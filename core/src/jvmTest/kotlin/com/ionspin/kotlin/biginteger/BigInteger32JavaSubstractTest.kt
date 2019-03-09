@@ -9,7 +9,7 @@ import kotlin.test.assertTrue
  * on 09-Mar-3/9/19
  */
 @ExperimentalUnsignedTypes
-class BigInteger32JavaTest {
+class BigInteger32JavaSubstractTest {
 
     val basePower = 32
 
