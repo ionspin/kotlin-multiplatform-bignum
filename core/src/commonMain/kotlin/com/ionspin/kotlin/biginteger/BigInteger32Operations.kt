@@ -11,6 +11,7 @@ internal object BigInteger32Operations {
     val overflowMask = 0x100000000U
     val lowerMask = 0xFFFFUL
     val base: UInt = 0xFFFFFFFFU
+    val basePowerOfTwo = 32
 
     /**
      * Hackers delight 5-11
@@ -18,7 +19,7 @@ internal object BigInteger32Operations {
     fun numberOfLeadingZeroes(value: UInt): Int {
         var x = value
         var y: UInt
-        var n = 32
+        var n = basePowerOfTwo
 
         y = x shr 16
         if (y != 0U) {
@@ -51,12 +52,12 @@ internal object BigInteger32Operations {
 
     fun bitLength(value: UIntArray): Int {
         val mostSignificant = value[value.size - 1]
-        return bitLength(mostSignificant) + (value.size) * 32
+        return bitLength(mostSignificant) + (value.size) * basePowerOfTwo
 
     }
 
     fun bitLength(value: UInt): Int {
-        return 32 - numberOfLeadingZeroes(value)
+        return basePowerOfTwo - numberOfLeadingZeroes(value)
     }
 
     fun removeLeadingZeroes(bigInteger: UIntArray): UIntArray {
@@ -85,8 +86,8 @@ internal object BigInteger32Operations {
         }
         val originalSize = operand.size
         val leadingZeroes = numberOfLeadingZeroes(operand[operand.size - 1])
-        val shiftWords = places / 32
-        val shiftBits = places % 32
+        val shiftWords = places / basePowerOfTwo
+        val shiftBits = places % basePowerOfTwo
         val wordsNeeded = if (shiftBits > leadingZeroes) {
             shiftWords + 1
         } else {
@@ -107,10 +108,10 @@ internal object BigInteger32Operations {
                     (operand[it - shiftWords] shl shiftBits)
                 }
                 in (shiftWords + 1) until (originalSize + shiftWords) -> {
-                    (operand[it - shiftWords] shl shiftBits) or (operand[it - shiftWords - 1] shr (32 - shiftBits))
+                    (operand[it - shiftWords] shl shiftBits) or (operand[it - shiftWords - 1] shr (basePowerOfTwo - shiftBits))
                 }
                 originalSize + wordsNeeded - 1 -> {
-                    (operand[it - wordsNeeded] shr (32 - shiftBits))
+                    (operand[it - wordsNeeded] shr (basePowerOfTwo - shiftBits))
                 }
                 else -> { throw RuntimeException("Invalid case $it")}
 
@@ -123,9 +124,9 @@ internal object BigInteger32Operations {
         var transfer: UInt = 0U
 
         val leadingZeroes = numberOfLeadingZeroes(operand[operand.size - 1])
-        val shiftWords = places / 32
-        val shiftBits = (places % 32)
-        val wordsToDiscard = if (shiftBits >= (32 - leadingZeroes)) {
+        val shiftWords = places / basePowerOfTwo
+        val shiftBits = (places % basePowerOfTwo)
+        val wordsToDiscard = if (shiftBits >= (basePowerOfTwo - leadingZeroes)) {
             shiftWords + 1
         } else {
             shiftWords
@@ -141,7 +142,7 @@ internal object BigInteger32Operations {
         return UIntArray(operand.size - wordsToDiscard) {
             when (it) {
                 in 0..(operand.size - 2 - wordsToDiscard) -> {
-                    (operand[it + wordsToDiscard] shr shiftBits) or (operand[it + wordsToDiscard + 1] shl (32 - shiftBits))
+                    (operand[it + wordsToDiscard] shr shiftBits) or (operand[it + wordsToDiscard + 1] shl (basePowerOfTwo - shiftBits))
                 }
                 operand.size - 1 - wordsToDiscard -> {
                     (operand[it + wordsToDiscard] shr shiftBits)
@@ -164,13 +165,11 @@ internal object BigInteger32Operations {
     }
 
     fun denormalize(
-        quotientNormalized: UIntArray,
         remainderNormalized: UIntArray,
         normalizationShift: Int
-    ): Pair<UIntArray, UIntArray> {
-        val quotient = quotientNormalized shr normalizationShift
+    ): UIntArray {
         val remainder = remainderNormalized shr normalizationShift
-        return Pair(quotient, remainder)
+        return remainder
     }
 
     //---------------- Primitive operations -----------------------//
@@ -230,7 +229,7 @@ internal object BigInteger32Operations {
         while (i < minLength) {
             sum = sum + largerData[i] + smallerData[i]
             result[i] = (sum and mask).toUInt()
-            sum = sum shr 32
+            sum = sum shr basePowerOfTwo
             i++
         }
 
@@ -252,7 +251,7 @@ internal object BigInteger32Operations {
             }
 
             sum = sum + largerData[i]
-            sum = sum shr 32
+            sum = sum shr basePowerOfTwo
         }
 
     }
@@ -271,13 +270,13 @@ internal object BigInteger32Operations {
         while (i < smallerLength) {
             diff = largerData[i].toULong() - smallerData[i] - diff
             result[i] = diff.toUInt()
-            diff = (diff and overflowMask) shr 32
+            diff = (diff and overflowMask) shr basePowerOfTwo
             i++
         }
 
         while (diff != 0UL) {
             diff = largerData[i].toULong() - diff
-            if ((diff and overflowMask) shr 32 == 1UL) {
+            if ((diff and overflowMask) shr basePowerOfTwo == 1UL) {
                 result[i] = (diff - 1UL).toUInt()
             } else {
                 result[i] = diff.toUInt()
@@ -303,7 +302,7 @@ internal object BigInteger32Operations {
 
     fun multiply(first: UInt, second: UInt): UIntArray {
         val result = first * second
-        val high = (result shr 32).toUInt()
+        val high = (result shr basePowerOfTwo).toUInt()
         val low = result.toUInt()
 
         return removeLeadingZeroes(uintArrayOf(low, high))
@@ -319,8 +318,8 @@ internal object BigInteger32Operations {
             product = first[i].toULong() * second
             sum = result[i].toULong() + (product and mask).toUInt()
             result[i] = (sum and mask).toUInt()
-            sum = sum shr 32
-            result[i + 1] = (product shr 32).toUInt() + sum.toUInt()
+            sum = sum shr basePowerOfTwo
+            result[i + 1] = (product shr basePowerOfTwo).toUInt() + sum.toUInt()
         }
 
         return removeLeadingZeroes(result)
@@ -328,7 +327,7 @@ internal object BigInteger32Operations {
 
     fun multiply(first: UIntArray, second: UIntArray): UIntArray {
         return second.foldIndexed(UIntArray(0)) { index, acc, element ->
-            acc + (multiply(first, element) shl (index * 32))
+            acc + (multiply(first, element) shl (index * basePowerOfTwo))
 
         }
 
@@ -347,24 +346,25 @@ internal object BigInteger32Operations {
         val wordPrecision = dividendSize - divisorSize
         val quotient = UIntArray(wordPrecision)
         quotient[wordPrecision - 1] = 0U
-        val divisorTimesBaseToPowerOfM = (divisor shl (wordPrecision + 32))
+        val divisorTimesBaseToPowerOfM = (divisor shl (wordPrecision + basePowerOfTwo))
         if (dividend >= divisorTimesBaseToPowerOfM) {
             quotient[wordPrecision - 1] = 1U
-            dividend = dividend - (divisor shl (wordPrecision + 32))
+            dividend = dividend - (divisor shl (wordPrecision + basePowerOfTwo))
         }
 
         for (j in (wordPrecision - 1) downTo 0) {
-            val qjhat = (dividend[divisorSize + j].toULong() * base + dividend[divisorSize + j - 1]) / divisor[divisorSize - 1]
+            val qjhat = ((dividend[divisorSize + j].toULong() shl basePowerOfTwo) + dividend[divisorSize + j - 1]) / divisor[divisorSize - 1]
             quotient[j] = if (qjhat < (base - 1UL)) qjhat.toUInt() else base - 1U
-            dividend = dividend - divisor * quotient[j] * (base shr j)
+            val divisorTimesQuotient = quotient * divisor
+            dividend = dividend - ((divisor * quotient[j]) shl (j * basePowerOfTwo))
             while (divisor < 0U) {
                 quotient[j] = quotient[j] - 1U
                 dividend = dividend + divisor * (base shr j)
             }
         }
 
-        val (denormQuotient, denormRemainder) = denormalize(quotient, dividend, normalizationShift)
-        return Pair(denormQuotient, denormRemainder)
+        val denormRemainder = denormalize(dividend, normalizationShift)
+        return Pair(quotient, denormRemainder)
     }
 
     private infix fun UIntArray.shl(places: Int): UIntArray {
