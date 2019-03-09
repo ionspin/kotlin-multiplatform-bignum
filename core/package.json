@@ -1,0 +1,15 @@
+{
+  "name": "kcontroller-flow-js",
+  "version" : "0.0.1",
+  "description" : "Payment SDK multi",
+  "main" : "flow.js",
+  "author": "Ugljesa Jovanovic",
+  "license": "SSPL",
+  "homepage": "",
+  "dependencies": {
+    "kotlin" : "1.3.20"
+  },
+  "devDependencies": {
+    "mocha": "5.2.0"
+  }
+}
