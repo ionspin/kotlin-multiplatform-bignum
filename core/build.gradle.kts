@@ -63,6 +63,7 @@ kotlin {
                 implementation(kotlin(Deps.Jvm.test))
                 implementation(kotlin(Deps.Jvm.testJUnit))
                 implementation(Deps.Jvm.oshi)
+                implementation(Deps.Jvm.coroutinesTest)
             }
         }
         val jsMain by getting {

@@ -65,6 +65,7 @@ object Deps {
         val ktorClientCore = "io.ktor:ktor-client-core-jvm:${Versions.ktor}"
         val timber = "com.jakewharton.timber:timber-jdk:${Versions.timber}"
         val oshi = "com.github.oshi:oshi-core:${Versions.oshi}"
+        val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.kotlinCoroutines}"
     }
 
     object iOs {

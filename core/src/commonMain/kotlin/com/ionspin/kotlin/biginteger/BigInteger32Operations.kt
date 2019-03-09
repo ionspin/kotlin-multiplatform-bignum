@@ -79,11 +79,11 @@ internal object BigInteger32Operations {
 
     }
 
-    fun shiftLeft(operand : UIntArray, places : Int) : UIntArray {
+    fun shiftLeft(operand: UIntArray, places: Int): UIntArray {
         if (operand.size == 0 || places == 0) {
             return operand
         }
-        var transfer = 0U
+        val originalSize = operand.size
         val leadingZeroes = numberOfLeadingZeroes(operand[operand.size - 1])
         val shiftWords = places / 32
         val shiftBits = places % 32
@@ -92,44 +92,69 @@ internal object BigInteger32Operations {
         } else {
             shiftWords
         }
-        return UIntArray(operand.size + wordsNeeded) {
-            when(it) {
-                in 0 until shiftWords  -> 0U
-                in shiftWords until (operand.size + wordsNeeded - 1) -> {
-                    val current = (operand[it - shiftWords] shl shiftBits) or transfer
-                    transfer = operand[it - shiftWords] shr (32 - shiftBits)
-                    current
-
-                }
-                (operand.size + wordsNeeded - 1) -> {
-                    if (shiftWords == operand.size + wordsNeeded - 1) {
-                        transfer = operand[it - shiftWords] shr (32 - shiftBits)
-                    }
-                    0U or transfer
-                }
-                else -> {
-                    throw RuntimeException("Unexpected case $it")
+        if (shiftBits == 0) {
+            return UIntArray(operand.size + wordsNeeded) {
+                when (it) {
+                    in 0 until shiftWords -> 0U
+                    else -> operand[it - shiftWords]
                 }
             }
+        }
+        return UIntArray(operand.size + wordsNeeded) {
+            when (it) {
+                in 0 until shiftWords -> 0U
+                shiftWords -> {
+                    (operand[it - shiftWords] shl shiftBits)
+                }
+                in (shiftWords + 1) until (originalSize + shiftWords) -> {
+                    (operand[it - shiftWords] shl shiftBits) or (operand[it - shiftWords - 1] shr (32 - shiftBits))
+                }
+                originalSize + wordsNeeded - 1 -> {
+                    (operand[it - wordsNeeded] shr (32 - shiftBits))
+                }
+                else -> { throw RuntimeException("Invalid case $it")}
 
-
+            }
         }
 
     }
 
-    fun shiftRight(operand : UIntArray, places: Int) : UIntArray {
-        var transfer: ULong = 0U
+    fun shiftRight(operand: UIntArray, places: Int): UIntArray {
+        var transfer: UInt = 0U
 
-        val leadingZeroes = numberOfLeadingZeroes(operand[operand.size -1])
-        val shiftWords = places / 63
-        val shiftBits = (places % 63).toInt()
-        val wordsNeeded = 1
-        return uintArrayOf()
+        val leadingZeroes = numberOfLeadingZeroes(operand[operand.size - 1])
+        val shiftWords = places / 32
+        val shiftBits = (places % 32)
+        val wordsToDiscard = if (shiftBits >= (32 - leadingZeroes)) {
+            shiftWords + 1
+        } else {
+            shiftWords
+        }
+        if (wordsToDiscard >= operand.size) {
+            return UIntArray(0)
+        }
+
+        if (shiftBits == 0) {
+            operand.copyOfRange(operand.size - wordsToDiscard, operand.size)
+        }
+
+        return UIntArray(operand.size - wordsToDiscard) {
+            when (it) {
+                in 0..(operand.size - 2 - wordsToDiscard) -> {
+                    (operand[it + wordsToDiscard] shr shiftBits) or (operand[it + wordsToDiscard + 1] shl (32 - shiftBits))
+                }
+                operand.size - 1 - wordsToDiscard -> {
+                    (operand[it + wordsToDiscard] shr shiftBits)
+                }
+                else -> { throw RuntimeException("Invalid case $it")}
+            }
+        }
+
     }
 
     //---------------- Primitive operations -----------------------//
 
-    fun compare(first : UIntArray, second:UIntArray) : Int {
+    fun compare(first: UIntArray, second: UIntArray): Int {
 
 
         if (first.size > second.size) {
@@ -167,7 +192,7 @@ internal object BigInteger32Operations {
 
     }
 
-    fun addition(first : UIntArray, second : UIntArray) : UIntArray {
+    fun addition(first: UIntArray, second: UIntArray): UIntArray {
         if (first.size == 1 && first[0] == 0U) return second
         if (second.size == 1 && second[0] == 0U) return first
 
@@ -212,7 +237,7 @@ internal object BigInteger32Operations {
     }
 
     fun substract(first: UIntArray, second: UIntArray): UIntArray {
-        val firstIsLarger = compare(first,second) == 1
+        val firstIsLarger = compare(first, second) == 1
 
         val (largerLength, smallerLength, largerData, smallerData) = if (firstIsLarger) {
             Quadruple(first.size, second.size, first, second)
@@ -271,7 +296,7 @@ internal object BigInteger32Operations {
         var sum = 0UL
         for (i in 0 until first.size) {
             product = first[i].toULong() * second
-            sum = result[i].toULong()  + (product and mask).toUInt()
+            sum = result[i].toULong() + (product and mask).toUInt()
             result[i] = (sum and mask).toUInt()
             sum = sum shr 32
             result[i + 1] = (product shr 32).toUInt() + sum.toUInt()
@@ -280,9 +305,8 @@ internal object BigInteger32Operations {
         return removeLeadingZeroes(result)
     }
 
-    fun multiply(first: UIntArray, second: UIntArray) : UIntArray {
-        return  second.foldIndexed(UIntArray(0)) {
-            index, acc, element ->
+    fun multiply(first: UIntArray, second: UIntArray): UIntArray {
+        return second.foldIndexed(UIntArray(0)) { index, acc, element ->
             acc + (multiply(first, element) shl (index * 32))
 
         }
