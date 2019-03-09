@@ -152,6 +152,27 @@ internal object BigInteger32Operations {
 
     }
 
+    fun normalize(dividend: UIntArray, divisor: UIntArray): Triple<UIntArray, UIntArray, Int> {
+        val dividendSize = dividend.size
+        val divisorSize = divisor.size
+        val normalizationShift = numberOfLeadingZeroes(divisor[divisorSize - 1])
+        val divisorNormalized = divisor.shl(normalizationShift)
+        val dividendNormalized = dividend.shl(normalizationShift)
+
+        return Triple(dividendNormalized, divisorNormalized, normalizationShift)
+
+    }
+
+    fun denormalize(
+        quotientNormalized: UIntArray,
+        remainderNormalized: UIntArray,
+        normalizationShift: Int
+    ): Pair<UIntArray, UIntArray> {
+        val quotient = quotientNormalized shr normalizationShift
+        val remainder = remainderNormalized shr normalizationShift
+        return Pair(quotient, remainder)
+    }
+
     //---------------- Primitive operations -----------------------//
 
     fun compare(first: UIntArray, second: UIntArray): Int {
@@ -313,8 +334,37 @@ internal object BigInteger32Operations {
 
     }
 
-    fun divide() {
-        //Fun fun
+    /**
+     * Based on algorithm from MCA
+     */
+    fun basicDivide(
+        unnormalizedDividend: UIntArray,
+        unnormalizedDivisor: UIntArray
+    ): Pair<UIntArray, UIntArray> {
+        var (dividend, divisor, normalizationShift) = normalize(unnormalizedDividend, unnormalizedDivisor)
+        val dividendSize = dividend.size
+        val divisorSize = divisor.size
+        val wordPrecision = dividendSize - divisorSize
+        val quotient = UIntArray(wordPrecision)
+        quotient[wordPrecision - 1] = 0U
+        val divisorTimesBaseToPowerOfM = (divisor shl (wordPrecision + 32))
+        if (dividend >= divisorTimesBaseToPowerOfM) {
+            quotient[wordPrecision - 1] = 1U
+            dividend = dividend - (divisor shl (wordPrecision + 32))
+        }
+
+        for (j in (wordPrecision - 1) downTo 0) {
+            val qjhat = (dividend[divisorSize + j].toULong() * base + dividend[divisorSize + j - 1]) / divisor[divisorSize - 1]
+            quotient[j] = if (qjhat < (base - 1UL)) qjhat.toUInt() else base - 1U
+            dividend = dividend - divisor * quotient[j] * (base shr j)
+            while (divisor < 0U) {
+                quotient[j] = quotient[j] - 1U
+                dividend = dividend + divisor * (base shr j)
+            }
+        }
+
+        val (denormQuotient, denormRemainder) = denormalize(quotient, dividend, normalizationShift)
+        return Pair(denormQuotient, denormRemainder)
     }
 
     private infix fun UIntArray.shl(places: Int): UIntArray {
@@ -348,5 +398,17 @@ internal object BigInteger32Operations {
 
     private operator fun UIntArray.times(other: UInt): UIntArray {
         return multiply(this, other)
+    }
+    private operator fun UIntArray.div(other: UInt): UIntArray {
+        TODO()
+        return basicDivide(this, uintArrayOf(other)).first
+    }
+
+    private operator fun UIntArray.compareTo(other: UIntArray): Int {
+        return compare(this, other)
+    }
+
+    private operator fun UIntArray.compareTo(other: UInt): Int {
+        return compare(this, uintArrayOf(other))
     }
 }

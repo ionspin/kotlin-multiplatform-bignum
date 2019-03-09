@@ -1,6 +1,15 @@
 package com.ionspin.kotlin.biginteger
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.junit.Test
+import java.math.BigInteger
+import java.time.Duration
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.Period
+import kotlin.random.Random
+import kotlin.random.nextUInt
 import kotlin.test.assertTrue
 
 /**
@@ -53,5 +62,77 @@ class BigInteger32JavaMultiplyTest {
 
         }
 
+        for (i in 1..Int.MAX_VALUE step 10000001) {
+            println("$i")
+            for (j in 1..Int.MAX_VALUE step 100000000) {
+                for (k in 1..Int.MAX_VALUE step 100000001) {
+                    for (l in 1..Int.MAX_VALUE step 100000000) {
+                        GlobalScope.launch {
+                            multiplySingleTest(i.toUInt(), j.toUInt(), k.toUInt(), l.toUInt())
+                        }
+                    }
+                }
+            }
+        }
+
+
+    }
+
+    @Test
+    fun randomMultiplyTest() {
+        val seed = 1
+        val random = Random(seed)
+        for (i in 1..Int.MAX_VALUE step 99) {
+            if ((i % 100000) in 1..100) {
+                println(i)
+            }
+            multiplySingleTest(random.nextUInt(), random.nextUInt(), random.nextUInt())
+        }
+
+    }
+
+    @Test
+    fun randomMultiplyLotsOfElementsTest() {
+        val seed = 1
+        val random = Random(seed)
+        val numberOfElements = 150000
+        println("Number of elements $numberOfElements")
+
+        val lotOfElements = UIntArray(numberOfElements) {
+            random.nextUInt()
+        }
+        multiplySingleTest(*lotOfElements)
+    }
+
+    fun multiplySingleTest(vararg elements: UInt) {
+        assertTrue("Failed on ${elements.contentToString()}") {
+            val time = elements.size > 100
+            lateinit var lastTime: LocalDateTime
+            lateinit var startTime: LocalDateTime
+
+            if (time) {
+                lastTime = LocalDateTime.now()
+                startTime = lastTime
+            }
+
+            val result = elements.foldIndexed(UIntArray(1) { 1U }) { index, acc, uInt ->
+                BigInteger32Operations.multiply(acc, uInt)
+            }
+            if (time) {
+                lastTime = LocalDateTime.now()
+                println("Total time ${Duration.between(startTime, lastTime)}")
+                startTime = lastTime
+            }
+            val convertedResult = result.toJavaBigInteger()
+            val bigIntResult = elements.foldIndexed(BigInteger.ONE) { index, acc, uInt ->
+                acc * BigInteger(uInt.toString(), 10)
+            }
+            if (time) {
+                println("Result ${convertedResult}")
+                println("Total time ${Duration.between(startTime, lastTime)}")
+            }
+
+            bigIntResult == convertedResult
+        }
     }
 }
