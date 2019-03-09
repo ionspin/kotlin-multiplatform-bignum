@@ -355,7 +355,6 @@ internal object BigInteger32Operations {
         for (j in (wordPrecision - 1) downTo 0) {
             val qjhat = ((dividend[divisorSize + j].toULong() shl basePowerOfTwo) + dividend[divisorSize + j - 1]) / divisor[divisorSize - 1]
             quotient[j] = if (qjhat < (base - 1UL)) qjhat.toUInt() else base - 1U
-            val divisorTimesQuotient = quotient * divisor
             dividend = dividend - ((divisor * quotient[j]) shl (j * basePowerOfTwo))
             while (divisor < 0U) {
                 quotient[j] = quotient[j] - 1U
@@ -372,7 +371,7 @@ internal object BigInteger32Operations {
     }
 
     private infix fun UIntArray.shr(places: Int): UIntArray {
-        return shiftLeft(this, places)
+        return shiftRight(this, places)
     }
 
 
