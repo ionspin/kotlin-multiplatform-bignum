@@ -283,10 +283,6 @@ internal object BigInteger32Operations {
     fun multiply(first: UIntArray, second: UIntArray) : UIntArray {
         return  second.foldIndexed(UIntArray(0)) {
             index, acc, element ->
-            val accumulator = acc
-            val temp = multiply(first, element)
-            val shifted = temp shl (index * 32)
-            val almost = acc + (temp shl (index * 32))
             acc + (multiply(first, element) shl (index * 32))
 
         }
