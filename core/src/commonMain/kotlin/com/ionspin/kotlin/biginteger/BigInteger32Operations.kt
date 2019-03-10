@@ -81,7 +81,7 @@ internal object BigInteger32Operations {
     }
 
     fun shiftLeft(operand: UIntArray, places: Int): UIntArray {
-        if (operand.size == 0 || places == 0) {
+        if (operand.isEmpty() || places == 0) {
             return operand
         }
         val originalSize = operand.size
@@ -123,6 +123,9 @@ internal object BigInteger32Operations {
     }
 
     fun shiftRight(operand: UIntArray, places: Int): UIntArray {
+        if (operand.isEmpty() || places == 0) {
+            return operand
+        }
         var transfer: UInt = 0U
 
         val leadingZeroes = numberOfLeadingZeroes(operand[operand.size - 1])
@@ -363,20 +366,19 @@ internal object BigInteger32Operations {
         var (dividend, divisor, normalizationShift) = normalize(unnormalizedDividend, unnormalizedDivisor)
         val dividendSize = dividend.size
         val divisorSize = divisor.size
-        var wordPrecision = dividendSize - divisorSize
+        val wordPrecision = dividendSize - divisorSize
 
-        val quotient = UIntArray(wordPrecision)
+
 
         var qjhat = 0UL
         var reconstructedQuotient: UIntArray
+        var quotient = UIntArray(wordPrecision)
 
-
-        quotient[wordPrecision - 1] = 0U
-
-        val divisorTimesBaseToPowerOfM = (divisor shl (wordPrecision + basePowerOfTwo))
+        val divisorTimesBaseToPowerOfM = (divisor shl (wordPrecision * basePowerOfTwo))
         if (dividend >= divisorTimesBaseToPowerOfM) {
-            quotient[wordPrecision - 1] = 1U
-            dividend = dividend - (divisor shl (wordPrecision + basePowerOfTwo))
+            quotient = UIntArray(wordPrecision + 1)
+            quotient[wordPrecision] = 1U
+            dividend = dividend - divisorTimesBaseToPowerOfM
         }
 
         for (j in (wordPrecision - 1) downTo 0) {
@@ -395,6 +397,10 @@ internal object BigInteger32Operations {
 
         val denormRemainder = denormalize(dividend, normalizationShift)
         return Pair(quotient, denormRemainder)
+    }
+
+    fun baseReciprocal(operand : UIntArray, precision : Int) {
+
     }
 
     private infix fun UIntArray.shl(places: Int): UIntArray {

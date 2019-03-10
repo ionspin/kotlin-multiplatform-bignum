@@ -1,5 +1,7 @@
 package com.ionspin.kotlin.biginteger
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.junit.Test
 import java.math.BigInteger
 import java.time.Duration
@@ -80,10 +82,35 @@ class BigInteger32DivisionTest {
             }
             val a = uintArrayOf(random.nextUInt(), random.nextUInt())
             val b = uintArrayOf(random.nextUInt(), random.nextUInt())
-            if (BigInteger32Operations.compare(a, b) > 0) {
-                divisionSingleTest(a, b)
-            } else {
-                divisionSingleTest(b, a)
+            GlobalScope.launch {
+                if (BigInteger32Operations.compare(a, b) > 0) {
+                    divisionSingleTest(a, b)
+                } else {
+                    divisionSingleTest(b, a)
+                }
+            }
+
+
+        }
+
+    }
+
+    @Test
+    fun randomDivisionMultiWordTest2() {
+        val seed = 1
+        val random = Random(seed)
+        for (i in 1..Int.MAX_VALUE step 99) {
+            if ((i % 100000) in 1..100) {
+                println(i)
+            }
+            val a = uintArrayOf(random.nextUInt(), random.nextUInt(), random.nextUInt(), random.nextUInt())
+            val b = uintArrayOf(random.nextUInt(), random.nextUInt())
+            GlobalScope.launch {
+                if (BigInteger32Operations.compare(a, b) > 0) {
+                    divisionSingleTest(a, b)
+                } else {
+                    divisionSingleTest(b, a)
+                }
             }
 
         }
@@ -92,12 +119,13 @@ class BigInteger32DivisionTest {
 
     @Test
     fun preciseDebugTest() {
-        divisionSingleTest(uintArrayOf(3767748705U), uintArrayOf(2696295277U))
+
+        divisionSingleTest(uintArrayOf(3449361588U,1278830002U,3123489057U,3720277819U), uintArrayOf(486484208U,2780187700U))
     }
 
     fun divisionSingleTest(dividend : UIntArray, divisor : UIntArray) {
-        assertTrue("Failed on ${dividend.joinToString(separator = ",") { it.toString() }} " +
-                "/ ${divisor.joinToString(separator = ",") { it.toString() }}") {
+        assertTrue("Failed on uintArrayOf(${dividend.joinToString(separator = ",") { it.toString() + "U" }}), " +
+                "uintArrayOf(${divisor.joinToString(separator = ",") { it.toString() + "U" }})") {
             val a = dividend
             val b = divisor
             try {
