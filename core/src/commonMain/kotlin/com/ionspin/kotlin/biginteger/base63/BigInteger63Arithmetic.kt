@@ -346,6 +346,12 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
     }
 
     fun convertFrom32BitRepresentation(operand: UIntArray): ULongArray {
+        if (operand.size == 0) {
+            return ZERO
+        }
+        if (operand.size == 1) {
+            return ulongArrayOf(operand[0].toULong())
+        }
         val length = BigInteger32Arithmetic.bitLength(operand)
         val requiredLength = if (length % 63 == 0) {
             length / 63
@@ -355,32 +361,37 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
 
         val result = ULongArray(requiredLength)
         var skipWordCount = 0
-        for (i in 0 until requiredLength - (operand.size / 32)) {
+        for (i in 0 until requiredLength) {
             skipWordCount = i / 32
-            val remI = i % 32
-            val position = (i * 2) + skipWordCount
+            val shiftAmount = i % 32
+            val position = (i * 2) - skipWordCount
             when (i) {
                 0 -> {
-                    result[i] = operand[(i * 2)].toULong() or ((operand[(i * 2) + 1].toULong() shl 31) and highMask)
+                    result[i] = operand[(i * 2)].toULong() or ((operand[(i * 2) + 1].toULong() shl 32) and highMask)
                 }
                 in 1 until requiredLength - 1 -> {
                     result[i] =
-                        (operand[position - 1].toULong() shr (32 - remI)) or (operand[position].toULong() shl remI) or ((operand[position + 1].toULong() shl (32 + remI)) and highMask)
+                        (operand[position - 1].toULong() shr (32 - shiftAmount)) or (operand[position].toULong() shl shiftAmount) or ((operand[position + 1].toULong() shl (32 + shiftAmount)) and highMask)
                 }
                 requiredLength - 1 -> {
-                    result[i] =
-                        (operand[position - 1].toULong() shr (32 - remI)) // or (operand[(i * 2)].toULong() shl i)
+                    if (position < operand.size) {
+                        result[i] =
+                            (operand[position - 1].toULong() shr (32 - shiftAmount))  or (operand[position].toULong() shl shiftAmount)
+                    } else {
+                        result[i] =
+                            (operand[position - 1].toULong() shr (32 - shiftAmount))
+                    }
                 }
 
             }
 
 
         }
-        if (operand.size % 2 != 0) {
-            val lastI = requiredLength - 1 + skipWordCount
-            result[lastI] =
-                (operand[(lastI * 2) - 1].toULong() shr (32 - lastI)) or (operand[(lastI * 2)].toULong() shl lastI)
-        }
+//        if (operand.size % 2 != 0) {
+//            val lastI = requiredLength - 1 + skipWordCount
+//            result[lastI] =
+//                (operand[(lastI * 2) - 1].toULong() shr (32 - lastI)) or (operand[(lastI * 2)].toULong() shl lastI)
+//        }
 //        result[requiredLength - 1] = (operand[operand.size - 1].toULong() shl ((operand.size - 1) / 2)) or (operand[operand.size - 2].toULong() shr (32 - (operand.size - 1)/2))
         return result
     }
