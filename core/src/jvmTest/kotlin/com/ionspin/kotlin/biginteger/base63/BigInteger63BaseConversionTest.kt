@@ -1,7 +1,7 @@
 package com.ionspin.kotlin.biginteger.base63
 
 import com.ionspin.kotlin.biginteger.base32.toJavaBigInteger
-import com.ionspin.kotlin.biginteger.base63.BigInteger63Arithmetic.base
+import com.ionspin.kotlin.biginteger.base63.BigInteger63Arithmetic.baseMask
 import java.math.BigInteger
 import kotlin.random.Random
 import kotlin.random.nextUInt
@@ -42,7 +42,7 @@ class BigInteger63BaseConversionTest {
         assertTrue {
             val seed = 1
             val random = Random(seed)
-            val a = ULongArray(321) { random.nextULong() and base }
+            val a = ULongArray(321) { random.nextULong() and baseMask }
             val b = BigInteger63Arithmetic.convertTo64BitRepresentation(a)
             val aBigInt = a.toJavaBigInteger()
             val bBigInt = b.fromBase64toJavaBigInteger()
