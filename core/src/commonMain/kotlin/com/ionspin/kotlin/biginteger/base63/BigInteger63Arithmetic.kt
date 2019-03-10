@@ -509,7 +509,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
             result[2 * i + 1] = (power64Representation[i] shr 32).toUInt()
         }
 
-        return result
+        return BigInteger32Arithmetic.removeLeadingZeroes(result)
     }
 
     fun convertFrom32BitRepresentation(operand: UIntArray): ULongArray {

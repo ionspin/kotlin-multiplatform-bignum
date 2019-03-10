@@ -1,5 +1,7 @@
 package com.ionspin.kotlin.biginteger.base63
 
+import com.ionspin.kotlin.biginteger.base32.BigInteger32Arithmetic
+import com.ionspin.kotlin.biginteger.base32.toJavaBigInteger
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.Test
@@ -146,12 +148,19 @@ class BigInteger63DivisionTest {
             val b = divisor
             try {
                 val c = BigInteger63Arithmetic.divide(a, b)
+                val d = BigInteger32Arithmetic.divide(
+                    BigInteger63Arithmetic.convertTo32BitRepresentation(a),
+                    BigInteger63Arithmetic.convertTo32BitRepresentation(b)
+                    )
 
                 val quotientBigInt = c.first.toJavaBigInteger()
                 val remainderBigInt = c.second.toJavaBigInteger()
 
                 val bigIntQuotient = a.toJavaBigInteger() / b.toJavaBigInteger()
                 val bigIntRemainder = a.toJavaBigInteger() % b.toJavaBigInteger()
+
+                val quotient32 = d.first.toJavaBigInteger()
+                val remainder32 = d.second.toJavaBigInteger()
 
                 quotientBigInt == bigIntQuotient && remainderBigInt == bigIntRemainder
             } catch (e : Throwable) {
