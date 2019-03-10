@@ -10,7 +10,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     val mask = 0xFFFFFFFFUL
     val overflowMask = 0x100000000U
     val lowerMask = 0xFFFFUL
-    override val base: UInt = 0xFFFFFFFFU
+    val base: UInt = 0xFFFFFFFFU
     override val basePowerOfTwo = 32
 
     override val ZERO = UIntArray(0)

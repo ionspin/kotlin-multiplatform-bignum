@@ -10,7 +10,7 @@ actual object NativeBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int> {
         get() = TODO("not implemented yet")
     override val ONE: IntArray
         get() = TODO("not implemented yet")
-    override val base: Int
+    val base: Int
         get() = TODO("not implemented yet")
     override val basePowerOfTwo: Int
         get() = TODO("not implemented yet")

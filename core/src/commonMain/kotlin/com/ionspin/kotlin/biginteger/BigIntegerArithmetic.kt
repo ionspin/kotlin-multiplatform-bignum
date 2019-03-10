@@ -8,7 +8,6 @@ package com.ionspin.kotlin.biginteger
 interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
     val ZERO : BackingCollectionType
     val ONE : BackingCollectionType
-    val base: BackingWordType
     val basePowerOfTwo: Int
     /**
      * Hackers delight 5-11
