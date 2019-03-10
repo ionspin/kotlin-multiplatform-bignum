@@ -23,10 +23,6 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         TODO("not implemented yet")
     }
 
-    override fun bitLength(value: ULong): Int {
-        TODO("not implemented yet")
-    }
-
     override fun shiftLeft(operand: ULongArray, places: Int): ULongArray {
         TODO("not implemented yet")
     }
@@ -47,19 +43,11 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         TODO("not implemented yet")
     }
 
-    override fun multiply(first: ULongArray, second: ULong): ULongArray {
-        TODO("not implemented yet")
-    }
-
     override fun multiply(first: ULongArray, second: ULongArray): ULongArray {
         TODO("not implemented yet")
     }
 
     override fun divide(first: ULongArray, second: ULongArray): Pair<ULongArray, ULongArray> {
-        TODO("not implemented yet")
-    }
-
-    override fun divide(first: ULongArray, second: ULong): Pair<ULongArray, ULongArray> {
         TODO("not implemented yet")
     }
 

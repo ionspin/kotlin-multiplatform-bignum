@@ -6,7 +6,7 @@ package com.ionspin.kotlin.biginteger
  * ugljesa.jovanovic@ionspin.com
  * on 10-Mar-3/10/19
  */
-typealias WordArray = UIntArray
+
 
 
 @ExperimentalUnsignedTypes
@@ -15,7 +15,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Boolean) {
 
     @ExperimentalUnsignedTypes
     companion object {
-        private val arithmetic = BigInteger32Arithmetic
+        private val arithmetic = chosenArithmetic
 
         val positive = true
         val negative = true

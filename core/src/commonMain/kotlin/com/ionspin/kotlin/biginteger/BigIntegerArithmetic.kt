@@ -15,16 +15,13 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
      */
     fun numberOfLeadingZeroes(value: BackingWordType): Int
     fun bitLength(value: BackingCollectionType): Int
-    fun bitLength(value: BackingWordType): Int
     fun shiftLeft(operand: BackingCollectionType, places: Int): BackingCollectionType
     fun shiftRight(operand: BackingCollectionType, places: Int): BackingCollectionType
     fun compare(first: BackingCollectionType, second: BackingCollectionType): Int
     fun addition(first: BackingCollectionType, second: BackingCollectionType): BackingCollectionType
     fun substract(first: BackingCollectionType, second: BackingCollectionType): BackingCollectionType
-    fun multiply(first: BackingCollectionType, second: BackingWordType): BackingCollectionType
     fun multiply(first: BackingCollectionType, second: BackingCollectionType): BackingCollectionType
     fun divide(first: BackingCollectionType, second: BackingCollectionType): Pair<BackingCollectionType, BackingCollectionType>
-    fun divide(first: BackingCollectionType, second: BackingWordType): Pair<BackingCollectionType, BackingCollectionType>
 
 
 }

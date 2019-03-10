@@ -59,7 +59,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     }
 
-    override fun bitLength(value: UInt): Int {
+    fun bitLength(value: UInt): Int {
         return basePowerOfTwo - numberOfLeadingZeroes(value)
     }
 
@@ -313,7 +313,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return removeLeadingZeroes(uintArrayOf(low, high))
     }
 
-    override fun multiply(first: UIntArray, second: UInt): UIntArray {
+    fun multiply(first: UIntArray, second: UInt): UIntArray {
 
         val result = UIntArray(first.size + 1)
 
@@ -342,7 +342,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return basicDivide(first, second)
     }
 
-    override fun divide(first: UIntArray, second: UInt) : Pair<UIntArray, UIntArray> {
+    fun divide(first: UIntArray, second: UInt) : Pair<UIntArray, UIntArray> {
         return basicDivide(first, uintArrayOf(second))
     }
 
