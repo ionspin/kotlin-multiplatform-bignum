@@ -13,6 +13,9 @@ internal object BigInteger32Operations {
     val base: UInt = 0xFFFFFFFFU
     val basePowerOfTwo = 32
 
+    val ZERO = UIntArray(0)
+    val ONE = UIntArray(1) { 1U }
+
     /**
      * Hackers delight 5-11
      */
@@ -63,18 +66,8 @@ internal object BigInteger32Operations {
     fun removeLeadingZeroes(bigInteger: UIntArray): UIntArray {
         val firstEmpty = bigInteger.indexOfLast { it != 0U } + 1
         if (firstEmpty == -1 || firstEmpty == 0) {
-            //If the big integer was 0, return just an array with one element equal to zero
-            return bigInteger.copyOfRange(0, 1)
-        }
-        return bigInteger.copyOfRange(0, firstEmpty)
-
-    }
-
-    fun removeLeadingZeroesInt(bigInteger: UIntArray): UIntArray {
-        val firstEmpty = bigInteger.indexOfLast { it != 0U } + 1
-        if (firstEmpty == -1 || firstEmpty == 0) {
-            //If the big integer was 0, return just an array with one element equal to zero
-            return bigInteger.copyOfRange(0, 1)
+            //Array is equal to zero, so we return array with zero elements
+            return ZERO
         }
         return bigInteger.copyOfRange(0, firstEmpty)
 
@@ -137,7 +130,7 @@ internal object BigInteger32Operations {
             shiftWords
         }
         if (wordsToDiscard >= operand.size) {
-            return UIntArray(0)
+            return ZERO
         }
 
         if (shiftBits == 0) {
@@ -169,6 +162,11 @@ internal object BigInteger32Operations {
 
         return Triple(dividendNormalized, divisorNormalized, normalizationShift)
 
+    }
+
+    fun normalize(operand : UIntArray) : Pair<UIntArray, Int> {
+        val normalizationShift = numberOfLeadingZeroes(operand[operand.size - 1])
+        return Pair(operand.shl(normalizationShift) , normalizationShift)
     }
 
     fun denormalize(
@@ -299,7 +297,7 @@ internal object BigInteger32Operations {
         }
 
         if (result.filter { it == 0U }.isEmpty()) {
-            return UIntArray(0)
+            return ZERO
         }
         //Remove zero words
         val firstEmpty = result.indexOfLast { it != 0U } + 1
@@ -333,7 +331,7 @@ internal object BigInteger32Operations {
     }
 
     fun multiply(first: UIntArray, second: UIntArray): UIntArray {
-        return second.foldIndexed(UIntArray(0)) { index, acc, element ->
+        return second.foldIndexed(ZERO) { index, acc, element ->
             acc + (multiply(first, element) shl (index * basePowerOfTwo))
 
         }
@@ -399,7 +397,15 @@ internal object BigInteger32Operations {
         return Pair(quotient, denormRemainder)
     }
 
-    fun baseReciprocal(operand : UIntArray, precision : Int) {
+    fun baseReciprocal(unnomrmalizedOperand : UIntArray, precision : Int) : UIntArray {
+        val (operand, normalizationShift) = normalize(unnomrmalizedOperand)
+        val operandSize = operand.size
+        if (operandSize <= 2) {
+            return (((uintArrayOf(1U) shl (2 * basePowerOfTwo)) / operand) - 1U)
+        }
+
+        TODO()
+
 
     }
 
@@ -437,8 +443,23 @@ internal object BigInteger32Operations {
     }
 
     private operator fun UIntArray.div(other: UInt): UIntArray {
-        TODO()
         return basicDivide(this, uintArrayOf(other)).first
+    }
+
+    private operator fun UIntArray.rem(other: UInt): UIntArray {
+        return basicDivide(this, uintArrayOf(other)).second
+    }
+
+    private operator fun UIntArray.div(other: UIntArray): UIntArray {
+        return basicDivide(this, other).first
+    }
+
+    private operator fun UIntArray.rem(other: UIntArray): UIntArray {
+        return basicDivide(this, other).second
+    }
+
+    private infix fun UIntArray.divrem(other: UIntArray) : Pair<UIntArray, UIntArray> {
+        return basicDivide(this, other)
     }
 
     private operator fun UIntArray.compareTo(other: UIntArray): Int {

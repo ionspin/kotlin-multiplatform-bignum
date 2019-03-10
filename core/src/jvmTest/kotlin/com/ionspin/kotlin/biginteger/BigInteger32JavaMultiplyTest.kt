@@ -129,6 +129,7 @@ class BigInteger32JavaMultiplyTest {
             }
             if (time) {
                 println("Result ${convertedResult}")
+                lastTime = LocalDateTime.now()
                 println("Total time ${Duration.between(startTime, lastTime)}")
             }
 

@@ -1,5 +1,6 @@
 package com.ionspin.kotlin.biginteger
 
+import jdk.nashorn.internal.objects.Global
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.Test
@@ -116,6 +117,24 @@ class BigInteger32DivisionTest {
         }
 
     }
+
+//    @Test
+//    fun randomDivisionLongWordTest2() {
+//        val seed = 1
+//        val random = Random(seed)
+//        println("Preparing dividend")
+//        generateSequence {  }
+//        for (i in 1..Int.MAX_VALUE step 99) {
+//            if ((i % 100000) in 1..100) {
+//                println(i)
+//            }
+//            val a = uintArrayOf(random.nextUInt(), random.nextUInt(), random.nextUInt(), random.nextUInt())
+//            val b = uintArrayOf(random.nextUInt(), random.nextUInt())
+//
+//
+//        }
+//
+//    }
 
     @Test
     fun preciseDebugTest() {
