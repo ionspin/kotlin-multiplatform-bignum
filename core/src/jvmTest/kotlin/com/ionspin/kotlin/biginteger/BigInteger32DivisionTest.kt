@@ -1,12 +1,8 @@
 package com.ionspin.kotlin.biginteger
 
-import jdk.nashorn.internal.objects.Global
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.Test
-import java.math.BigInteger
-import java.time.Duration
-import java.time.LocalDateTime
 import kotlin.random.Random
 import kotlin.random.nextUInt
 import kotlin.test.assertTrue
@@ -24,7 +20,7 @@ class BigInteger32DivisionTest {
         assertTrue {
             val a = uintArrayOf(40U)
             val b = uintArrayOf(20U)
-            val c = BigInteger32Operations.basicDivide(a, b)
+            val c = BigInteger32Arithmetic.basicDivide(a, b)
 
             val quotientBigInt = c.first.toJavaBigInteger()
             val remainderBigInt = c.second.toJavaBigInteger()
@@ -40,7 +36,7 @@ class BigInteger32DivisionTest {
         assertTrue {
             val a = uintArrayOf(20U, 20U)
             val b = uintArrayOf(10U, 10U)
-            val c = BigInteger32Operations.basicDivide(a, b)
+            val c = BigInteger32Arithmetic.basicDivide(a, b)
 
             val quotientBigInt = c.first.toJavaBigInteger()
             val remainderBigInt = c.second.toJavaBigInteger()
@@ -84,7 +80,7 @@ class BigInteger32DivisionTest {
             val a = uintArrayOf(random.nextUInt(), random.nextUInt())
             val b = uintArrayOf(random.nextUInt(), random.nextUInt())
             GlobalScope.launch {
-                if (BigInteger32Operations.compare(a, b) > 0) {
+                if (BigInteger32Arithmetic.compare(a, b) > 0) {
                     divisionSingleTest(a, b)
                 } else {
                     divisionSingleTest(b, a)
@@ -107,7 +103,7 @@ class BigInteger32DivisionTest {
             val a = uintArrayOf(random.nextUInt(), random.nextUInt(), random.nextUInt(), random.nextUInt())
             val b = uintArrayOf(random.nextUInt(), random.nextUInt())
             GlobalScope.launch {
-                if (BigInteger32Operations.compare(a, b) > 0) {
+                if (BigInteger32Arithmetic.compare(a, b) > 0) {
                     divisionSingleTest(a, b)
                 } else {
                     divisionSingleTest(b, a)
@@ -148,7 +144,7 @@ class BigInteger32DivisionTest {
             val a = dividend
             val b = divisor
             try {
-                val c = BigInteger32Operations.basicDivide(a, b)
+                val c = BigInteger32Arithmetic.basicDivide(a, b)
 
                 val quotientBigInt = c.first.toJavaBigInteger()
                 val remainderBigInt = c.second.toJavaBigInteger()

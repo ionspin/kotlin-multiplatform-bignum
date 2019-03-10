@@ -23,7 +23,7 @@ class BigInteger32JavaSubstractTest {
         assertTrue {
             val a = uintArrayOf(10U, 20U)
             val b = uintArrayOf(15U, 5U)
-            val c = BigInteger32Operations.substract(a, b)
+            val c = BigInteger32Arithmetic.substract(a, b)
 
             val resultBigInt = c.toJavaBigInteger()
 
@@ -76,12 +76,12 @@ class BigInteger32JavaSubstractTest {
             }
 
             val first = elements.copyOfRange(0, elements.size / 2).foldIndexed(UIntArray(1) { 1U }) { index, acc, uInt ->
-                BigInteger32Operations.multiply(acc, uInt)
+                BigInteger32Arithmetic.multiply(acc, uInt)
             }
             val second = elements.copyOfRange(elements.size / 2, elements.size - 1).foldIndexed(UIntArray(1) { 1U }) { index, acc, uInt ->
-                BigInteger32Operations.multiply(acc, uInt)
+                BigInteger32Arithmetic.multiply(acc, uInt)
             }
-            val result = BigInteger32Operations.substract(first, second)
+            val result = BigInteger32Arithmetic.substract(first, second)
 
             if (time) {
                 lastTime = LocalDateTime.now()

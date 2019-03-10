@@ -9,15 +9,15 @@ import kotlin.test.assertTrue
  * on 09-Mar-3/9/19
  */
 @ExperimentalUnsignedTypes
-class BigInteger32OperationsAdditionTest {
+class BigInteger32ArithmeticSubstractionTest {
 
     @Test
     fun testAddition() {
         assertTrue {
-            val a = uintArrayOf(1U)
-            val b = uintArrayOf(2U)
-            val c = BigInteger32Operations.addition(a, b)
-            c[0] == 3U
+            val a = uintArrayOf(10U, 20U)
+            val b = uintArrayOf(15U, 5U)
+            val c = BigInteger32Arithmetic.substract(a, b)
+            c[1] == 14U
         }
     }
 }

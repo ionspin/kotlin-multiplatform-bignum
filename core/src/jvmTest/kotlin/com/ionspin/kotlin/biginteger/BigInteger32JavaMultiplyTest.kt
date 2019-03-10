@@ -5,9 +5,7 @@ import kotlinx.coroutines.launch
 import org.junit.Test
 import java.math.BigInteger
 import java.time.Duration
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.Period
 import kotlin.random.Random
 import kotlin.random.nextUInt
 import kotlin.test.assertTrue
@@ -24,7 +22,7 @@ class BigInteger32JavaMultiplyTest {
         assertTrue {
             val a = uintArrayOf(10U)
             val b = uintArrayOf(20U)
-            val c = BigInteger32Operations.multiply(a, b)
+            val c = BigInteger32Arithmetic.multiply(a, b)
 
             val resultBigInt = c.toJavaBigInteger()
 
@@ -37,7 +35,7 @@ class BigInteger32JavaMultiplyTest {
         assertTrue {
             val a = uintArrayOf(10U, 10U)
             val b = uintArrayOf(20U, 20U)
-            val c = BigInteger32Operations.multiply(a, b)
+            val c = BigInteger32Arithmetic.multiply(a, b)
 
             val resultBigInt = c.toJavaBigInteger()
 
@@ -52,7 +50,7 @@ class BigInteger32JavaMultiplyTest {
         assertTrue {
             val a = uintArrayOf((0U - 1U), 10U)
             val b = uintArrayOf(20U)
-            val c = BigInteger32Operations.multiply(a, b)
+            val c = BigInteger32Arithmetic.multiply(a, b)
 
             val resultBigInt = c.toJavaBigInteger()
 
@@ -116,7 +114,7 @@ class BigInteger32JavaMultiplyTest {
             }
 
             val result = elements.foldIndexed(UIntArray(1) { 1U }) { index, acc, uInt ->
-                BigInteger32Operations.multiply(acc, uInt)
+                BigInteger32Arithmetic.multiply(acc, uInt)
             }
             if (time) {
                 lastTime = LocalDateTime.now()

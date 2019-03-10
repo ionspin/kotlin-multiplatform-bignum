@@ -6,20 +6,20 @@ package com.ionspin.kotlin.biginteger
  * on 09-Mar-3/9/19
  */
 @ExperimentalUnsignedTypes
-internal object BigInteger32Operations {
+internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     val mask = 0xFFFFFFFFUL
     val overflowMask = 0x100000000U
     val lowerMask = 0xFFFFUL
-    val base: UInt = 0xFFFFFFFFU
-    val basePowerOfTwo = 32
+    override val base: UInt = 0xFFFFFFFFU
+    override val basePowerOfTwo = 32
 
-    val ZERO = UIntArray(0)
-    val ONE = UIntArray(1) { 1U }
+    override val ZERO = UIntArray(0)
+    override val ONE = UIntArray(1) { 1U }
 
     /**
      * Hackers delight 5-11
      */
-    fun numberOfLeadingZeroes(value: UInt): Int {
+    override fun numberOfLeadingZeroes(value: UInt): Int {
         var x = value
         var y: UInt
         var n = basePowerOfTwo
@@ -53,17 +53,17 @@ internal object BigInteger32Operations {
         return n - x.toInt()
     }
 
-    fun bitLength(value: UIntArray): Int {
+    override fun bitLength(value: UIntArray): Int {
         val mostSignificant = value[value.size - 1]
         return bitLength(mostSignificant) + (value.size) * basePowerOfTwo
 
     }
 
-    fun bitLength(value: UInt): Int {
+    override fun bitLength(value: UInt): Int {
         return basePowerOfTwo - numberOfLeadingZeroes(value)
     }
 
-    fun removeLeadingZeroes(bigInteger: UIntArray): UIntArray {
+    override fun removeLeadingZeroes(bigInteger: UIntArray): UIntArray {
         val firstEmpty = bigInteger.indexOfLast { it != 0U } + 1
         if (firstEmpty == -1 || firstEmpty == 0) {
             //Array is equal to zero, so we return array with zero elements
@@ -73,7 +73,7 @@ internal object BigInteger32Operations {
 
     }
 
-    fun shiftLeft(operand: UIntArray, places: Int): UIntArray {
+    override fun shiftLeft(operand: UIntArray, places: Int): UIntArray {
         if (operand.isEmpty() || places == 0) {
             return operand
         }
@@ -115,7 +115,7 @@ internal object BigInteger32Operations {
 
     }
 
-    fun shiftRight(operand: UIntArray, places: Int): UIntArray {
+    override fun shiftRight(operand: UIntArray, places: Int): UIntArray {
         if (operand.isEmpty() || places == 0) {
             return operand
         }
@@ -153,7 +153,7 @@ internal object BigInteger32Operations {
 
     }
 
-    fun normalize(dividend: UIntArray, divisor: UIntArray): Triple<UIntArray, UIntArray, Int> {
+    override fun normalize(dividend: UIntArray, divisor: UIntArray): Triple<UIntArray, UIntArray, Int> {
         val dividendSize = dividend.size
         val divisorSize = divisor.size
         val normalizationShift = numberOfLeadingZeroes(divisor[divisorSize - 1])
@@ -164,12 +164,12 @@ internal object BigInteger32Operations {
 
     }
 
-    fun normalize(operand : UIntArray) : Pair<UIntArray, Int> {
+    override fun normalize(operand : UIntArray) : Pair<UIntArray, Int> {
         val normalizationShift = numberOfLeadingZeroes(operand[operand.size - 1])
         return Pair(operand.shl(normalizationShift) , normalizationShift)
     }
 
-    fun denormalize(
+    override fun denormalize(
         remainderNormalized: UIntArray,
         normalizationShift: Int
     ): UIntArray {
@@ -179,7 +179,7 @@ internal object BigInteger32Operations {
 
     //---------------- Primitive operations -----------------------//
 
-    fun compare(first: UIntArray, second: UIntArray): Int {
+    override fun compare(first: UIntArray, second: UIntArray): Int {
 
 
         if (first.size > second.size) {
@@ -217,7 +217,7 @@ internal object BigInteger32Operations {
 
     }
 
-    fun addition(first: UIntArray, second: UIntArray): UIntArray {
+    override fun addition(first: UIntArray, second: UIntArray): UIntArray {
         if (first.size == 1 && first[0] == 0U) return second
         if (second.size == 1 && second[0] == 0U) return first
 
@@ -261,7 +261,7 @@ internal object BigInteger32Operations {
 
     }
 
-    fun substract(first: UIntArray, second: UIntArray): UIntArray {
+    override fun substract(first: UIntArray, second: UIntArray): UIntArray {
         val firstIsLarger = compare(first, second) == 1
 
         val (largerLength, smallerLength, largerData, smallerData) = if (firstIsLarger) {
@@ -305,7 +305,7 @@ internal object BigInteger32Operations {
         return result.copyOfRange(0, firstEmpty)
     }
 
-    fun multiply(first: UInt, second: UInt): UIntArray {
+    override fun multiply(first: UInt, second: UInt): UIntArray {
         val result = first * second
         val high = (result shr basePowerOfTwo).toUInt()
         val low = result.toUInt()
@@ -313,7 +313,7 @@ internal object BigInteger32Operations {
         return removeLeadingZeroes(uintArrayOf(low, high))
     }
 
-    fun multiply(first: UIntArray, second: UInt): UIntArray {
+    override fun multiply(first: UIntArray, second: UInt): UIntArray {
 
         val result = UIntArray(first.size + 1)
 
@@ -330,7 +330,7 @@ internal object BigInteger32Operations {
         return removeLeadingZeroes(result)
     }
 
-    fun multiply(first: UIntArray, second: UIntArray): UIntArray {
+    override fun multiply(first: UIntArray, second: UIntArray): UIntArray {
         return second.foldIndexed(ZERO) { index, acc, element ->
             acc + (multiply(first, element) shl (index * basePowerOfTwo))
 
@@ -344,7 +344,7 @@ internal object BigInteger32Operations {
      * Version 0.5.9
      * https://members.loria.fr/PZimmermann/mca/pub226.html
      */
-    fun basicDivide(
+    override fun basicDivide(
         unnormalizedDividend: UIntArray,
         unnormalizedDivisor: UIntArray
     ): Pair<UIntArray, UIntArray> {
@@ -397,7 +397,7 @@ internal object BigInteger32Operations {
         return Pair(quotient, denormRemainder)
     }
 
-    fun baseReciprocal(unnomrmalizedOperand : UIntArray, precision : Int) : UIntArray {
+    override fun baseReciprocal(unnomrmalizedOperand : UIntArray, precision : Int) : UIntArray {
         val (operand, normalizationShift) = normalize(unnomrmalizedOperand)
         val operandSize = operand.size
         if (operandSize <= 2) {
@@ -409,64 +409,68 @@ internal object BigInteger32Operations {
 
     }
 
-    private infix fun UIntArray.shl(places: Int): UIntArray {
-        return shiftLeft(this, places)
+    private val arithmetic: BigIntegerArithmetic = BigInteger32Arithmetic
+
+    internal infix fun UIntArray.shl(places: Int): UIntArray {
+        return arithmetic.shiftLeft(this, places)
     }
 
-    private infix fun UIntArray.shr(places: Int): UIntArray {
-        return shiftRight(this, places)
+    internal infix fun UIntArray.shr(places: Int): UIntArray {
+        return arithmetic.shiftRight(this, places)
     }
 
 
-    private operator fun UIntArray.plus(other: UIntArray): UIntArray {
-        return addition(this, other)
+    internal operator fun UIntArray.plus(other: UIntArray): UIntArray {
+        return arithmetic.addition(this, other)
     }
 
-    private operator fun UIntArray.minus(other: UIntArray): UIntArray {
-        return substract(this, other)
+    internal operator fun UIntArray.minus(other: UIntArray): UIntArray {
+        return arithmetic.substract(this, other)
     }
 
-    private operator fun UIntArray.times(other: UIntArray): UIntArray {
-        return multiply(this, other)
+    internal operator fun UIntArray.times(other: UIntArray): UIntArray {
+        return arithmetic.multiply(this, other)
     }
 
-    private operator fun UIntArray.plus(other: UInt): UIntArray {
-        return addition(this, uintArrayOf(other))
+    internal operator fun UIntArray.plus(other: UInt): UIntArray {
+        return arithmetic.addition(this, uintArrayOf(other))
     }
 
-    private operator fun UIntArray.minus(other: UInt): UIntArray {
-        return substract(this, uintArrayOf(other))
+    internal operator fun UIntArray.minus(other: UInt): UIntArray {
+        return arithmetic.substract(this, uintArrayOf(other))
     }
 
-    private operator fun UIntArray.times(other: UInt): UIntArray {
-        return multiply(this, other)
+    internal operator fun UIntArray.times(other: UInt): UIntArray {
+        return arithmetic.multiply(this, other)
     }
 
-    private operator fun UIntArray.div(other: UInt): UIntArray {
-        return basicDivide(this, uintArrayOf(other)).first
+    internal operator fun UIntArray.div(other: UInt): UIntArray {
+        return arithmetic.basicDivide(this, uintArrayOf(other)).first
     }
 
-    private operator fun UIntArray.rem(other: UInt): UIntArray {
-        return basicDivide(this, uintArrayOf(other)).second
+    internal operator fun UIntArray.rem(other: UInt): UIntArray {
+        return arithmetic.basicDivide(this, uintArrayOf(other)).second
     }
 
-    private operator fun UIntArray.div(other: UIntArray): UIntArray {
-        return basicDivide(this, other).first
+    internal operator fun UIntArray.div(other: UIntArray): UIntArray {
+        return arithmetic.basicDivide(this, other).first
     }
 
-    private operator fun UIntArray.rem(other: UIntArray): UIntArray {
-        return basicDivide(this, other).second
+    internal operator fun UIntArray.rem(other: UIntArray): UIntArray {
+        return arithmetic.basicDivide(this, other).second
     }
 
-    private infix fun UIntArray.divrem(other: UIntArray) : Pair<UIntArray, UIntArray> {
-        return basicDivide(this, other)
+    internal infix fun UIntArray.divrem(other: UIntArray): Pair<UIntArray, UIntArray> {
+        return arithmetic.basicDivide(this, other)
     }
 
-    private operator fun UIntArray.compareTo(other: UIntArray): Int {
-        return compare(this, other)
+    internal operator fun UIntArray.compareTo(other: UIntArray): Int {
+        return arithmetic.compare(this, other)
     }
 
-    private operator fun UIntArray.compareTo(other: UInt): Int {
-        return compare(this, uintArrayOf(other))
+    internal operator fun UIntArray.compareTo(other: UInt): Int {
+        return arithmetic.compare(this, uintArrayOf(other))
     }
+
+
 }

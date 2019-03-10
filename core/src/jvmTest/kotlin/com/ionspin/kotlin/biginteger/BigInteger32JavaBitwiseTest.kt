@@ -42,7 +42,7 @@ class BigInteger32JavaBitwiseTest {
     fun shiftLeftSingleTest(places : Int, vararg uints : UInt) {
         assertTrue ("Failed for $places and elements ${uints.contentToString()}") {
             val a = uintArrayOf(*uints)
-            val result = BigInteger32Operations.shiftLeft(a, places)
+            val result = BigInteger32Arithmetic.shiftLeft(a, places)
             val convertedResult = result.toJavaBigInteger()
             val bigIntResult = a.toJavaBigInteger() shl places
             convertedResult == bigIntResult
@@ -78,7 +78,7 @@ class BigInteger32JavaBitwiseTest {
     fun shiftRightSingleTest(places : Int, vararg uints : UInt) {
         assertTrue ("Failed for $places and elements ${uints.contentToString()}") {
             val a = uintArrayOf(*uints)
-            val result = BigInteger32Operations.shiftRight(a, places)
+            val result = BigInteger32Arithmetic.shiftRight(a, places)
             val convertedResult = result.toJavaBigInteger()
             val bigIntResult = a.toJavaBigInteger() shr places
             convertedResult == bigIntResult
