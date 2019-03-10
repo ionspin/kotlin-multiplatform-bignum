@@ -90,19 +90,32 @@ class BigInteger32DivisionTest {
 
     }
 
+    @Test
+    fun preciseDebugTest() {
+        divisionSingleTest(uintArrayOf(3767748705U), uintArrayOf(2696295277U))
+    }
+
     fun divisionSingleTest(dividend : UIntArray, divisor : UIntArray) {
-        assertTrue("Failed on ${dividend} / $divisor") {
+        assertTrue("Failed on ${dividend.joinToString(separator = ",") { it.toString() }} " +
+                "/ ${divisor.joinToString(separator = ",") { it.toString() }}") {
             val a = dividend
             val b = divisor
-            val c = BigInteger32Operations.basicDivide(a, b)
+            try {
+                val c = BigInteger32Operations.basicDivide(a, b)
 
-            val quotientBigInt = c.first.toJavaBigInteger()
-            val remainderBigInt = c.second.toJavaBigInteger()
+                val quotientBigInt = c.first.toJavaBigInteger()
+                val remainderBigInt = c.second.toJavaBigInteger()
 
-            val bigIntQuotient = a.toJavaBigInteger() / b.toJavaBigInteger()
-            val bigIntRemainder = a.toJavaBigInteger() % b.toJavaBigInteger()
+                val bigIntQuotient = a.toJavaBigInteger() / b.toJavaBigInteger()
+                val bigIntRemainder = a.toJavaBigInteger() % b.toJavaBigInteger()
 
-            quotientBigInt == bigIntQuotient && remainderBigInt == bigIntRemainder
+                quotientBigInt == bigIntQuotient && remainderBigInt == bigIntRemainder
+            } catch (e : Throwable) {
+                e.printStackTrace()
+                false
+            }
+
+
 
 
 

@@ -113,7 +113,9 @@ internal object BigInteger32Operations {
                 originalSize + wordsNeeded - 1 -> {
                     (operand[it - wordsNeeded] shr (basePowerOfTwo - shiftBits))
                 }
-                else -> { throw RuntimeException("Invalid case $it")}
+                else -> {
+                    throw RuntimeException("Invalid case $it")
+                }
 
             }
         }
@@ -147,7 +149,9 @@ internal object BigInteger32Operations {
                 operand.size - 1 - wordsToDiscard -> {
                     (operand[it + wordsToDiscard] shr shiftBits)
                 }
-                else -> { throw RuntimeException("Invalid case $it")}
+                else -> {
+                    throw RuntimeException("Invalid case $it")
+                }
             }
         }
 
@@ -334,18 +338,41 @@ internal object BigInteger32Operations {
     }
 
     /**
-     * Based on algorithm from MCA
+     * Based on Basecase DivRem algorithm from
+     * Modern Computer Arithmetic, Richard Brent and Paul Zimmermann, Cambridge University Press, 2010.
+     * Version 0.5.9
+     * https://members.loria.fr/PZimmermann/mca/pub226.html
      */
     fun basicDivide(
         unnormalizedDividend: UIntArray,
         unnormalizedDivisor: UIntArray
     ): Pair<UIntArray, UIntArray> {
+        if (unnormalizedDivisor > unnormalizedDividend) {
+            return Pair(uintArrayOf(0U), unnormalizedDividend)
+        }
+        if (unnormalizedDivisor.size == 1 && unnormalizedDividend.size == 1) {
+            return Pair(uintArrayOf(unnormalizedDividend[0] / unnormalizedDivisor[0]),
+                uintArrayOf(unnormalizedDividend[0] % unnormalizedDivisor[0]))
+        }
+        val bitPrecision = bitLength(unnormalizedDividend) - bitLength(unnormalizedDivisor)
+        if (bitPrecision == 0) {
+            return Pair(uintArrayOf(1U), unnormalizedDividend - unnormalizedDivisor)
+        }
+
+
         var (dividend, divisor, normalizationShift) = normalize(unnormalizedDividend, unnormalizedDivisor)
         val dividendSize = dividend.size
         val divisorSize = divisor.size
-        val wordPrecision = dividendSize - divisorSize
+        var wordPrecision = dividendSize - divisorSize
+
         val quotient = UIntArray(wordPrecision)
+
+        var qjhat = 0UL
+        var reconstructedQuotient: UIntArray
+
+
         quotient[wordPrecision - 1] = 0U
+
         val divisorTimesBaseToPowerOfM = (divisor shl (wordPrecision + basePowerOfTwo))
         if (dividend >= divisorTimesBaseToPowerOfM) {
             quotient[wordPrecision - 1] = 1U
@@ -353,13 +380,17 @@ internal object BigInteger32Operations {
         }
 
         for (j in (wordPrecision - 1) downTo 0) {
-            val qjhat = ((dividend[divisorSize + j].toULong() shl basePowerOfTwo) + dividend[divisorSize + j - 1]) / divisor[divisorSize - 1]
+            qjhat =
+                ((dividend[divisorSize + j].toULong() shl basePowerOfTwo) + dividend[divisorSize + j - 1]) / divisor[divisorSize - 1]
             quotient[j] = if (qjhat < (base - 1UL)) qjhat.toUInt() else base - 1U
-            dividend = dividend - ((divisor * quotient[j]) shl (j * basePowerOfTwo))
-            while (divisor < 0U) {
-                quotient[j] = quotient[j] - 1U
-                dividend = dividend + divisor * (base shr j)
+            // We don't have signed integers here so we need to check if reconstructed quotient is larger than the dividend
+            // instead of just doing  A ← A − qj β B and then looping. Final effect is the same.
+            reconstructedQuotient = ((divisor * quotient[j]) shl (j * basePowerOfTwo))
+            while (reconstructedQuotient > dividend) {
+                quotient[j] -= 1U
+                reconstructedQuotient = ((divisor * quotient[j]) shl (j * basePowerOfTwo))
             }
+            dividend = dividend - reconstructedQuotient
         }
 
         val denormRemainder = denormalize(dividend, normalizationShift)
@@ -398,6 +429,7 @@ internal object BigInteger32Operations {
     private operator fun UIntArray.times(other: UInt): UIntArray {
         return multiply(this, other)
     }
+
     private operator fun UIntArray.div(other: UInt): UIntArray {
         TODO()
         return basicDivide(this, uintArrayOf(other)).first
