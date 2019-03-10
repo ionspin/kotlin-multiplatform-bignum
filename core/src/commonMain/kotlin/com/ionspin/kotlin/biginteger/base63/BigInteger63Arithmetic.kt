@@ -15,6 +15,8 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
     val base: ULong = 0x7FFFFFFFFFFFFFFFUL
     override val basePowerOfTwo: Int = 63
 
+    val highMask = 0x7FFFFFFF00000000UL
+
 
     override fun numberOfLeadingZeroes(value: ULong): Int {
         var x = value
@@ -281,8 +283,10 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         }
 
         for (j in (wordPrecision - 1) downTo 0) {
-            val twoDigit = ((ulongArrayOf(dividend[divisorSize + j]) shl basePowerOfTwo) + dividend[divisorSize + j - 1])
-            qjhat = BigInteger32Arithmetic.divide(twoDigit.to32Bit(), ulongArrayOf(divisor[divisorSize - 1]).to32Bit()).first.from32Bit()
+            val twoDigit =
+                ((ulongArrayOf(dividend[divisorSize + j]) shl basePowerOfTwo) + dividend[divisorSize + j - 1])
+            qjhat = BigInteger32Arithmetic.divide(twoDigit.to32Bit(), ulongArrayOf(divisor[divisorSize - 1]).to32Bit())
+                .first.from32Bit()
             quotient[j] = if (qjhat < (base - 1UL)) {
                 qjhat[0]
             } else {
@@ -303,28 +307,34 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         return Pair(removeLeadingZeroes(quotient), denormRemainder)
     }
 
-    fun convertTo64BitRepresentation(operand: ULongArray) : ULongArray {
+    fun convertTo64BitRepresentation(operand: ULongArray): ULongArray {
         val length = bitLength(operand)
-        val requiredLength = if (length % 64 == 0 ) {
+        val requiredLength = if (length % 64 == 0) {
             length / 64
         } else {
             (length / 64) + 1
         }
+        var wordStep: Int
+        var shiftAmount: Int
+
         val result = ULongArray(requiredLength)
         for (i in 0 until requiredLength) {
-            val wordStep = i / 64
-            if (i < requiredLength) {
-                result[i] = (operand[i + wordStep] shr i) or ((operand[i + wordStep + 1] shl (63 - i)))
+            wordStep = i / 64
+            shiftAmount = i % 63
+            if (i + wordStep + 1 < operand.size) {
+                result[i] =
+                    (operand[i + wordStep] shr shiftAmount) or ((operand[i + wordStep + 1] shl (63 - shiftAmount)))
             } else {
-                result[i] = (operand[i + wordStep] shr i)
+                result[i] = (operand[i + wordStep] shr shiftAmount)
             }
+
         }
 
         return result
 
     }
 
-    fun convertTo32BitRepresentation(operand : ULongArray) : UIntArray {
+    fun convertTo32BitRepresentation(operand: ULongArray): UIntArray {
         val power64Representation = convertTo64BitRepresentation(operand)
         val result = UIntArray(power64Representation.size * 2)
         for (i in 0 until power64Representation.size) {
@@ -335,30 +345,43 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         return result
     }
 
-    fun convertFrom32BitRepresentation(operand: UIntArray) : ULongArray {
+    fun convertFrom32BitRepresentation(operand: UIntArray): ULongArray {
         val length = BigInteger32Arithmetic.bitLength(operand)
-        val requiredLength = if (length % 63 == 0 ) {
+        val requiredLength = if (length % 63 == 0) {
             length / 63
         } else {
             (length / 63) + 1
         }
 
         val result = ULongArray(requiredLength)
-        for (i in 0 until requiredLength step 2) {
-            val newWord = i / 63
+        var skipWordCount = 0
+        for (i in 0 until requiredLength - (operand.size / 32)) {
+            skipWordCount = i / 32
+            val remI = i % 32
+            val position = (i * 2) + skipWordCount
             when (i) {
                 0 -> {
-                    result[i / 2] = (operand[i].toULong()  or (operand[i + 1].toULong() shl 31))
+                    result[i] = operand[(i * 2)].toULong() or ((operand[(i * 2) + 1].toULong() shl 31) and highMask)
                 }
-                in 1 until requiredLength -> {
-                    result[i / 2] = (operand[i].toULong() or ((operand[i - 1].toULong() shr (32 - i))) or (operand[i + 1].toULong() shl 30)
+                in 1 until requiredLength - 1 -> {
+                    result[i] =
+                        (operand[position - 1].toULong() shr (32 - remI)) or (operand[position].toULong() shl remI) or ((operand[position + 1].toULong() shl (32 + remI)) and highMask)
                 }
-                requiredLength -> {
-                    result[i / 2] = operand[i].toULong() or (operand[i - 1].toULong() shr (32 - i))
+                requiredLength - 1 -> {
+                    result[i] =
+                        (operand[position - 1].toULong() shr (32 - remI)) // or (operand[(i * 2)].toULong() shl i)
                 }
+
             }
 
+
         }
+        if (operand.size % 2 != 0) {
+            val lastI = requiredLength - 1 + skipWordCount
+            result[lastI] =
+                (operand[(lastI * 2) - 1].toULong() shr (32 - lastI)) or (operand[(lastI * 2)].toULong() shl lastI)
+        }
+//        result[requiredLength - 1] = (operand[operand.size - 1].toULong() shl ((operand.size - 1) / 2)) or (operand[operand.size - 2].toULong() shr (32 - (operand.size - 1)/2))
         return result
     }
 
@@ -442,11 +465,11 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         return compare(this, ulongArrayOf(other))
     }
 
-    internal fun ULongArray.to32Bit() : UIntArray {
+    internal fun ULongArray.to32Bit(): UIntArray {
         return convertTo32BitRepresentation(this)
     }
 
-    internal fun UIntArray.from32Bit() : ULongArray {
+    internal fun UIntArray.from32Bit(): ULongArray {
         return convertFrom32BitRepresentation(this)
     }
 
