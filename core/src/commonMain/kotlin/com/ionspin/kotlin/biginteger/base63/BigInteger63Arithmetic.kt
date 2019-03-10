@@ -319,7 +319,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
 
         val result = ULongArray(requiredLength)
         for (i in 0 until requiredLength) {
-            wordStep = i / 64
+            wordStep = i / 63
             shiftAmount = i % 63
             if (i + wordStep + 1 < operand.size) {
                 result[i] =

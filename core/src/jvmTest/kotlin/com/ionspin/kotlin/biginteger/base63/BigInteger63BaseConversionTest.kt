@@ -42,7 +42,7 @@ class BigInteger63BaseConversionTest {
         assertTrue {
             val seed = 1
             val random = Random(seed)
-            val a = ULongArray(64) { random.nextULong() and base }
+            val a = ULongArray(321) { random.nextULong() and base }
             val b = BigInteger63Arithmetic.convertTo64BitRepresentation(a)
             val aBigInt = a.toJavaBigInteger()
             val bBigInt = b.fromBase64toJavaBigInteger()
