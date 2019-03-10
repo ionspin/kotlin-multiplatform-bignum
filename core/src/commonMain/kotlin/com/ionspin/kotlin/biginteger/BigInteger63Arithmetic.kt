@@ -15,7 +15,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
     override val basePowerOfTwo: Int
         get() = TODO("not implemented yet")
 
-    override fun numberOfLeadingZeroes(value: UInt): Int {
+    override fun numberOfLeadingZeroes(value: ULong): Int {
         TODO("not implemented yet")
     }
 
@@ -23,11 +23,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         TODO("not implemented yet")
     }
 
-    override fun bitLength(value: UInt): Int {
-        TODO("not implemented yet")
-    }
-
-    override fun removeLeadingZeroes(bigInteger: ULongArray): ULongArray {
+    override fun bitLength(value: ULong): Int {
         TODO("not implemented yet")
     }
 
@@ -36,18 +32,6 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
     }
 
     override fun shiftRight(operand: ULongArray, places: Int): ULongArray {
-        TODO("not implemented yet")
-    }
-
-    override fun normalize(dividend: ULongArray, divisor: ULongArray): Triple<ULongArray, ULongArray, Int> {
-        TODO("not implemented yet")
-    }
-
-    override fun normalize(operand: ULongArray): Pair<ULongArray, Int> {
-        TODO("not implemented yet")
-    }
-
-    override fun denormalize(remainderNormalized: ULongArray, normalizationShift: Int): ULongArray {
         TODO("not implemented yet")
     }
 
@@ -63,11 +47,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         TODO("not implemented yet")
     }
 
-    override fun multiply(first: UInt, second: UInt): ULongArray {
-        TODO("not implemented yet")
-    }
-
-    override fun multiply(first: ULongArray, second: UInt): ULongArray {
+    override fun multiply(first: ULongArray, second: ULong): ULongArray {
         TODO("not implemented yet")
     }
 
@@ -75,14 +55,11 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         TODO("not implemented yet")
     }
 
-    override fun basicDivide(
-        unnormalizedDividend: ULongArray,
-        unnormalizedDivisor: ULongArray
-    ): Pair<ULongArray, ULongArray> {
+    override fun divide(first: ULongArray, second: ULongArray): Pair<ULongArray, ULongArray> {
         TODO("not implemented yet")
     }
 
-    override fun baseReciprocal(unnomrmalizedOperand: ULongArray, precision: Int): ULongArray {
+    override fun divide(first: ULongArray, second: ULong): Pair<ULongArray, ULongArray> {
         TODO("not implemented yet")
     }
 

@@ -5,45 +5,27 @@ package com.ionspin.kotlin.biginteger
  * ugljesa.jovanovic@ionspin.com
  * on 10-Mar-3/10/19
  */
-interface BigIntegerArithmetic<BackingType, PrimitiveType> {
-    val ZERO : BackingType
-    val ONE : BackingType
-    val base: PrimitiveType
+interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
+    val ZERO : BackingCollectionType
+    val ONE : BackingCollectionType
+    val base: BackingWordType
     val basePowerOfTwo: Int
     /**
      * Hackers delight 5-11
      */
-    fun numberOfLeadingZeroes(value: UInt): Int
+    fun numberOfLeadingZeroes(value: BackingWordType): Int
+    fun bitLength(value: BackingCollectionType): Int
+    fun bitLength(value: BackingWordType): Int
+    fun shiftLeft(operand: BackingCollectionType, places: Int): BackingCollectionType
+    fun shiftRight(operand: BackingCollectionType, places: Int): BackingCollectionType
+    fun compare(first: BackingCollectionType, second: BackingCollectionType): Int
+    fun addition(first: BackingCollectionType, second: BackingCollectionType): BackingCollectionType
+    fun substract(first: BackingCollectionType, second: BackingCollectionType): BackingCollectionType
+    fun multiply(first: BackingCollectionType, second: BackingWordType): BackingCollectionType
+    fun multiply(first: BackingCollectionType, second: BackingCollectionType): BackingCollectionType
+    fun divide(first: BackingCollectionType, second: BackingCollectionType): Pair<BackingCollectionType, BackingCollectionType>
+    fun divide(first: BackingCollectionType, second: BackingWordType): Pair<BackingCollectionType, BackingCollectionType>
 
-    fun bitLength(value: BackingType): Int
-    fun bitLength(value: UInt): Int
-    fun removeLeadingZeroes(bigInteger: BackingType): BackingType
-    fun shiftLeft(operand: BackingType, places: Int): BackingType
-    fun shiftRight(operand: BackingType, places: Int): BackingType
-    fun normalize(dividend: BackingType, divisor: BackingType): Triple<BackingType, BackingType, Int>
-    fun normalize(operand : BackingType) : Pair<BackingType, Int>
-    fun denormalize(
-        remainderNormalized: BackingType,
-        normalizationShift: Int
-    ): BackingType
 
-    fun compare(first: BackingType, second: BackingType): Int
-    fun addition(first: BackingType, second: BackingType): BackingType
-    fun substract(first: BackingType, second: BackingType): BackingType
-    fun multiply(first: UInt, second: UInt): BackingType
-    fun multiply(first: BackingType, second: UInt): BackingType
-    fun multiply(first: BackingType, second: BackingType): BackingType
-    /**
-     * Based on Basecase DivRem algorithm from
-     * Modern Computer Arithmetic, Richard Brent and Paul Zimmermann, Cambridge University Press, 2010.
-     * Version 0.5.9
-     * https://members.loria.fr/PZimmermann/mca/pub226.html
-     */
-    fun basicDivide(
-        unnormalizedDividend: BackingType,
-        unnormalizedDivisor: BackingType
-    ): Pair<BackingType, BackingType>
-
-    fun baseReciprocal(unnomrmalizedOperand : BackingType, precision : Int) : BackingType
 }
 
