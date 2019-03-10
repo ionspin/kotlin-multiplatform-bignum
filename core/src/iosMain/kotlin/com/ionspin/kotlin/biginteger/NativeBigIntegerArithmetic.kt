@@ -55,5 +55,11 @@ actual object NativeBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int> {
         TODO("not implemented yet")
     }
 
+    override fun parseBase(number: String, base: Int) {
+        TODO("not implemented yet")
+    }
 
+    override fun toString(operand: IntArray, base: Int): String {
+        TODO("not implemented yet")
+    }
 }

@@ -1,4 +1,4 @@
-package com.ionspin.kotlin.biginteger
+package com.ionspin.kotlin.biginteger.base32
 
 import org.junit.Test
 import java.math.BigInteger

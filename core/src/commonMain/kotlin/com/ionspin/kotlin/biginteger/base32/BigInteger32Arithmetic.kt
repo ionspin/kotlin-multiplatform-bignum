@@ -1,4 +1,7 @@
-package com.ionspin.kotlin.biginteger
+package com.ionspin.kotlin.biginteger.base32
+
+import com.ionspin.kotlin.biginteger.BigIntegerArithmetic
+import com.ionspin.kotlin.biginteger.Quadruple
 
 /**
  * Created by Ugljesa Jovanovic
@@ -55,12 +58,14 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     override fun bitLength(value: UIntArray): Int {
         val mostSignificant = value[value.size - 1]
-        return bitLength(mostSignificant) + (value.size) * basePowerOfTwo
+        return bitLength(mostSignificant) + (value.size - 1) * basePowerOfTwo
 
     }
 
     fun bitLength(value: UInt): Int {
-        return basePowerOfTwo - numberOfLeadingZeroes(value)
+        return basePowerOfTwo - numberOfLeadingZeroes(
+            value
+        )
     }
 
     fun removeLeadingZeroes(bigInteger: UIntArray): UIntArray {
@@ -78,7 +83,8 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             return operand
         }
         val originalSize = operand.size
-        val leadingZeroes = numberOfLeadingZeroes(operand[operand.size - 1])
+        val leadingZeroes =
+            numberOfLeadingZeroes(operand[operand.size - 1])
         val shiftWords = places / basePowerOfTwo
         val shiftBits = places % basePowerOfTwo
         val wordsNeeded = if (shiftBits > leadingZeroes) {
@@ -121,7 +127,8 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
         var transfer: UInt = 0U
 
-        val leadingZeroes = numberOfLeadingZeroes(operand[operand.size - 1])
+        val leadingZeroes =
+            numberOfLeadingZeroes(operand[operand.size - 1])
         val shiftWords = places / basePowerOfTwo
         val shiftBits = (places % basePowerOfTwo)
         val wordsToDiscard = if (shiftBits >= (basePowerOfTwo - leadingZeroes)) {
@@ -156,7 +163,8 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     fun normalize(dividend: UIntArray, divisor: UIntArray): Triple<UIntArray, UIntArray, Int> {
         val dividendSize = dividend.size
         val divisorSize = divisor.size
-        val normalizationShift = numberOfLeadingZeroes(divisor[divisorSize - 1])
+        val normalizationShift =
+            numberOfLeadingZeroes(divisor[divisorSize - 1])
         val divisorNormalized = divisor.shl(normalizationShift)
         val dividendNormalized = dividend.shl(normalizationShift)
 
@@ -165,7 +173,8 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
     fun normalize(operand : UIntArray) : Pair<UIntArray, Int> {
-        val normalizationShift = numberOfLeadingZeroes(operand[operand.size - 1])
+        val normalizationShift =
+            numberOfLeadingZeroes(operand[operand.size - 1])
         return Pair(operand.shl(normalizationShift) , normalizationShift)
     }
 
@@ -180,8 +189,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     //---------------- Primitive operations -----------------------//
 
     override fun compare(first: UIntArray, second: UIntArray): Int {
-
-
         if (first.size > second.size) {
             return 1
         }
@@ -332,7 +339,10 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     override fun multiply(first: UIntArray, second: UIntArray): UIntArray {
         return second.foldIndexed(ZERO) { index, acc, element ->
-            acc + (multiply(first, element) shl (index * basePowerOfTwo))
+            acc + (multiply(
+                first,
+                element
+            ) shl (index * basePowerOfTwo))
 
         }
 
@@ -357,19 +367,34 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         unnormalizedDivisor: UIntArray
     ): Pair<UIntArray, UIntArray> {
         if (unnormalizedDivisor > unnormalizedDividend) {
-            return Pair(uintArrayOf(0U), unnormalizedDividend)
+            return Pair(ZERO, unnormalizedDividend)
         }
         if (unnormalizedDivisor.size == 1 && unnormalizedDividend.size == 1) {
-            return Pair(uintArrayOf(unnormalizedDividend[0] / unnormalizedDivisor[0]),
-                uintArrayOf(unnormalizedDividend[0] % unnormalizedDivisor[0]))
+            return Pair(
+                removeLeadingZeroes(
+                    uintArrayOf(
+                        unnormalizedDividend[0] / unnormalizedDivisor[0]
+                    )
+                ),
+                removeLeadingZeroes(
+                    uintArrayOf(
+                        unnormalizedDividend[0] % unnormalizedDivisor[0]
+                    )
+                )
+            )
         }
-        val bitPrecision = bitLength(unnormalizedDividend) - bitLength(unnormalizedDivisor)
+        val bitPrecision = bitLength(unnormalizedDividend) - bitLength(
+            unnormalizedDivisor
+        )
         if (bitPrecision == 0) {
             return Pair(uintArrayOf(1U), unnormalizedDividend - unnormalizedDivisor)
         }
 
 
-        var (dividend, divisor, normalizationShift) = normalize(unnormalizedDividend, unnormalizedDivisor)
+        var (dividend, divisor, normalizationShift) = normalize(
+            unnormalizedDividend,
+            unnormalizedDivisor
+        )
         val dividendSize = dividend.size
         val divisorSize = divisor.size
         val wordPrecision = dividendSize - divisorSize
@@ -395,18 +420,21 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             // instead of just doing  A ← A − qj β B and then looping. Final effect is the same.
             reconstructedQuotient = ((divisor * quotient[j]) shl (j * basePowerOfTwo))
             while (reconstructedQuotient > dividend) {
-                quotient[j] -= 1U
+                quotient[j] = quotient[j] - 1U
                 reconstructedQuotient = ((divisor * quotient[j]) shl (j * basePowerOfTwo))
             }
             dividend = dividend - reconstructedQuotient
         }
 
-        val denormRemainder = denormalize(dividend, normalizationShift)
-        return Pair(quotient, denormRemainder)
+        val denormRemainder =
+            denormalize(dividend, normalizationShift)
+        return Pair(removeLeadingZeroes(quotient), denormRemainder)
     }
 
     fun baseReciprocal(unnomrmalizedOperand : UIntArray, precision : Int) : UIntArray {
-        val (operand, normalizationShift) = normalize(unnomrmalizedOperand)
+        val (operand, normalizationShift) = normalize(
+            unnomrmalizedOperand
+        )
         val operandSize = operand.size
         if (operandSize <= 2) {
             return (((uintArrayOf(1U) shl (2 * basePowerOfTwo)) / operand) - 1U)
@@ -415,6 +443,27 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         TODO()
 
 
+    }
+
+    override fun parseBase(number: String, base: Int) {
+        TODO("not implemented yet")
+    }
+
+    override fun toString(operand : UIntArray, base: Int): String {
+        var copy = operand.copyOf()
+        val baseArray = uintArrayOf(base.toUInt())
+        val stringBuilder = StringBuilder()
+        while (copy.isNotEmpty()) {
+            val divremResult = (copy divrem baseArray)
+            if (divremResult.second.isEmpty()) {
+                stringBuilder.append(0)
+            } else {
+                stringBuilder.append(divremResult.second[0].toString(base))
+            }
+
+            copy = divremResult.first
+        }
+        return stringBuilder.toString().reversed()
     }
 
     internal infix fun UIntArray.shl(places: Int): UIntArray {
@@ -477,6 +526,5 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     internal operator fun UIntArray.compareTo(other: UInt): Int {
         return compare(this, uintArrayOf(other))
     }
-
 
 }

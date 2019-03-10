@@ -21,6 +21,8 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
     fun substract(first: BackingCollectionType, second: BackingCollectionType): BackingCollectionType
     fun multiply(first: BackingCollectionType, second: BackingCollectionType): BackingCollectionType
     fun divide(first: BackingCollectionType, second: BackingCollectionType): Pair<BackingCollectionType, BackingCollectionType>
+    fun parseBase(number : String, base : Int)
+    fun toString(operand: BackingCollectionType, base : Int) : String
 
 
 }
