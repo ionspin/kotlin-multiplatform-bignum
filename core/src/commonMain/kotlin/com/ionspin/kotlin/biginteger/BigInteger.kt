@@ -10,7 +10,7 @@ package com.ionspin.kotlin.biginteger
 
 
 @ExperimentalUnsignedTypes
-class BigInteger private constructor(wordArray: WordArray, val sign: Boolean) {
+class BigInteger private constructor(wordArray: WordArray, val sign: Boolean) : Comparable<BigInteger> {
 
 
     @ExperimentalUnsignedTypes
@@ -132,7 +132,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Boolean) {
         return divideAndRemainder(other)
     }
 
-    operator fun BigInteger.compareTo(other: BigInteger): Int {
+    override fun compareTo(other: BigInteger): Int {
         return compare(other)
     }
 

@@ -47,6 +47,9 @@ class BigInteger63DivisionTest {
             val bigIntQuotient = a.toJavaBigInteger() / b.toJavaBigInteger()
             val bigIntRemainder = a.toJavaBigInteger() % b.toJavaBigInteger()
 
+            val bla = 1L
+            bla.toBigInteger()
+
 
             quotientBigInt == bigIntQuotient && remainderBigInt == bigIntRemainder
         }
@@ -137,8 +140,8 @@ class BigInteger63DivisionTest {
 
     @Test
     fun preciseDebugTest() {
-
-        divisionSingleTest(ulongArrayOf(3449361588UL,1278830002UL,3123489057UL,3720277819UL), ulongArrayOf(486484208UL,2780187700UL))
+        divisionSingleTest(ulongArrayOf(3449361588UL,1278830002UL,3123489057UL,3720277819UL), ulongArrayOf(1UL))
+        divisionSingleTest(ulongArrayOf(3449361588UL,1278830002UL,3123489057UL,3720277819UL), ulongArrayOf(1UL,1UL))
     }
 
     fun divisionSingleTest(dividend : ULongArray, divisor : ULongArray) {

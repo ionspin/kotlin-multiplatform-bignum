@@ -3,6 +3,7 @@ package com.ionspin.kotlin.biginteger.base63
 import com.ionspin.kotlin.biginteger.BigIntegerArithmetic
 import com.ionspin.kotlin.biginteger.Quadruple
 import com.ionspin.kotlin.biginteger.base32.BigInteger32Arithmetic
+import com.ionspin.kotlin.biginteger.base32.BigInteger32Arithmetic.divrem
 
 /**
  * Created by Ugljesa Jovanovic
@@ -571,15 +572,22 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
     }
 
     override fun parseBase(number: String, base: Int) {
-        TODO("not implemented yet")
+
     }
 
     override fun toString(operand: ULongArray, base: Int): String {
         var copy = operand.copyOf()
         val baseArray = ulongArrayOf(base.toULong())
         val stringBuilder = StringBuilder()
-        while (copy != ulongArrayOf(0U)) {
-            stringBuilder.append(divide(copy, baseArray).second[0].toString(base))
+        while (copy.isNotEmpty()) {
+            val divremResult = (copy divrem baseArray)
+            if (divremResult.second.isEmpty()) {
+                stringBuilder.append(0)
+            } else {
+                stringBuilder.append(divremResult.second[0].toString(base))
+            }
+
+            copy = divremResult.first
         }
         return stringBuilder.toString().reversed()
     }

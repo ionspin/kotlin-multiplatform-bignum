@@ -413,9 +413,20 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
 
         for (j in (wordPrecision - 1) downTo 0) {
-            qjhat =
-                ((dividend[divisorSize + j].toULong() shl basePowerOfTwo) + dividend[divisorSize + j - 1]) / divisor[divisorSize - 1]
-            quotient[j] = if (qjhat < (base - 1UL)) qjhat.toUInt() else base - 1U
+            qjhat = if (divisorSize + j < dividend.size) {
+                ((dividend[divisorSize + j].toULong() shl basePowerOfTwo) +
+                        dividend[divisorSize + j - 1]) /
+                        divisor[divisorSize - 1]
+            } else {
+                ((dividend[divisorSize + j - 1]) / divisor[divisorSize - 1]).toULong()
+            }
+
+            quotient[j] = if (qjhat < (base - 1UL)) {
+                qjhat.toUInt()
+            } else {
+                base - 1U
+            }
+
             // We don't have signed integers here so we need to check if reconstructed quotient is larger than the dividend
             // instead of just doing  A ← A − qj β B and then looping. Final effect is the same.
             reconstructedQuotient = ((divisor * quotient[j]) shl (j * basePowerOfTwo))
