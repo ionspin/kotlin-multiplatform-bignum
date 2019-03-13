@@ -140,7 +140,6 @@ class BigInteger63DivisionTest {
 
     @Test
     fun preciseDebugTest() {
-        divisionSingleTest(ulongArrayOf(3449361588UL,1278830002UL,3123489057UL,3720277819UL), ulongArrayOf(1UL))
         divisionSingleTest(ulongArrayOf(3449361588UL,1278830002UL,3123489057UL,3720277819UL), ulongArrayOf(1UL,1UL))
     }
 

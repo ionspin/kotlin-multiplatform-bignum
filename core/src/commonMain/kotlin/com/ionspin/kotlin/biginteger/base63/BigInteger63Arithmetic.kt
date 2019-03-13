@@ -3,7 +3,6 @@ package com.ionspin.kotlin.biginteger.base63
 import com.ionspin.kotlin.biginteger.BigIntegerArithmetic
 import com.ionspin.kotlin.biginteger.Quadruple
 import com.ionspin.kotlin.biginteger.base32.BigInteger32Arithmetic
-import com.ionspin.kotlin.biginteger.base32.BigInteger32Arithmetic.divrem
 
 /**
  * Created by Ugljesa Jovanovic
@@ -13,7 +12,7 @@ import com.ionspin.kotlin.biginteger.base32.BigInteger32Arithmetic.divrem
 @ExperimentalUnsignedTypes
 object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
     override val ZERO: ULongArray = ulongArrayOf(0u)
-    override val ONE: ULongArray = ulongArrayOf(1u)    
+    override val ONE: ULongArray = ulongArrayOf(1u)
     override val basePowerOfTwo: Int = 63
 
     val baseMask: ULong = 0x7FFFFFFFFFFFFFFFUL
@@ -401,7 +400,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
      * Version 0.5.9
      * https://members.loria.fr/PZimmermann/mca/pub226.html
      */
-    fun basicDivide(
+    fun baseDivide(
         unnormalizedDividend: ULongArray,
         unnormalizedDivisor: ULongArray
     ): Pair<ULongArray, ULongArray> {
@@ -451,8 +450,11 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         }
 
         for (j in (wordPrecision - 1) downTo 0) {
-            val twoDigit =
+            val twoDigit = if (divisorSize + j < dividend.size) {
                 ((ulongArrayOf(dividend[divisorSize + j]) shl basePowerOfTwo) + dividend[divisorSize + j - 1])
+            } else {
+                ulongArrayOf(dividend[divisorSize + j - 1])
+            }
             val convertedResult = BigInteger32Arithmetic.divide(twoDigit.to32Bit(), ulongArrayOf(divisor[divisorSize - 1]).to32Bit())
             qjhat = convertedResult.first.from32Bit()
             quotient[j] = if (qjhat < (baseMask - 1UL)) {
@@ -461,7 +463,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
                 baseMask - 1U
             }
             // We don't have signed integers here so we need to check if reconstructed quotient is larger than the dividend
-            // instead of just doing  A ← A − qj β B and then looping. Final effect is the same.
+            // instead of just doing  (dividend = dividend − qj * β^j * divisor) and then looping. Final effect is the same.
             reconstructedQuotient = ((divisor * quotient[j]) shl (j * basePowerOfTwo))
             while (reconstructedQuotient > dividend) {
                 quotient[j] = quotient[j] - 1U
@@ -568,7 +570,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
     }
 
     override fun divide(first: ULongArray, second: ULongArray): Pair<ULongArray, ULongArray> {
-        return basicDivide(first, second)
+        return baseDivide(first, second)
     }
 
     override fun parseBase(number: String, base: Int) {
@@ -691,23 +693,23 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
     }
 
     internal operator fun ULongArray.div(other: ULong): ULongArray {
-        return basicDivide(this, ulongArrayOf(other)).first
+        return baseDivide(this, ulongArrayOf(other)).first
     }
 
     internal operator fun ULongArray.rem(other: ULong): ULongArray {
-        return basicDivide(this, ulongArrayOf(other)).second
+        return baseDivide(this, ulongArrayOf(other)).second
     }
 
     internal operator fun ULongArray.div(other: ULongArray): ULongArray {
-        return basicDivide(this, other).first
+        return baseDivide(this, other).first
     }
 
     internal operator fun ULongArray.rem(other: ULongArray): ULongArray {
-        return basicDivide(this, other).second
+        return baseDivide(this, other).second
     }
 
     internal infix fun ULongArray.divrem(other: ULongArray): Pair<ULongArray, ULongArray> {
-        return basicDivide(this, other)
+        return baseDivide(this, other)
     }
 
     internal operator fun ULongArray.compareTo(other: ULongArray): Int {
