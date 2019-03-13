@@ -443,7 +443,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         var reconstructedQuotient: ULongArray
         var quotient = ULongArray(wordPrecision)
 
-        val divisorTimesBaseToPowerOfM = (divisor shl (wordPrecision * BigInteger32Arithmetic.basePowerOfTwo))
+        val divisorTimesBaseToPowerOfM = (divisor shl (wordPrecision * basePowerOfTwo))
         if (dividend >= divisorTimesBaseToPowerOfM) {
             quotient = ULongArray(wordPrecision + 1)
             quotient[wordPrecision] = 1U
@@ -453,8 +453,8 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         for (j in (wordPrecision - 1) downTo 0) {
             val twoDigit =
                 ((ulongArrayOf(dividend[divisorSize + j]) shl basePowerOfTwo) + dividend[divisorSize + j - 1])
-            qjhat = BigInteger32Arithmetic.divide(twoDigit.to32Bit(), ulongArrayOf(divisor[divisorSize - 1]).to32Bit())
-                .first.from32Bit()
+            val convertedResult = BigInteger32Arithmetic.divide(twoDigit.to32Bit(), ulongArrayOf(divisor[divisorSize - 1]).to32Bit())
+            qjhat = convertedResult.first.from32Bit()
             quotient[j] = if (qjhat < (baseMask - 1UL)) {
                 qjhat[0]
             } else {
@@ -462,10 +462,10 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
             }
             // We don't have signed integers here so we need to check if reconstructed quotient is larger than the dividend
             // instead of just doing  A ← A − qj β B and then looping. Final effect is the same.
-            reconstructedQuotient = ((divisor * quotient[j]) shl (j * BigInteger32Arithmetic.basePowerOfTwo))
+            reconstructedQuotient = ((divisor * quotient[j]) shl (j * basePowerOfTwo))
             while (reconstructedQuotient > dividend) {
                 quotient[j] = quotient[j] - 1U
-                reconstructedQuotient = ((divisor * quotient[j]) shl (j * BigInteger32Arithmetic.basePowerOfTwo))
+                reconstructedQuotient = ((divisor * quotient[j]) shl (j * basePowerOfTwo))
             }
             dividend = dividend - reconstructedQuotient
         }
