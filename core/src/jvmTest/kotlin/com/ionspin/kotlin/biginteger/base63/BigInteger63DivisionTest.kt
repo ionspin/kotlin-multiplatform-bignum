@@ -83,7 +83,7 @@ class BigInteger63DivisionTest {
                 println(i)
             }
             val a = ulongArrayOf(random.nextULong() shr 1, random.nextULong() shr 1)
-            val b = ulongArrayOf(random.nextULong() shr 1, random.nextULong()shr 1)
+            val b = ulongArrayOf(random.nextULong() shr 1, random.nextULong() shr 1)
             GlobalScope.launch {
                 if (BigInteger63Arithmetic.compare(a, b) > 0) {
                     divisionSingleTest(a, b)

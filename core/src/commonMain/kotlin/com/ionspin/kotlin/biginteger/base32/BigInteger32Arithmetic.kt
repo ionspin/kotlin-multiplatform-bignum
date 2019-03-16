@@ -418,8 +418,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             dividend = dividend - divisorTimesBaseToPowerOfM
         }
 
-        var debugDenormQuotient = UIntArray(0)
-
         for (j in (wordPrecision - 1) downTo 0) {
             qjhat = if (divisorSize + j < dividend.size) {
                 ((dividend[divisorSize + j].toULong() shl basePowerOfTwo) +
@@ -448,7 +446,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
                 reconstructedQuotient = ((divisor * quotient[j]) shl (j * basePowerOfTwo))
             }
             dividend = dividend - reconstructedQuotient
-            debugDenormQuotient = denormalize(quotient, normalizationShift)
         }
 
         val denormRemainder =
@@ -465,20 +462,25 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             return (((uintArrayOf(1U) shl (2 * basePowerOfTwo)) / operand) - 1U)
         }
 
-        TODO()
+        TODO("Soon")
 
 
     }
 
-    override fun parseBase(number: String, base: Int) {
-        TODO("not implemented yet")
+    override fun parseBase(number: String, base: Int) : UIntArray {
+        var parsed = ZERO
+        number.forEach { char ->
+
+            parsed = (parsed * base.toUInt()) + (char.toInt() - 48).toUInt()
+        }
+        return parsed
     }
 
     override fun toString(operand : UIntArray, base: Int): String {
         var copy = operand.copyOf()
         val baseArray = uintArrayOf(base.toUInt())
         val stringBuilder = StringBuilder()
-        while (copy.isNotEmpty()) {
+        while (copy != ZERO) {
             val divremResult = (copy divrem baseArray)
             if (divremResult.second.isEmpty()) {
                 stringBuilder.append(0)

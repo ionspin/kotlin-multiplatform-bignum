@@ -50,7 +50,7 @@ actual object NativeBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int> {
     override fun divide(first: IntArray, second: IntArray): Pair<IntArray, IntArray> {
         TODO("not implemented yet")
     }
-    override fun parseBase(number: String, base: Int) {
+    override fun parseBase(number: String, base: Int) : IntArray {
         TODO("not implemented yet")
     }
 

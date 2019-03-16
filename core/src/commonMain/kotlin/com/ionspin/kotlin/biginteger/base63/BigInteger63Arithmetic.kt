@@ -3,6 +3,8 @@ package com.ionspin.kotlin.biginteger.base63
 import com.ionspin.kotlin.biginteger.BigIntegerArithmetic
 import com.ionspin.kotlin.biginteger.Quadruple
 import com.ionspin.kotlin.biginteger.base32.BigInteger32Arithmetic
+import com.ionspin.kotlin.biginteger.base32.BigInteger32Arithmetic.plus
+import com.ionspin.kotlin.biginteger.base32.BigInteger32Arithmetic.shl
 import kotlin.math.sign
 
 /**
@@ -595,8 +597,12 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         return baseDivide(first, second)
     }
 
-    override fun parseBase(number: String, base: Int) {
-
+    override fun parseBase(number: String, base: Int) : ULongArray {
+        var parsed = ZERO
+        number.forEach {
+            parsed = (parsed shl basePowerOfTwo) + it.toInt().toULong()
+        }
+        return parsed
     }
 
     override fun toString(operand: ULongArray, base: Int): String {
