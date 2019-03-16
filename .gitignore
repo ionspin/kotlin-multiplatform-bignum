@@ -6,5 +6,5 @@
 */build
 build/
 /captures
-
+/core/node_modules
 gradle.properties
