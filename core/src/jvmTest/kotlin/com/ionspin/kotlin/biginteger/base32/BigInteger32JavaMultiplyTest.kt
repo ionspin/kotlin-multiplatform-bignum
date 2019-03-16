@@ -17,6 +17,8 @@
 
 package com.ionspin.kotlin.biginteger.base32
 
+import com.ionspin.kotlin.biginteger.util.runTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.Test
@@ -32,8 +34,26 @@ import kotlin.test.assertTrue
  * ugljesa.jovanovic@ionspin.com
  * on 09-Mar-3/9/19
  */
+@ExperimentalCoroutinesApi
 @ExperimentalUnsignedTypes
 class BigInteger32JavaMultiplyTest {
+
+    @Test
+    fun quick() {
+        assertTrue {
+            val a = uintArrayOf(10U)
+            val b = uintArrayOf(20U)
+            val c = BigInteger32Arithmetic.multiply(a, b)
+
+            val resultBigInt = c.toJavaBigInteger()
+
+            val bigIntResult = a.toJavaBigInteger() * b.toJavaBigInteger()
+
+            resultBigInt == bigIntResult
+
+        }
+    }
+
     @Test
     fun testMultiply() {
         assertTrue {
@@ -107,17 +127,38 @@ class BigInteger32JavaMultiplyTest {
     }
 
     @Test
-    fun randomMultiplyLotsOfElementsTest() {
+    fun randomMultiplyLotsOfElementsTest() = runTest {
         val seed = 1
         val random = Random(seed)
-        val numberOfElements = 150000
+        val numberOfElements = 2
         println("Number of elements $numberOfElements")
 
-        val lotOfElements = UIntArray(numberOfElements) {
+        val first = UIntArray(numberOfElements) {
             random.nextUInt()
         }
-        multiplySingleTest(*lotOfElements)
+
+        val second = UIntArray(numberOfElements) {
+            random.nextUInt()
+        }
+        multiplySingleTestArray(first, second)
     }
+
+//    @Test
+//    fun randomMultiplyLotsOfElementsTest2() = runTest {
+//        val seed = 1
+//        val random = Random(seed)
+//        val numberOfElements = 15000
+//        println("Number of elements $numberOfElements")
+//
+//        val first = UIntArray(numberOfElements) {
+//            random.nextUInt()
+//        }
+//
+//        val second = UIntArray(numberOfElements) {
+//            random.nextUInt()
+//        }
+//        multiplySingleTest(*first)
+//    }
 
     fun multiplySingleTest(vararg elements: UInt) {
         assertTrue("Failed on ${elements.contentToString()}") {
@@ -145,10 +186,47 @@ class BigInteger32JavaMultiplyTest {
             if (time) {
                 println("Result ${convertedResult}")
                 lastTime = LocalDateTime.now()
-                println("Total time ${Duration.between(startTime, lastTime)}")
+                println("Java Big Integer total time ${Duration.between(startTime, lastTime)}")
             }
 
             bigIntResult == convertedResult
+        }
+    }
+
+    fun multiplySingleTestArray(first : UIntArray, second : UIntArray) {
+        assertTrue("Failed on uintArrayOf(${first.joinToString(separator = ", ")} \n second: ${second.joinToString(separator = ", ")}") {
+            val time = first.size > 100
+            lateinit var lastTime: LocalDateTime
+            lateinit var startTime: LocalDateTime
+            println("Creating java big integers")
+            var firstBigInt = first.toJavaBigInteger()
+            var secondBigInt = second.toJavaBigInteger()
+            println("Starting")
+            if (time) {
+                lastTime = LocalDateTime.now()
+                startTime = lastTime
+            }
+
+            val result = BigInteger32Arithmetic.multiply(first, second)
+
+            if (time) {
+                lastTime = LocalDateTime.now()
+                println("Total time ${Duration.between(startTime, lastTime)}")
+                startTime = lastTime
+            }
+
+            val bigIntResult = firstBigInt * secondBigInt
+
+            if (time) {
+                lastTime = LocalDateTime.now()
+                println("Java Big Integer total time ${Duration.between(startTime, lastTime)}")
+            }
+            val string32 = BigInteger32Arithmetic.toString(result, 10)
+            val resultBigInt = result.toJavaBigInteger()
+            println(resultBigInt.toString())
+            println(bigIntResult.toString())
+
+            bigIntResult == resultBigInt
         }
     }
 }

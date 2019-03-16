@@ -30,8 +30,8 @@ plugins {
 repositories {
     mavenCentral()
 }
-group = "com.ionspin.kotlin.biginteger.core"
-version = "0.0.2"
+group = "com.ionspin.kotlin.bignumber"
+version = "0.0.3"
 
 kotlin {
     jvm()
@@ -60,6 +60,7 @@ kotlin {
             dependencies {
                 implementation(kotlin(Deps.Common.stdLib))
                 implementation(kotlin(Deps.Common.test))
+                implementation(Deps.Common.coroutines)
             }
         }
         val commonTest by getting {
@@ -73,6 +74,7 @@ kotlin {
                 implementation(kotlin(Deps.Jvm.stdLib))
                 implementation(kotlin(Deps.Jvm.test))
                 implementation(kotlin(Deps.Jvm.testJUnit))
+                implementation(Deps.Jvm.coroutinesCore)
             }
         }
         val jvmTest by getting {
@@ -87,6 +89,7 @@ kotlin {
             dependencies {
                 implementation(kotlin(Deps.Js.stdLib))
                 implementation(kotlin(Deps.Js.test))
+                implementation(Deps.Js.coroutines)
             }
         }
         val jsTest by getting {
@@ -96,6 +99,7 @@ kotlin {
         }
         val iosMain by getting {
             dependencies {
+                implementation(Deps.Native.coroutines)
             }
         }
         val iosTest by getting {
@@ -103,6 +107,7 @@ kotlin {
 
         val nativeMain by creating {
             dependencies {
+                implementation(Deps.Native.coroutines)
             }
         }
         val nativeTest by creating {

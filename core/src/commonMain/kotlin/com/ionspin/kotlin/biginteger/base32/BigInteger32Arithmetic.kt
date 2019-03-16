@@ -19,12 +19,15 @@ package com.ionspin.kotlin.biginteger.base32
 
 import com.ionspin.kotlin.biginteger.BigIntegerArithmetic
 import com.ionspin.kotlin.biginteger.Quadruple
+import com.ionspin.kotlin.biginteger.util.block
+import kotlinx.coroutines.*
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
  * on 09-Mar-3/9/19
  */
+@ExperimentalCoroutinesApi
 @ExperimentalUnsignedTypes
 internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     val mask = 0xFFFFFFFFUL
@@ -35,6 +38,8 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     override val ZERO = UIntArray(0)
     override val ONE = UIntArray(1) { 1U }
+
+    val useCoroutines = false
 
     /**
      * Hackers delight 5-11
@@ -192,10 +197,10 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     }
 
-    fun normalize(operand : UIntArray) : Pair<UIntArray, Int> {
+    fun normalize(operand: UIntArray): Pair<UIntArray, Int> {
         val normalizationShift =
             numberOfLeadingZeroes(operand[operand.size - 1])
-        return Pair(operand.shl(normalizationShift) , normalizationShift)
+        return Pair(operand.shl(normalizationShift), normalizationShift)
     }
 
     fun denormalize(
@@ -357,18 +362,40 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return removeLeadingZeroes(result)
     }
 
+    @Suppress("ConstantConditionIf")
     override fun multiply(first: UIntArray, second: UIntArray): UIntArray {
-        return second.foldIndexed(ZERO) { index, acc, element ->
-            acc + (multiply(
-                first,
-                element
-            ) shl (index * basePowerOfTwo))
+        if (useCoroutines) {
+            val partialResults = second.mapIndexed { index, element ->
+                GlobalScope.async {
+                    multiply(first, element) shl (index * basePowerOfTwo)
+                }
+            }
 
+
+            var result = uintArrayOf()
+            block {
+                partialResults.awaitAll()
+                result = partialResults.fold(UIntArray(0)) { acc, deferred ->
+                    acc + (deferred.getCompleted())
+                }
+            }
+            return result
+        } else {
+            return second.foldIndexed(ZERO) { index, acc, element ->
+                acc + (multiply(
+                    first,
+                    element
+                ) shl (index * basePowerOfTwo))
+
+            }
         }
+
+
+
 
     }
 
-    override fun divide(first: UIntArray, second: UIntArray) : Pair<UIntArray, UIntArray> {
+    override fun divide(first: UIntArray, second: UIntArray): Pair<UIntArray, UIntArray> {
         return basicDivide(first, second)
     }
 
@@ -417,7 +444,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         val wordPrecision = dividendSize - divisorSize
 
 
-
         var qjhat = 0UL
         var reconstructedQuotient: UIntArray
         var quotient = UIntArray(wordPrecision)
@@ -464,7 +490,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return Pair(removeLeadingZeroes(quotient), denormRemainder)
     }
 
-    fun baseReciprocal(unnomrmalizedOperand : UIntArray, precision : Int) : UIntArray {
+    fun baseReciprocal(unnomrmalizedOperand: UIntArray, precision: Int): UIntArray {
         val (operand, normalizationShift) = normalize(
             unnomrmalizedOperand
         )
@@ -478,7 +504,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     }
 
-    override fun parseForBase(number: String, base: Int) : UIntArray {
+    override fun parseForBase(number: String, base: Int): UIntArray {
         var parsed = ZERO
         number.forEach { char ->
             parsed = (parsed * base.toUInt()) + (char.toInt() - 48).toUInt()
@@ -486,7 +512,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return parsed
     }
 
-    override fun toString(operand : UIntArray, base: Int): String {
+    override fun toString(operand: UIntArray, base: Int): String {
         var copy = operand.copyOf()
         val baseArray = uintArrayOf(base.toUInt())
         val stringBuilder = StringBuilder()

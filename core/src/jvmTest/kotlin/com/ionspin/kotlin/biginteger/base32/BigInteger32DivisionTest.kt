@@ -23,8 +23,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
+import java.lang.ArithmeticException
 import kotlin.random.Random
 import kotlin.random.nextUInt
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 /**
@@ -73,38 +75,37 @@ class BigInteger32DivisionTest {
     fun `Test division with only one word`() {
         val seed = 1
         val random = Random(seed)
-        for (i in 1..Int.MAX_VALUE step 99) {
+        val jobList: MutableList<Job> = mutableListOf()
+        for (i in 1..Int.MAX_VALUE step 5001) {
             if ((i % 100000) in 1..100) {
                 println(i)
             }
             val a = random.nextUInt()
             val b = random.nextUInt()
-            if (a > b) {
-                divisionSingleTest(uintArrayOf(a), uintArrayOf(b))
-            } else {
-                divisionSingleTest(uintArrayOf(b), uintArrayOf(a))
-            }
+            jobList.add(
+                GlobalScope.launch {
+                    if (a > b) {
+                        divisionSingleTest(uintArrayOf(a), uintArrayOf(b))
+                    } else {
+                        divisionSingleTest(uintArrayOf(b), uintArrayOf(a))
+                    }
+                }
+            )
+        }
 
+        runBlocking {
+            jobList.forEach { it.join() }
         }
 
     }
 
     @Test
-    fun `Test division with zero`() {
-        val seed = 1
-        val random = Random(seed)
-        for (i in 1..Int.MAX_VALUE step 99) {
-            if ((i % 100000) in 1..100) {
-                println(i)
-            }
-            val a = random.nextUInt()
-            val b = 0U
-            if (a > b) {
-                divisionSingleTest(uintArrayOf(a), uintArrayOf(b))
-            } else {
-                divisionSingleTest(uintArrayOf(b), uintArrayOf(a))
-            }
+    fun `Test should throw arithmetic exception because of division with zero`() {
+        val dividend = uintArrayOf(1U)
+        val divisor = uintArrayOf(0U)
 
+        assertFailsWith<ArithmeticException> {
+            BigInteger32Arithmetic.divide(dividend, divisor)
         }
 
     }
@@ -113,149 +114,124 @@ class BigInteger32DivisionTest {
     fun `Test division by one`() {
         val seed = 1
         val random = Random(seed)
-        for (i in 1..Int.MAX_VALUE step 99) {
-            if ((i % 100000) in 1..100) {
-                println(i)
-            }
+        for (i in 1..Int.MAX_VALUE step 10001) {
             val a = random.nextUInt()
             val b = 1U
-            if (a > b) {
-                divisionSingleTest(uintArrayOf(a), uintArrayOf(b))
-            } else {
-                divisionSingleTest(uintArrayOf(b), uintArrayOf(a))
-            }
-
+            divisionSingleTest(uintArrayOf(a), uintArrayOf(b))
         }
 
     }
 
     @Test
-    fun randomDivisionMultiWordTest() {
+    fun `Test division with of two words with two words`() {
         val seed = 1
         val random = Random(seed)
-        for (i in 1..Int.MAX_VALUE step 99) {
-            if ((i % 100000) in 1..100) {
-                println(i)
-            }
+
+        val jobList: MutableList<Job> = mutableListOf()
+        for (i in 1..Int.MAX_VALUE step 5001) {
+
+
             val a = uintArrayOf(random.nextUInt(), random.nextUInt())
             val b = uintArrayOf(random.nextUInt(), random.nextUInt())
-            GlobalScope.launch {
-                if (BigInteger32Arithmetic.compare(a, b) > 0) {
-                    divisionSingleTest(a, b)
-                } else {
-                    divisionSingleTest(b, a)
+            jobList.add(
+                GlobalScope.launch {
+                    if (BigInteger32Arithmetic.compare(a, b) > 0) {
+                        divisionSingleTest(a, b)
+                    } else {
+                        divisionSingleTest(b, a)
+                    }
                 }
-            }
-
-
+            )
+        }
+        runBlocking {
+            jobList.forEach { it.join() }
         }
 
     }
 
     @Test
-    fun randomDivisionMultiWordTest2() {
+    fun `Test division of 4 word dividend with 2 word divisor`() {
         val seed = 1
         val random = Random(seed)
-        for (i in 1..Int.MAX_VALUE step 99) {
+        val jobList: MutableList<Job> = mutableListOf()
+        for (i in 1..Int.MAX_VALUE step 5001) {
             if ((i % 100000) in 1..100) {
                 println(i)
             }
             val a = uintArrayOf(random.nextUInt(), random.nextUInt(), random.nextUInt(), random.nextUInt())
             val b = uintArrayOf(random.nextUInt(), random.nextUInt())
-            GlobalScope.launch {
-                if (BigInteger32Arithmetic.compare(a, b) > 0) {
+            jobList.add(
+                GlobalScope.launch {
                     divisionSingleTest(a, b)
-                } else {
-                    divisionSingleTest(b, a)
                 }
-            }
+            )
 
+        }
+        runBlocking {
+            jobList.forEach { it.join() }
         }
 
     }
 
     @Test
-    fun randomDivisionMultiWordTest4() {
+    fun `Test division with a large number of words in divisor`() {
         val seed = 1
         val random = Random(seed)
 
 
-        var jobList : List<Job> = emptyList()
-        for (i in 5_000 downTo 10 step 3) {
+        val jobList: MutableList<Job> = mutableListOf()
+        for (i in 10..5000 step 19) {
             val a = UIntArray(i) { random.nextUInt() }
             var randomDivisorSize = random.nextInt(i - 1)
             if (randomDivisorSize == 0) {
                 randomDivisorSize = 1
             }
             val b = UIntArray(randomDivisorSize) { random.nextUInt() }
-            jobList += GlobalScope.launch {
-                println("Division: $i words / $randomDivisorSize words")
+            jobList.add(
+                GlobalScope.launch {
                     divisionSingleTest(a, b)
-            }
+                }
+            )
         }
         runBlocking {
             jobList.forEach { it.join() }
         }
 
 
-
-
     }
 
-
+    //Can't remember why I created this one
     @Test
-    fun randomDivisionMultiWordTest3() {
+    fun `Test divison of 12 word dividend by four word divisor`() {
         val seed = 1
         val random = Random(seed)
-        for (i in 1..Int.MAX_VALUE step 99) {
-            if ((i % 100000) in 1..100) {
-                println(i)
-            }
+        val jobList: MutableList<Job> = mutableListOf()
+        for (i in 1..Int.MAX_VALUE step 5001) {
+
             val a = uintArrayOf(
                 random.nextUInt(), random.nextUInt(), random.nextUInt(), random.nextUInt(),
                 random.nextUInt(), random.nextUInt(), random.nextUInt(), random.nextUInt(),
                 random.nextUInt(), random.nextUInt(), random.nextUInt(), random.nextUInt()
             )
             val b = uintArrayOf(random.nextUInt(), random.nextUInt(), random.nextUInt(), random.nextUInt())
-            GlobalScope.launch {
-                if (BigInteger32Arithmetic.compare(a, b) > 0) {
+            jobList.add(
+                GlobalScope.launch {
                     divisionSingleTest(a, b)
-                } else {
-                    divisionSingleTest(b, a)
                 }
-            }
+            )
 
+        }
+        runBlocking {
+            jobList.forEach { it.join() }
         }
 
     }
 
-//    @Test
-//    fun randomDivisionLongWordTest2() {
-//        val seed = 1
-//        val random = Random(seed)
-//        println("Preparing dividend")
-//        generateSequence {  }
-//        for (i in 1..Int.MAX_VALUE step 99) {
-//            if ((i % 100000) in 1..100) {
-//                println(i)
-//            }
-//            val a = uintArrayOf(random.nextUInt(), random.nextUInt(), random.nextUInt(), random.nextUInt())
-//            val b = uintArrayOf(random.nextUInt(), random.nextUInt())
-//
-//
-//        }
-//
-//    }
-
-    @Test
-    fun preciseDebugTest() {
-
-        divisionSingleTest(uintArrayOf(3449361588U,1278830002U,3123489057U,3720277819U), uintArrayOf(486484208U,2780187700U))
-    }
-
-    fun divisionSingleTest(dividend : UIntArray, divisor : UIntArray) {
-        assertTrue("Failed on uintArrayOf(${dividend.joinToString(separator = ",") { it.toString() + "U" }}), " +
-                "uintArrayOf(${divisor.joinToString(separator = ",") { it.toString() + "U" }})") {
+    fun divisionSingleTest(dividend: UIntArray, divisor: UIntArray) {
+        assertTrue(
+            "Failed on uintArrayOf(${dividend.joinToString(separator = ",") { it.toString() + "U" }}), " +
+                    "uintArrayOf(${divisor.joinToString(separator = ",") { it.toString() + "U" }})"
+        ) {
             val a = dividend
             val b = divisor
             try {
@@ -268,14 +244,10 @@ class BigInteger32DivisionTest {
                 val bigIntRemainder = a.toJavaBigInteger() % b.toJavaBigInteger()
 
                 quotientBigInt == bigIntQuotient && remainderBigInt == bigIntRemainder
-            } catch (e : Throwable) {
+            } catch (e: Throwable) {
                 e.printStackTrace()
                 false
             }
-
-
-
-
 
 
         }
