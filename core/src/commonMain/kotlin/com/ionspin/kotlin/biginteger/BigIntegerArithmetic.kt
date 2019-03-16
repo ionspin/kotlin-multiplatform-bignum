@@ -17,11 +17,11 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
     fun shiftLeft(operand: BackingCollectionType, places: Int): BackingCollectionType
     fun shiftRight(operand: BackingCollectionType, places: Int): BackingCollectionType
     fun compare(first: BackingCollectionType, second: BackingCollectionType): Int
-    fun addition(first: BackingCollectionType, second: BackingCollectionType): BackingCollectionType
+    fun add(first: BackingCollectionType, second: BackingCollectionType): BackingCollectionType
     fun substract(first: BackingCollectionType, second: BackingCollectionType): BackingCollectionType
     fun multiply(first: BackingCollectionType, second: BackingCollectionType): BackingCollectionType
     fun divide(first: BackingCollectionType, second: BackingCollectionType): Pair<BackingCollectionType, BackingCollectionType>
-    fun parseBase(number : String, base : Int) : BackingCollectionType
+    fun parseForBase(number : String, base : Int) : BackingCollectionType
     fun toString(operand: BackingCollectionType, base : Int) : String
 
 

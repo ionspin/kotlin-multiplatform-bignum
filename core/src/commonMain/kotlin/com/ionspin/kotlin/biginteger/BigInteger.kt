@@ -22,6 +22,17 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Boolean) : 
 
         val ZERO = BigInteger(arithmetic.ZERO, negative)
         val ONE = BigInteger(arithmetic.ONE, positive)
+
+        fun parseString(string : String, base : Int) : BigInteger{
+            val signed = (string[0] == '-' || string[0] == '+')
+            return if (signed) {
+                val isNegative = string[0] == '-'
+                BigInteger(arithmetic.parseForBase(string.substring(1, string.length), base), isNegative)
+            } else {
+                BigInteger(arithmetic.parseForBase(string, base), positive)
+            }
+
+        }
     }
 
     private val magnitude: WordArray = wordArray
@@ -33,7 +44,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Boolean) : 
         } else {
             other.sign
         }
-        return BigInteger(arithmetic.addition(this.magnitude, other.magnitude), sign)
+        return BigInteger(arithmetic.add(this.magnitude, other.magnitude), sign)
     }
 
     fun substract(other: BigInteger): BigInteger {
@@ -63,7 +74,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Boolean) : 
             positive
         }
 
-        return BigInteger(arithmetic.basicDivide(this.magnitude, other.magnitude).first, sign)
+        return BigInteger(arithmetic.divide(this.magnitude, other.magnitude).first, sign)
     }
 
     fun remainder(other: BigInteger): BigInteger {
@@ -73,7 +84,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Boolean) : 
             positive
         }
 
-        return BigInteger(arithmetic.basicDivide(this.magnitude, other.magnitude).second, sign)
+        return BigInteger(arithmetic.divide(this.magnitude, other.magnitude).second, sign)
     }
 
     fun divideAndRemainder(other: BigInteger): Pair<BigInteger, BigInteger> {
@@ -83,8 +94,8 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Boolean) : 
             positive
         }
         return Pair(
-            BigInteger(arithmetic.basicDivide(this.magnitude, other.magnitude).first, sign),
-            BigInteger(arithmetic.basicDivide(this.magnitude, other.magnitude).second, sign)
+            BigInteger(arithmetic.divide(this.magnitude, other.magnitude).first, sign),
+            BigInteger(arithmetic.divide(this.magnitude, other.magnitude).second, sign)
         )
     }
 
@@ -128,13 +139,29 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Boolean) : 
         return remainder(other)
     }
 
-    infix fun BigInteger.divrem(other: BigInteger): Pair<BigInteger, BigInteger> {
-        return divideAndRemainder(other)
+    infix fun BigInteger.divrem(other: BigInteger): QuotientAndRemainder {
+        val result = divideAndRemainder(other)
+        return QuotientAndRemainder(result.first, result.second)
     }
 
     override fun compareTo(other: BigInteger): Int {
         return compare(other)
     }
+
+    override fun toString() : String {
+        return toString(10)
+    }
+
+    fun toString(base : Int) : String {
+        val sign = if (!sign) {
+            "-"
+        } else {
+            ""
+        }
+        return sign + arithmetic.toString(this.magnitude, base)
+    }
+
+    data class QuotientAndRemainder(val quotient : BigInteger, val remainder : BigInteger)
 
 
 }

@@ -17,7 +17,7 @@ class BigInteger32ArithmeticAdditionTest {
         assertTrue {
             val a = uintArrayOf(1U)
             val b = uintArrayOf(2U)
-            val c = BigInteger32Arithmetic.addition(a, b)
+            val c = BigInteger32Arithmetic.add(a, b)
             c[0] == 3U
         }
     }

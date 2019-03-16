@@ -2,7 +2,6 @@ package com.ionspin.kotlin.biginteger.base32
 
 import com.ionspin.kotlin.biginteger.BigIntegerArithmetic
 import com.ionspin.kotlin.biginteger.Quadruple
-import com.ionspin.kotlin.biginteger.base63.BigInteger63Arithmetic
 
 /**
  * Created by Ugljesa Jovanovic
@@ -72,7 +71,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     fun removeLeadingZeroes(bigInteger: UIntArray): UIntArray {
         val firstEmpty = bigInteger.indexOfLast { it != 0U } + 1
         if (firstEmpty == -1 || firstEmpty == 0) {
-            //Array is equal to zero, so we return array with zero elements
             return ZERO
         }
         return bigInteger.copyOfRange(0, firstEmpty)
@@ -167,7 +165,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
     fun normalize(dividend: UIntArray, divisor: UIntArray): Triple<UIntArray, UIntArray, Int> {
-        val dividendSize = dividend.size
         val divisorSize = divisor.size
         val normalizationShift =
             numberOfLeadingZeroes(divisor[divisorSize - 1])
@@ -230,7 +227,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     }
 
-    override fun addition(first: UIntArray, second: UIntArray): UIntArray {
+    override fun add(first: UIntArray, second: UIntArray): UIntArray {
         if (first.size == 1 && first[0] == 0U) return second
         if (second.size == 1 && second[0] == 0U) return first
 
@@ -358,9 +355,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return basicDivide(first, second)
     }
 
-    fun divide(first: UIntArray, second: UInt) : Pair<UIntArray, UIntArray> {
-        return basicDivide(first, uintArrayOf(second))
-    }
 
     /**
      * Based on Basecase DivRem algorithm from
@@ -467,10 +461,9 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     }
 
-    override fun parseBase(number: String, base: Int) : UIntArray {
+    override fun parseForBase(number: String, base: Int) : UIntArray {
         var parsed = ZERO
         number.forEach { char ->
-
             parsed = (parsed * base.toUInt()) + (char.toInt() - 48).toUInt()
         }
         return parsed
@@ -503,7 +496,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
 
     internal operator fun UIntArray.plus(other: UIntArray): UIntArray {
-        return addition(this, other)
+        return add(this, other)
     }
 
     internal operator fun UIntArray.minus(other: UIntArray): UIntArray {
@@ -515,7 +508,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
     internal operator fun UIntArray.plus(other: UInt): UIntArray {
-        return addition(this, uintArrayOf(other))
+        return add(this, uintArrayOf(other))
     }
 
     internal operator fun UIntArray.minus(other: UInt): UIntArray {

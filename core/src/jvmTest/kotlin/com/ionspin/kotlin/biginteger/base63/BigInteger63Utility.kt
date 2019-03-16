@@ -13,3 +13,8 @@ fun ULongArray.toJavaBigInteger(): BigInteger {
 
     }
 }
+
+fun bla() {
+    val i = 1
+    i.toBigInteger()
+}

@@ -37,7 +37,7 @@ actual object NativeBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int> {
         TODO("not implemented yet")
     }
 
-    override fun addition(first: IntArray, second: IntArray): IntArray {
+    override fun add(first: IntArray, second: IntArray): IntArray {
         TODO("not implemented yet")
     }
 
@@ -55,7 +55,7 @@ actual object NativeBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int> {
         TODO("not implemented yet")
     }
 
-    override fun parseBase(number: String, base: Int) : IntArray {
+    override fun parseForBase(number: String, base: Int) : IntArray {
         TODO("not implemented yet")
     }
 

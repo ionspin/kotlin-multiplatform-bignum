@@ -2,6 +2,8 @@ package com.ionspin.kotlin.biginteger.base32
 
 import org.junit.Test
 import java.math.BigInteger
+import kotlin.random.Random
+import kotlin.random.nextUInt
 import kotlin.test.assertTrue
 
 /**
@@ -10,7 +12,7 @@ import kotlin.test.assertTrue
  * on 16-Mar-3/16/19
  */
 @ExperimentalUnsignedTypes
-class BigInteger32StringConversion {
+class BigInteger32StringConversionTests {
 
 
 
@@ -21,10 +23,36 @@ class BigInteger32StringConversion {
 
     fun testParsingSingleTest(uIntArrayString: String, base : Int) {
         assertTrue {
-            val parsed = BigInteger32Arithmetic.parseBase(uIntArrayString, base)
+            val parsed = BigInteger32Arithmetic.parseForBase(uIntArrayString, base)
             val javaBigIntParsed = BigInteger(uIntArrayString, base)
 
             parsed.toJavaBigInteger() == javaBigIntParsed
+        }
+
+    }
+
+    @Test
+    fun randomToStringTest() {
+        val seed = 1
+        val random = Random(seed)
+        for (i in 1..Int.MAX_VALUE step 99) {
+            if ((i % 100000) in 1..100) {
+                println(i)
+            }
+            toStringSingleTest(uintArrayOf(random.nextUInt()), 10)
+        }
+
+    }
+
+    @Test
+    fun randomToStringTestRandomBase() {
+        val seed = 1
+        val random = Random(seed)
+        for (i in 1..Int.MAX_VALUE step 99) {
+            if ((i % 100000) in 1..100) {
+                println(i)
+            }
+            toStringSingleTest(uintArrayOf(random.nextUInt(), random.nextUInt()), random.nextInt(2,36)) //36 is the max java bigint supports
         }
 
     }

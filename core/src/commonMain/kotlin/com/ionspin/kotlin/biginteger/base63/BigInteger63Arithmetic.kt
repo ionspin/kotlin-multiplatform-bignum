@@ -3,9 +3,6 @@ package com.ionspin.kotlin.biginteger.base63
 import com.ionspin.kotlin.biginteger.BigIntegerArithmetic
 import com.ionspin.kotlin.biginteger.Quadruple
 import com.ionspin.kotlin.biginteger.base32.BigInteger32Arithmetic
-import com.ionspin.kotlin.biginteger.base32.BigInteger32Arithmetic.plus
-import com.ionspin.kotlin.biginteger.base32.BigInteger32Arithmetic.shl
-import kotlin.math.sign
 
 /**
  * Created by Ugljesa Jovanovic
@@ -203,7 +200,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         }
     }
 
-    override fun addition(first: ULongArray, second: ULongArray): ULongArray {
+    override fun add(first: ULongArray, second: ULongArray): ULongArray {
         if (first.size == 1 && first[0] == 0UL) return second
         if (second.size == 1 && second[0] == 0UL) return first
 
@@ -597,10 +594,10 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         return baseDivide(first, second)
     }
 
-    override fun parseBase(number: String, base: Int) : ULongArray {
+    override fun parseForBase(number: String, base: Int) : ULongArray {
         var parsed = ZERO
-        number.forEach {
-            parsed = (parsed shl basePowerOfTwo) + it.toInt().toULong()
+        number.forEach {char ->
+             parsed = (parsed * base.toULong()) + (char.toInt() - 48).toULong()
         }
         return parsed
     }
@@ -697,7 +694,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
 
 
     internal operator fun ULongArray.plus(other: ULongArray): ULongArray {
-        return addition(this, other)
+        return add(this, other)
     }
 
     internal operator fun ULongArray.minus(other: ULongArray): ULongArray {
@@ -709,7 +706,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
     }
 
     internal operator fun ULongArray.plus(other: ULong): ULongArray {
-        return addition(this, ulongArrayOf(other))
+        return add(this, ulongArrayOf(other))
     }
 
     internal operator fun ULongArray.minus(other: ULong): ULongArray {
