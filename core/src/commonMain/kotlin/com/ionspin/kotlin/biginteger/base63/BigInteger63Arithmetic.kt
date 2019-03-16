@@ -3,6 +3,7 @@ package com.ionspin.kotlin.biginteger.base63
 import com.ionspin.kotlin.biginteger.BigIntegerArithmetic
 import com.ionspin.kotlin.biginteger.Quadruple
 import com.ionspin.kotlin.biginteger.base32.BigInteger32Arithmetic
+import kotlin.math.sign
 
 /**
  * Created by Ugljesa Jovanovic
@@ -145,9 +146,14 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
             operand.copyOfRange(operand.size - wordsToDiscard, operand.size)
         }
 
+        if (operand.size > 1 && operand.size - wordsToDiscard == 1) {
+            return ulongArrayOf((operand[operand.size - 1] shl (basePowerOfTwo - shiftBits)))
+        }
+
+
         return ULongArray(operand.size - wordsToDiscard) {
             when (it) {
-                in 0..(operand.size - 2 - wordsToDiscard) -> {
+                in 0 until (operand.size - 1 - wordsToDiscard) -> {
                     ((operand[it + wordsToDiscard] shr shiftBits)) or
                             ((operand[it + wordsToDiscard + 1] shl (basePowerOfTwo - shiftBits) and baseMask))
                 }
@@ -240,9 +246,19 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
     override fun substract(first: ULongArray, second: ULongArray): ULongArray {
         val firstPrepared = removeLeadingZeroes(first)
         val secondPrepared = removeLeadingZeroes(second)
-        val firstIsLarger = compare(firstPrepared, secondPrepared) == 1
-        if (second.size == 1 && second[0] == 0UL) return first
+        val comparison = compare(firstPrepared, secondPrepared)
+        val firstIsLarger = comparison == 1
 
+        if (comparison == 0) return ZERO
+
+        if (second.size == 1 && second[0] == 0UL) {
+            return first
+        }
+
+        // Lets throw this just to catch when we didn't prepare the operands correctly
+        if (!firstIsLarger) {
+            throw RuntimeException("Substraction result less than zero")
+        }
         val (largerLength, smallerLength, largerData, smallerData) = if (firstIsLarger) {
             Quadruple(firstPrepared.size, secondPrepared.size, firstPrepared, secondPrepared)
         } else {
@@ -290,7 +306,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
     override fun multiply(first: ULongArray, second: ULongArray): ULongArray {
         var resultArray = ulongArrayOf()
         second.forEachIndexed { index: Int, element: ULong ->
-            resultArray = resultArray + multiply(first, element)
+            resultArray = resultArray + (multiply(first, element) shl (index * basePowerOfTwo))
         }
         return removeLeadingZeroes(resultArray)
 
@@ -435,10 +451,10 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         )
         val dividendSize = dividend.size
         val divisorSize = divisor.size
-        val wordPrecision = dividendSize - divisorSize
+        var wordPrecision = dividendSize - divisorSize
 
 
-        var qjhat = ulongArrayOf()
+        var qjhat : ULongArray
         var reconstructedQuotient: ULongArray
         var quotient = ULongArray(wordPrecision)
 
@@ -449,11 +465,16 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
             dividend = dividend - divisorTimesBaseToPowerOfM
         }
 
+
         for (j in (wordPrecision - 1) downTo 0) {
             val twoDigit = if (divisorSize + j < dividend.size) {
                 ((ulongArrayOf(dividend[divisorSize + j]) shl basePowerOfTwo) + dividend[divisorSize + j - 1])
             } else {
-                ulongArrayOf(dividend[divisorSize + j - 1])
+                if (divisorSize + j == dividend.size) {
+                    ulongArrayOf(dividend[divisorSize + j - 1])
+                } else {
+                    ZERO
+                }
             }
             val convertedResult = BigInteger32Arithmetic.divide(twoDigit.to32Bit(), ulongArrayOf(divisor[divisorSize - 1]).to32Bit())
             qjhat = convertedResult.first.from32Bit()
@@ -469,15 +490,16 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
                 quotient[j] = quotient[j] - 1U
                 reconstructedQuotient = ((divisor * quotient[j]) shl (j * basePowerOfTwo))
             }
+
             dividend = dividend - reconstructedQuotient
         }
-
         val denormRemainder =
             denormalize(dividend, normalizationShift)
         return Pair(removeLeadingZeroes(quotient), denormRemainder)
     }
 
     fun convertTo64BitRepresentation(operand: ULongArray): ULongArray {
+        if (operand == ZERO) return ZERO
         val length = bitLength(operand)
         val requiredLength = if (length % 64 == 0) {
             length / 64
@@ -581,7 +603,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         var copy = operand.copyOf()
         val baseArray = ulongArrayOf(base.toULong())
         val stringBuilder = StringBuilder()
-        while (copy.isNotEmpty()) {
+        while (copy != ZERO) {
             val divremResult = (copy divrem baseArray)
             if (divremResult.second.isEmpty()) {
                 stringBuilder.append(0)

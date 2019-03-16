@@ -1,7 +1,10 @@
 package com.ionspin.kotlin.biginteger.base32
 
+import com.ionspin.kotlin.biginteger.base63.toJavaBigInteger
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.random.Random
 import kotlin.random.nextUInt
@@ -70,6 +73,46 @@ class BigInteger32DivisionTest {
     }
 
     @Test
+    fun `Test division with zero`() {
+        val seed = 1
+        val random = Random(seed)
+        for (i in 1..Int.MAX_VALUE step 99) {
+            if ((i % 100000) in 1..100) {
+                println(i)
+            }
+            val a = random.nextUInt()
+            val b = 0U
+            if (a > b) {
+                divisionSingleTest(uintArrayOf(a), uintArrayOf(b))
+            } else {
+                divisionSingleTest(uintArrayOf(b), uintArrayOf(a))
+            }
+
+        }
+
+    }
+
+    @Test
+    fun `Test division by one`() {
+        val seed = 1
+        val random = Random(seed)
+        for (i in 1..Int.MAX_VALUE step 99) {
+            if ((i % 100000) in 1..100) {
+                println(i)
+            }
+            val a = random.nextUInt()
+            val b = 1U
+            if (a > b) {
+                divisionSingleTest(uintArrayOf(a), uintArrayOf(b))
+            } else {
+                divisionSingleTest(uintArrayOf(b), uintArrayOf(a))
+            }
+
+        }
+
+    }
+
+    @Test
     fun randomDivisionMultiWordTest() {
         val seed = 1
         val random = Random(seed)
@@ -102,6 +145,61 @@ class BigInteger32DivisionTest {
             }
             val a = uintArrayOf(random.nextUInt(), random.nextUInt(), random.nextUInt(), random.nextUInt())
             val b = uintArrayOf(random.nextUInt(), random.nextUInt())
+            GlobalScope.launch {
+                if (BigInteger32Arithmetic.compare(a, b) > 0) {
+                    divisionSingleTest(a, b)
+                } else {
+                    divisionSingleTest(b, a)
+                }
+            }
+
+        }
+
+    }
+
+    @Test
+    fun randomDivisionMultiWordTest4() {
+        val seed = 1
+        val random = Random(seed)
+
+
+        var jobList : List<Job> = emptyList()
+        for (i in 5_000 downTo 10 step 3) {
+            val a = UIntArray(i) { random.nextUInt() }
+            var randomDivisorSize = random.nextInt(i - 1)
+            if (randomDivisorSize == 0) {
+                randomDivisorSize = 1
+            }
+            val b = UIntArray(randomDivisorSize) { random.nextUInt() }
+            jobList += GlobalScope.launch {
+                println("Division: $i words / $randomDivisorSize words")
+                    divisionSingleTest(a, b)
+            }
+        }
+        runBlocking {
+            jobList.forEach { it.join() }
+        }
+
+
+
+
+    }
+
+
+    @Test
+    fun randomDivisionMultiWordTest3() {
+        val seed = 1
+        val random = Random(seed)
+        for (i in 1..Int.MAX_VALUE step 99) {
+            if ((i % 100000) in 1..100) {
+                println(i)
+            }
+            val a = uintArrayOf(
+                random.nextUInt(), random.nextUInt(), random.nextUInt(), random.nextUInt(),
+                random.nextUInt(), random.nextUInt(), random.nextUInt(), random.nextUInt(),
+                random.nextUInt(), random.nextUInt(), random.nextUInt(), random.nextUInt()
+            )
+            val b = uintArrayOf(random.nextUInt(), random.nextUInt(), random.nextUInt(), random.nextUInt())
             GlobalScope.launch {
                 if (BigInteger32Arithmetic.compare(a, b) > 0) {
                     divisionSingleTest(a, b)

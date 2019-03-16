@@ -75,6 +75,11 @@ class BigInteger32JavaBitwiseTest {
         shiftRightSingleTest(237, 0U - 1U)
     }
 
+    @Test
+    fun debugTest() {
+        shiftRightSingleTest(5, 4294967295U)
+    }
+
     fun shiftRightSingleTest(places : Int, vararg uints : UInt) {
         assertTrue ("Failed for $places and elements ${uints.contentToString()}") {
             val a = uintArrayOf(*uints)

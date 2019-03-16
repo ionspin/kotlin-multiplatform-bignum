@@ -2,6 +2,7 @@ package com.ionspin.kotlin.biginteger.base32
 
 import com.ionspin.kotlin.biginteger.BigIntegerArithmetic
 import com.ionspin.kotlin.biginteger.Quadruple
+import com.ionspin.kotlin.biginteger.base63.BigInteger63Arithmetic
 
 /**
  * Created by Ugljesa Jovanovic
@@ -144,19 +145,24 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             operand.copyOfRange(operand.size - wordsToDiscard, operand.size)
         }
 
-        return UIntArray(operand.size - wordsToDiscard) {
+        if (operand.size > 1 && operand.size - wordsToDiscard == 1) {
+            return uintArrayOf((operand[operand.size - 1] shl (basePowerOfTwo - shiftBits)))
+        }
+
+        val result = UIntArray(operand.size - wordsToDiscard) {
             when (it) {
-                in 0..(operand.size - 2 - wordsToDiscard) -> {
+                in 0 until (operand.size - 1 - wordsToDiscard) -> {
                     (operand[it + wordsToDiscard] shr shiftBits) or (operand[it + wordsToDiscard + 1] shl (basePowerOfTwo - shiftBits))
                 }
                 operand.size - 1 - wordsToDiscard -> {
-                    (operand[it + wordsToDiscard] shr shiftBits)
+                    (operand[it + wordsToDiscard] shr (shiftBits))
                 }
                 else -> {
                     throw RuntimeException("Invalid case $it")
                 }
             }
         }
+        return result
 
     }
 
@@ -412,13 +418,19 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             dividend = dividend - divisorTimesBaseToPowerOfM
         }
 
+        var debugDenormQuotient = UIntArray(0)
+
         for (j in (wordPrecision - 1) downTo 0) {
             qjhat = if (divisorSize + j < dividend.size) {
                 ((dividend[divisorSize + j].toULong() shl basePowerOfTwo) +
                         dividend[divisorSize + j - 1]) /
                         divisor[divisorSize - 1]
             } else {
-                ((dividend[divisorSize + j - 1]) / divisor[divisorSize - 1]).toULong()
+                if (divisorSize + j == dividend.size) {
+                    ((dividend[divisorSize + j - 1]) / divisor[divisorSize - 1]).toULong()
+                } else {
+                    0UL
+                }
             }
 
             quotient[j] = if (qjhat < (base - 1UL)) {
@@ -428,13 +440,15 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             }
 
             // We don't have signed integers here so we need to check if reconstructed quotient is larger than the dividend
-            // instead of just doing  A ← A − qj β B and then looping. Final effect is the same.
+            // instead of just doing  (dividend = dividend − qj * β^j * divisor) and then looping while dividend is less than 0.
+            // Final effect is the same.
             reconstructedQuotient = ((divisor * quotient[j]) shl (j * basePowerOfTwo))
             while (reconstructedQuotient > dividend) {
                 quotient[j] = quotient[j] - 1U
                 reconstructedQuotient = ((divisor * quotient[j]) shl (j * basePowerOfTwo))
             }
             dividend = dividend - reconstructedQuotient
+            debugDenormQuotient = denormalize(quotient, normalizationShift)
         }
 
         val denormRemainder =
