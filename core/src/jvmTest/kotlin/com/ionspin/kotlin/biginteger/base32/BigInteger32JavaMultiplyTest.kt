@@ -130,7 +130,7 @@ class BigInteger32JavaMultiplyTest {
     fun randomMultiplyLotsOfElementsTest() = runTest {
         val seed = 1
         val random = Random(seed)
-        val numberOfElements = 2
+        val numberOfElements = 4
         println("Number of elements $numberOfElements")
 
         val first = UIntArray(numberOfElements) {
@@ -194,13 +194,32 @@ class BigInteger32JavaMultiplyTest {
     }
 
     fun multiplySingleTestArray(first : UIntArray, second : UIntArray) {
-        assertTrue("Failed on uintArrayOf(${first.joinToString(separator = ", ")} \n second: ${second.joinToString(separator = ", ")}") {
+        assertTrue("Failed on uintArrayOf(${first.joinToString(separator = ", ")})" +
+                ", uintArrayOf(${second.joinToString(separator = ", ")})") {
             val time = first.size > 100
             lateinit var lastTime: LocalDateTime
             lateinit var startTime: LocalDateTime
             println("Creating java big integers")
             var firstBigInt = first.toJavaBigInteger()
             var secondBigInt = second.toJavaBigInteger()
+
+            val firstPart = BigInteger32Arithmetic.multiply(first, second[0])
+            val secondPart = BigInteger32Arithmetic.shiftLeft(
+                BigInteger32Arithmetic.multiply(first, second[1]),
+                BigInteger32Arithmetic.basePowerOfTwo)
+
+
+            val bla1 = firstPart.toJavaBigInteger()
+            val bla2 = secondPart.toJavaBigInteger()
+
+            val sum = BigInteger32Arithmetic.add(firstPart, secondPart)
+
+            val firstPartBigInt = firstBigInt * uintArrayOf(second[0]).toJavaBigInteger()
+            val secondPartBigInt = (firstBigInt * uintArrayOf(second[1]).toJavaBigInteger()).shl(BigInteger32Arithmetic.basePowerOfTwo)
+
+            val sumBigInt = firstPartBigInt + secondPartBigInt
+            val bigIntSum = sum.toJavaBigInteger()
+
             println("Starting")
             if (time) {
                 lastTime = LocalDateTime.now()
