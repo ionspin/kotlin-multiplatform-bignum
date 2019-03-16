@@ -354,7 +354,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         var sum = 0UL
         for (i in 0 until first.size) {
             product = first[i].toULong() * second
-            sum = result[i].toULong() + sum + (product and mask).toUInt()
+            sum = result[i].toULong() + (product and mask).toUInt()
             result[i] = (sum and mask).toUInt()
             sum = sum shr basePowerOfTwo
             result[i + 1] = (product shr basePowerOfTwo).toUInt() + sum.toUInt()
@@ -589,6 +589,12 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     internal operator fun UIntArray.compareTo(other: UInt): Int {
         return compare(this, uintArrayOf(other))
+    }
+
+    fun toUnsignedIntArrayCodeFormat(array : UIntArray) : String {
+        return array.joinToString (prefix = "uintArrayOf(", separator = ", ", postfix = ")") {
+            it.toString() + "U"
+        }
     }
 
 }

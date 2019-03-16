@@ -130,7 +130,7 @@ class BigInteger32JavaMultiplyTest {
     fun randomMultiplyLotsOfElementsTest() = runTest {
         val seed = 1
         val random = Random(seed)
-        val numberOfElements = 4
+        val numberOfElements = 200
         println("Number of elements $numberOfElements")
 
         val first = UIntArray(numberOfElements) {
@@ -203,23 +203,6 @@ class BigInteger32JavaMultiplyTest {
             var firstBigInt = first.toJavaBigInteger()
             var secondBigInt = second.toJavaBigInteger()
 
-            val firstPart = BigInteger32Arithmetic.multiply(first, second[0])
-            val secondPart = BigInteger32Arithmetic.shiftLeft(
-                BigInteger32Arithmetic.multiply(first, second[1]),
-                BigInteger32Arithmetic.basePowerOfTwo)
-
-
-            val bla1 = firstPart.toJavaBigInteger()
-            val bla2 = secondPart.toJavaBigInteger()
-
-            val sum = BigInteger32Arithmetic.add(firstPart, secondPart)
-
-            val firstPartBigInt = firstBigInt * uintArrayOf(second[0]).toJavaBigInteger()
-            val secondPartBigInt = (firstBigInt * uintArrayOf(second[1]).toJavaBigInteger()).shl(BigInteger32Arithmetic.basePowerOfTwo)
-
-            val sumBigInt = firstPartBigInt + secondPartBigInt
-            val bigIntSum = sum.toJavaBigInteger()
-
             println("Starting")
             if (time) {
                 lastTime = LocalDateTime.now()
@@ -240,11 +223,7 @@ class BigInteger32JavaMultiplyTest {
                 lastTime = LocalDateTime.now()
                 println("Java Big Integer total time ${Duration.between(startTime, lastTime)}")
             }
-            val string32 = BigInteger32Arithmetic.toString(result, 10)
             val resultBigInt = result.toJavaBigInteger()
-            println(resultBigInt.toString())
-            println(bigIntResult.toString())
-
             bigIntResult == resultBigInt
         }
     }
