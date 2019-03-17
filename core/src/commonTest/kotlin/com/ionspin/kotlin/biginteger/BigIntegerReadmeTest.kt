@@ -56,7 +56,7 @@ class BigIntegerReadmeTest {
         val product = a * b
 
         println("Product: $product")
-        val expectedResult = BigInteger.parseString("-85070591730234615856620279821087277056", 10)
+        val expectedResult = BigInteger.parseString("-85070591730234615856620279821087277056")
 
         assertTrue { product == expectedResult }
     }
@@ -108,6 +108,8 @@ class BigIntegerReadmeTest {
 
         val shifted = a shl 215
         println("Shifted: $shifted")
+        val expectedResult = BigInteger.parseString("52656145834278593348959013841835216159447547700274555627155488768")
+        assertTrue { shifted == expectedResult }
     }
 
     @Test
@@ -116,6 +118,8 @@ class BigIntegerReadmeTest {
 
         val shifted = a shr 90
         println("Shifted: $shifted")
+        val expectedResult = BigInteger.parseString("80779")
+        assertTrue { expectedResult == shifted }
     }
 
 }

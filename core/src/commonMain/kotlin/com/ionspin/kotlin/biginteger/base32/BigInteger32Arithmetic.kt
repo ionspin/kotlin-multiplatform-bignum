@@ -279,8 +279,9 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             }
 
             sum = sum + largerData[i]
-            largerData[i] = (sum and baseMask).toUInt()
+            result[i] = (sum and baseMask).toUInt()
             sum = sum shr basePowerOfTwo
+            i++
         }
 
     }

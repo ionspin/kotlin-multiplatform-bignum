@@ -247,8 +247,9 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
             }
 
             sum = sum + largerData[i]
-            largerData[i] = (sum and baseMask)
+            result[i] = (sum and baseMask)
             sum = sum shr 63
+            i++
         }
     }
 
@@ -613,9 +614,10 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
 
     override fun parseForBase(number: String, base: Int) : ULongArray {
         var parsed = ZERO
-        number.forEach {char ->
+        number.forEachIndexed {index, char ->
             val previous = (parsed * base.toULong())
             parsed = previous + (char.toInt() - 48).toULong()
+            val temp = 1
         }
         return parsed
     }

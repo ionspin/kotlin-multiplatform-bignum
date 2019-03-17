@@ -75,10 +75,7 @@ class BigInteger63DivisionTest {
     fun `Test division with only one word`() {
         val seed = 1
         val random = Random(seed)
-        for (i in 1..Int.MAX_VALUE step 99) {
-            if ((i % 100000) in 1..100) {
-                println(i)
-            }
+        for (i in 1..Int.MAX_VALUE step 3001) {
             val a = random.nextULong() shr 1
             val b = random.nextULong() shr 1
             if (a > b) {
@@ -92,13 +89,11 @@ class BigInteger63DivisionTest {
     }
 
     @Test
-    fun randomDivisionMultiWordTest() {
+    fun `Test two word divided by two words`() {
         val seed = 1
         val random = Random(seed)
-        for (i in 1..Int.MAX_VALUE step 99) {
-            if ((i % 100000) in 1..100) {
-                println(i)
-            }
+        for (i in 1..Int.MAX_VALUE step 3001) {
+
             val a = ulongArrayOf(random.nextULong() shr 1, random.nextULong() shr 1)
             val b = ulongArrayOf(random.nextULong() shr 1, random.nextULong() shr 1)
             GlobalScope.launch {
@@ -115,13 +110,11 @@ class BigInteger63DivisionTest {
     }
 
     @Test
-    fun randomDivisionMultiWordTest2() {
+    fun `Test four words divided by two words`() {
         val seed = 1
         val random = Random(seed)
-        for (i in 1..Int.MAX_VALUE step 99) {
-            if ((i % 100000) in 1..100) {
-                println(i)
-            }
+        for (i in 1..Int.MAX_VALUE step 3001) {
+
             val a = ulongArrayOf(random.nextULong() shr 1, random.nextULong() shr 1, random.nextULong() shr 1, random.nextULong() shr 1)
             val b = ulongArrayOf(random.nextULong() shr 1, random.nextULong() shr 1)
             GlobalScope.launch {
@@ -142,23 +135,7 @@ class BigInteger63DivisionTest {
 
     }
 
-//    @Test
-//    fun randomDivisionLongWordTest2() {
-//        val seed = 1
-//        val random = Random(seed)
-//        println("Preparing dividend")
-//        generateSequence {  }
-//        for (i in 1..Int.MAX_VALUE step 99) {
-//            if ((i % 100000) in 1..100) {
-//                println(i)
-//            }
-//            val a = uintArrayOf(random.nextUInt(), random.nextUInt(), random.nextUInt(), random.nextUInt())
-//            val b = uintArrayOf(random.nextUInt(), random.nextUInt())
-//
-//
-//        }
-//
-//    }
+
 
     @Test
     fun preciseDebugTest() {
@@ -184,29 +161,6 @@ class BigInteger63DivisionTest {
 
                 val bigIntQuotient = a.toJavaBigInteger() / b.toJavaBigInteger()
                 val bigIntRemainder = a.toJavaBigInteger() % b.toJavaBigInteger()
-
-                val bi32quotient = d.first.toJavaBigInteger()
-                val bi32remainder = d.second.toJavaBigInteger()
-
-//                println("Dividend: ${BigInteger63Arithmetic.toString(a, 10)}")
-//                println("Divisor: ${BigInteger63Arithmetic.toString(b, 10)}")
-//
-//                println("Dividend BigInt representation: ${a.toJavaBigInteger().toString(10)}")
-//                println("Divisor BigInt representation: ${b.toJavaBigInteger().toString(10)}")
-//
-//                println("bi64quotient    : ${bi64quotient.toString(2)}")
-//                println("bi64remainder   : ${bi64remainder.toString(2)}")
-//                println("bigIntQuotient  : ${bigIntQuotient.toString(2)}")
-//                println("bigIntRemainder : ${bigIntRemainder.toString(2)}")
-//                println("bi32quotient    : ${bi32quotient.toString(2)}")
-//                println("bi32remainder   : ${bi32remainder.toString(2)}")
-//                println("bi64quotient    : ${bi64quotient.toString()}")
-//                println("bi64remainder   : ${bi64remainder.toString()}")
-//                println("bigIntQuotient  : ${bigIntQuotient.toString()}")
-//                println("bigIntRemainder : ${bigIntRemainder.toString()}")
-//                println("bi32quotient    : ${bi32quotient.toString()}")
-//                println("bi32remainder   : ${bi32remainder.toString()}")
-
 
                 bi64quotient == bigIntQuotient && bi64remainder == bigIntRemainder
             } catch (e : Throwable) {

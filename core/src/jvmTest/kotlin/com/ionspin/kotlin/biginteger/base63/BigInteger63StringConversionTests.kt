@@ -36,8 +36,9 @@ class BigInteger63StringConversionTests {
 
     @Test
     fun `Test parsing with sepcific values`() {
-        testParsingSingleTest("1234", 10)
-        testParsingSingleTest("922337203685477580799999999999990776627963145224192", 10)
+//        testParsingSingleTest("1234", 10)
+//        testParsingSingleTest("922337203685477580799999999999990776627963145224192", 10)
+        testParsingSingleTest("52656145834278593348959013841835216159447547700274555627155488768", 10)
     }
 
     fun testParsingSingleTest(uIntArrayString: String, base: Int) {
@@ -54,7 +55,7 @@ class BigInteger63StringConversionTests {
     fun `Random toString test, in base 10`() {
         val seed = 1
         val random = Random(seed)
-        for (i in 1..Int.MAX_VALUE step 99) {
+        for (i in 1..Int.MAX_VALUE step 7001) {
             toStringSingleTest(ulongArrayOf(random.nextULong()), 10)
         }
 
@@ -64,10 +65,7 @@ class BigInteger63StringConversionTests {
     fun `Random toString test, in random base less than 36`() {
         val seed = 1
         val random = Random(seed)
-        for (i in 1..Int.MAX_VALUE step 99) {
-            if ((i % 100000) in 1..100) {
-                println(i)
-            }
+        for (i in 1..Int.MAX_VALUE step 7001) {
             toStringSingleTest(
                 ulongArrayOf(random.nextULong(), random.nextULong()),
                 random.nextInt(2, 36)

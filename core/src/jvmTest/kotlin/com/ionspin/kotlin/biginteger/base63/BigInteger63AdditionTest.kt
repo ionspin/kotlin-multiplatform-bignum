@@ -17,33 +17,40 @@
 
 package com.ionspin.kotlin.biginteger.base63
 
-import kotlin.test.Test
+import org.junit.Test
 import kotlin.test.assertTrue
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 10-Mar-3/10/19
+ * on 17-Mar-3/17/19
  */
+/*
+0 = 9223372036854775800
+1 = 9223372036854775807
+2 = 9223372036854775807
+3 = 67108863
+
++ 8
+ */
+
 @ExperimentalUnsignedTypes
-class BigInteger64StringTest {
+class BigInteger63AdditionTest {
 
     @Test
-    fun testToString() {
-        val a = ulongArrayOf(1UL, 1UL)
-        toStringSingleTest(a)
-    }
+    fun `Test specific values for addition`() {
+        val first = ulongArrayOf(9223372036854775800UL, 9223372036854775807UL, 9223372036854775807UL, 67108863UL)
+        val second = ulongArrayOf(8UL)
+        val result = BigInteger63Arithmetic.add(first, second)
 
-
-
-    fun toStringSingleTest(ulongArray : ULongArray) {
-        assertTrue {
-            val result = BigInteger63Arithmetic.toString(ulongArray, 10)
-            val bigIntResult = ulongArray.toJavaBigInteger().toString()
-            println("Result $result \nBigInt $bigIntResult")
-            result == bigIntResult
-        }
-
+        val bigIntResult = first.toJavaBigInteger() + second.toJavaBigInteger()
+        assertTrue { result.toJavaBigInteger() == bigIntResult }
 
     }
+
+
+
+
+
+    
 }

@@ -56,7 +56,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         val ZERO = BigInteger(arithmetic.ZERO, Sign.ZERO)
         val ONE = BigInteger(arithmetic.ONE, Sign.POSITIVE)
 
-        fun parseString(string: String, base: Int): BigInteger {
+        fun parseString(string: String, base: Int = 10): BigInteger {
             val signed = (string[0] == '-' || string[0] == '+')
             return if (signed) {
                 if (string.length == 1) {

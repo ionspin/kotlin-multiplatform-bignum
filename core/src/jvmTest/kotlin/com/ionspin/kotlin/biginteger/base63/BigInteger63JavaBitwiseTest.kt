@@ -58,6 +58,7 @@ class BigInteger63JavaBitwiseTest {
         shiftLeftSingleTest(75, ulongArrayOf(0UL - 1UL))
         shiftLeftSingleTest(5, ulongArrayOf(0UL - 1UL))
         shiftLeftSingleTest(237, ulongArrayOf(0UL - 1UL))
+        shiftLeftSingleTest(215, ulongArrayOf(1U))
 
     }
 
