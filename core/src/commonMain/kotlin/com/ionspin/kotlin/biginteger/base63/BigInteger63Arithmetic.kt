@@ -274,7 +274,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
 
         // Lets throw this just to catch when we didn't prepare the operands correctly
         if (!firstIsLarger) {
-            throw RuntimeException("Substraction result less than zero")
+            throw RuntimeException("subtraction result less than zero")
         }
         val (largerLength, smallerLength, largerData, smallerData) = if (firstIsLarger) {
             Quadruple(firstPrepared.size, secondPrepared.size, firstPrepared, secondPrepared)
@@ -512,6 +512,11 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
 
             dividend = dividend - reconstructedQuotient
         }
+
+        while (dividend >= divisor) {
+            quotient += 1UL
+            dividend -= divisor
+        }
         val denormRemainder =
             denormalize(dividend, normalizationShift)
         return Pair(removeLeadingZeroes(quotient), denormRemainder)
@@ -617,7 +622,8 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
     override fun parseForBase(number: String, base: Int) : ULongArray {
         var parsed = ZERO
         number.forEach {char ->
-             parsed = (parsed * base.toULong()) + (char.toInt() - 48).toULong()
+            val previous = (parsed * base.toULong())
+            parsed = previous + (char.toInt() - 48).toULong()
         }
         return parsed
     }
@@ -773,7 +779,13 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         return convertFrom32BitRepresentation(this)
     }
 
-    override fun fromLong(long: Long): ULongArray = ulongArrayOf(long.toULong())
+    override fun fromLong(long: Long): ULongArray {
+        if ((long.toULong() and overflowMask shr 63) == 1UL) {
+            return ulongArrayOf(baseMask) + 1U
+        }
+        return ulongArrayOf((long.toULong() and baseMask))
+
+    }
 
     override fun fromInt(int: Int): ULongArray = ulongArrayOf(int.toULong())
 

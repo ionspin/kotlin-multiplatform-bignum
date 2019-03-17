@@ -19,6 +19,9 @@ package com.ionspin.kotlin.biginteger.base32
 
 import com.ionspin.kotlin.biginteger.BigIntegerArithmetic
 import com.ionspin.kotlin.biginteger.Quadruple
+import com.ionspin.kotlin.biginteger.base63.BigInteger63Arithmetic.compareTo
+import com.ionspin.kotlin.biginteger.base63.BigInteger63Arithmetic.minus
+import com.ionspin.kotlin.biginteger.base63.BigInteger63Arithmetic.plus
 import kotlinx.coroutines.*
 
 /**
@@ -26,7 +29,6 @@ import kotlinx.coroutines.*
  * ugljesa.jovanovic@ionspin.com
  * on 09-Mar-3/9/19
  */
-@ExperimentalCoroutinesApi
 @ExperimentalUnsignedTypes
 internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     val baseMask = 0xFFFFFFFFUL
@@ -38,7 +40,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     override val ZERO = UIntArray(0)
     override val ONE = UIntArray(1) { 1U }
 
-    val useCoroutines = false
 
     /**
      * Hackers delight 5-11
@@ -461,6 +462,11 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
                 reconstructedQuotient = ((divisor * quotient[j]) shl (j * basePowerOfTwo))
             }
             dividend = dividend - reconstructedQuotient
+        }
+
+        while (dividend >= divisor) {
+            quotient += 1U
+            dividend -= divisor
         }
 
         val denormRemainder =

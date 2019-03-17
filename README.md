@@ -1,0 +1,89 @@
+# Kotlin MP BigNum library
+
+Kotlin Multiplatform BigNum library is a pure kotlin implementation of arbitrary precision
+arithmetic operations. it follows the same approach as Kotlin does on JVM to keep the interface
+familiar.
+
+## Notes
+
+This is the first version of the library, and has the base implementation of all operations. Improvements such as Karatsuba multiplication, Toom-Cook, division using multiplication by reciprocal and other are planned for future releases.
+
+## Integration
+
+#### Gradle
+```
+    implementation("com.ionspin.kotlin.bignum:core:0.0.4")
+```
+
+
+## Usage
+
+### Creating big integers
+
+To create a big integer you can parse a string:
+```
+BigInteger.parse("-1122334455667788990011223344556677889900", 10)
+```
+
+Or use the extensions function for `Long`, `Int`, `Byte` or `Short`
+```
+BigInteger.fromLong(234L)
+```
+
+### Basic arithmetic operations
+
+Addition
+```
+val a = BigInteger.fromLong(Long.MAX_VALUE)
+val b = BigInteger.fromInt(Integer.MAX_VALUE)
+
+val sum = a + b
+println("Sum: $sum")
+----- Output -----
+Sum: Sum: 9223372039002259454
+```
+
+Subtraction
+```
+val a = BigInteger.fromLong(1L)
+val b = BigInteger.fromInt(2L)
+
+val sum = a + b
+println("Sum: $sum")
+----- Output -----
+Sum: 3
+```
+
+Multiplication
+```
+val a = BigInteger.parseString("99999999999999999999999999999999", 10)
+val b = BigInteger.fromLong(Long.MIN_VALUE)
+val product = a * b
+
+println("Product: $product")
+----- Output -----
+Product: -92233720368547758066161616161616161616161616101776627963145224192
+```
+
+Division
+```
+val a = BigInteger.fromLong(1L)
+val b = BigInteger.fromInt(2L)
+
+val sum = a + b
+println("Sum: $sum")
+----- Output -----
+Sum: 3
+```
+
+Division with remainder
+```
+val a = BigInteger.fromLong(1L)
+val b = BigInteger.fromInt(2L)
+
+val sum = a + b
+println("Sum: $sum")
+----- Output -----
+Sum: 3
+```
+

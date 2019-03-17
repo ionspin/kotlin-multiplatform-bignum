@@ -15,12 +15,14 @@
  *
  */
 
-package com.ionspin.kotlin.biginteger.base32
+package com.ionspin.kotlin.biginteger.base63
 
+import com.ionspin.kotlin.biginteger.base63.BigInteger63Arithmetic.divrem
 import org.junit.Test
 import java.math.BigInteger
 import kotlin.random.Random
 import kotlin.random.nextUInt
+import kotlin.random.nextULong
 import kotlin.test.assertTrue
 
 /**
@@ -29,17 +31,18 @@ import kotlin.test.assertTrue
  * on 16-Mar-3/16/19
  */
 @ExperimentalUnsignedTypes
-class BigInteger32StringConversionTests {
+class BigInteger63StringConversionTests {
 
 
     @Test
     fun `Test parsing with sepcific values`() {
         testParsingSingleTest("1234", 10)
+        testParsingSingleTest("922337203685477580799999999999990776627963145224192", 10)
     }
 
-    fun testParsingSingleTest(uIntArrayString: String, base : Int) {
+    fun testParsingSingleTest(uIntArrayString: String, base: Int) {
         assertTrue {
-            val parsed = BigInteger32Arithmetic.parseForBase(uIntArrayString, base)
+            val parsed = BigInteger63Arithmetic.parseForBase(uIntArrayString, base)
             val javaBigIntParsed = BigInteger(uIntArrayString, base)
 
             parsed.toJavaBigInteger() == javaBigIntParsed
@@ -52,7 +55,7 @@ class BigInteger32StringConversionTests {
         val seed = 1
         val random = Random(seed)
         for (i in 1..Int.MAX_VALUE step 99) {
-            toStringSingleTest(uintArrayOf(random.nextUInt()), 10)
+            toStringSingleTest(ulongArrayOf(random.nextULong()), 10)
         }
 
     }
@@ -65,23 +68,32 @@ class BigInteger32StringConversionTests {
             if ((i % 100000) in 1..100) {
                 println(i)
             }
-            toStringSingleTest(uintArrayOf(random.nextUInt(), random.nextUInt()), random.nextInt(2,36)) //36 is the max java bigint supports
+            toStringSingleTest(
+                ulongArrayOf(random.nextULong(), random.nextULong()),
+                random.nextInt(2, 36)
+            ) //36 is the max java bigint supports
         }
 
     }
 
     @Test
     fun `Test toString with specific values`() {
-        toStringSingleTest(uintArrayOf(1234U), 10)
+        toStringSingleTest(ulongArrayOf(1234U), 10)
     }
 
-    fun toStringSingleTest(uIntArray: UIntArray, base : Int) {
+    fun toStringSingleTest(uLongArray: ULongArray, base: Int) {
         assertTrue {
-            val result = BigInteger32Arithmetic.toString(uIntArray, base)
-            val javaBigIntResult = uIntArray.toJavaBigInteger().toString(base)
+            val result = BigInteger63Arithmetic.toString(uLongArray, base)
+            val javaBigIntResult = uLongArray.toJavaBigInteger().toString(base)
 
             result == javaBigIntResult
         }
     }
+
+
+
+
+
+
 
 }

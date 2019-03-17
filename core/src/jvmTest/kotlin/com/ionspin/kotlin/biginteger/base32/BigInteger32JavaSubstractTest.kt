@@ -36,7 +36,7 @@ class BigInteger32JavaSubstractTest {
     val basePower = 32
 
     @Test
-    fun substractionTest() {
+    fun `Test subtraction with specific values`() {
         assertTrue {
             val a = uintArrayOf(10U, 20U)
             val b = uintArrayOf(15U, 5U)
@@ -56,10 +56,10 @@ class BigInteger32JavaSubstractTest {
 
 
     @Test
-    fun randomSubstractTest() {
+    fun `Test subtraction with random values`() {
         val seed = 1
         val random = Random(seed)
-        for (i in 1..Int.MAX_VALUE step 99) {
+        for (i in 1..Int.MAX_VALUE step 5001) {
             if ((i % 100000) in 1..100) {
                 println(i)
             }
@@ -69,7 +69,7 @@ class BigInteger32JavaSubstractTest {
     }
 
     @Test
-    fun randomSubstractLotsOfElementsTest() {
+    fun `Test subtraction with a large number of random values`() {
         val seed = 1
         val random = Random(seed)
         val numberOfElements = 150000
@@ -83,7 +83,7 @@ class BigInteger32JavaSubstractTest {
 
     fun substractSingleTest(vararg elements: UInt) {
         assertTrue("Failed on ${elements.contentToString()}") {
-            val time = elements.size > 100
+            val time = false
             lateinit var lastTime: LocalDateTime
             lateinit var startTime: LocalDateTime
 

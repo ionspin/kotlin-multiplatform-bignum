@@ -17,6 +17,8 @@
 
 package com.ionspin.kotlin.biginteger
 
+import com.ionspin.kotlin.biginteger.base63.BigInteger63Arithmetic.baseMask
+
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
@@ -31,6 +33,8 @@ actual object NativeBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int> {
         get() = TODO("not implemented yet")
     override val basePowerOfTwo: Int
         get() = TODO("not implemented yet")
+
+    val baseMask = 0x7FFFFFFFL
 
     override fun numberOfLeadingZeroes(value: Int): Int {
         TODO("not implemented yet")
@@ -75,7 +79,7 @@ actual object NativeBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int> {
         TODO("not implemented yet")
     }
 
-    override fun fromLong(long: Long): IntArray = intArrayOf(long.toInt())
+    override fun fromLong(long: Long): IntArray = intArrayOf((long and baseMask).toInt(), (long shr basePowerOfTwo).toInt() )
 
     override fun fromInt(int: Int): IntArray = intArrayOf(int)
 

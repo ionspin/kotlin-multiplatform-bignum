@@ -15,27 +15,24 @@
  *
  */
 
-package com.ionspin.kotlin.biginteger
+package com.ionspin.kotlin.biginteger.base32
 
-import com.ionspin.kotlin.biginteger.base32.BigInteger32Arithmetic
-import kotlin.test.Test
-import kotlin.test.assertTrue
+import org.junit.Test
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 09-Mar-3/9/19
+ * on 17-Mar-3/17/19
  */
 @ExperimentalUnsignedTypes
-class BigInteger32ArithmeticSubstractionTest {
+class BigInteger32AdditionTest {
 
     @Test
-    fun testAddition() {
-        assertTrue {
-            val a = uintArrayOf(10U, 20U)
-            val b = uintArrayOf(15U, 5U)
-            val c = BigInteger32Arithmetic.substract(a, b)
-            c[1] == 14U
-        }
+    fun `Test specific values`() {
+        val a = uintArrayOf(1U)
+        val b = uintArrayOf(2U)
+
+        val sum = BigInteger32Arithmetic.add(a, b)
+        println("Sum: $sum")
     }
 }
