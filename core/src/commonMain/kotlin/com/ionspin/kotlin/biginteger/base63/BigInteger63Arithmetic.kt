@@ -639,7 +639,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         return stringBuilder.toString().reversed()
     }
 
-    fun longArrayAnd(operand: ULongArray, mask: ULongArray): ULongArray {
+    override fun and(operand: ULongArray, mask: ULongArray): ULongArray {
         return ULongArray(operand.size) {
             if (it < mask.size) {
                 operand[it] and mask[it]
@@ -649,7 +649,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         }
     }
 
-    fun longArrayOr(operand: ULongArray, mask: ULongArray): ULongArray {
+    override fun or(operand: ULongArray, mask: ULongArray): ULongArray {
         return ULongArray(operand.size) {
             if (it < mask.size) {
                 operand[it] or mask[it]
@@ -659,7 +659,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         }
     }
 
-    fun longArrayXor(operand: ULongArray, mask: ULongArray): ULongArray {
+    override fun xor(operand: ULongArray, mask: ULongArray): ULongArray {
         return ULongArray(operand.size) {
             if (it < mask.size) {
                 operand[it] xor mask[it]
@@ -669,7 +669,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         }
     }
 
-    fun longArrayInv(operand: ULongArray): ULongArray {
+    override fun inv(operand: ULongArray): ULongArray {
         return ULongArray(operand.size) {
             operand[it].inv()
         }
@@ -678,27 +678,27 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
     // -------------- Bitwise ---------------- //
 
     private infix fun ULongArray.and(other: ULongArray): ULongArray {
-        return longArrayAnd(this, other)
+        return and(this, other)
     }
 
     private infix fun ULongArray.or(other: ULongArray): ULongArray {
-        return longArrayOr(this, other)
+        return or(this, other)
     }
 
     private infix fun ULongArray.xor(other: ULongArray): ULongArray {
-        return longArrayXor(this, other)
+        return xor(this, other)
     }
 
     private infix fun ULongArray.and(other: ULong): ULongArray {
-        return longArrayAnd(this, ulongArrayOf(other))
+        return and(this, ulongArrayOf(other))
     }
 
     private infix fun ULongArray.or(other: ULong): ULongArray {
-        return longArrayOr(this, ulongArrayOf(other))
+        return or(this, ulongArrayOf(other))
     }
 
     private infix fun ULongArray.xor(other: ULong): ULongArray {
-        return longArrayXor(this, ulongArrayOf(other))
+        return xor(this, ulongArrayOf(other))
     }
 
 

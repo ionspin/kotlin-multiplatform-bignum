@@ -94,6 +94,11 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
     fun fromShort(short : Short): BackingCollectionType
     fun fromByte(byte : Byte) : BackingCollectionType
 
+    fun or(operand: BackingCollectionType, mask: BackingCollectionType) : BackingCollectionType
+    fun xor(operand: BackingCollectionType, mask: BackingCollectionType) : BackingCollectionType
+    fun and(operand: BackingCollectionType, mask: BackingCollectionType) : BackingCollectionType
+    fun inv(operand: BackingCollectionType) : BackingCollectionType
+
 
 }
 

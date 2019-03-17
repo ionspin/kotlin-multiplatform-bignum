@@ -32,7 +32,7 @@ import kotlin.test.assertTrue
  * on 10-Mar-3/10/19
  */
 @ExperimentalUnsignedTypes
-class BigInteger63BaseConversionTest {
+class BigInteger63JavaBaseConversionTest {
 
     @Test
     fun test63To64Conversion() {

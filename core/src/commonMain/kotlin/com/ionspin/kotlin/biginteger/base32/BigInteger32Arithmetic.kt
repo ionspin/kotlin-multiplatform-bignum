@@ -505,6 +505,42 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return stringBuilder.toString().reversed()
     }
 
+    override fun and(operand: UIntArray, mask: UIntArray): UIntArray {
+        return UIntArray(operand.size) {
+            if (it < mask.size) {
+                operand[it] and mask[it]
+            } else {
+                0U
+            }
+        }
+    }
+
+    override fun or(operand: UIntArray, mask: UIntArray): UIntArray {
+        return UIntArray(operand.size) {
+            if (it < mask.size) {
+                operand[it] or mask[it]
+            } else {
+                operand[it]
+            }
+        }
+    }
+
+    override fun xor(operand: UIntArray, mask: UIntArray): UIntArray {
+        return UIntArray(operand.size) {
+            if (it < mask.size) {
+                operand[it] xor mask[it]
+            } else {
+                operand[it] xor 0U
+            }
+        }
+    }
+
+    override fun inv(operand: UIntArray): UIntArray {
+        return UIntArray(operand.size) {
+            operand[it].inv()
+        }
+    }
+
     internal infix fun UIntArray.shl(places: Int): UIntArray {
         return shiftLeft(this, places)
     }

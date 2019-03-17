@@ -50,9 +50,6 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
     companion object {
         private val arithmetic = chosenArithmetic
 
-        val positive = true
-        val negative = true
-
         val ZERO = BigInteger(arithmetic.ZERO, Sign.ZERO)
         val ONE = BigInteger(arithmetic.ONE, Sign.POSITIVE)
 
@@ -184,10 +181,10 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         } else {
             Sign.POSITIVE
         }
-        if (sign == Sign.POSITIVE) {
-            return BigInteger(arithmetic.multiply(this.magnitude, other.magnitude), sign)
+        return if (sign == Sign.POSITIVE) {
+            BigInteger(arithmetic.multiply(this.magnitude, other.magnitude), sign)
         } else {
-            return BigInteger(arithmetic.multiply(this.magnitude, other.magnitude), sign)
+            BigInteger(arithmetic.multiply(this.magnitude, other.magnitude), sign)
         }
     }
 
@@ -275,6 +272,22 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
     infix fun divrem(other: BigInteger): QuotientAndRemainder {
         val result = divideAndRemainder(other)
         return QuotientAndRemainder(result.first, result.second)
+    }
+
+    private infix fun and(other: ULongArray): ULongArray {
+        return arithmetic.and(this.magnitude, other)
+    }
+
+    private infix fun or(other: ULongArray): ULongArray {
+        return arithmetic.or(this.magnitude, other)
+    }
+
+    private infix fun xor(other: ULongArray): ULongArray {
+        return arithmetic.xor(this.magnitude, other)
+    }
+
+    fun inv() : ULongArray {
+        return arithmetic.inv(this.magnitude)
     }
 
     override fun compareTo(other: Any): Int {
