@@ -56,34 +56,57 @@ Sum: 3
 
 Multiplication
 ```
-val a = BigInteger.parseString("99999999999999999999999999999999", 10)
+val a = BigInteger.fromLong(Long.MAX_VALUE)
 val b = BigInteger.fromLong(Long.MIN_VALUE)
+
 val product = a * b
 
 println("Product: $product")
 ----- Output -----
-Product: -92233720368547758066161616161616161616161616101776627963145224192
+Product: -85070591730234615856620279821087277056
 ```
 
-Division
+Division - Quotient
 ```
-val a = BigInteger.fromLong(1L)
-val b = BigInteger.fromInt(2L)
+val a = BigInteger.fromLong(Long.MAX_VALUE)
+val b = BigInteger.fromInt(Int.MAX_VALUE)
 
-val sum = a + b
-println("Sum: $sum")
+val dividend = a + b
+val divisor = BigInteger.fromLong(Long.MAX_VALUE)
+
+val quotient = dividend / divisor
+        println("Quotient: $quotient")
 ----- Output -----
-Sum: 3
+Quotient: 1
 ```
 
-Division with remainder
+Division - Remainder
 ```
-val a = BigInteger.fromLong(1L)
-val b = BigInteger.fromInt(2L)
+val a = BigInteger.fromLong(Long.MAX_VALUE)
+val b = BigInteger.fromInt(Int.MAX_VALUE)
 
-val sum = a + b
-println("Sum: $sum")
+val dividend = a + b
+val divisor = BigInteger.fromLong(Long.MAX_VALUE)
+
+val remainder = dividend % divisor
+println("Remainder: $remainder")
 ----- Output -----
-Sum: 3
+Remainder: 2147483647
+```
+
+Division - Quotient and Remainder
+```
+val a = BigInteger.fromLong(Long.MAX_VALUE)
+val b = BigInteger.fromInt(Int.MAX_VALUE)
+
+val dividend = a + b
+val divisor = BigInteger.fromLong(Long.MAX_VALUE)
+
+val quotientAndRemainder = dividend divrem divisor
+
+println("Quotient: ${quotientAndRemainder.quotient} \nRemainder: ${quotientAndRemainder.remainder}")
+----- Output -----
+Quotient: 1 
+Remainder: 2147483647
 ```
 

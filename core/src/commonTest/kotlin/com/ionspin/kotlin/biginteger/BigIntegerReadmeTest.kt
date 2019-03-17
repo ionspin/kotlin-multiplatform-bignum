@@ -50,8 +50,8 @@ class BigIntegerReadmeTest {
 
     @Test
     fun `Test readme multiplication sample2`() {
-        val a = com.ionspin.kotlin.biginteger.BigInteger.fromLong(Long.MAX_VALUE)
-        val b = com.ionspin.kotlin.biginteger.BigInteger.fromLong(Long.MIN_VALUE)
+        val a = BigInteger.fromLong(Long.MAX_VALUE)
+        val b = BigInteger.fromLong(Long.MIN_VALUE)
 
         val product = a * b
 
