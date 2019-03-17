@@ -110,4 +110,21 @@ class BigInteger63JavaBitwiseTest {
             convertedResult == bigIntResult
         }
     }
+    @Test
+    fun `Test specific xor`(){
+        val operand = BigInteger63Arithmetic.parseForBase("11110000", 2)
+        val mask = BigInteger63Arithmetic.parseForBase("00111100", 2)
+        singleXorTest(operand, mask)
+
+//        val expectedResult = BigInteger63Arithmetic.parseForBase("11001100", 2)
+
+
+    }
+
+    fun singleXorTest(operand : ULongArray, mask : ULongArray) {
+        val result = BigInteger63Arithmetic.xor(operand, mask)
+        val bigIntResult = operand.toJavaBigInteger().xor(mask.toJavaBigInteger())
+
+        assertTrue { result.toJavaBigInteger() == bigIntResult }
+    }
 }

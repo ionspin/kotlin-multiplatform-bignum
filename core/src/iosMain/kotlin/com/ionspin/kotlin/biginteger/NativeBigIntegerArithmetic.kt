@@ -87,4 +87,20 @@ actual object NativeBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int> {
     override fun fromShort(short: Short): IntArray = intArrayOf(short.toInt())
 
     override fun fromByte(byte: Byte): IntArray = intArrayOf(byte.toInt())
+
+    override fun or(operand: IntArray, mask: IntArray): IntArray {
+        TODO("not implemented yet")
+    }
+
+    override fun xor(operand: IntArray, mask: IntArray): IntArray {
+        TODO("not implemented yet")
+    }
+
+    override fun and(operand: IntArray, mask: IntArray): IntArray {
+        TODO("not implemented yet")
+    }
+
+    override fun inv(operand: IntArray): IntArray {
+        TODO("not implemented yet")
+    }
 }

@@ -23,6 +23,8 @@ package com.ionspin.kotlin.biginteger
  * on 10-Mar-3/10/19
  */
 actual object NativeBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int> {
+
+
     override val ZERO: IntArray
         get() = TODO("not implemented yet")
     override val ONE: IntArray
@@ -89,5 +91,21 @@ actual object NativeBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int> {
     override fun fromShort(short: Short): IntArray = intArrayOf(short.toInt())
 
     override fun fromByte(byte: Byte): IntArray = intArrayOf(byte.toInt())
+
+    override fun or(operand: IntArray, mask: IntArray): IntArray {
+        TODO("not implemented yet")
+    }
+
+    override fun xor(operand: IntArray, mask: IntArray): IntArray {
+        TODO("not implemented yet")
+    }
+
+    override fun and(operand: IntArray, mask: IntArray): IntArray {
+        TODO("not implemented yet")
+    }
+
+    override fun inv(operand: IntArray): IntArray {
+        TODO("not implemented yet")
+    }
 
 }

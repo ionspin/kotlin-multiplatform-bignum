@@ -677,27 +677,27 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
 
     // -------------- Bitwise ---------------- //
 
-    private infix fun ULongArray.and(other: ULongArray): ULongArray {
+    private infix fun ULongArray.andX(other: ULongArray): ULongArray {
         return and(this, other)
     }
 
-    private infix fun ULongArray.or(other: ULongArray): ULongArray {
+    private infix fun ULongArray.orX(other: ULongArray): ULongArray {
         return or(this, other)
     }
 
-    private infix fun ULongArray.xor(other: ULongArray): ULongArray {
+    private infix fun ULongArray.xorX(other: ULongArray): ULongArray {
         return xor(this, other)
     }
 
-    private infix fun ULongArray.and(other: ULong): ULongArray {
+    private infix fun ULongArray.andX(other: ULong): ULongArray {
         return and(this, ulongArrayOf(other))
     }
 
-    private infix fun ULongArray.or(other: ULong): ULongArray {
+    private infix fun ULongArray.orX(other: ULong): ULongArray {
         return or(this, ulongArrayOf(other))
     }
 
-    private infix fun ULongArray.xor(other: ULong): ULongArray {
+    private infix fun ULongArray.xorX(other: ULong): ULongArray {
         return xor(this, ulongArrayOf(other))
     }
 
