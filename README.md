@@ -113,5 +113,23 @@ Remainder: 2147483647
 ### Bitwise operations
 
 #### Shift left
+```
+val a = BigInteger.fromByte(1)
+
+val shifted = a shl 215
+println("Shifted: $shifted")
+----- Output -----
+Shifted: 52656145834278593348959013841835216159447547700274555627155488768
+```
+
+#### Shift right
+```
+val a = BigInteger.parseString("100000000000000000000000000000000", 10)
+
+val shifted = a shr 90
+----- Output -----
+Shifted: 52656145834278593348959013841835216159447547700274555627155488768
+
+```
 
 
