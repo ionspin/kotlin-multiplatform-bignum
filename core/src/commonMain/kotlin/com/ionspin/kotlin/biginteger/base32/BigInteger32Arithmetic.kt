@@ -19,7 +19,6 @@ package com.ionspin.kotlin.biginteger.base32
 
 import com.ionspin.kotlin.biginteger.BigIntegerArithmetic
 import com.ionspin.kotlin.biginteger.Quadruple
-import com.ionspin.kotlin.biginteger.util.block
 import kotlinx.coroutines.*
 
 /**
@@ -30,7 +29,7 @@ import kotlinx.coroutines.*
 @ExperimentalCoroutinesApi
 @ExperimentalUnsignedTypes
 internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
-    val mask = 0xFFFFFFFFUL
+    val baseMask = 0xFFFFFFFFUL
     val overflowMask = 0x100000000U
     val lowerMask = 0xFFFFUL
     val base: UInt = 0xFFFFFFFFU
@@ -265,7 +264,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         var sum: ULong = 0u
         while (i < minLength) {
             sum = sum + largerData[i] + smallerData[i]
-            result[i] = (sum and mask).toUInt()
+            result[i] = (sum and baseMask).toUInt()
             sum = sum shr basePowerOfTwo
             i++
         }
@@ -288,7 +287,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             }
 
             sum = sum + largerData[i]
-            largerData[i] = (sum and mask).toUInt()
+            largerData[i] = (sum and baseMask).toUInt()
             sum = sum shr basePowerOfTwo
         }
 
@@ -354,8 +353,8 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         var sum = 0UL
         for (i in 0 until first.size) {
             product = first[i].toULong() * second
-            sum = result[i].toULong() + (product and mask).toUInt()
-            result[i] = (sum and mask).toUInt()
+            sum = result[i].toULong() + (product and baseMask).toUInt()
+            result[i] = (sum and baseMask).toUInt()
             sum = sum shr basePowerOfTwo
             result[i + 1] = (product shr basePowerOfTwo).toUInt() + sum.toUInt()
         }
@@ -365,35 +364,13 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     @Suppress("ConstantConditionIf")
     override fun multiply(first: UIntArray, second: UIntArray): UIntArray {
-        if (useCoroutines) {
-            val partialResults = second.mapIndexed { index, element ->
-                GlobalScope.async {
-                    multiply(first, element) shl (index * basePowerOfTwo)
-                }
-            }
 
-
-            var result = uintArrayOf()
-            block {
-                partialResults.awaitAll()
-                result = partialResults.fold(UIntArray(0)) { acc, deferred ->
-                    acc + (deferred.getCompleted())
-                }
-            }
-            return result
-        } else {
-            return second.foldIndexed(ZERO) { index, acc, element ->
-                acc + (multiply(
-                    first,
-                    element
-                ) shl (index * basePowerOfTwo))
-
-            }
+        return second.foldIndexed(ZERO) { index, acc, element ->
+            acc + (multiply(
+                first,
+                element
+            ) shl (index * basePowerOfTwo))
         }
-
-
-
-
     }
 
     override fun divide(first: UIntArray, second: UIntArray): Pair<UIntArray, UIntArray> {
@@ -401,7 +378,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
 
-    /**
+    /*
      * Based on Basecase DivRem algorithm from
      * Modern Computer Arithmetic, Richard Brent and Paul Zimmermann, Cambridge University Press, 2010.
      * Version 0.5.9
@@ -591,10 +568,17 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return compare(this, uintArrayOf(other))
     }
 
-    fun toUnsignedIntArrayCodeFormat(array : UIntArray) : String {
-        return array.joinToString (prefix = "uintArrayOf(", separator = ", ", postfix = ")") {
+    fun toUnsignedIntArrayCodeFormat(array: UIntArray): String {
+        return array.joinToString(prefix = "uintArrayOf(", separator = ", ", postfix = ")") {
             it.toString() + "U"
         }
     }
 
+    override fun fromLong(long: Long): UIntArray = uintArrayOf(long.toUInt())
+
+    override fun fromInt(int: Int): UIntArray = uintArrayOf(int.toUInt())
+
+    override fun fromShort(short: Short): UIntArray = uintArrayOf(short.toUInt())
+
+    override fun fromByte(byte: Byte): UIntArray = uintArrayOf(byte.toUInt())
 }

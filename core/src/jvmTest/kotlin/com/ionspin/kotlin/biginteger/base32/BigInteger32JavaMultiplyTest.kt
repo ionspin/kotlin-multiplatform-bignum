@@ -39,23 +39,7 @@ import kotlin.test.assertTrue
 class BigInteger32JavaMultiplyTest {
 
     @Test
-    fun quick() {
-        assertTrue {
-            val a = uintArrayOf(10U)
-            val b = uintArrayOf(20U)
-            val c = BigInteger32Arithmetic.multiply(a, b)
-
-            val resultBigInt = c.toJavaBigInteger()
-
-            val bigIntResult = a.toJavaBigInteger() * b.toJavaBigInteger()
-
-            resultBigInt == bigIntResult
-
-        }
-    }
-
-    @Test
-    fun testMultiply() {
+    fun `Test for sentimental value`() {
         assertTrue {
             val a = uintArrayOf(10U)
             val b = uintArrayOf(20U)
@@ -97,40 +81,24 @@ class BigInteger32JavaMultiplyTest {
 
         }
 
-        for (i in 1..Int.MAX_VALUE step 10000001) {
-            println("$i")
-            for (j in 1..Int.MAX_VALUE step 100000000) {
-                for (k in 1..Int.MAX_VALUE step 100000001) {
-                    for (l in 1..Int.MAX_VALUE step 100000000) {
-                        GlobalScope.launch {
-                            multiplySingleTest(i.toUInt(), j.toUInt(), k.toUInt(), l.toUInt())
-                        }
-                    }
-                }
-            }
-        }
-
 
     }
 
     @Test
-    fun randomMultiplyTest() {
+    fun `Test multiplying three words`() {
         val seed = 1
         val random = Random(seed)
-        for (i in 1..Int.MAX_VALUE step 99) {
-            if ((i % 100000) in 1..100) {
-                println(i)
-            }
+        for (i in 1..Int.MAX_VALUE step 5001) {
             multiplySingleTest(random.nextUInt(), random.nextUInt(), random.nextUInt())
         }
 
     }
 
     @Test
-    fun randomMultiplyLotsOfElementsTest() = runTest {
+    fun `Multiply two large words`() = runTest {
         val seed = 1
         val random = Random(seed)
-        val numberOfElements = 200
+        val numberOfElements = 15000
         println("Number of elements $numberOfElements")
 
         val first = UIntArray(numberOfElements) {
@@ -143,26 +111,23 @@ class BigInteger32JavaMultiplyTest {
         multiplySingleTestArray(first, second)
     }
 
-//    @Test
-//    fun randomMultiplyLotsOfElementsTest2() = runTest {
-//        val seed = 1
-//        val random = Random(seed)
-//        val numberOfElements = 15000
-//        println("Number of elements $numberOfElements")
-//
-//        val first = UIntArray(numberOfElements) {
-//            random.nextUInt()
-//        }
-//
-//        val second = UIntArray(numberOfElements) {
-//            random.nextUInt()
-//        }
-//        multiplySingleTest(*first)
-//    }
+    @Test
+    fun `Test multiplying a lot of words`() = runTest {
+        val seed = 1
+        val random = Random(seed)
+        val numberOfElements = 15000
+        println("Number of elements $numberOfElements")
+
+        val first = UIntArray(numberOfElements) {
+            random.nextUInt()
+        }
+
+        multiplySingleTest(*first)
+    }
 
     fun multiplySingleTest(vararg elements: UInt) {
         assertTrue("Failed on ${elements.contentToString()}") {
-            val time = elements.size > 100
+            val time = true
             lateinit var lastTime: LocalDateTime
             lateinit var startTime: LocalDateTime
 
@@ -184,7 +149,6 @@ class BigInteger32JavaMultiplyTest {
                 acc * BigInteger(uInt.toString(), 10)
             }
             if (time) {
-                println("Result ${convertedResult}")
                 lastTime = LocalDateTime.now()
                 println("Java Big Integer total time ${Duration.between(startTime, lastTime)}")
             }
@@ -196,7 +160,7 @@ class BigInteger32JavaMultiplyTest {
     fun multiplySingleTestArray(first : UIntArray, second : UIntArray) {
         assertTrue("Failed on uintArrayOf(${first.joinToString(separator = ", ")})" +
                 ", uintArrayOf(${second.joinToString(separator = ", ")})") {
-            val time = first.size > 100
+            val time = true
             lateinit var lastTime: LocalDateTime
             lateinit var startTime: LocalDateTime
             println("Creating java big integers")

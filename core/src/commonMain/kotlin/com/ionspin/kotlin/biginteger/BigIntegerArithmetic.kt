@@ -18,6 +18,8 @@
 package com.ionspin.kotlin.biginteger
 
 /**
+ * Interface defining big integer operations
+ *
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
  * on 10-Mar-3/10/19
@@ -27,19 +29,70 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
     val ONE : BackingCollectionType
     val basePowerOfTwo: Int
     /**
-     * Hackers delight 5-11
+     * Returns the number of leading zeroes in highest word
      */
     fun numberOfLeadingZeroes(value: BackingWordType): Int
+
+    /**
+     * Number of bits needed to represent this number
+     */
     fun bitLength(value: BackingCollectionType): Int
+
+    /**
+     * Arithmetic shift left. Shifts the number to the left, by required places of bits, creating new words if necessary
+     */
     fun shiftLeft(operand: BackingCollectionType, places: Int): BackingCollectionType
+    /**
+     * Arithmetic shift right. Shifts the number to the right, by required places of bits, removing words that no longer relevant
+     */
     fun shiftRight(operand: BackingCollectionType, places: Int): BackingCollectionType
+
+    /**
+     * Compares two numbers
+     *
+     * @return -1 if first is bigger, 0 if equal, +1 if second is bigger
+     */
     fun compare(first: BackingCollectionType, second: BackingCollectionType): Int
+
+    /**
+     * Adds two big integers
+     * @return result of addition
+     */
     fun add(first: BackingCollectionType, second: BackingCollectionType): BackingCollectionType
+
+    /**
+     * Substracts two big integers
+     * @return result of subtraction
+     */
     fun substract(first: BackingCollectionType, second: BackingCollectionType): BackingCollectionType
+
+    /**
+     * Multiplies two big integers
+     * @return result of multiplication
+     */
     fun multiply(first: BackingCollectionType, second: BackingCollectionType): BackingCollectionType
+
+    /**
+     * Divide two big integers
+     * @return A pair representing quotient (first member of the pair) and remainder (second member of the pair)
+     */
     fun divide(first: BackingCollectionType, second: BackingCollectionType): Pair<BackingCollectionType, BackingCollectionType>
+
+    /**
+     * Parse a string in a specific base into a big integer
+     */
     fun parseForBase(number : String, base : Int) : BackingCollectionType
+
+    /**
+     * return a string representation of big integer in a specific number base
+     */
     fun toString(operand: BackingCollectionType, base : Int) : String
+
+
+    fun fromLong(long : Long) : BackingCollectionType
+    fun fromInt(int : Int) : BackingCollectionType
+    fun fromShort(short : Short): BackingCollectionType
+    fun fromByte(byte : Byte) : BackingCollectionType
 
 
 }

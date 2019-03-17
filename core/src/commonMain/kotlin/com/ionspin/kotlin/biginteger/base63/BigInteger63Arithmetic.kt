@@ -255,6 +255,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
             }
 
             sum = sum + largerData[i]
+            largerData[i] = (sum and baseMask)
             sum = sum shr 63
         }
     }
@@ -373,7 +374,9 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
 
 
     }
-
+    /*
+    Useful when we want to do a ULong * ULong -> ULongArray, currently not used anywhere, and untested
+     */
     fun multiply(first: ULong, second: ULong): ULongArray {
         //Split the operands
         val firstLow = first and lowMask
@@ -769,6 +772,14 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
     internal fun UIntArray.from32Bit(): ULongArray {
         return convertFrom32BitRepresentation(this)
     }
+
+    override fun fromLong(long: Long): ULongArray = ulongArrayOf(long.toULong())
+
+    override fun fromInt(int: Int): ULongArray = ulongArrayOf(int.toULong())
+
+    override fun fromShort(short: Short): ULongArray = ulongArrayOf(short.toULong())
+
+    override fun fromByte(byte: Byte): ULongArray = ulongArrayOf(byte.toULong())
 
 
 }

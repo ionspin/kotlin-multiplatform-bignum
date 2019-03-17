@@ -75,4 +75,12 @@ actual object NativeBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int> {
         TODO("not implemented yet")
     }
 
+    override fun fromLong(long: Long): IntArray = intArrayOf(long.toInt())
+
+    override fun fromInt(int: Int): IntArray = intArrayOf(int)
+
+    override fun fromShort(short: Short): IntArray = intArrayOf(short.toInt())
+
+    override fun fromByte(byte: Byte): IntArray = intArrayOf(byte.toInt())
+
 }

@@ -22,3 +22,24 @@ package com.ionspin.kotlin.biginteger
  * ugljesa.jovanovic@ionspin.com
  * on 10-Mar-3/10/19
  */
+
+@ExperimentalUnsignedTypes
+class ConversionExtensions {
+    fun Long.toBigInteger() : BigInteger {
+        return BigInteger.fromLong(this)
+    }
+
+    fun Int.toBigInteger() : BigInteger {
+        return BigInteger.fromInt(this)
+    }
+
+    fun Short.toBigInteger() : BigInteger {
+        return BigInteger.fromShort(this)
+    }
+
+    fun Byte.toBigInteger() : BigInteger {
+        return BigInteger.fromByte(this)
+    }
+}
+
+

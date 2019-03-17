@@ -50,6 +50,11 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Boolean) : 
             }
 
         }
+
+        fun fromLong(long : Long) = BigInteger(arithmetic.fromLong(long), long > 0)
+        fun fromInt(int : Int) = BigInteger(arithmetic.fromInt(int), int > 0)
+        fun fromShort(short : Short) = BigInteger(arithmetic.fromShort(short), short > 0)
+        fun fromByte(byte : Byte) = BigInteger(arithmetic.fromByte(byte), byte > 0)
     }
 
     private val magnitude: WordArray = wordArray
