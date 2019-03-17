@@ -146,17 +146,8 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         if (operand.isEmpty() || places == 0) {
             return operand
         }
-        var transfer: UInt = 0U
-
-        val leadingZeroes =
-            numberOfLeadingZeroes(operand[operand.size - 1])
-        val shiftWords = places / basePowerOfTwo
         val shiftBits = (places % basePowerOfTwo)
-        val wordsToDiscard = if (shiftBits >= (basePowerOfTwo - leadingZeroes)) {
-            shiftWords + 1
-        } else {
-            shiftWords
-        }
+        val wordsToDiscard = places / basePowerOfTwo
         if (wordsToDiscard >= operand.size) {
             return ZERO
         }
@@ -166,7 +157,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
 
         if (operand.size > 1 && operand.size - wordsToDiscard == 1) {
-            return uintArrayOf((operand[operand.size - 1] shl (basePowerOfTwo - shiftBits)))
+            return uintArrayOf(operand[operand.size - 1] shr shiftBits)
         }
 
         val result = UIntArray(operand.size - wordsToDiscard) {

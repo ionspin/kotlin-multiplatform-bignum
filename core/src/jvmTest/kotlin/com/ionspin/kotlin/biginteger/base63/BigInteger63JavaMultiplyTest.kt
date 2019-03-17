@@ -17,6 +17,7 @@
 
 package com.ionspin.kotlin.biginteger.base63
 
+import com.ionspin.kotlin.biginteger.util.runTest
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.Test
@@ -36,7 +37,7 @@ import kotlin.test.assertTrue
 @ExperimentalUnsignedTypes
 class BigInteger63JavaMultiplyTest {
     @Test
-    fun testMultiply() {
+    fun `Test for sentimental value`() {
         assertTrue {
             val a = ulongArrayOf(10U)
             val b = ulongArrayOf(20U)
@@ -78,55 +79,59 @@ class BigInteger63JavaMultiplyTest {
 
         }
 
-        for (i in 1..Int.MAX_VALUE step 10000001) {
-            println("$i")
-            for (j in 1..Int.MAX_VALUE step 100000000) {
-                for (k in 1..Int.MAX_VALUE step 100000001) {
-                    for (l in 1..Int.MAX_VALUE step 100000000) {
-                        GlobalScope.launch {
-                            multiplySingleTest(i.toULong(), j.toULong(), k.toULong(), l.toULong())
-                        }
-                    }
-                }
-            }
-        }
-
 
     }
 
     @Test
-    fun randomMultiplyTest() {
+    fun `Test multiplying three words`() {
         val seed = 1
         val random = Random(seed)
-        for (i in 1..Int.MAX_VALUE step 99) {
-            if ((i % 100000) in 1..100) {
-                println(i)
-            }
-            multiplySingleTest(random.nextULong(), random.nextULong(), random.nextULong())
+        for (i in 1..Int.MAX_VALUE step 5001) {
+            multiplySingleTest(random.nextULong() shr 1, random.nextULong() shr 1, random.nextULong() shr 1)
         }
 
     }
 
     @Test
-    fun randomMultiplyLotsOfElementsTest() {
+    fun `Multiply two large words`() = runTest {
         val seed = 1
         val random = Random(seed)
-        val numberOfElements = 150000
+        val numberOfElements = 15000
         println("Number of elements $numberOfElements")
 
-        val lotOfElements = ULongArray(numberOfElements) {
-            random.nextULong()
+        val first = ULongArray(numberOfElements) {
+            random.nextULong() shr 1
         }
-        multiplySingleTest(*lotOfElements)
+
+        val second = ULongArray(numberOfElements) {
+            random.nextULong() shr 1
+        }
+        multiplySingleTest(first, second)
+    }
+
+    @Test
+    fun `Test multiplying a lot of words`() = runTest {
+        val seed = 1
+        val random = Random(seed)
+        val numberOfElements = 15000
+        println("Number of elements $numberOfElements")
+
+        val first = ULongArray(numberOfElements) {
+            random.nextULong() shr 1
+        }
+
+        multiplySingleTest(*first)
     }
 
     @Test
     fun preciseMultiplyTest() {
         multiplySingleTest(ulongArrayOf(3751237528UL, 9223372035661198284UL, 7440555637UL, 0UL, 2UL, 0UL, 2UL), ulongArrayOf(1UL, 1UL))
+//        multiplySingleTest(1193170172382743678UL, 17005332033106823254UL, 15532449225048523230UL) Invalid sample, 64 bit number!
     }
 
     fun multiplySingleTest(first : ULongArray, second : ULongArray) {
-        assertTrue("Failed on ${first.contentToString()} ${second.contentToString()}") {
+        assertTrue("Failed on ulongArrayOf(${first.joinToString(separator = ", ") { it.toString() + "UL" }})," +
+                " ulongArrayOf(${second.joinToString(separator = ", ") { it.toString() + "UL" }})") {
 
             val result = BigInteger63Arithmetic.multiply(first, second)
 
@@ -138,7 +143,8 @@ class BigInteger63JavaMultiplyTest {
     }
 
     fun multiplySingleTest(vararg elements: ULong) {
-        assertTrue("Failed on ${elements.contentToString()}") {
+        val elementsArray = elements
+        assertTrue("Failed on (${elementsArray.joinToString(separator = ", ") { it.toString() + "UL" }})") {
             val time = elements.size > 100
             lateinit var lastTime: LocalDateTime
             lateinit var startTime: LocalDateTime

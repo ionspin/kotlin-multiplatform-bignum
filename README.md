@@ -32,7 +32,7 @@ BigInteger.fromLong(234L)
 
 ### Basic arithmetic operations
 
-Addition
+#### Addition
 ```
 val a = BigInteger.fromLong(Long.MAX_VALUE)
 val b = BigInteger.fromInt(Integer.MAX_VALUE)
@@ -43,7 +43,7 @@ println("Sum: $sum")
 Sum: Sum: 9223372039002259454
 ```
 
-Subtraction
+#### Subtraction
 ```
 val a = BigInteger.fromLong(1L)
 val b = BigInteger.fromInt(2L)
@@ -54,7 +54,7 @@ println("Sum: $sum")
 Sum: 3
 ```
 
-Multiplication
+#### Multiplication
 ```
 val a = BigInteger.fromLong(Long.MAX_VALUE)
 val b = BigInteger.fromLong(Long.MIN_VALUE)
@@ -66,7 +66,7 @@ println("Product: $product")
 Product: -85070591730234615856620279821087277056
 ```
 
-Division - Quotient
+#### Division - Quotient
 ```
 val a = BigInteger.fromLong(Long.MAX_VALUE)
 val b = BigInteger.fromInt(Int.MAX_VALUE)
@@ -80,7 +80,7 @@ val quotient = dividend / divisor
 Quotient: 1
 ```
 
-Division - Remainder
+#### Division - Remainder
 ```
 val a = BigInteger.fromLong(Long.MAX_VALUE)
 val b = BigInteger.fromInt(Int.MAX_VALUE)
@@ -94,7 +94,7 @@ println("Remainder: $remainder")
 Remainder: 2147483647
 ```
 
-Division - Quotient and Remainder
+#### Division - Quotient and Remainder
 ```
 val a = BigInteger.fromLong(Long.MAX_VALUE)
 val b = BigInteger.fromInt(Int.MAX_VALUE)
@@ -109,4 +109,9 @@ println("Quotient: ${quotientAndRemainder.quotient} \nRemainder: ${quotientAndRe
 Quotient: 1 
 Remainder: 2147483647
 ```
+
+### Bitwise operations
+
+#### Shift left
+
 

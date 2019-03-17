@@ -20,6 +20,8 @@ package com.ionspin.kotlin.biginteger.base63
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.junit.Test
+import kotlin.random.Random
+import kotlin.random.nextULong
 import kotlin.test.assertTrue
 
 /**
@@ -30,35 +32,38 @@ import kotlin.test.assertTrue
 @ExperimentalUnsignedTypes
 class BigInteger63JavaBitwiseTest {
 
-    @Test
-    fun shiftLeftTest() {
-        for (i in 1 .. Int.MAX_VALUE step 10000001) {
-            println("$i")
-            for (j in 1 .. Int.MAX_VALUE step 100000000) {
-                for (k in 1 .. Int.MAX_VALUE step 100000001) {
-                    for (l in 1 .. Int.MAX_VALUE step 100000000) {
-                        GlobalScope.launch {
-                            shiftLeftSingleTest(i, j.toULong(),k.toULong(),l.toULong())
-                        }
 
-                    }
-                }
-            }
+    @Test
+    fun `Random shift left test`() {
+        val seed = 1
+        val random = Random(seed)
+        for (i in 1..Int.MAX_VALUE step 3001) {
+            var a = ulongArrayOf(random.nextULong() shr 1, random.nextULong() shr 1)
+            a = BigInteger63Arithmetic.multiply(a, a)
+
+            shiftLeftSingleTest(random.nextInt(BigInteger63Arithmetic.bitLength(a)), a)
+
+
         }
-        shiftLeftSingleTest(32, 1U)
-        shiftLeftSingleTest(32, 2U)
-        shiftLeftSingleTest(32, 0UL - 1UL)
-        shiftLeftSingleTest(35, 0UL - 1UL)
-        shiftLeftSingleTest(35, 0UL - 1UL, 0UL, 1UL)
-        shiftLeftSingleTest(64, 0UL - 1UL)
-        shiftLeftSingleTest(75, 0UL - 1UL)
-        shiftLeftSingleTest(5, 0UL - 1UL)
-        shiftLeftSingleTest(237, 0UL - 1UL)
     }
 
-    fun shiftLeftSingleTest(places : Int, vararg ulongs : ULong) {
-        assertTrue ("Failed for $places and elements ${ulongs.contentToString()}") {
-            val a = ulongArrayOf(*ulongs)
+    @Test
+    fun `Test specific combinations for left shift`() {
+        shiftLeftSingleTest(32, ulongArrayOf(1U))
+        shiftLeftSingleTest(32, ulongArrayOf(2U))
+        shiftLeftSingleTest(32, ulongArrayOf(0UL - 1UL))
+        shiftLeftSingleTest(35, ulongArrayOf(0UL - 1UL))
+        shiftLeftSingleTest(35, ulongArrayOf(0UL - 1UL, 0UL, 1UL))
+        shiftLeftSingleTest(64, ulongArrayOf(0UL - 1UL))
+        shiftLeftSingleTest(75, ulongArrayOf(0UL - 1UL))
+        shiftLeftSingleTest(5, ulongArrayOf(0UL - 1UL))
+        shiftLeftSingleTest(237, ulongArrayOf(0UL - 1UL))
+
+    }
+
+    fun shiftLeftSingleTest(places : Int, ulongs : ULongArray) {
+        assertTrue ("Failed for $places and elements ulongArrayOf(${ulongs.joinToString(separator = ", ") { it.toString() + "UL" }})") {
+            val a = ulongs
             val result = BigInteger63Arithmetic.shiftLeft(a, places)
             val convertedResult = result.toJavaBigInteger()
             val bigIntResult = a.toJavaBigInteger() shl places
@@ -67,37 +72,40 @@ class BigInteger63JavaBitwiseTest {
     }
 
     @Test
-    fun shiftRightSingleTest() {
-        for (i in 1 .. Int.MAX_VALUE step 10000001) {
-            println("$i")
-            for (j in 1 .. Int.MAX_VALUE step 100000000) {
-                for (k in 1 .. Int.MAX_VALUE step 100000001) {
-                    for (l in 1 .. Int.MAX_VALUE step 100000000) {
-                        GlobalScope.launch {
-                            shiftLeftSingleTest(i, j.toULong(),k.toULong(),l.toULong())
-                        }
+    fun `Random shift right test`() {
+        val seed = 1
+        val random = Random(seed)
+        for (i in 1..Int.MAX_VALUE step 3001) {
+            var a = ulongArrayOf(random.nextULong() shr 1, random.nextULong() shr 1)
+            a = BigInteger63Arithmetic.multiply(a, a)
 
-                    }
-                }
-            }
+            shiftRightSingleTest(random.nextInt(BigInteger63Arithmetic.bitLength(a)), a)
+
+
         }
-
-        shiftRightSingleTest(32, 1UL)
-        shiftRightSingleTest(32, 2UL)
-        shiftRightSingleTest(32, 0UL - 1UL)
-        shiftRightSingleTest(35, 0UL - 1UL)
-        shiftRightSingleTest(64, 0UL - 1UL)
-        shiftRightSingleTest(75, 0UL - 1UL)
-        shiftRightSingleTest(5, 0UL - 1UL)
-        shiftRightSingleTest(237, 0UL - 1UL)
     }
 
-    fun shiftRightSingleTest(places : Int, vararg ulongs : ULong) {
-        assertTrue ("Failed for $places and elements ${ulongs.contentToString()}") {
-            val a = ulongArrayOf(*ulongs)
+    @Test
+    fun `Test specific combinations for right shift`() {
+        shiftRightSingleTest(32, ulongArrayOf(1UL))
+        shiftRightSingleTest(32, ulongArrayOf(2UL))
+        shiftRightSingleTest(32, ulongArrayOf(0UL - 1UL))
+        shiftRightSingleTest(35, ulongArrayOf(0UL - 1UL))
+        shiftRightSingleTest(64, ulongArrayOf(0UL - 1UL))
+        shiftRightSingleTest(5, ulongArrayOf(0UL - 1UL))
+        shiftRightSingleTest(237, ulongArrayOf(0UL - 1UL))
+        shiftRightSingleTest(126, ulongArrayOf(5724129373318154496UL, 4479429175062385556UL, 7319678748417918140UL, 201305160793401908UL))
+        shiftRightSingleTest(122, ulongArrayOf(5724129373318154496UL, 4479429175062385556UL, 7319678748417918140UL, 201305160793401908UL))
+        shiftRightSingleTest(90, BigInteger63Arithmetic.parseForBase("100000000000000000000000000000000", 10))
+    }
+
+    fun shiftRightSingleTest(places : Int, ulongs : ULongArray) {
+        assertTrue ("Failed for $places and elements ulongArrayOf(${ulongs.joinToString(separator = ", ") { it.toString() + "UL" }})") {
+            val a = ulongs
+            val aBigInt = a.toJavaBigInteger()
             val result = BigInteger63Arithmetic.shiftRight(a, places)
             val convertedResult = result.toJavaBigInteger()
-            val bigIntResult = a.toJavaBigInteger() shr places
+            val bigIntResult = aBigInt shr places
             convertedResult == bigIntResult
         }
     }

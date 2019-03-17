@@ -243,11 +243,11 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
     fun isZero(): Boolean = this.sign == Sign.ZERO
 
 
-    infix fun BigInteger.shl(places: Int): BigInteger {
+    infix fun shl(places: Int): BigInteger {
         return BigInteger(arithmetic.shiftLeft(this.magnitude, places), sign)
     }
 
-    infix fun BigInteger.shr(places: Int): BigInteger {
+    infix fun shr(places: Int): BigInteger {
         return BigInteger(arithmetic.shiftRight(this.magnitude, places), sign)
     }
 

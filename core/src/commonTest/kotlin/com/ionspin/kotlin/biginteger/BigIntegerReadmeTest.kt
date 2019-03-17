@@ -102,4 +102,20 @@ class BigIntegerReadmeTest {
         assertTrue { quotientAndRemainder.remainder == BigInteger.fromInt(Int.MAX_VALUE) }
     }
 
+    @Test
+    fun `Test readme shift left sample`() {
+        val a = BigInteger.fromByte(1)
+
+        val shifted = a shl 215
+        println("Shifted: $shifted")
+    }
+
+    @Test
+    fun `Test readme shift right sample`() {
+        val a = BigInteger.parseString("100000000000000000000000000000000", 10)
+
+        val shifted = a shr 90
+        println("Shifted: $shifted")
+    }
+
 }
