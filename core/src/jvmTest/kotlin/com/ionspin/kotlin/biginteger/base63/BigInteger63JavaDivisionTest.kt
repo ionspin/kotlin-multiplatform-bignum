@@ -157,10 +157,6 @@ class BigInteger63JavaDivisionTest {
             val b = divisor
             try {
                 val c = BigInteger63Arithmetic.divide(a, b)
-                val d = BigInteger32Arithmetic.divide(
-                    BigInteger63Arithmetic.convertTo32BitRepresentation(a),
-                    BigInteger63Arithmetic.convertTo32BitRepresentation(b)
-                    )
 
                 val bi64quotient = c.first.toJavaBigInteger()
                 val bi64remainder = c.second.toJavaBigInteger()

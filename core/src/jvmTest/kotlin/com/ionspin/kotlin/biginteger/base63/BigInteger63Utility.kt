@@ -24,6 +24,7 @@ import java.math.BigInteger
  * ugljesa.jovanovic@ionspin.com
  * on 09-Mar-3/9/19
  */
+@UseExperimental(ExperimentalUnsignedTypes::class)
 fun ULongArray.toJavaBigInteger(): BigInteger {
     return this.foldIndexed(BigInteger.valueOf(0)) { index, acc, digit ->
         acc.or(BigInteger(digit.toString(), 10).shiftLeft((index) * 63))
@@ -31,6 +32,7 @@ fun ULongArray.toJavaBigInteger(): BigInteger {
     }
 }
 
+@UseExperimental(ExperimentalUnsignedTypes::class)
 fun com.ionspin.kotlin.biginteger.BigInteger.toJavaBigInteger() : BigInteger {
     return (this.magnitude.toJavaBigInteger() * this.sign.toInt().toBigInteger())
 }

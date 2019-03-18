@@ -291,7 +291,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         } else {
             Quadruple(second.size, first.size, second, first)
         }
-        val result = UIntArray(largerLength + 1) { index -> 0u }
+        val result = UIntArray(largerLength + 1) { 0u }
         var i = 0
         var diff: ULong = 0u
         while (i < smallerLength) {

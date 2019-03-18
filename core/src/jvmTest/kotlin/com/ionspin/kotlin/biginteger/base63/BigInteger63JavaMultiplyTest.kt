@@ -154,7 +154,7 @@ class BigInteger63JavaMultiplyTest {
                 startTime = lastTime
             }
 
-            val result = elements.foldIndexed(ULongArray(1) { 1U }) { index, acc, uLong ->
+            val result = elements.fold(ULongArray(1) { 1U }) { acc, uLong ->
                 BigInteger63Arithmetic.multiply(acc, uLong)
             }
             if (time) {
@@ -163,7 +163,7 @@ class BigInteger63JavaMultiplyTest {
                 startTime = lastTime
             }
             val convertedResult = result.toJavaBigInteger()
-            val bigIntResult = elements.foldIndexed(BigInteger.ONE) { index, acc, uInt ->
+            val bigIntResult = elements.fold(BigInteger.ONE) { acc, uInt ->
                 acc * BigInteger(uInt.toString(), 10)
             }
             if (time) {

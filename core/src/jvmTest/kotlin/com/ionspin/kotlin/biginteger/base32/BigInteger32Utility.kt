@@ -24,6 +24,7 @@ import java.math.BigInteger
  * ugljesa.jovanovic@ionspin.com
  * on 09-Mar-3/9/19
  */
+@UseExperimental(ExperimentalUnsignedTypes::class)
 fun UIntArray.toJavaBigInteger(): BigInteger {
     return this.foldIndexed(BigInteger.valueOf(0)) { index, acc, digit ->
         acc.or(BigInteger(digit.toString(), 10).shiftLeft((index) * 32))

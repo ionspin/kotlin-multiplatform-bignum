@@ -103,11 +103,11 @@ class BigInteger32JavaSubstractTest {
             }
 
             val first =
-                elements.copyOfRange(0, elements.size / 2).foldIndexed(UIntArray(1) { 1U }) { index, acc, uInt ->
+                elements.copyOfRange(0, elements.size / 2).fold(UIntArray(1) { 1U }) { acc, uInt ->
                     BigInteger32Arithmetic.multiply(acc, uInt)
                 }
             val second = elements.copyOfRange(elements.size / 2, elements.size - 1)
-                .foldIndexed(UIntArray(1) { 1U }) { index, acc, uInt ->
+                .fold(UIntArray(1) { 1U }) { acc, uInt ->
                     BigInteger32Arithmetic.multiply(acc, uInt)
                 }
             val result = BigInteger32Arithmetic.substract(first, second)
@@ -120,11 +120,11 @@ class BigInteger32JavaSubstractTest {
 
             val convertedResult = result.toJavaBigInteger()
             val bigIntFirst =
-                elements.copyOfRange(0, elements.size / 2).foldIndexed(BigInteger.ONE) { index, acc, uInt ->
+                elements.copyOfRange(0, elements.size / 2).fold(BigInteger.ONE) { acc, uInt ->
                     acc * BigInteger(uInt.toString(), 10)
                 }
             val bigIntSecond = elements.copyOfRange(elements.size / 2, elements.size - 1)
-                .foldIndexed(BigInteger.ONE) { index, acc, uInt ->
+                .fold(BigInteger.ONE) { acc, uInt ->
                     acc * BigInteger(uInt.toString(), 10)
                 }
             val bigIntResult = bigIntFirst - bigIntSecond
