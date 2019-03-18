@@ -219,7 +219,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         } else {
             Quadruple(second.size, first.size, second, first)
         }
-        val result = ULongArray(maxLength + 1) { index -> 0u }
+        val result = ULongArray(maxLength + 1) { 0u }
         var i = 0
         var sum: ULong = 0u
         while (i < minLength) {
@@ -275,7 +275,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         } else {
             Quadruple(secondPrepared.size, firstPrepared.size, secondPrepared, firstPrepared)
         }
-        val result = ULongArray(largerLength + 1) { index -> 0u }
+        val result = ULongArray(largerLength + 1) { 0u }
         var i = 0
         var diff: ULong = 0u
         while (i < smallerLength) {
@@ -401,7 +401,6 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
     }
 
     fun normalize(dividend: ULongArray, divisor: ULongArray): Triple<ULongArray, ULongArray, Int> {
-        val dividendSize = dividend.size
         val divisorSize = divisor.size
         val normalizationShift = numberOfLeadingZeroes(divisor[divisorSize - 1])
         val divisorNormalized = divisor.shl(normalizationShift)
@@ -572,7 +571,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         }
 
         val result = ULongArray(requiredLength)
-        var skipWordCount = 0
+        var skipWordCount: Int
         for (i in 0 until requiredLength) {
             skipWordCount = i / 32
             val shiftAmount = i % 32
@@ -617,9 +616,8 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
 
     override fun parseForBase(number: String, base: Int): ULongArray {
         var parsed = ZERO
-        number.toLowerCase().forEachIndexed { index, char ->
-            val previous = (parsed * base.toULong())
-            parsed = previous + (char.toDigit()).toULong()
+        number.toLowerCase().forEach { char ->
+            parsed = (parsed * base.toULong()) + (char.toDigit()).toULong()
         }
         return removeLeadingZeroes(parsed)
     }

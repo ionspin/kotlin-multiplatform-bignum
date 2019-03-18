@@ -26,6 +26,7 @@ import kotlin.test.assertTrue
  * ugljesa.jovanovic@ionspin.com
  * on 16-Mar-3/16/19
  */
+@ExperimentalUnsignedTypes
 class ParsingAndToStringTest {
     val seed = 1
     val random = Random(1)

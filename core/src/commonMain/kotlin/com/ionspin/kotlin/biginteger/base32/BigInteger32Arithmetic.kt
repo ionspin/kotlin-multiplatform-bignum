@@ -19,10 +19,7 @@ package com.ionspin.kotlin.biginteger.base32
 
 import com.ionspin.kotlin.biginteger.BigIntegerArithmetic
 import com.ionspin.kotlin.biginteger.Quadruple
-import com.ionspin.kotlin.biginteger.base63.BigInteger63Arithmetic.compareTo
-import com.ionspin.kotlin.biginteger.base63.BigInteger63Arithmetic.minus
-import com.ionspin.kotlin.biginteger.base63.BigInteger63Arithmetic.plus
-import kotlinx.coroutines.*
+import com.ionspin.kotlin.biginteger.util.toDigit
 
 /**
  * Created by Ugljesa Jovanovic
@@ -251,7 +248,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
 
 
-        val result = UIntArray(maxLength + 1) { index -> 0u }
+        val result = UIntArray(maxLength + 1) { 0u }
         var i = 0
         var sum: ULong = 0u
         while (i < minLength) {
@@ -342,8 +339,8 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
         val result = UIntArray(first.size + 1)
 
-        var product = 0UL
-        var sum = 0UL
+        var product: ULong
+        var sum: ULong
         for (i in 0 until first.size) {
             product = first[i].toULong() * second
             sum = result[i].toULong() + (product and baseMask).toUInt()
@@ -415,7 +412,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         val wordPrecision = dividendSize - divisorSize
 
 
-        var qjhat = 0UL
+        var qjhat: ULong
         var reconstructedQuotient: UIntArray
         var quotient = UIntArray(wordPrecision)
 
@@ -466,9 +463,9 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return Pair(removeLeadingZeroes(quotient), denormRemainder)
     }
 
-    fun baseReciprocal(unnomrmalizedOperand: UIntArray, precision: Int): UIntArray {
-        val (operand, normalizationShift) = normalize(
-            unnomrmalizedOperand
+    fun baseReciprocal(unnormalized: UIntArray, precision: Int): UIntArray {
+        val (operand, _) = normalize(
+            unnormalized
         )
         val operandSize = operand.size
         if (operandSize <= 2) {
@@ -483,7 +480,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     override fun parseForBase(number: String, base: Int): UIntArray {
         var parsed = ZERO
         number.forEach { char ->
-            parsed = (parsed * base.toUInt()) + (char.toInt() - 48).toUInt()
+            parsed = (parsed * base.toUInt()) + char.toDigit().toUInt()
         }
         return parsed
     }

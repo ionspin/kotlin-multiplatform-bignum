@@ -25,5 +25,7 @@ import com.ionspin.kotlin.biginteger.base63.BigInteger63Arithmetic
  * ugljesa.jovanovic@ionspin.com
  * on 10-Mar-3/10/19
  */
+@ExperimentalUnsignedTypes
 typealias WordArray = ULongArray
+@ExperimentalUnsignedTypes
 internal val chosenArithmetic = BigInteger63Arithmetic
