@@ -1,4 +1,5 @@
-# Kotlin MP BigNum library
+[![Build Status](https://travis-ci.com/ionspin/kotlin-multiplatform-bignum.svg?token=HyeUGwxzSsjXNj8mianH&branch=master)](https://travis-ci.com/ionspin/kotlin-multiplatform-bignum)
+# Kotlin MP BigNum library 
 
 Kotlin Multiplatform BigNum library is a pure kotlin implementation of arbitrary precision
 arithmetic operations. it follows the same approach as Kotlin does on JVM to keep the interface
