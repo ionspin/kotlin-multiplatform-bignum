@@ -35,7 +35,7 @@ version = "0.0.3"
 
 kotlin {
     jvm()
-    js() {
+    js {
         compilations {
             this.forEach {
                 it.compileKotlinTask.kotlinOptions.sourceMap = true
