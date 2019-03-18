@@ -58,10 +58,10 @@ Sum: Sum: 9223372039002259454
 val a = BigInteger.fromLong(1L)
 val b = BigInteger.fromInt(2L)
 
-val sum = a + b
-println("Sum: $sum")
+val difference = a - b
+println("Difference: $difference")
 ----- Output -----
-Sum: 3
+Difference: 3
 ```
 
 #### Multiplication
@@ -142,7 +142,7 @@ Shifted: 52656145834278593348959013841835216159447547700274555627155488768
 
 ```
 
-#### XOR
+#### Xor
 ```
 val operand = BigInteger.parseString("11110000", 2)
 val mask = BigInteger.parseString("00111100", 2)
@@ -179,8 +179,9 @@ Or result: ffffffffffff0000000000
 
 Unlike Java BigInteger which does two's complement inversion, this method does bitwise inversion, 
 
-I.e.: If the number was "1100" binary, invPrecise returns "0011" => "11" => 4 decimal 
-Where Java BigInteger would return "1011" => -13 two's complement decimal
+I.e.: If the number was "1100" binary, invPrecise returns "0011" => "11" => 4 in base 10 
+
+In the same case Java BigInteger would return "1011" => -13 two's complement base 10
 ```
 val operand = BigInteger.parseString("11110000", 2)
 val invResult = operand.invPrecise()
