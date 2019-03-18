@@ -4,9 +4,17 @@ Kotlin Multiplatform BigNum library is a pure kotlin implementation of arbitrary
 arithmetic operations. it follows the same approach as Kotlin does on JVM to keep the interface
 familiar.
 
-## Notes
+## Notes & Roadmap
 
-This is the first version of the library, and has the base implementation of all operations. Improvements such as Karatsuba multiplication, Toom-Cook, division using multiplication by reciprocal and other are planned for future releases.
+This is the first version of the library, and has the base implementation of **integer** operations. Floating point arithmetic,
+and modular arithmetic are planned for future releases, as well as improvements such as Karatsuba multiplication, 
+Toom-Cook, division using multiplication by reciprocal and other.
+
+Also there is a plan to implement native
+
+## Should I use this in production
+
+No. Even though the tests pass, and it seems to be working fine, the library is not mature enough to be used for anything even remotely critical. Also Kotlin Multiplatform is still experimental, so there's that.
 
 ## Integration
 
