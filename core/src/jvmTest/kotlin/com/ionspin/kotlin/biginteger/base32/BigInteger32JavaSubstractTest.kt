@@ -17,6 +17,10 @@
 
 package com.ionspin.kotlin.biginteger.base32
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import java.math.BigInteger
 import java.time.Duration
@@ -59,11 +63,17 @@ class BigInteger32JavaSubstractTest {
     fun `Test subtraction with random values`() {
         val seed = 1
         val random = Random(seed)
+        val jobList: MutableList<Job> = mutableListOf()
+
         for (i in 1..Int.MAX_VALUE step 5001) {
-            if ((i % 100000) in 1..100) {
-                println(i)
-            }
-            substractSingleTest(random.nextUInt(), random.nextUInt(), random.nextUInt())
+            jobList.add(
+                GlobalScope.launch {
+                    substractSingleTest(random.nextUInt(), random.nextUInt(), random.nextUInt())
+                }
+            )
+        }
+        runBlocking {
+            jobList.forEach { it.join() }
         }
 
     }
@@ -72,7 +82,7 @@ class BigInteger32JavaSubstractTest {
     fun `Test subtraction with a large number of random values`() {
         val seed = 1
         val random = Random(seed)
-        val numberOfElements = 150000
+        val numberOfElements = 15000
         println("Number of elements $numberOfElements")
 
         val lotOfElements = UIntArray(numberOfElements) {
@@ -92,12 +102,14 @@ class BigInteger32JavaSubstractTest {
                 startTime = lastTime
             }
 
-            val first = elements.copyOfRange(0, elements.size / 2).foldIndexed(UIntArray(1) { 1U }) { index, acc, uInt ->
-                BigInteger32Arithmetic.multiply(acc, uInt)
-            }
-            val second = elements.copyOfRange(elements.size / 2, elements.size - 1).foldIndexed(UIntArray(1) { 1U }) { index, acc, uInt ->
-                BigInteger32Arithmetic.multiply(acc, uInt)
-            }
+            val first =
+                elements.copyOfRange(0, elements.size / 2).foldIndexed(UIntArray(1) { 1U }) { index, acc, uInt ->
+                    BigInteger32Arithmetic.multiply(acc, uInt)
+                }
+            val second = elements.copyOfRange(elements.size / 2, elements.size - 1)
+                .foldIndexed(UIntArray(1) { 1U }) { index, acc, uInt ->
+                    BigInteger32Arithmetic.multiply(acc, uInt)
+                }
             val result = BigInteger32Arithmetic.substract(first, second)
 
             if (time) {
@@ -107,12 +119,14 @@ class BigInteger32JavaSubstractTest {
             }
 
             val convertedResult = result.toJavaBigInteger()
-            val bigIntFirst = elements.copyOfRange(0, elements.size / 2).foldIndexed(BigInteger.ONE) { index, acc, uInt ->
-                acc * BigInteger(uInt.toString(), 10)
-            }
-            val bigIntSecond = elements.copyOfRange(elements.size / 2, elements.size - 1).foldIndexed(BigInteger.ONE) { index, acc, uInt ->
-                acc * BigInteger(uInt.toString(), 10)
-            }
+            val bigIntFirst =
+                elements.copyOfRange(0, elements.size / 2).foldIndexed(BigInteger.ONE) { index, acc, uInt ->
+                    acc * BigInteger(uInt.toString(), 10)
+                }
+            val bigIntSecond = elements.copyOfRange(elements.size / 2, elements.size - 1)
+                .foldIndexed(BigInteger.ONE) { index, acc, uInt ->
+                    acc * BigInteger(uInt.toString(), 10)
+                }
             val bigIntResult = bigIntFirst - bigIntSecond
             if (time) {
                 println("Result ${convertedResult}")

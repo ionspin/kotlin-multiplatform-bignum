@@ -17,6 +17,10 @@
 
 package com.ionspin.kotlin.biginteger.base32
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import java.math.BigInteger
 import kotlin.random.Random
@@ -51,8 +55,16 @@ class BigInteger32JavaStringConversionTests {
     fun `Random toString test, in base 10`() {
         val seed = 1
         val random = Random(seed)
-        for (i in 1..Int.MAX_VALUE step 99) {
-            toStringSingleTest(uintArrayOf(random.nextUInt()), 10)
+        val jobList: MutableList<Job> = mutableListOf()
+        for (i in 1..Int.MAX_VALUE step 5001) {
+            jobList.add(
+                GlobalScope.launch {
+                    toStringSingleTest(uintArrayOf(random.nextUInt()), 10)
+                }
+            )
+        }
+        runBlocking {
+            jobList.forEach { it.join() }
         }
 
     }
@@ -61,11 +73,19 @@ class BigInteger32JavaStringConversionTests {
     fun `Random toString test, in random base less than 36`() {
         val seed = 1
         val random = Random(seed)
-        for (i in 1..Int.MAX_VALUE step 99) {
-            if ((i % 100000) in 1..100) {
-                println(i)
-            }
-            toStringSingleTest(uintArrayOf(random.nextUInt(), random.nextUInt()), random.nextInt(2,36)) //36 is the max java bigint supports
+        val jobList: MutableList<Job> = mutableListOf()
+        for (i in 1..Int.MAX_VALUE step 5001) {
+            jobList.add(
+                GlobalScope.launch {
+                    toStringSingleTest(
+                        uintArrayOf(random.nextUInt(), random.nextUInt()),
+                        random.nextInt(2, 36)
+                    ) //36 is the max java bigint supports
+                }
+            )
+        }
+        runBlocking {
+            jobList.forEach { it.join() }
         }
 
     }

@@ -77,9 +77,6 @@ class BigInteger32JavaDivisionTest {
         val random = Random(seed)
         val jobList: MutableList<Job> = mutableListOf()
         for (i in 1..Int.MAX_VALUE step 5001) {
-            if ((i % 100000) in 1..100) {
-                println(i)
-            }
             val a = random.nextUInt()
             val b = random.nextUInt()
             jobList.add(
@@ -155,9 +152,6 @@ class BigInteger32JavaDivisionTest {
         val random = Random(seed)
         val jobList: MutableList<Job> = mutableListOf()
         for (i in 1..Int.MAX_VALUE step 5001) {
-            if ((i % 100000) in 1..100) {
-                println(i)
-            }
             val a = uintArrayOf(random.nextUInt(), random.nextUInt(), random.nextUInt(), random.nextUInt())
             val b = uintArrayOf(random.nextUInt(), random.nextUInt())
             jobList.add(

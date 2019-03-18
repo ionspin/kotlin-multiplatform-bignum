@@ -18,9 +18,7 @@
 package com.ionspin.kotlin.biginteger.base32
 
 import com.ionspin.kotlin.biginteger.util.runTest
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.junit.Test
 import java.math.BigInteger
 import java.time.Duration
@@ -88,8 +86,17 @@ class BigInteger32JavaMultiplyTest {
     fun `Test multiplying three words`() {
         val seed = 1
         val random = Random(seed)
+        val jobList: MutableList<Job> = mutableListOf()
+
         for (i in 1..Int.MAX_VALUE step 5001) {
-            multiplySingleTest(random.nextUInt(), random.nextUInt(), random.nextUInt())
+            jobList.add(
+                GlobalScope.launch {
+                    multiplySingleTest(random.nextUInt(), random.nextUInt(), random.nextUInt())
+                }
+            )
+        }
+        runBlocking {
+            jobList.forEach { it.join() }
         }
 
     }
@@ -127,7 +134,7 @@ class BigInteger32JavaMultiplyTest {
 
     fun multiplySingleTest(vararg elements: UInt) {
         assertTrue("Failed on ${elements.contentToString()}") {
-            val time = true
+            val time = false
             lateinit var lastTime: LocalDateTime
             lateinit var startTime: LocalDateTime
 
@@ -157,9 +164,11 @@ class BigInteger32JavaMultiplyTest {
         }
     }
 
-    fun multiplySingleTestArray(first : UIntArray, second : UIntArray) {
-        assertTrue("Failed on uintArrayOf(${first.joinToString(separator = ", ")})" +
-                ", uintArrayOf(${second.joinToString(separator = ", ")})") {
+    fun multiplySingleTestArray(first: UIntArray, second: UIntArray) {
+        assertTrue(
+            "Failed on uintArrayOf(${first.joinToString(separator = ", ")})" +
+                    ", uintArrayOf(${second.joinToString(separator = ", ")})"
+        ) {
             val time = true
             lateinit var lastTime: LocalDateTime
             lateinit var startTime: LocalDateTime

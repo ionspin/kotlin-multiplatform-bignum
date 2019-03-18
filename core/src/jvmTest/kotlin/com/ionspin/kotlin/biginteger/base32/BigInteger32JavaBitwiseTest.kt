@@ -41,7 +41,7 @@ class BigInteger32JavaBitwiseTest {
 
 
         val jobList: MutableList<Job> = mutableListOf()
-        for (i in 1 .. 30_000 step 1000 ) {
+        for (i in 1 .. 30_000 step 5000 ) {
             val a = UIntArray(i) { random.nextUInt() }
             val b = random.nextInt(i)
             jobList.add(
@@ -73,10 +73,8 @@ class BigInteger32JavaBitwiseTest {
     fun `Test shift right`() {
         val seed = 1
         val random = Random(seed)
-
-
         val jobList: MutableList<Job> = mutableListOf()
-        for (i in 1 .. 30_000 step 1000 ) {
+        for (i in 1 .. 30_000 step 5000 ) {
             val a = UIntArray(i) { random.nextUInt() }
             val b = random.nextInt(i)
             jobList.add(

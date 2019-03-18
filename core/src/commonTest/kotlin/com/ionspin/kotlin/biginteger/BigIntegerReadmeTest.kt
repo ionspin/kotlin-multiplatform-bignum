@@ -30,7 +30,7 @@ class BigIntegerReadmeTest {
 
 
     @Test
-    fun `Test readme addition sample`() {
+    fun `Test_readme_addition_sample`() {
         val a = BigInteger.fromLong(Long.MAX_VALUE)
         val b = BigInteger.fromInt(Int.MAX_VALUE)
 
@@ -39,7 +39,7 @@ class BigIntegerReadmeTest {
     }
 
     @Test
-    fun `Test readme subtraction sample`() {
+    fun `Test_readme_subtraction_sample`() {
         val a = BigInteger.fromLong(Long.MIN_VALUE)
         val b = BigInteger.fromLong(Long.MIN_VALUE)
 
@@ -48,7 +48,7 @@ class BigIntegerReadmeTest {
     }
 
     @Test
-    fun `Test readme multiplication sample2`() {
+    fun `Test_readme_multiplication_sample2`() {
         val a = BigInteger.fromLong(Long.MAX_VALUE)
         val b = BigInteger.fromLong(Long.MIN_VALUE)
 
@@ -61,7 +61,7 @@ class BigIntegerReadmeTest {
     }
 
     @Test
-    fun `Test readme division sample`() {
+    fun `Test_readme_division_sample`() {
         val a = BigInteger.fromLong(Long.MAX_VALUE)
         val b = BigInteger.fromInt(Int.MAX_VALUE)
 
@@ -74,7 +74,7 @@ class BigIntegerReadmeTest {
     }
 
     @Test
-    fun `Test readme remainder sample`() {
+    fun `Test_readme_remainder_sample`() {
         val a = BigInteger.fromLong(Long.MAX_VALUE)
         val b = BigInteger.fromInt(Int.MAX_VALUE)
 
@@ -87,7 +87,7 @@ class BigIntegerReadmeTest {
     }
 
     @Test
-    fun `Test readme division and remainder sample`() {
+    fun `Test_readme_division_and_remainder_sample`() {
         val a = BigInteger.fromLong(Long.MAX_VALUE)
         val b = BigInteger.fromInt(Int.MAX_VALUE)
 
@@ -102,7 +102,7 @@ class BigIntegerReadmeTest {
     }
 
     @Test
-    fun `Test readme shift left sample`() {
+    fun `Test_readme_shift_left_sample`() {
         val a = BigInteger.fromByte(1)
 
         val shifted = a shl 215
@@ -112,7 +112,7 @@ class BigIntegerReadmeTest {
     }
 
     @Test
-    fun `Test readme shift right sample`() {
+    fun `Test_readme_shift_right_sample`() {
         val a = BigInteger.parseString("100000000000000000000000000000000", 10)
 
         val shifted = a shr 90
@@ -122,7 +122,7 @@ class BigIntegerReadmeTest {
     }
 
     @Test
-    fun `Test readme xor sample`(){
+    fun `Test_readme_xor_sample`(){
         val operand = BigInteger.parseString("11110000", 2)
         val mask =    BigInteger.parseString("00111100", 2)
         val xorResult = operand xor mask
@@ -136,7 +136,7 @@ class BigIntegerReadmeTest {
     }
 
     @Test
-    fun `Test readme or sample`(){
+    fun `Test_readme_or_sample`(){
         val operand = BigInteger.parseString("FFFFFFFFFF000000000000", 16)
         val mask =    BigInteger.parseString("00000000FFFF0000000000", 16)
         val orResult = operand or mask
@@ -150,7 +150,7 @@ class BigIntegerReadmeTest {
     }
 
     @Test
-    fun `Test readme and sample`(){
+    fun `Test_readme_and_sample`(){
         val operand = BigInteger.parseString("FFFFFFFFFF000000000000", 16)
         val mask =    BigInteger.parseString("00000000FFFF0000000000", 16)
         val andResult = operand and mask
@@ -164,7 +164,7 @@ class BigIntegerReadmeTest {
     }
 
     @Test
-    fun `Test readme inv sample`(){
+    fun `Test_readme_inv_sample`(){
         val operand = BigInteger.parseString("11110000", 2)
         val invResult = operand.invPrecise()
         println("Inv result: ${invResult.toString(2)}")

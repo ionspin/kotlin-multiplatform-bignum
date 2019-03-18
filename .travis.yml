@@ -1,0 +1,18 @@
+matrix:
+  include:
+    - os: linux
+      language: java
+      jdk: oraclejdk8
+      env:
+        KBUILD=linux
+        JAVA_OPTS=-Xmx2g
+      script:
+        - ./gradlew build
+cache:
+  directories:
+    - $HOME/.m2/
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+branches:
+  only:
+    - master

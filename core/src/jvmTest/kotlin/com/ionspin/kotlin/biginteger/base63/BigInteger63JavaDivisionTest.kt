@@ -20,7 +20,9 @@ package com.ionspin.kotlin.biginteger.base63
 import com.ionspin.kotlin.biginteger.base32.BigInteger32Arithmetic
 import com.ionspin.kotlin.biginteger.base32.toJavaBigInteger
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.random.Random
 import kotlin.random.nextULong
@@ -92,6 +94,7 @@ class BigInteger63JavaDivisionTest {
     fun `Test two word divided by two words`() {
         val seed = 1
         val random = Random(seed)
+        val jobList: MutableList<Job> = mutableListOf()
         for (i in 1..Int.MAX_VALUE step 3001) {
 
             val a = ulongArrayOf(random.nextULong() shr 1, random.nextULong() shr 1)
@@ -105,6 +108,9 @@ class BigInteger63JavaDivisionTest {
             }
 
 
+        }
+        runBlocking {
+            jobList.forEach { it.join() }
         }
 
     }
