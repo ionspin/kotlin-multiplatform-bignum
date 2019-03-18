@@ -116,14 +116,77 @@ class BigInteger63JavaBitwiseTest {
         val mask = BigInteger63Arithmetic.parseForBase("00111100", 2)
         singleXorTest(operand, mask)
 
-//        val expectedResult = BigInteger63Arithmetic.parseForBase("11001100", 2)
-
 
     }
+
+    @Test
+    fun `Test random xor`() {
+        val seed = 1
+        val random = Random(seed)
+        for (i in 1..Int.MAX_VALUE step 3001) {
+            var a = ulongArrayOf(random.nextULong() shr 1, random.nextULong() shr 1)
+            a = BigInteger63Arithmetic.multiply(a, a)
+
+            shiftRightSingleTest(random.nextInt(BigInteger63Arithmetic.bitLength(a)), a)
+
+
+        }
+    }
+
+
 
     fun singleXorTest(operand : ULongArray, mask : ULongArray) {
         val result = BigInteger63Arithmetic.xor(operand, mask)
         val bigIntResult = operand.toJavaBigInteger().xor(mask.toJavaBigInteger())
+
+        assertTrue { result.toJavaBigInteger() == bigIntResult }
+    }
+
+
+    @Test
+    fun `Test specific or`(){
+        val operand = BigInteger63Arithmetic.parseForBase("FFFFFFFFFF000000000000", 16)
+        val mask =    BigInteger63Arithmetic.parseForBase("00000000FFFF0000000000", 16)
+        singleOrTest(operand, mask)
+
+
+    }
+
+    fun singleOrTest(operand : ULongArray, mask : ULongArray) {
+        val result = BigInteger63Arithmetic.or(operand, mask)
+        val bigIntResult = operand.toJavaBigInteger().or(mask.toJavaBigInteger())
+
+        assertTrue { result.toJavaBigInteger() == bigIntResult }
+    }
+
+
+    @Test
+    fun `Test specific and`(){
+        val operand = BigInteger63Arithmetic.parseForBase("FFFFFFFFFF000000000000", 16)
+        val mask = BigInteger63Arithmetic.parseForBase("00000000FFFF0000000000", 16)
+        singleAndTest(operand, mask)
+
+
+
+    }
+
+    fun singleAndTest(operand : ULongArray, mask : ULongArray) {
+        val result = BigInteger63Arithmetic.and(operand, mask)
+        val bigIntResult = operand.toJavaBigInteger().and(mask.toJavaBigInteger())
+
+        assertTrue { result.toJavaBigInteger() == bigIntResult }
+    }
+
+    @Test
+    fun `Test specific inv`(){
+        val operand = BigInteger63Arithmetic.parseForBase("1100", 2)
+        singleInvTest(operand)
+
+    }
+    //Hmmm this is not behaving as I would expect it to on java side
+    fun singleInvTest(operand : ULongArray) {
+        val result = BigInteger63Arithmetic.inv(operand)
+        val bigIntResult = operand.toJavaBigInteger().xor(1.toBigInteger().shr(operand.toJavaBigInteger().bitLength()) - 1.toBigInteger())
 
         assertTrue { result.toJavaBigInteger() == bigIntResult }
     }

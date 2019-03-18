@@ -132,4 +132,49 @@ Shifted: 52656145834278593348959013841835216159447547700274555627155488768
 
 ```
 
+#### XOR
+```
+val operand = BigInteger.parseString("11110000", 2)
+val mask = BigInteger.parseString("00111100", 2)
 
+val xorResult = operand xor mask
+
+println("Xor result: ${xorResult.toString(2)}")
+----- Output -----
+Xor result: 11001100
+```
+
+
+#### And
+```
+val operand = BigInteger.parseString("FFFFFFFFFF000000000000", 16)
+val mask =    BigInteger.parseString("00000000FFFF0000000000", 16)
+val andResult = operand and mask
+println("And result: ${andResult.toString(16)}")
+----- Output -----
+And result: ff000000000000
+```
+
+#### Or
+```
+val operand = BigInteger.parseString("FFFFFFFFFF000000000000", 16)
+val mask =    BigInteger.parseString("00000000FFFF0000000000", 16)
+val orResult = operand or mask
+println("Or result: ${orResult.toString(16)}")
+----- Output -----
+Or result: ffffffffffff0000000000
+```
+
+#### Inverted "precise"
+
+Unlike Java BigInteger which does two's complement inversion, this method does bitwise inversion, 
+
+I.e.: If the number was "1100" binary, invPrecise returns "0011" => "11" => 4 decimal 
+Where Java BigInteger would return "1011" => -13 two's complement decimal
+```
+val operand = BigInteger.parseString("11110000", 2)
+val invResult = operand.invPrecise()
+println("Inv result: ${invResult.toString(2)}")
+----- Output -----
+Inv result: 1111
+```

@@ -20,6 +20,7 @@ package com.ionspin.kotlin.biginteger.base63
 import com.ionspin.kotlin.biginteger.BigIntegerArithmetic
 import com.ionspin.kotlin.biginteger.Quadruple
 import com.ionspin.kotlin.biginteger.base32.BigInteger32Arithmetic
+import com.ionspin.kotlin.biginteger.util.toDigit
 
 /**
  * Created by Ugljesa Jovanovic
@@ -34,8 +35,8 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
 
     val baseMask: ULong = 0x7FFFFFFFFFFFFFFFUL
 
-    val lowMask      = 0x00000000FFFFFFFFUL
-    val highMask     = 0x7FFFFFFF00000000UL
+    val lowMask = 0x00000000FFFFFFFFUL
+    val highMask = 0x7FFFFFFF00000000UL
     val overflowMask = 0x8000000000000000UL
 
 
@@ -367,6 +368,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
 
 
     }
+
     /*
     Useful when we want to do a ULong * ULong -> ULongArray, currently not used anywhere, and untested
      */
@@ -466,7 +468,7 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         var wordPrecision = dividendSize - divisorSize
 
 
-        var qjhat : ULongArray
+        var qjhat: ULongArray
         var reconstructedQuotient: ULongArray
         var quotient = ULongArray(wordPrecision)
 
@@ -488,7 +490,8 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
                     ZERO
                 }
             }
-            val convertedResult = BigInteger32Arithmetic.divide(twoDigit.to32Bit(), ulongArrayOf(divisor[divisorSize - 1]).to32Bit())
+            val convertedResult =
+                BigInteger32Arithmetic.divide(twoDigit.to32Bit(), ulongArrayOf(divisor[divisorSize - 1]).to32Bit())
             qjhat = convertedResult.first.from32Bit()
             quotient[j] = if (qjhat < (baseMask - 1UL)) {
                 qjhat[0]
@@ -612,14 +615,13 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
         return baseDivide(first, second)
     }
 
-    override fun parseForBase(number: String, base: Int) : ULongArray {
+    override fun parseForBase(number: String, base: Int): ULongArray {
         var parsed = ZERO
-        number.forEachIndexed {index, char ->
+        number.toLowerCase().forEachIndexed { index, char ->
             val previous = (parsed * base.toULong())
-            parsed = previous + (char.toInt() - 48).toULong()
-            val temp = 1
+            parsed = previous + (char.toDigit()).toULong()
         }
-        return parsed
+        return removeLeadingZeroes(parsed)
     }
 
     override fun toString(operand: ULongArray, base: Int): String {
@@ -640,39 +642,53 @@ object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
     }
 
     override fun and(operand: ULongArray, mask: ULongArray): ULongArray {
-        return ULongArray(operand.size) {
-            if (it < mask.size) {
-                operand[it] and mask[it]
-            } else {
-                0UL
+        return removeLeadingZeroes(
+            ULongArray(operand.size) {
+                if (it < mask.size) {
+                    operand[it] and mask[it]
+                } else {
+                    0UL
+                }
             }
-        }
+        )
     }
 
     override fun or(operand: ULongArray, mask: ULongArray): ULongArray {
-        return ULongArray(operand.size) {
-            if (it < mask.size) {
-                operand[it] or mask[it]
-            } else {
-                operand[it]
+        return removeLeadingZeroes(
+            ULongArray(operand.size) {
+                if (it < mask.size) {
+                    operand[it] or mask[it]
+                } else {
+                    operand[it]
+                }
             }
-        }
+        )
     }
 
     override fun xor(operand: ULongArray, mask: ULongArray): ULongArray {
-        return ULongArray(operand.size) {
-            if (it < mask.size) {
-                operand[it] xor mask[it]
-            } else {
-                operand[it] xor 0UL
+        return removeLeadingZeroes(
+            ULongArray(operand.size) {
+                if (it < mask.size) {
+                    operand[it] xor mask[it]
+                } else {
+                    operand[it] xor 0UL
+                }
             }
-        }
+        )
     }
 
     override fun inv(operand: ULongArray): ULongArray {
-        return ULongArray(operand.size) {
-            operand[it].inv()
+        val leadingZeroes = numberOfLeadingZeroes(operand[operand.size - 1])
+        val cleanupMask = (((1UL shl leadingZeroes + 1) - 1U) shl (basePowerOfTwo - leadingZeroes)).inv()
+        val inverted = ULongArray(operand.size) {
+            if (it < operand.size - 2) {
+                operand[it].inv() and baseMask
+            } else {
+                operand[it].inv() and cleanupMask
+            }
         }
+
+        return inverted
     }
 
     // -------------- Bitwise ---------------- //

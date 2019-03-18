@@ -274,20 +274,26 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         return QuotientAndRemainder(result.first, result.second)
     }
 
-    private infix fun and(other: ULongArray): ULongArray {
-        return arithmetic.and(this.magnitude, other)
+    infix fun and(other: BigInteger): BigInteger {
+        return BigInteger(arithmetic.and(this.magnitude, other.magnitude), sign)
     }
 
-    private infix fun or(other: ULongArray): ULongArray {
-        return arithmetic.or(this.magnitude, other)
+    infix fun or(other: BigInteger): BigInteger {
+        return BigInteger(arithmetic.or(this.magnitude, other.magnitude), sign)
     }
 
-    private infix fun xor(other: ULongArray): ULongArray {
-        return arithmetic.xor(this.magnitude, other)
+    infix fun xor(other: BigInteger): BigInteger {
+        return BigInteger(arithmetic.xor(this.magnitude, other.magnitude), sign)
     }
 
-    fun inv() : ULongArray {
-        return arithmetic.inv(this.magnitude)
+    /**
+     * Inverts only up to chosen [arithmetic] [BigIntegerArithmetic.bitLength] bits.
+     * This is different from Java biginteger which returns inverse in two's complement.
+     *
+     * I.e.: If the number was "1100" binary, invPrecise returns "0011" => "11" => 4 decimal
+     */
+    fun invPrecise() : BigInteger {
+        return BigInteger(arithmetic.inv(this.magnitude), sign)
     }
 
     override fun compareTo(other: Any): Int {

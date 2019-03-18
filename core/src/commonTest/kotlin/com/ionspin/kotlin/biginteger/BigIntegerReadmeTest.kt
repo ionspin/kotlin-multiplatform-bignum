@@ -17,7 +17,6 @@
 
 package com.ionspin.kotlin.biginteger
 
-import kotlin.math.absoluteValue
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -120,6 +119,61 @@ class BigIntegerReadmeTest {
         println("Shifted: $shifted")
         val expectedResult = BigInteger.parseString("80779")
         assertTrue { expectedResult == shifted }
+    }
+
+    @Test
+    fun `Test readme xor sample`(){
+        val operand = BigInteger.parseString("11110000", 2)
+        val mask =    BigInteger.parseString("00111100", 2)
+        val xorResult = operand xor mask
+        println("Xor result: ${xorResult.toString(2)}")
+
+        val expectedResult = BigInteger.parseString("11001100", 2)
+
+        assertTrue { xorResult == expectedResult }
+
+
+    }
+
+    @Test
+    fun `Test readme or sample`(){
+        val operand = BigInteger.parseString("FFFFFFFFFF000000000000", 16)
+        val mask =    BigInteger.parseString("00000000FFFF0000000000", 16)
+        val orResult = operand or mask
+        println("Or result: ${orResult.toString(16)}")
+
+        val expectedResult = BigInteger.parseString("FFFFFFFFFFFF0000000000", 16)
+
+        assertTrue { orResult == expectedResult }
+
+
+    }
+
+    @Test
+    fun `Test readme and sample`(){
+        val operand = BigInteger.parseString("FFFFFFFFFF000000000000", 16)
+        val mask =    BigInteger.parseString("00000000FFFF0000000000", 16)
+        val andResult = operand and mask
+        println("And result: ${andResult.toString(16)}")
+
+        val expectedResult = BigInteger.parseString("00000000FF000000000000", 16)
+
+        assertTrue { andResult == expectedResult }
+
+
+    }
+
+    @Test
+    fun `Test readme inv sample`(){
+        val operand = BigInteger.parseString("11110000", 2)
+        val invResult = operand.invPrecise()
+        println("Inv result: ${invResult.toString(2)}")
+
+        val expectedResult = BigInteger.parseString("00001111", 2)
+
+        assertTrue { invResult == expectedResult }
+
+
     }
 
 }

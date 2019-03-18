@@ -39,6 +39,7 @@ class BigInteger63JavaStringConversionTests {
 //        testParsingSingleTest("1234", 10)
 //        testParsingSingleTest("922337203685477580799999999999990776627963145224192", 10)
         testParsingSingleTest("52656145834278593348959013841835216159447547700274555627155488768", 10)
+        testParsingSingleTest("f", 16)
     }
 
     fun testParsingSingleTest(uIntArrayString: String, base: Int) {
