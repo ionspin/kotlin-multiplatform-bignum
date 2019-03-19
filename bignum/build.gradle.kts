@@ -15,6 +15,8 @@
  *
  */
 
+@file:Suppress("UnstableApiUsage")
+
 import com.moowork.gradle.node.task.NodeTask
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
@@ -174,6 +176,42 @@ tasks {
     jsTest.dependsOn("copyPackageJson")
     jsTest.dependsOn(runTestsWithMocha)
 
+
+}
+
+
+
+signing {
+    isRequired = false
+    sign(publishing.publications)
+}
+
+publishing {
+    publications.withType(MavenPublication::class) {
+        pom {
+            description.set("Kotlin Multiplatform BigNum library")
+            url.set("https://github.com/ionspin/kotlin-multiplatform-bignum")
+            licenses {
+                license {
+                    name.set("The Apache License, Version 2.0")
+                    url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                }
+            }
+            developers {
+                developer {
+                    id.set("ionspin")
+                    name.set("Ugljesa Jovanovic")
+                    email.set("opensource@ionspin.com")
+                }
+            }
+            scm {
+                connection.set("scm:git:git://git@github.com:ionspin/kotlin-multiplatform-bignum.git")
+                developerConnection.set("scm:git:ssh://git@github.com:ionspin/kotlin-multiplatform-bignum.git")
+
+            }
+
+        }
+    }
 }
 
 
