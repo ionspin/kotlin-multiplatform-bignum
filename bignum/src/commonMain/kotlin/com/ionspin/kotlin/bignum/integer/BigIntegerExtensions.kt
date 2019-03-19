@@ -23,23 +23,21 @@ package com.ionspin.kotlin.bignum.integer
  * on 10-Mar-3/10/19
  */
 
-@ExperimentalUnsignedTypes
-class ConversionExtensions {
-    fun Long.toBigInteger() : BigInteger {
-        return BigInteger.fromLong(this)
-    }
 
-    fun Int.toBigInteger() : BigInteger {
-        return BigInteger.fromInt(this)
-    }
+fun Long.toBigInteger() : BigInteger {
+    return BigInteger.fromLong(this)
+}
 
-    fun Short.toBigInteger() : BigInteger {
-        return BigInteger.fromShort(this)
-    }
+fun Int.toBigInteger() : BigInteger {
+    return BigInteger.fromInt(this)
+}
 
-    fun Byte.toBigInteger() : BigInteger {
-        return BigInteger.fromByte(this)
-    }
+fun Short.toBigInteger() : BigInteger {
+    return BigInteger.fromShort(this)
+}
+
+fun Byte.toBigInteger() : BigInteger {
+    return BigInteger.fromByte(this)
 }
 
 

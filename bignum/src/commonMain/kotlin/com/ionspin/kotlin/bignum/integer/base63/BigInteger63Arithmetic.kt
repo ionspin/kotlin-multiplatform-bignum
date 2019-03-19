@@ -28,7 +28,7 @@ import com.ionspin.kotlin.bignum.integer.util.toDigit
  * on 10-Mar-3/10/19
  */
 @ExperimentalUnsignedTypes
-object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
+internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
     override val ZERO: ULongArray = ulongArrayOf(0u)
     override val ONE: ULongArray = ulongArrayOf(1u)
     override val basePowerOfTwo: Int = 63

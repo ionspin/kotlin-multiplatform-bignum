@@ -32,7 +32,7 @@ repositories {
     mavenCentral()
 }
 group = "com.ionspin.kotlin"
-version = "0.0.3"
+version = "0.0.4"
 
 kotlin {
     jvm()
