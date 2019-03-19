@@ -31,7 +31,7 @@ plugins {
 repositories {
     mavenCentral()
 }
-group = "com.ionspin.kotlin.bignumber"
+group = "com.ionspin.kotlin"
 version = "0.0.3"
 
 kotlin {

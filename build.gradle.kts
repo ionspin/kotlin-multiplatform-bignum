@@ -45,8 +45,8 @@ allprojects {
     }
 }
 
-group = "com.ionspin.kotlin.biginteger"
-version = "1.0-SNAPSHOT"
+group = "com.ionspin.kotlin"
+version = "0.1.0-SNAPSHOT"
 
 apply {
     plugin("kotlin")
