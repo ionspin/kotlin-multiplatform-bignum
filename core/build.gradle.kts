@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 plugins {
     kotlin(PluginsDeps.multiplatform)    
     id (PluginsDeps.mavenPublish)
+    id (PluginsDeps.signing)
     id (PluginsDeps.node) version Versions.nodePlugin
 }
 

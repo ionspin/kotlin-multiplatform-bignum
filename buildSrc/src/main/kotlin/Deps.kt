@@ -88,5 +88,6 @@ object PluginsDeps {
     val multiplatform = "multiplatform"
     val node = "com.github.node-gradle.node"
     val mavenPublish = "maven-publish"
+    val signing = "signing"
 }
 

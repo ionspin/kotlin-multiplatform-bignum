@@ -3,18 +3,18 @@
 # Kotlin MP BigNum library 
 
 Kotlin Multiplatform BigNum library is a pure kotlin implementation of arbitrary precision
-arithmetic operations. it follows the same approach as Kotlin does on JVM to keep the interface
+arithmetic operations. It follows the same approach as Kotlin does on JVM to keep the interface
 familiar.
 
 ## Notes & Roadmap
 
 This is the first version of the library, and has the base implementation of **integer** operations. Floating point arithmetic,
 and modular arithmetic are planned for future releases, as well as improvements such as Karatsuba multiplication, 
-Toom-Cook, division using multiplication by reciprocal and other.
+Toom-Cook, division using multiplication by reciprocal, and other.
 
-Also there is a plan to implement native
+Also, there is a plan to implement platform native versions.
 
-## Should I use this in production
+## Should I use this in production?
 
 No. Even though the tests pass, and it seems to be working fine, the library is not mature enough to be used for anything even remotely critical. Also Kotlin Multiplatform is still experimental, so there's that.
 
@@ -28,7 +28,7 @@ No. Even though the tests pass, and it seems to be working fine, the library is 
 
 ## Usage
 
-### Creating big integers
+### Creating Big Integers
 
 To create a big integer you can parse a string:
 ```
@@ -40,7 +40,7 @@ Or use the extensions function for `Long`, `Int`, `Byte` or `Short`
 BigInteger.fromLong(234L)
 ```
 
-### Basic arithmetic operations
+### Basic Arithmetic Operations
 
 #### Addition
 ```
@@ -120,9 +120,9 @@ Quotient: 1
 Remainder: 2147483647
 ```
 
-### Bitwise operations
+### Bitwise Operations
 
-#### Shift left
+#### Shift Left
 ```
 val a = BigInteger.fromByte(1)
 
@@ -132,7 +132,7 @@ println("Shifted: $shifted")
 Shifted: 52656145834278593348959013841835216159447547700274555627155488768
 ```
 
-#### Shift right
+#### Shift Right
 ```
 val a = BigInteger.parseString("100000000000000000000000000000000", 10)
 
@@ -179,7 +179,7 @@ Or result: ffffffffffff0000000000
 
 Unlike Java BigInteger which does two's complement inversion, this method does bitwise inversion, 
 
-I.e.: If the number was "1100" binary, invPrecise returns "0011" => "11" => 4 in base 10 
+i.e.: If the number was "1100" binary, invPrecise returns "0011" => "11" => 4 in base 10 
 
 In the same case Java BigInteger would return "1011" => -13 two's complement base 10
 ```
