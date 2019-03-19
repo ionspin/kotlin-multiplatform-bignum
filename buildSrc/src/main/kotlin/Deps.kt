@@ -89,5 +89,6 @@ object PluginsDeps {
     val node = "com.github.node-gradle.node"
     val mavenPublish = "maven-publish"
     val signing = "signing"
+    val dokka = "org.jetbrains.dokka"
 }
 
