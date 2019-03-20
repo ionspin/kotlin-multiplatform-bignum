@@ -24,6 +24,7 @@ object Versions {
     val ktor = "1.1.1"
     val kotlinSerialization = "0.10.0"
     val nodePlugin = "1.3.0"
+    val dokkaPlugin = "0.9.18"
 
 
 }

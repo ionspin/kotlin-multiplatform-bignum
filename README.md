@@ -22,7 +22,7 @@ No. Even though the tests pass, and it seems to be working fine, the library is 
 
 #### Gradle
 ```
-    implementation("com.ionspin.kotlin.bignum:core:0.0.4")
+    implementation("com.ionspin.kotlin:bignum:0.0.5")
 ```
 
 

@@ -18,6 +18,7 @@
 @file:Suppress("UnstableApiUsage")
 
 import com.moowork.gradle.node.task.NodeTask
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
 plugins {
@@ -25,16 +26,22 @@ plugins {
     id (PluginsDeps.mavenPublish)
     id (PluginsDeps.signing)
     id (PluginsDeps.node) version Versions.nodePlugin
+    id (PluginsDeps.dokka) version Versions.dokkaPlugin
 }
 
+val sonatypeStaging = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
 
+val sonatypePassword : String by project
 
+val sonatypeUsername : String by project
 
 repositories {
     mavenCentral()
+    jcenter()
+
 }
 group = "com.ionspin.kotlin"
-version = "0.0.4"
+version = "0.0.5"
 
 kotlin {
     jvm()
@@ -130,7 +137,6 @@ kotlin {
 
 
 
-
 task<Copy>("copyPackageJson") {
     dependsOn("compileKotlinJs")
     println("Copying package.json from $projectDir/core/src/jsMain/npm")
@@ -144,6 +150,7 @@ tasks {
     val compileKotlinJs by getting(AbstractCompile::class)
     val compileTestKotlinJs by getting(Kotlin2JsCompile::class)
     val jsTest by getting
+
 
     val populateNodeModulesForTests by creating {
         dependsOn(npmInstall, compileKotlinJs, compileTestKotlinJs)
@@ -176,8 +183,29 @@ tasks {
     jsTest.dependsOn("copyPackageJson")
     jsTest.dependsOn(runTestsWithMocha)
 
+    create<Jar>("javadocJar") {
+        dependsOn(dokka)
+        archiveClassifier.set("javadoc")
+        from(dokka.get().outputDirectory)
+    }
+
+    dokka {
+        println ("Dokka !")
+        impliedPlatforms = mutableListOf("Common")
+        kotlinTasks {
+            listOf()
+        }
+        sourceRoot {
+            println ("Common !")
+            path = "/home/ionspin/Projects/Future/KotlinBigInteger/bignum/src/commonMain"
+            platforms = listOf("Common")
+        }
+    }
 
 }
+
+
+
 
 
 
@@ -188,7 +216,9 @@ signing {
 
 publishing {
     publications.withType(MavenPublication::class) {
+        artifact(tasks["javadocJar"])
         pom {
+            name.set("Kotlin Multiplatform BigNum")
             description.set("Kotlin Multiplatform BigNum library")
             url.set("https://github.com/ionspin/kotlin-multiplatform-bignum")
             licenses {
@@ -205,11 +235,22 @@ publishing {
                 }
             }
             scm {
+                url.set("https://github.com/ionspin/kotlin-multiplatform-bignum")
                 connection.set("scm:git:git://git@github.com:ionspin/kotlin-multiplatform-bignum.git")
                 developerConnection.set("scm:git:ssh://git@github.com:ionspin/kotlin-multiplatform-bignum.git")
 
             }
 
+        }
+    }
+    repositories {
+        maven {
+
+            url = uri(sonatypeStaging)
+            credentials {
+                username = sonatypeUsername
+                password = sonatypePassword
+            }
         }
     }
 }
