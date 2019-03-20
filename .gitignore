@@ -6,6 +6,6 @@
 */build
 build/
 /captures
-/core/node_modules
+/bignum/node_modules
 gradle.properties
 /buildSrc/out

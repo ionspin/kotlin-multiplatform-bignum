@@ -31,9 +31,9 @@ plugins {
 
 val sonatypeStaging = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
 
-val sonatypePassword : String by project
+val sonatypePassword : String? by project
 
-val sonatypeUsername : String by project
+val sonatypeUsername : String? by project
 
 repositories {
     mavenCentral()
@@ -248,8 +248,8 @@ publishing {
 
             url = uri(sonatypeStaging)
             credentials {
-                username = sonatypeUsername
-                password = sonatypePassword
+                username = sonatypeUsername ?: ""
+                password = sonatypePassword ?: ""
             }
         }
     }
