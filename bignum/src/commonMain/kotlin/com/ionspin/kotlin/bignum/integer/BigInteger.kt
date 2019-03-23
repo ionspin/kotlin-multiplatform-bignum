@@ -77,6 +77,10 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 
         }
 
+        internal fun fromWordArray(wordArray: WordArray, sign: Sign) : BigInteger {
+            return BigInteger(wordArray, sign)
+        }
+
         private inline fun <reified T> determinSignFromNumber(number: Comparable<T>): Sign {
             return when (T::class) {
                 Long::class -> {
@@ -129,8 +133,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         return arithmetic.compare(resultMagnitude, arithmetic.ZERO) == 0
     }
 
-
-
+    val numberOfWords = magnitude.size
 
     fun add(other: BigInteger): BigInteger {
         val comparison = arithmetic.compare(this.magnitude, other.magnitude)
@@ -239,6 +242,10 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 
     fun isZero(): Boolean = this.sign == Sign.ZERO
 
+    fun negate() : BigInteger {
+        return BigInteger(wordArray = this.magnitude.copyOf(), sign = sign.not())
+    }
+
 
     infix fun shl(places: Int): BigInteger {
         return BigInteger(arithmetic.shiftLeft(this.magnitude, places), sign)
@@ -248,6 +255,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         return BigInteger(arithmetic.shiftRight(this.magnitude, places), sign)
     }
 
+    operator fun unaryMinus() : BigInteger = negate()
 
     operator fun plus(other: BigInteger): BigInteger {
         return add(other)

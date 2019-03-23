@@ -21,6 +21,7 @@ import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
 import com.ionspin.kotlin.bignum.integer.util.toDigit
+import kotlin.math.absoluteValue
 
 /**
  * Created by Ugljesa Jovanovic
@@ -788,18 +789,19 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun fromLong(long: Long): ULongArray {
-        if ((long.toULong() and overflowMask shr 63) == 1UL) {
+        if ((long.absoluteValue.toULong() and overflowMask shr 63) == 1UL) {
             return ulongArrayOf(baseMask) + 1U
         }
-        return ulongArrayOf((long.toULong() and baseMask))
+        return ulongArrayOf((long.absoluteValue.toULong() and baseMask))
 
     }
 
-    override fun fromInt(int: Int): ULongArray = ulongArrayOf(int.toULong())
+    override fun fromInt(int: Int): ULongArray = ulongArrayOf(int.absoluteValue.toULong())
 
-    override fun fromShort(short: Short): ULongArray = ulongArrayOf(short.toULong())
 
-    override fun fromByte(byte: Byte): ULongArray = ulongArrayOf(byte.toULong())
+    override fun fromShort(short: Short): ULongArray = ulongArrayOf(short.toInt().absoluteValue.toULong())
+
+    override fun fromByte(byte: Byte): ULongArray = ulongArrayOf(byte.toInt().absoluteValue.toULong())
 
 
 }

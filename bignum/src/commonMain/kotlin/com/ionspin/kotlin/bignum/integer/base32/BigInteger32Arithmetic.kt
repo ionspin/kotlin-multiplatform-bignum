@@ -20,6 +20,7 @@ package com.ionspin.kotlin.bignum.integer.base32
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.util.toDigit
+import kotlin.math.absoluteValue
 
 /**
  * Created by Ugljesa Jovanovic
@@ -605,11 +606,11 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
     }
 
-    override fun fromLong(long: Long): UIntArray = uintArrayOf(long.toUInt())
+    override fun fromLong(long: Long): UIntArray = uintArrayOf(long.absoluteValue.toUInt())
 
-    override fun fromInt(int: Int): UIntArray = uintArrayOf(int.toUInt())
+    override fun fromInt(int: Int): UIntArray = uintArrayOf(int.absoluteValue.toUInt())
 
-    override fun fromShort(short: Short): UIntArray = uintArrayOf(short.toUInt())
+    override fun fromShort(short: Short): UIntArray = uintArrayOf(short.toInt().absoluteValue.toUInt())
 
-    override fun fromByte(byte: Byte): UIntArray = uintArrayOf(byte.toUInt())
+    override fun fromByte(byte: Byte): UIntArray = uintArrayOf(byte.toInt().absoluteValue.toUInt())
 }
