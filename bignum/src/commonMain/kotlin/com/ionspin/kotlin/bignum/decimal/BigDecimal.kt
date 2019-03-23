@@ -41,7 +41,9 @@ class BigDecimal(val significand : BigInteger, val exponent : BigInteger, decima
     fun minus() : BigDecimal {
         TODO()
     }
-    fun multiply(other : BigDecimal, decimalMode: DecimalMode = DecimalMode()) : BigDecimal {
+
+
+    internal fun multiply(other : BigDecimal, decimalMode: DecimalMode = DecimalMode()) : BigDecimal {
         val newExponent = exponent * other.exponent
         val newSignificand = this.significand * other.significand
         return if (decimalMode.roundingMode != RoundingMode.NONE) {
@@ -52,6 +54,8 @@ class BigDecimal(val significand : BigInteger, val exponent : BigInteger, decima
 
     }
 
+    fun multiply(other : BigDecimal) = multiply(other, DecimalMode())
+
 
     fun div() : BigDecimal {
         TODO()
@@ -60,6 +64,10 @@ class BigDecimal(val significand : BigInteger, val exponent : BigInteger, decima
         TODO()
     }
     fun rem() : BigDecimal {
+        TODO()
+    }
+
+    fun divrem() : BigDecimal {
         TODO()
     }
     fun unaryMinus() : BigDecimal {
@@ -84,7 +92,8 @@ class BigDecimal(val significand : BigInteger, val exponent : BigInteger, decima
         TODO()
     }
 
-    private fun round() : BigDecimal {
+    private fun round(decimalMode: DecimalMode) : BigDecimal {
+
         TODO()
     }
 

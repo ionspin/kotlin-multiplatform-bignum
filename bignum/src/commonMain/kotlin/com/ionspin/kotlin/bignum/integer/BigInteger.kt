@@ -246,6 +246,32 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         return BigInteger(wordArray = this.magnitude.copyOf(), sign = sign.not())
     }
 
+    fun pow(exponent : Long) : BigInteger {
+        return (0 until exponent).fold(ONE) { acc, _ ->
+            acc * this
+        }
+    }
+
+    fun signum() : Int = when(sign) {
+        Sign.POSITIVE -> 1
+        Sign.NEGATIVE -> -1
+        Sign.ZERO -> 0
+    }
+
+    fun bitAt(position : Long) : Boolean {
+        if (position / 63 > Int.MAX_VALUE) {
+            throw ArithmeticException("Invalid bit index, too large, cannot access word (Word position > Int.MAX_VALUE")
+        }
+
+        val wordPosition = position / 63
+        if (wordPosition >= magnitude.size) {
+            return false
+        }
+        val bitPosition = position % 63
+        val word = magnitude[wordPosition.toInt()]
+        return (word and (1UL shl bitPosition.toInt()) == 1UL)
+    }
+
 
     infix fun shl(places: Int): BigInteger {
         return BigInteger(arithmetic.shiftLeft(this.magnitude, places), sign)

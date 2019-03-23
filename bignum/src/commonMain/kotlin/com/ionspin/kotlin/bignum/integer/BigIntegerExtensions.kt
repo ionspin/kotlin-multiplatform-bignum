@@ -24,20 +24,46 @@ package com.ionspin.kotlin.bignum.integer
  */
 
 
+@ExperimentalUnsignedTypes
 fun Long.toBigInteger() : BigInteger {
     return BigInteger.fromLong(this)
 }
 
+@ExperimentalUnsignedTypes
 fun Int.toBigInteger() : BigInteger {
     return BigInteger.fromInt(this)
 }
 
+@ExperimentalUnsignedTypes
 fun Short.toBigInteger() : BigInteger {
     return BigInteger.fromShort(this)
 }
 
+@ExperimentalUnsignedTypes
 fun Byte.toBigInteger() : BigInteger {
     return BigInteger.fromByte(this)
 }
+
+@ExperimentalUnsignedTypes
+operator fun BigInteger.plus(int : Int) : BigInteger {
+    return this.plus(BigInteger.fromInt(int))
+}
+
+@ExperimentalUnsignedTypes
+operator fun BigInteger.plus(long : Long) : BigInteger {
+    return this.plus(BigInteger.fromLong(long))
+}
+
+@ExperimentalUnsignedTypes
+operator fun BigInteger.plus(short : Short) : BigInteger {
+    return this.plus(BigInteger.fromShort(short))
+}
+
+@ExperimentalUnsignedTypes
+operator fun BigInteger.plus(byte : Byte) : BigInteger {
+    return this.plus(BigInteger.fromByte(byte))
+}
+
+
 
 
