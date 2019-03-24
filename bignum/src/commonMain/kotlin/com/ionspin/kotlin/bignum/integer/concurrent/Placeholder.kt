@@ -20,7 +20,7 @@ package com.ionspin.kotlin.bignum.integer.concurrent
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 17-Mar-3/17/19
+ * on 17-Mar-2019
  */
 suspend fun concurrentMultiply() {
 //    if (BigInteger32Arithmetic.useCoroutines) {

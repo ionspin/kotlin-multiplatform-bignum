@@ -20,7 +20,7 @@ package com.ionspin.kotlin.bignum.integer.util
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 18-Mar-3/18/19
+ * on 18-Mar-2019
  */
 fun Char.toDigit(radix : Int) : Int {
     return when (this) {

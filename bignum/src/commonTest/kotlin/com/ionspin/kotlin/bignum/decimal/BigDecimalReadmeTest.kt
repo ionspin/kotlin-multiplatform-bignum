@@ -24,7 +24,7 @@ import kotlin.test.assertTrue
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 24-Mar-3/24/19
+ * on 24-Mar-2019
  */
 @ExperimentalUnsignedTypes
 class BigDecimalReadmeTest {

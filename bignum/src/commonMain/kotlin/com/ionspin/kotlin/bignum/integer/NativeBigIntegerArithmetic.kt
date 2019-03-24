@@ -20,6 +20,6 @@ package com.ionspin.kotlin.bignum.integer
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 10-Mar-3/10/19
+ * on 10-Mar-2019
  */
 expect object NativeBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>

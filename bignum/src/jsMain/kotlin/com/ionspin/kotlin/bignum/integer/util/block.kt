@@ -23,6 +23,6 @@ import kotlinx.coroutines.promise
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 16-Mar-3/16/19
+ * on 16-Mar-2019
  */
 actual fun <T> block(block: suspend () -> T) : dynamic = GlobalScope.promise { block() }

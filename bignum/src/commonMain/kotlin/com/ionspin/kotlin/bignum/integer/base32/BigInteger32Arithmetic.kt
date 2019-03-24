@@ -25,7 +25,7 @@ import kotlin.math.absoluteValue
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 09-Mar-3/9/19
+ * on 09-Mar-2019
  */
 @ExperimentalUnsignedTypes
 internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {

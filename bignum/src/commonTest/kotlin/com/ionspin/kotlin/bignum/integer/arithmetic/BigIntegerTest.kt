@@ -26,7 +26,7 @@ import kotlin.test.assertTrue
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 23-Mar-3/23/19
+ * on 23-Mar-2019
  */
 @ExperimentalUnsignedTypes
 class BigIntegerTest {

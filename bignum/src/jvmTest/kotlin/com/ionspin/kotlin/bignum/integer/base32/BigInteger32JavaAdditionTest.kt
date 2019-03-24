@@ -22,7 +22,7 @@ import org.junit.Test
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 17-Mar-3/17/19
+ * on 17-Mar-2019
  */
 @ExperimentalUnsignedTypes
 class BigInteger32JavaAdditionTest {

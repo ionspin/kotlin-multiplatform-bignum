@@ -22,7 +22,7 @@ import java.math.BigInteger
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 09-Mar-3/9/19
+ * on 09-Mar-2019
  */
 @UseExperimental(ExperimentalUnsignedTypes::class)
 fun UIntArray.toJavaBigInteger(): BigInteger {

@@ -20,7 +20,7 @@ package com.ionspin.kotlin.bignum.decimal
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 10-Mar-3/10/19
+ * on 10-Mar-2019
  */
 
 
