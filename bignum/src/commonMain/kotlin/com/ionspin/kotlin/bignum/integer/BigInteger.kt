@@ -333,10 +333,24 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
     }
 
     fun numberOfDigits() : Int {
-        val bitLenght = arithmetic.bitLength(magnitude)
-//        val minDigit = ceil((bitLenght - 1) * LOG_10_OF_2)
-        val maxDigit = floor(bitLenght * LOG_10_OF_2) + 1
-        return maxDigit.toInt()
+//        val bitLenght = arithmetic.bitLength(magnitude)
+////        val minDigit = ceil((bitLenght - 1) * LOG_10_OF_2)
+//        val maxDigit = floor(bitLenght * LOG_10_OF_2) + 1
+//        val correct = this / 10.toBigInteger().pow(maxDigit.toInt())
+//        return when {
+//            correct == ZERO -> maxDigit.toInt() - 1
+//            correct > 0 && correct < 10 -> maxDigit.toInt()
+//            else -> -1
+//        }
+        var tmp = this
+        var counter = 0
+        while (tmp > 0) {
+            tmp /= 10
+            counter ++
+        }
+        return counter
+
+
     }
 
 

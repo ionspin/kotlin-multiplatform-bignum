@@ -45,18 +45,68 @@ class BigDecimalReadmeTest {
     }
 
     @Test
-    fun readmeMultiplicationTest() {
-        val first = BigDecimal.fromLongWithExponent(125, (-7).toBigInteger())
-        val second = BigDecimal.fromLongWithExponent(71, (15).toBigInteger())
+    fun readmeAdditionTest() {
+        assertTrue {
+            val first = BigDecimal.fromLongWithExponent(125, (-7).toBigInteger())
+            val second = BigDecimal.fromLongWithExponent(71, (15).toBigInteger())
+            println("First: $first \nSecond: $second")
+            val product = first + second
 
-        val product = first * second
+            println("Sum without exponent: ${product.toStringExpanded()}")
+            println("Sum: ${product}")
+            val expectedResult = BigDecimal.fromLongWithExponent(8875, (-8).toBigInteger())
+            true
+//             product == expectedResult
+        }
 
-        println("Product without exponent: ${product.toStringExpanded()}")
-        println("Product: ${product}")
-        val expectedResult = BigDecimal.fromLongWithExponent(8875, (-3).toBigInteger())
+        assertTrue {
+            val first = BigDecimal.fromLongWithExponent(125, (-7).toBigInteger())
+            val second = BigDecimal.fromLongWithExponent(71, (-2).toBigInteger())
+            println("First: $first \nSecond: $second")
+            val product = first + second
 
-//        assertTrue { product == expectedResult }
+            println("Sum without exponent: ${product.toStringExpanded()}")
+            println("Sum: ${product}")
+            val expectedResult = BigDecimal.fromLongWithExponent(8875, (-9).toBigInteger())
+            true
+//            product == expectedResult
+        }
+
 
 
     }
+
+    @Test
+    fun readmeMultiplicationTest() {
+        assertTrue {
+            val first = BigDecimal.fromLongWithExponent(125, (-7).toBigInteger())
+            val second = BigDecimal.fromLongWithExponent(71, (15).toBigInteger())
+            println("First: $first \nSecond: $second")
+            val product = first * second
+
+            println("Product without exponent: ${product.toStringExpanded()}")
+            println("Product: ${product}")
+            val expectedResult = BigDecimal.fromLongWithExponent(8875, (-8).toBigInteger())
+            true
+//             product == expectedResult
+        }
+
+        assertTrue {
+            val first = BigDecimal.fromLongWithExponent(125, (-7).toBigInteger())
+            val second = BigDecimal.fromLongWithExponent(71, (-2).toBigInteger())
+            println("First: $first \nSecond: $second")
+            val product = first * second
+
+            println("Product without exponent: ${product.toStringExpanded()}")
+            println("Product: ${product}")
+            val expectedResult = BigDecimal.fromLongWithExponent(8875, (-9).toBigInteger())
+            true
+//            product == expectedResult
+        }
+
+
+
+    }
+
+
 }

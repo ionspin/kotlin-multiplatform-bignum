@@ -18,27 +18,98 @@
 package com.ionspin.kotlin.bignum.decimal
 
 import org.junit.Test
-import java.math.BigDecimal
 import java.math.MathContext
 import java.math.RoundingMode
+import kotlin.test.assertTrue
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
  * on 24-Mar-2019
  */
+@ExperimentalUnsignedTypes
 class BigDecimalJvmTest {
 
+
     @Test
-    fun bla() {
-        val mathContext = MathContext(60, RoundingMode.CEILING)
-        val mathContext2 = MathContext(65, RoundingMode.CEILING)
-        val mathContext3 = MathContext(0, RoundingMode.UNNECESSARY)
-        val bigDecimalJvm = BigDecimal("1000000000000000000000000000000000000000000000000000000000000000000000000000002", mathContext)
-        val bigDecimalJvm2 = BigDecimal("1000000000000000000000000000000000000000000000000000000000000000000000000000002", mathContext2)
-        val result = bigDecimalJvm + bigDecimalJvm2
-        val blares = bigDecimalJvm.multiply(BigDecimal.valueOf(2), mathContext3)
-        val blares2 = blares.inc()
-        println("BigDecimalJvm: $bigDecimalJvm")
+    fun testCreation() {
+        assertTrue {
+            val bigDecimal = BigDecimal.fromLongWithExponent(123L, 5)
+            val javaBigDecimal = java.math.BigDecimal.valueOf(123, -5)
+            bigDecimal.toJavaBigDecimal() == javaBigDecimal
+        }
+    }
+
+    @Test
+    fun testAddition() {
+        assertTrue {
+            val first = BigDecimal.fromLongWithExponent(123L, 2)
+            val javaBigFirst = java.math.BigDecimal.valueOf(123, -2)
+
+            val second = BigDecimal.fromLongWithExponent(71, -3)
+            val javaBigSecond = java.math.BigDecimal.valueOf(71, 3)
+
+            val result = first + second
+            val javaBigResult = javaBigFirst + javaBigSecond
+
+            result.toJavaBigDecimal() == javaBigResult
+
+
+        }
+    }
+
+    @Test
+    fun testSubtraction() {
+        assertTrue {
+            val first = BigDecimal.fromLongWithExponent(123L, 2)
+            val javaBigFirst = java.math.BigDecimal.valueOf(123, -2)
+
+            val second = BigDecimal.fromLongWithExponent(71, -3)
+            val javaBigSecond = java.math.BigDecimal.valueOf(71, 3)
+
+            val result = first - second
+            val javaBigResult = javaBigFirst - javaBigSecond
+
+            result.toJavaBigDecimal() == javaBigResult
+
+
+        }
+    }
+
+    @Test
+    fun testMultiplication() {
+        assertTrue {
+            val first = BigDecimal.fromLongWithExponent(123L, 2)
+            val javaBigFirst = java.math.BigDecimal.valueOf(123, -2)
+
+            val second = BigDecimal.fromLongWithExponent(71, -3)
+            println("${second.toString()}")
+            val javaBigSecond = java.math.BigDecimal.valueOf(71, 3)
+
+            val result = first * second
+            val javaBigResult = javaBigFirst * javaBigSecond
+
+            result.toJavaBigDecimal() == javaBigResult
+
+
+        }
+    }
+
+    @Test
+    fun testDivision() {
+        assertTrue {
+            val first = BigDecimal.fromLongWithExponent(123L, 2)
+            val javaBigFirst = java.math.BigDecimal.valueOf(123, -2)
+
+            val second = BigDecimal.fromLongWithExponent(71, -3)
+            val javaBigSecond = java.math.BigDecimal.valueOf(71, 2)
+
+            val result = first - second
+            val javaBigResult = javaBigFirst - javaBigSecond
+
+            result.toJavaBigDecimal() == javaBigResult
+
+
+        }
     }
 }
