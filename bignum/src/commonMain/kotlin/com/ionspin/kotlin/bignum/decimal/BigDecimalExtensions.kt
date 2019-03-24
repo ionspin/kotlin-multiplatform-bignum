@@ -15,7 +15,7 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer
+package com.ionspin.kotlin.bignum.decimal
 
 /**
  * Created by Ugljesa Jovanovic
@@ -25,27 +25,29 @@ package com.ionspin.kotlin.bignum.integer
 
 
 @ExperimentalUnsignedTypes
-fun Long.toBigInteger(): BigInteger {
-    return BigInteger.fromLong(this)
+fun Long.toBigDecimal(): BigDecimal {
+    return BigDecimal.fromLong(this)
 }
 
 
 @ExperimentalUnsignedTypes
-fun Int.toBigInteger(): BigInteger {
-    return BigInteger.fromInt(this)
+fun Int.toBigDecimal(): BigDecimal {
+    return BigDecimal.fromInt(this)
 }
 
 
 @ExperimentalUnsignedTypes
-fun Short.toBigInteger(): BigInteger {
-    return BigInteger.fromShort(this)
+fun Short.toBigDecimal(): BigDecimal {
+    return BigDecimal.fromShort(this)
 }
 
 
 @ExperimentalUnsignedTypes
-fun Byte.toBigInteger(): BigInteger {
-    return BigInteger.fromByte(this)
+fun Byte.toBigDecimal(): BigDecimal {
+    return BigDecimal.fromByte(this)
 }
+
+
 
 
 

@@ -15,38 +15,32 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer
+package com.ionspin.kotlin.bignum.decimal
+
+import com.ionspin.kotlin.bignum.integer.toBigInteger
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 10-Mar-3/10/19
+ * on 24-Mar-3/24/19
  */
-
-
 @ExperimentalUnsignedTypes
-fun Long.toBigInteger(): BigInteger {
-    return BigInteger.fromLong(this)
+class BigDecimalReadmeTest {
+    @Test
+    fun toStringTest() {
+        val bigDecimal = BigDecimal.fromLongWithExponent(1, (-5).toBigInteger())
+        println("BigDecimal $bigDecimal")
+
+        assertTrue { bigDecimal.toString() == "1E-5" }
+    }
+
+    @Test
+    fun toStringWithoutExponentTest() {
+        val bigDecimal = BigDecimal.fromLongWithExponent(250000, (-5).toBigInteger())
+        println("BigDecimal ${bigDecimal.toStringExpanded()}")
+
+        assertTrue { bigDecimal.toStringExpanded() == "2.5" }
+    }
 }
-
-
-@ExperimentalUnsignedTypes
-fun Int.toBigInteger(): BigInteger {
-    return BigInteger.fromInt(this)
-}
-
-
-@ExperimentalUnsignedTypes
-fun Short.toBigInteger(): BigInteger {
-    return BigInteger.fromShort(this)
-}
-
-
-@ExperimentalUnsignedTypes
-fun Byte.toBigInteger(): BigInteger {
-    return BigInteger.fromByte(this)
-}
-
-
-
-
