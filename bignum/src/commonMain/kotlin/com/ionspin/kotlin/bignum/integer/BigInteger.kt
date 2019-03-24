@@ -287,10 +287,29 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         return BigInteger(wordArray = this.magnitude.copyOf(), sign = Sign.POSITIVE)
     }
 
+    fun pow(exponent: BigInteger) : BigInteger {
+        if (exponent <= Long.MAX_VALUE) {
+            return pow(exponent.magnitude[0].toLong())
+        }
+        //TODO this is not efficient
+        var counter = exponent
+        var result = ONE
+        while(counter > 0) {
+            counter--
+            result *= this
+        }
+
+        return result
+    }
+
     fun pow(exponent: Long): BigInteger {
         return (0 until exponent).fold(ONE) { acc, _ ->
             acc * this
         }
+    }
+
+    fun pow(exponent: Int): BigInteger {
+        return pow(exponent.toLong())
     }
 
     fun signum(): Int = when (sign) {
@@ -313,11 +332,11 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         return (word and (1UL shl bitPosition.toInt()) == 1UL)
     }
 
-    fun numberOfDigits() : Long {
+    fun numberOfDigits() : Int {
         val bitLenght = arithmetic.bitLength(magnitude)
 //        val minDigit = ceil((bitLenght - 1) * LOG_10_OF_2)
         val maxDigit = floor(bitLenght * LOG_10_OF_2) + 1
-        return maxDigit.toLong()
+        return maxDigit.toInt()
     }
 
 

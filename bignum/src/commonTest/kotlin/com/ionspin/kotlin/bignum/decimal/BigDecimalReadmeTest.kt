@@ -46,8 +46,8 @@ class BigDecimalReadmeTest {
 
     @Test
     fun readmeMultiplicationTest() {
-        val first = BigDecimal.fromLongWithExponent(125, (-2).toBigInteger())
-        val second = BigDecimal.fromLongWithExponent(71, (-1).toBigInteger())
+        val first = BigDecimal.fromLongWithExponent(125, (-7).toBigInteger())
+        val second = BigDecimal.fromLongWithExponent(71, (15).toBigInteger())
 
         val product = first * second
 
