@@ -315,7 +315,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 
     fun numberOfDigits() : Long {
         val bitLenght = arithmetic.bitLength(magnitude)
-        val minDigit = ceil((bitLenght - 1) * LOG_10_OF_2)
+//        val minDigit = ceil((bitLenght - 1) * LOG_10_OF_2)
         val maxDigit = floor(bitLenght * LOG_10_OF_2) + 1
         return maxDigit.toLong()
     }
