@@ -26,9 +26,10 @@ import kotlin.test.assertTrue
  * ugljesa.jovanovic@ionspin.com
  * on 23-Mar-2019
  */
+@ExperimentalUnsignedTypes
 class BitwiseTest {
 
-    @ExperimentalUnsignedTypes
+
     @Test
     fun testNegate() {
         val bigInt = BigInteger.fromInt(123)
@@ -38,4 +39,27 @@ class BitwiseTest {
         assertTrue { negatedBigInt == expectedBigInt }
 
     }
+
+    @Test
+    fun numberOfDigitsTest() {
+        val bigInteger = BigInteger.parseString("123456789012345678901234567890123456", 10)
+        val numberOfDigits = bigInteger.numberOfDigits()
+        val expectedDigits = 36L
+        assertTrue { numberOfDigits == expectedDigits }
+    }
+
+    @Test
+    fun numberOfDigitsBigTest() {
+        for (i in 1 .. 5000 step 101) {
+            val string = buildString (i) { for (j in 1 .. i) this.append('1')  }
+            val bigInteger = BigInteger.parseString(string, 10)
+            val numberOfDigits = bigInteger.numberOfDigits()
+            val expectedDigits = i
+            assertTrue { numberOfDigits == expectedDigits.toLong() }
+        }
+
+    }
+
+
+
 }

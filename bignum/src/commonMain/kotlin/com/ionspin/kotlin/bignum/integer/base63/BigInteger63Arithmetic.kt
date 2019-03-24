@@ -89,6 +89,14 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return 63 - numberOfLeadingZeroes(value)
     }
 
+    fun trailingZeroBits(value : ULong) : Int {
+        return 63 - bitLength(value.inv() and baseMask)
+    }
+
+    override fun trailingZeroBits(value : ULongArray) : Int {
+        TODO()
+    }
+
     fun removeLeadingZeroes(bigInteger: ULongArray): ULongArray {
         val firstEmpty = bigInteger.indexOfLast { it != 0UL } + 1
         if (firstEmpty == -1 || firstEmpty == 0) {

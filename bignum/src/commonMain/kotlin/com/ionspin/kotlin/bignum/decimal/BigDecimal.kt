@@ -18,6 +18,7 @@
 package com.ionspin.kotlin.bignum.decimal
 
 import com.ionspin.kotlin.bignum.integer.BigInteger
+import com.ionspin.kotlin.bignum.integer.minus
 import kotlin.math.absoluteValue
 
 /**
@@ -27,16 +28,23 @@ import kotlin.math.absoluteValue
  */
 
 @ExperimentalUnsignedTypes
-class BigDecimal(val significand: BigInteger, val exponent: BigInteger) {
+class BigDecimal private constructor(val significand: BigInteger, val exponent: BigInteger = BigInteger.ZERO, val decimalMode: DecimalMode = DecimalMode()) : Comparable<Any> {
 
     companion object {
+        val ZERO = BigDecimal(BigInteger.ZERO)
+        val ONE = BigDecimal(BigInteger.ONE)
 
         private fun roundOrDont(significand: BigInteger, exponent: BigInteger, decimalMode: DecimalMode): BigDecimal {
             return if (decimalMode.roundingMode != RoundingMode.NONE) {
-                BigDecimal(significand, exponent).round(decimalMode)
+                round(significand, exponent, decimalMode)
             } else {
                 BigDecimal(significand, exponent)
             }
+        }
+
+        private fun round(significand: BigInteger, exponent: BigInteger, decimalMode: DecimalMode): BigDecimal {
+
+            TODO()
         }
 
         fun fromLong(long: Long) = BigDecimal(BigInteger.fromLong(long), BigInteger.ZERO)
@@ -55,8 +63,17 @@ class BigDecimal(val significand: BigInteger, val exponent: BigInteger) {
     val isExponentLong = exponent.numberOfWords == 0
     val longExponent = exponent.magnitude[0]
 
+    init {
+        if (decimalMode.precision == 0 && exponent != BigInteger.ZERO) {
+            throw ArithmeticException("Invalid BigDecimal, exponent with unlimited precision")
+        }
+    }
+
+
+
 
     fun plus(other: BigDecimal, decimalMode: DecimalMode = DecimalMode()): BigDecimal {
+
         val newExponent = BigInteger.max(this.exponent, other.exponent)
         val newSignificand = this.significand + other.significand
         return roundOrDont(newSignificand, newExponent, decimalMode)
@@ -70,13 +87,9 @@ class BigDecimal(val significand: BigInteger, val exponent: BigInteger) {
 
 
     internal fun multiply(other: BigDecimal, decimalMode: DecimalMode = DecimalMode()): BigDecimal {
-        val newExponent = exponent * other.exponent
+        val newExponent = exponent + other.exponent
         val newSignificand = this.significand * other.significand
-        return if (decimalMode.roundingMode != RoundingMode.NONE) {
-            BigDecimal(newSignificand, newExponent).round(decimalMode)
-        } else {
-            BigDecimal(newSignificand, newExponent)
-        }
+        return roundOrDont(newSignificand, newExponent, decimalMode)
 
     }
 
@@ -156,15 +169,48 @@ class BigDecimal(val significand: BigInteger, val exponent: BigInteger) {
         return BigDecimal(significand, exponent * powerExponent)
     }
 
-    private fun round(decimalMode: DecimalMode): BigDecimal {
+    private fun bringToSamePrecision(first : BigDecimal, second : BigDecimal) : Pair<BigDecimal, BigDecimal> {
+//        if (first.decimalMode )
+        TODO()
+    }
+
+
+    fun compare(other : BigDecimal) : Int {
+        if (exponent == other.exponent) {
+            return significand.compare(other.significand)
+        }
 
         TODO()
+    }
+
+    override fun compareTo(other: Any): Int {
+        return when (other) {
+            is BigDecimal -> compare(other)
+            is Long -> compare(BigDecimal.fromLong(other))
+            is Int -> compare(BigDecimal.fromInt(other))
+            is Short -> compare(BigDecimal.fromShort(other))
+            is Byte -> compare(BigDecimal.fromByte(other))
+            else -> throw RuntimeException("Invalid comparison type for BigDecimal: ${other::class.simpleName}")
+        }
+
+    }
+
+    override fun equals(other: Any?): Boolean {
+        val comparison = when (other) {
+            is BigDecimal -> compare(other)
+            is Long -> compare(BigDecimal.fromLong(other))
+            is Int -> compare(BigDecimal.fromInt(other))
+            is Short -> compare(BigDecimal.fromShort(other))
+            is Byte -> compare(BigDecimal.fromByte(other))
+            else -> -1
+        }
+        return comparison == 0
     }
 
     override fun toString(): String {
         val significandString = significand.toString(10)
         return when {
-            exponent > 0 -> significandString + "E$exponent"
+            exponent > 0 -> significandString + "E+$exponent"
             exponent < 0 -> "0.${significandString}E$exponent"
             exponent == BigInteger.ZERO -> significandString
             else -> throw RuntimeException("Invalid state, please report a bug (Integer compareTo invalid)")

@@ -15,18 +15,26 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer
+package com.ionspin.kotlin.bignum.integer.arithmetic
 
+import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 10-Mar-2019
+ * on 24-Mar-2019
  */
 @ExperimentalUnsignedTypes
-typealias WordArray = ULongArray
-@ExperimentalUnsignedTypes
-typealias Word = ULong
-@ExperimentalUnsignedTypes
-internal val chosenArithmetic : BigIntegerArithmetic<WordArray, Word> = BigInteger63Arithmetic
+class BigInteger32BitWiseTest {
+
+    @Test
+    fun trailingZeroBitsTest() {
+        val a = ulongArrayOf(64U)
+        val count = BigInteger63Arithmetic.trailingZeroBits(a)
+        assertTrue { count == 7 }
+
+    }
+}

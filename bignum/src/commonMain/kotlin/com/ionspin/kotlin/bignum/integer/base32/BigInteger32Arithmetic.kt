@@ -88,6 +88,10 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         )
     }
 
+    override fun trailingZeroBits(value : UIntArray) : Int {
+        TODO()
+    }
+
     fun removeLeadingZeroes(bigInteger: UIntArray): UIntArray {
         val firstEmpty = bigInteger.indexOfLast { it != 0U } + 1
         if (firstEmpty == -1 || firstEmpty == 0) {

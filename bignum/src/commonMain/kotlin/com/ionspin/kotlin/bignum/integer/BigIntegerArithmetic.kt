@@ -39,6 +39,11 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
     fun bitLength(value: BackingCollectionType): Int
 
     /**
+     * Number of consecutive zeroes count from the right in binary representation
+     */
+    fun trailingZeroBits(value: BackingCollectionType) : Int
+
+    /**
      * Arithmetic shift left. Shifts the number to the left, by required places of bits, creating new words if necessary
      */
     fun shiftLeft(operand: BackingCollectionType, places: Int): BackingCollectionType

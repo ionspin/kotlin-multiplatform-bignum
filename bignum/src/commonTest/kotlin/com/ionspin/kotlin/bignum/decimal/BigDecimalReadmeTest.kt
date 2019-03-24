@@ -43,4 +43,20 @@ class BigDecimalReadmeTest {
 
         assertTrue { bigDecimal.toStringExpanded() == "2.5" }
     }
+
+    @Test
+    fun readmeMultiplicationTest() {
+        val first = BigDecimal.fromLongWithExponent(125, (-2).toBigInteger())
+        val second = BigDecimal.fromLongWithExponent(71, (-1).toBigInteger())
+
+        val product = first * second
+
+        println("Product without exponent: ${product.toStringExpanded()}")
+        println("Product: ${product}")
+        val expectedResult = BigDecimal.fromLongWithExponent(8875, (-3).toBigInteger())
+
+//        assertTrue { product == expectedResult }
+
+
+    }
 }

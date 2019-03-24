@@ -42,6 +42,10 @@ actual object NativeBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int> {
         TODO("not implemented yet")
     }
 
+    override fun trailingZeroBits(value: IntArray): Int {
+        TODO("not implemented yet")
+    }
+
     override fun shiftLeft(operand: IntArray, places: Int): IntArray {
         TODO("not implemented yet")
     }

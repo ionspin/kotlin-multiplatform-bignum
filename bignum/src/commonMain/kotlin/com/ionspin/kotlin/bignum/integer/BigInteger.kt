@@ -17,6 +17,11 @@
 
 package com.ionspin.kotlin.bignum.integer
 
+import kotlin.math.ceil
+import kotlin.math.floor
+import kotlin.math.log10
+import kotlin.math.pow
+
 
 /**
  * Created by Ugljesa Jovanovic
@@ -50,10 +55,12 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 
     @ExperimentalUnsignedTypes
     companion object {
-        private val arithmetic = chosenArithmetic
+        private val arithmetic : BigIntegerArithmetic<WordArray, Word> = chosenArithmetic
 
         val ZERO = BigInteger(arithmetic.ZERO, Sign.ZERO)
         val ONE = BigInteger(arithmetic.ONE, Sign.POSITIVE)
+
+        val LOG_10_OF_2 = log10(2.0)
 
         fun parseString(string: String, base: Int = 10): BigInteger {
             val signed = (string[0] == '-' || string[0] == '+')
@@ -216,13 +223,20 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         if (other.isZero()) {
             throw ArithmeticException("Division by zero! $this / $other")
         }
-        val sign = if (this.sign != other.sign) {
-            Sign.NEGATIVE
+
+        val result = arithmetic.divide(this.magnitude, other.magnitude).first
+        return if (result == arithmetic.ZERO) {
+            ZERO
         } else {
-            Sign.POSITIVE
+            val sign = if (this.sign != other.sign) {
+                Sign.NEGATIVE
+            } else {
+                Sign.POSITIVE
+            }
+            BigInteger(result, sign)
         }
 
-        return BigInteger(arithmetic.divide(this.magnitude, other.magnitude).first, sign)
+
     }
 
     fun remainder(other: BigInteger): BigInteger {
@@ -298,6 +312,15 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         val word = magnitude[wordPosition.toInt()]
         return (word and (1UL shl bitPosition.toInt()) == 1UL)
     }
+
+    fun numberOfDigits() : Long {
+        val bitLenght = arithmetic.bitLength(magnitude)
+        val minDigit = ceil((bitLenght - 1) * LOG_10_OF_2)
+        val maxDigit = floor(bitLenght * LOG_10_OF_2) + 1
+        return maxDigit.toLong()
+    }
+
+
 
 
     infix fun shl(places: Int): BigInteger {
