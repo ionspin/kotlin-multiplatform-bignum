@@ -30,18 +30,50 @@ import kotlin.test.assertTrue
 class BigDecimalReadmeTest {
     @Test
     fun toStringTest() {
-        val bigDecimal = BigDecimal.fromLongWithExponent(1, (-5).toBigInteger())
-        println("BigDecimal $bigDecimal")
 
-        assertTrue { bigDecimal.toString() == "1E-5" }
+
+        assertTrue {
+            val bigDecimal = BigDecimal.fromLongWithExponent(1, (10).toBigInteger())
+            println("BigDecimal $bigDecimal")
+            bigDecimal.toString() == "1.0E+10"
+        }
+
+        assertTrue {
+            val bigDecimal = BigDecimal.fromLongWithExponent(1, (-5).toBigInteger())
+            println("BigDecimal $bigDecimal")
+            bigDecimal.toString() == "1.0E-5"
+        }
+
+        assertTrue {
+            val bigDecimal = BigDecimal.fromLongWithExponent(71, (-2).toBigInteger())
+            println("BigDecimal $bigDecimal")
+            bigDecimal.toString() == "7.1E-2"
+        }
     }
 
     @Test
     fun toStringWithoutExponentTest() {
-        val bigDecimal = BigDecimal.fromLongWithExponent(250000, (-5).toBigInteger())
-        println("BigDecimal ${bigDecimal.toStringExpanded()}")
 
-        assertTrue { bigDecimal.toStringExpanded() == "2.5" }
+
+        assertTrue {
+            val bigDecimal = BigDecimal.fromLongWithExponent(525, (5).toBigInteger())
+            println("BigDecimal ${bigDecimal.toStringExpanded()}")
+            bigDecimal.toStringExpanded() == "525000"
+        }
+
+        assertTrue {
+            val bigDecimal = BigDecimal.fromLongWithExponent(250001, (-5).toBigInteger())
+            println("BigDecimal ${bigDecimal.toStringExpanded()}")
+            bigDecimal.toStringExpanded() == "0.0000250001"
+        }
+
+        assertTrue {
+            val bigDecimal = BigDecimal.fromLongWithExponent(71, (-2).toBigInteger())
+            println("BigDecimal ${bigDecimal.toStringExpanded()}")
+            bigDecimal.toStringExpanded() == "0.071"
+        }
+
+
     }
 
     @Test
@@ -73,7 +105,6 @@ class BigDecimalReadmeTest {
         }
 
 
-
     }
 
     @Test
@@ -103,7 +134,6 @@ class BigDecimalReadmeTest {
             true
 //            product == expectedResult
         }
-
 
 
     }

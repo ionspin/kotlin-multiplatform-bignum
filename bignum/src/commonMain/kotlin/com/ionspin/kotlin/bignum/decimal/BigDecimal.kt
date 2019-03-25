@@ -78,7 +78,7 @@ class BigDecimal private constructor(
 
         fun fromByteWithExponent(byte: Byte, exponent: BigInteger): BigDecimal {
             val bigint = BigInteger.fromByte(byte)
-            return BigDecimal(bigint, exponent )
+            return BigDecimal(bigint, exponent)
         }
 
         fun fromLongWithExponent(long: Long, exponent: Int): BigDecimal =
@@ -198,7 +198,10 @@ class BigDecimal private constructor(
         return BigDecimal(significand, exponent * powerExponent)
     }
 
-    private fun bringSignificandToSameExponent(first: BigDecimal, second: BigDecimal): Triple<BigInteger, BigInteger, BigInteger> {
+    private fun bringSignificandToSameExponent(
+        first: BigDecimal,
+        second: BigDecimal
+    ): Triple<BigInteger, BigInteger, BigInteger> {
         val firstExponent = first.exponent
         val secondExponent = second.exponent
         return when {
@@ -257,9 +260,15 @@ class BigDecimal private constructor(
 
     override fun toString(): String {
         val significandString = significand.toString(10)
+        val expand = if (significandString.length == 1) {
+            "0"
+        } else {
+            ""
+        }
+
         return when {
-            exponent > 0 -> "${placeADotInString(significandString, significandString.length - 1)}E+$exponent"
-            exponent < 0 -> "${placeADotInString(significandString, significandString.length - 1)}E$exponent"
+            exponent > 0 -> "${placeADotInString(significandString, significandString.length - 1)}${expand}E+$exponent"
+            exponent < 0 -> "${placeADotInString(significandString, significandString.length - 1)}${expand}E$exponent"
             exponent == BigInteger.ZERO -> noExponentStringtoScientificNotation(significandString)
             else -> throw RuntimeException("Invalid state, please report a bug (Integer compareTo invalid)")
         }
@@ -268,22 +277,35 @@ class BigDecimal private constructor(
     fun toStringExpanded(): String {
         val digits = significand.numberOfDigits()
         if (exponent > Int.MAX_VALUE) {
-            throw RuntimeException("Invalid toStringExpanded request (expoenent > Int.MAX_VALUE)")
+            throw RuntimeException("Invalid toStringExpanded request (exponent > Int.MAX_VALUE)")
         }
         val significandString = significand.toString(10)
+
+
         return when {
             exponent > 0 -> {
-                if (exponent - digits + 1 > 0) {
-                    placeADotInString(
-                        significandString + ((exponent - digits + 1) * '0'),
-                        exponent.magnitude[0].toInt().absoluteValue
-                    )
+                val diffBigInt = (exponent - digits + 1)
+                val diffInt = diffBigInt.magnitude[0].toInt()
+
+                if (diffInt > 0) {
+                    val expandZeroes = diffBigInt * '0'
+                    significandString + expandZeroes
                 } else {
-                    placeADotInString(significandString, exponent.magnitude[0].toInt().absoluteValue)
+                    significandString
                 }
 
-            } //
-            exponent < 0 -> placeADotInString(significandString, exponent.magnitude[0].toInt().absoluteValue)
+            }
+            exponent < 0 -> {
+
+                val diffInt = exponent.magnitude[0].toInt()
+
+                if (diffInt > 0) {
+                    val expandZeroes = exponent.abs() * '0'
+                    placeADotInString(expandZeroes + significandString, diffInt + significandString.length - 1)
+                } else {
+                    placeADotInString(significandString, significandString.length - 1)
+                }
+            }
             exponent == BigInteger.ZERO -> significandString
 
             else -> throw RuntimeException("Invalid state, please report a bug (Integer compareTo invalid)")
