@@ -61,6 +61,10 @@ class BigDecimal private constructor(
         fun fromShort(short: Short) = BigDecimal(BigInteger.fromShort(short), BigInteger.ZERO)
         fun fromByte(byte: Byte) = BigDecimal(BigInteger.fromByte(byte), BigInteger.ZERO)
 
+        fun fromBigIntegerWithExponent(bigInteger: BigInteger , exponent: BigInteger) : BigDecimal {
+            return BigDecimal(bigInteger, exponent)
+        }
+
         fun fromLongWithExponent(long: Long, exponent: BigInteger): BigDecimal {
             val bigint = BigInteger.fromLong(long)
             return BigDecimal(bigint, exponent)
@@ -202,18 +206,25 @@ class BigDecimal private constructor(
         first: BigDecimal,
         second: BigDecimal
     ): Triple<BigInteger, BigInteger, BigInteger> {
+        val firstDigits = first.significand.numberOfDigits()
+        val secondDigits = second.significand.numberOfDigits()
         val firstExponent = first.exponent
         val secondExponent = second.exponent
+
+        val firstMove = firstDigits  - 1
+        val secondMove = secondDigits - 1
+
+
         return when {
-            firstExponent < secondExponent -> {
-                val exponentDifference = secondExponent - firstExponent
-                val preparedSecond = second.significand * 10.toBigInteger().pow(exponentDifference - 1)
-                return Triple(first.significand, preparedSecond, exponentDifference)
-            }
             firstExponent > secondExponent -> {
-                val exponentDifference = firstExponent - secondExponent
-                val preparedFirst = first.significand * 10.toBigInteger().pow(exponentDifference - 1)
-                return Triple(preparedFirst, second.significand, exponentDifference)
+                val exponentDifference = firstExponent - secondExponent + secondMove - firstMove
+                val preparedFirst = first.significand * 10.toBigInteger().pow(exponentDifference)
+                return Triple(preparedFirst, second.significand, firstExponent)
+            }
+            firstExponent < secondExponent -> {
+                val exponentDifference = secondExponent - firstExponent + firstMove - secondMove
+                val preparedSecond = second.significand * 10.toBigInteger().pow(exponentDifference)
+                return Triple(first.significand, preparedSecond, secondExponent)
             }
             firstExponent == secondExponent -> {
                 return Triple(first.significand, second.significand, firstExponent)
@@ -291,7 +302,7 @@ class BigDecimal private constructor(
                     val expandZeroes = diffBigInt * '0'
                     significandString + expandZeroes
                 } else {
-                    placeADotInString(significandString, exponent.magnitude[0].toInt())
+                    placeADotInString(significandString, significandString.length - exponent.magnitude[0].toInt() - 1)
                 }
 
             }

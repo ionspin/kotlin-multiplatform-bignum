@@ -35,24 +35,97 @@ class BigDecimalJvmTest {
     fun testCreation() {
         assertTrue {
             val bigDecimal = BigDecimal.fromLongWithExponent(123L, 5)
-            val javaBigDecimal = java.math.BigDecimal.valueOf(123, -5)
-            bigDecimal.toJavaBigDecimal() == javaBigDecimal
+            val javaBigDecimal = java.math.BigDecimal.valueOf(123, -3)
+            bigDecimal.toJavaBigDecimal().compareTo(javaBigDecimal) == 0
+        }
+
+        assertTrue {
+            val bigDecimal = BigDecimal.fromLongWithExponent(123L, 4)
+            val javaBigDecimal = java.math.BigDecimal.valueOf(123, -2)
+            bigDecimal.toJavaBigDecimal().compareTo(javaBigDecimal) == 0
+        }
+
+        assertTrue {
+            val bigDecimal = BigDecimal.fromLongWithExponent(71, -2)
+            val javaBigDecimal = java.math.BigDecimal.valueOf(71, 3)
+
+            val bigDecimalConverted = bigDecimal.toJavaBigDecimal()
+
+            bigDecimal.toJavaBigDecimal().compareTo(javaBigDecimal) == 0 // <- Ignores java bigint scale difference
+        }
+
+        assertTrue {
+            val bigDecimal = BigDecimal.fromLongWithExponent(125L, -7)
+            val javaBigDecimal = java.math.BigDecimal.valueOf(125, 9)
+            bigDecimal.toJavaBigDecimal().compareTo(javaBigDecimal) == 0
+        }
+
+        assertTrue {
+            val bigDecimal = BigDecimal.fromLongWithExponent(71, 15)
+            val javaBigDecimal = java.math.BigDecimal.valueOf(71, -14)
+            bigDecimal.toJavaBigDecimal().compareTo(javaBigDecimal) == 0
         }
     }
 
     @Test
     fun testAddition() {
+
         assertTrue {
             val first = BigDecimal.fromLongWithExponent(123L, 4)
             val javaBigFirst = java.math.BigDecimal.valueOf(123, -2)
 
-            val second = BigDecimal.fromLongWithExponent(71, -2)
-            val javaBigSecond = java.math.BigDecimal.valueOf(71, 3)
+            val second = BigDecimal.fromLongWithExponent(71, 2)
+            val javaBigSecond = java.math.BigDecimal.valueOf(71, -1)
 
             val result = first + second
             val javaBigResult = javaBigFirst + javaBigSecond
 
-            result.toJavaBigDecimal() == javaBigResult
+            result.toJavaBigDecimal().compareTo(javaBigResult) == 0
+
+
+        }
+
+        assertTrue {
+            val first = BigDecimal.fromLongWithExponent(123L, 4)
+            val javaBigFirst = java.math.BigDecimal.valueOf(123, -2)
+
+            val second = BigDecimal.fromLongWithExponent(7111, -2)
+            val javaBigSecond = java.math.BigDecimal.valueOf(7111, 5)
+
+            val result = first + second
+            val javaBigResult = javaBigFirst + javaBigSecond
+
+            result.toJavaBigDecimal().compareTo(javaBigResult) == 0
+
+
+        }
+
+        assertTrue {
+            val first = BigDecimal.fromLongWithExponent(125L, -7)
+            val javaBigFirst = java.math.BigDecimal.valueOf(125, 9)
+
+            val second = BigDecimal.fromLongWithExponent(71, 15)
+            val javaBigSecond = java.math.BigDecimal.valueOf(71, -14)
+
+            val result = first + second
+            val javaBigResult = javaBigFirst + javaBigSecond
+
+            result.toJavaBigDecimal().compareTo(javaBigResult) == 0
+
+
+        }
+
+        assertTrue {
+            val first = BigDecimal.fromLongWithExponent(125L, 15) // 15
+            val javaBigFirst = java.math.BigDecimal.valueOf(125, -13 ) // -14
+
+            val second = BigDecimal.fromLongWithExponent(71, -7) // -7
+            val javaBigSecond = java.math.BigDecimal.valueOf(71, 8) // 9
+
+            val result = first + second
+            val javaBigResult = javaBigFirst + javaBigSecond
+
+            result.toJavaBigDecimal().compareTo(javaBigResult) == 0
 
 
         }

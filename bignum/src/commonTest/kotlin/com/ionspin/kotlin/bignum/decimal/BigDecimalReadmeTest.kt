@@ -17,6 +17,7 @@
 
 package com.ionspin.kotlin.bignum.decimal
 
+import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -48,6 +49,13 @@ class BigDecimalReadmeTest {
             val bigDecimal = BigDecimal.fromLongWithExponent(71, (-2).toBigInteger())
             println("BigDecimal $bigDecimal")
             bigDecimal.toString() == "7.1E-2"
+        }
+
+
+        assertTrue {
+            val bigDecimal = BigDecimal.fromLongWithExponent(7111, (7).toBigInteger())
+            println("BigDecimal $bigDecimal")
+            bigDecimal.toString() == "7.111E+7"
         }
     }
 
@@ -103,24 +111,26 @@ class BigDecimalReadmeTest {
             val product = first + second
 
             println("Sum without exponent: ${product.toStringExpanded()}")
-            println("Sum: ${product}")
-            val expectedResult = BigDecimal.fromLongWithExponent(8875, (-8).toBigInteger())
-            true
-//             product == expectedResult
+            println("Sum:      ${product}")
+            val expectedResult =  BigDecimal.fromBigIntegerWithExponent(
+                BigInteger.parseString("7100000000000000000000125", 10), (15).toBigInteger()
+            )
+            println("Expected: ${product}")
+             product == expectedResult
         }
 
-        assertTrue {
-            val first = BigDecimal.fromLongWithExponent(125, (-7).toBigInteger())
-            val second = BigDecimal.fromLongWithExponent(71, (-2).toBigInteger())
-            println("First: $first \nSecond: $second")
-            val product = first + second
-
-            println("Sum without exponent: ${product.toStringExpanded()}")
-            println("Sum: ${product}")
-            val expectedResult = BigDecimal.fromLongWithExponent(8875, (-9).toBigInteger())
-            true
-//            product == expectedResult
-        }
+//        assertTrue {
+//            val first = BigDecimal.fromLongWithExponent(125, (-7).toBigInteger())
+//            val second = BigDecimal.fromLongWithExponent(71, (-2).toBigInteger())
+//            println("First: $first \nSecond: $second")
+//            val product = first + second
+//
+//            println("Sum without exponent: ${product.toStringExpanded()}")
+//            println("Sum: ${product}")
+//            val expectedResult = BigDecimal.fromLongWithExponent(8875, (-9).toBigInteger())
+//            true
+////            product == expectedResult
+//        }
 
 
     }

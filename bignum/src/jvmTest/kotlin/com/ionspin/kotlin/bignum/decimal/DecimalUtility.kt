@@ -26,7 +26,6 @@ import com.ionspin.kotlin.bignum.integer.base63.toJavaBigInteger
  */
 @UseExperimental(ExperimentalUnsignedTypes::class)
 fun BigDecimal.toJavaBigDecimal() : java.math.BigDecimal {
-    val scale = ((this.exponent.magnitude[0].toInt() + 1 - this.significand.numberOfDigits()) * -1 )
-    val javaBigDecimal = java.math.BigDecimal(this.significand.toJavaBigInteger(),  scale )
-    return javaBigDecimal
+    println("Expanded ${this.toStringExpanded()}")
+    return java.math.BigDecimal(this.toStringExpanded())
 }

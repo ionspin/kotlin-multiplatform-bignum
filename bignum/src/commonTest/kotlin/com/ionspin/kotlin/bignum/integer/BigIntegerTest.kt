@@ -40,6 +40,14 @@ class BigIntegerTest {
     }
 
     @Test
+    fun testPow10() {
+        val a = BigInteger.fromInt(10)
+        val b = a.pow(2)
+        val expected = BigInteger.fromInt(100)
+        assertTrue { b == expected }
+    }
+
+    @Test
     fun testPowBigger() {
         val a = BigInteger.fromInt(2)
         val b = a.pow(10240)
