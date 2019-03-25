@@ -63,32 +63,33 @@ class BigDecimal private constructor(
 
         fun fromLongWithExponent(long: Long, exponent: BigInteger): BigDecimal {
             val bigint = BigInteger.fromLong(long)
-            val preparedExponent = bigint.numberOfDigits() - 1
-            return BigDecimal(bigint, exponent + preparedExponent)
+            return BigDecimal(bigint, exponent)
         }
 
         fun fromIntWithExponent(int: Int, exponent: BigInteger): BigDecimal {
             val bigint = BigInteger.fromInt(int)
-            val preparedExponent = bigint.numberOfDigits()
-            return BigDecimal(bigint, exponent + preparedExponent)
+            return BigDecimal(bigint, exponent)
         }
 
         fun fromShortWithExponent(short: Short, exponent: BigInteger): BigDecimal {
             val bigint = BigInteger.fromShort(short)
-            val preparedExponent = bigint.numberOfDigits()
-            return BigDecimal(bigint, exponent + preparedExponent)
+            return BigDecimal(bigint, exponent)
         }
 
         fun fromByteWithExponent(byte: Byte, exponent: BigInteger): BigDecimal {
             val bigint = BigInteger.fromByte(byte)
-            val preparedExponent = bigint.numberOfDigits()
-            return BigDecimal(bigint, exponent + preparedExponent)
+            return BigDecimal(bigint, exponent )
         }
 
-        fun fromLongWithExponent(long: Long, exponent: Int): BigDecimal = fromLongWithExponent(long, exponent.toBigInteger())
+        fun fromLongWithExponent(long: Long, exponent: Int): BigDecimal =
+            fromLongWithExponent(long, exponent.toBigInteger())
+
         fun fromIntWithExponent(int: Int, exponent: Int): BigDecimal = fromIntWithExponent(int, exponent.toBigInteger())
-        fun fromShortWithExponent(short: Short, exponent: Int): BigDecimal = fromShortWithExponent(short, exponent.toBigInteger())
-        fun fromByteWithExponent(byte: Byte, exponent: Int): BigDecimal = fromByteWithExponent(byte, exponent.toBigInteger())
+        fun fromShortWithExponent(short: Short, exponent: Int): BigDecimal =
+            fromShortWithExponent(short, exponent.toBigInteger())
+
+        fun fromByteWithExponent(byte: Byte, exponent: Int): BigDecimal =
+            fromByteWithExponent(byte, exponent.toBigInteger())
     }
 
     val isExponentLong = exponent.numberOfWords == 0
@@ -97,23 +98,23 @@ class BigDecimal private constructor(
 
     fun plus(other: BigDecimal, decimalMode: DecimalMode = DecimalMode()): BigDecimal {
 
-        val (first, second) = bringToSameExponent(this, other)
-        val newSignificand = first.significand + second.significand
-        val newExponent = BigInteger.max(first.exponent, second.exponent) + newSignificand.numberOfDigits() - 1
+        val (first, second, exponent) = bringSignificandToSameExponent(this, other)
+        val newSignificand = first + second
+        val newExponent = BigInteger.max(this.exponent, other.exponent)
 
         return roundOrDont(newSignificand, newExponent, decimalMode)
     }
 
     fun minus(other: BigDecimal, decimalMode: DecimalMode = DecimalMode()): BigDecimal {
-        val (first, second) = bringToSameExponent(this, other)
-        val newSignificand = first.significand - second.significand
-        val newExponent = BigInteger.max(first.exponent, second.exponent) + newSignificand.numberOfDigits() - 1
+        val (first, second, exponent) = bringSignificandToSameExponent(this, other)
+        val newSignificand = first - second
+        val newExponent = BigInteger.max(this.exponent, other.exponent)
         return roundOrDont(newSignificand, newExponent, decimalMode)
     }
 
 
     internal fun multiply(other: BigDecimal, decimalMode: DecimalMode = DecimalMode()): BigDecimal {
-//        val (first, second) = bringToSameExponent(this, other)
+//        val (first, second) = bringSignificandToSameExponent(this, other)
         val newSignificand = this.significand * other.significand
         val newExponent = this.exponent + other.exponent
         return roundOrDont(newSignificand, newExponent, decimalMode)
@@ -122,24 +123,23 @@ class BigDecimal private constructor(
 
 
     fun div(other: BigDecimal, decimalMode: DecimalMode = DecimalMode()): BigDecimal {
-        val (first, second) = bringToSameExponent(this, other)
-        val newExponent = first.exponent - second.exponent
-        val newSignificand = first.significand / second.significand //TODO
+        val newExponent = this.exponent - other.exponent
+        val newSignificand = this.significand / other.significand //TODO
         return roundOrDont(newSignificand, newExponent, decimalMode)
     }
 
     //TODO
     fun integerDiv(other: BigDecimal, decimalMode: DecimalMode = DecimalMode()): BigDecimal {
-        val (first, second) = bringToSameExponent(this, other)
-        val newExponent = first.exponent - second.exponent
-        val newSignificand = first.significand / second.significand
+        val (first, second) = bringSignificandToSameExponent(this, other)
+        val newExponent = this.exponent - other.exponent
+        val newSignificand = this.significand / other.significand
         return roundOrDont(newSignificand, newExponent, decimalMode)
     }
 
     fun rem(other: BigDecimal, decimalMode: DecimalMode = DecimalMode()): BigDecimal {
-        val (first, second) = bringToSameExponent(this, other)
-        val newExponent = first.exponent - second.exponent
-        val newSignificand = first.significand % second.significand
+        val (first, second) = bringSignificandToSameExponent(this, other)
+        val newExponent = this.exponent - other.exponent
+        val newSignificand = this.significand % other.significand
         return roundOrDont(newSignificand, newExponent, decimalMode)
     }
 
@@ -198,25 +198,22 @@ class BigDecimal private constructor(
         return BigDecimal(significand, exponent * powerExponent)
     }
 
-    private fun bringToSameExponent(first: BigDecimal, second: BigDecimal): Pair<BigDecimal, BigDecimal> {
+    private fun bringSignificandToSameExponent(first: BigDecimal, second: BigDecimal): Triple<BigInteger, BigInteger, BigInteger> {
         val firstExponent = first.exponent
         val secondExponent = second.exponent
-//        val exponentDifference = (firstExponent.abs() - secondExponent.abs()).abs()
         return when {
             firstExponent < secondExponent -> {
                 val exponentDifference = secondExponent - firstExponent
-                val preparedSecond = second.significand * 10.toBigInteger().pow(exponentDifference.abs() - first.significand.numberOfDigits() + 1)
-                val preparedSecondExponent = second.exponent - exponentDifference
-                return Pair(first, BigDecimal(preparedSecond, preparedSecondExponent))
+                val preparedSecond = second.significand * 10.toBigInteger().pow(exponentDifference - 1)
+                return Triple(first.significand, preparedSecond, exponentDifference)
             }
             firstExponent > secondExponent -> {
                 val exponentDifference = firstExponent - secondExponent
-                val preparedFirst = first.significand * 10.toBigInteger().pow(exponentDifference.abs() - first.significand.numberOfDigits() + 1)
-                val preparedFirstExponent = first.exponent - exponentDifference
-                return Pair(BigDecimal(preparedFirst, preparedFirstExponent), second)
+                val preparedFirst = first.significand * 10.toBigInteger().pow(exponentDifference - 1)
+                return Triple(preparedFirst, second.significand, exponentDifference)
             }
             firstExponent == secondExponent -> {
-                return Pair(first, second)
+                return Triple(first.significand, second.significand, firstExponent)
             }
             else -> {
                 throw RuntimeException("Invalid comparison state BigInteger: $firstExponent, $secondExponent")
@@ -230,7 +227,7 @@ class BigDecimal private constructor(
         if (exponent == other.exponent) {
             return significand.compare(other.significand)
         }
-        val (preparedFirst, preparedSecond) = bringToSameExponent(this, other)
+        val (preparedFirst, preparedSecond) = bringSignificandToSameExponent(this, other)
         return preparedFirst.compare(preparedSecond)
     }
 
@@ -277,7 +274,10 @@ class BigDecimal private constructor(
         return when {
             exponent > 0 -> {
                 if (exponent - digits + 1 > 0) {
-                    placeADotInString(significandString + ((exponent - digits + 1) * '0'), exponent.magnitude[0].toInt().absoluteValue)
+                    placeADotInString(
+                        significandString + ((exponent - digits + 1) * '0'),
+                        exponent.magnitude[0].toInt().absoluteValue
+                    )
                 } else {
                     placeADotInString(significandString, exponent.magnitude[0].toInt().absoluteValue)
                 }
@@ -295,19 +295,11 @@ class BigDecimal private constructor(
     }
 
     private fun placeADotInString(input: String, position: Int): String {
-        val prepared = if (input.length < position) {
-            val builder = buildString(input.length + (position - input.length)) {
-                for (i in 0 until position - input.length) {
-                    this.append('0')
-                }
-                append(input)
-            }
-            "0.${builder}"
-        } else {
-            val prefix = input.substring(0 until input.length - position)
-            val suffix = input.substring(input.length - position until input.length)
-            prefix + '.' + suffix
-        }
+
+        val prefix = input.substring(0 until input.length - position)
+        val suffix = input.substring(input.length - position until input.length)
+        val prepared = prefix + '.' + suffix
+
         return prepared.dropLastWhile { it == '0' }
 
     }
