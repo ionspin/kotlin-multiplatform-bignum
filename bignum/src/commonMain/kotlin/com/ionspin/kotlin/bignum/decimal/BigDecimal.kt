@@ -269,7 +269,7 @@ class BigDecimal private constructor(
         return when {
             exponent > 0 -> "${placeADotInString(significandString, significandString.length - 1)}${expand}E+$exponent"
             exponent < 0 -> "${placeADotInString(significandString, significandString.length - 1)}${expand}E$exponent"
-            exponent == BigInteger.ZERO -> noExponentStringtoScientificNotation(significandString)
+            exponent == BigInteger.ZERO -> "${placeADotInString(significandString, significandString.length - 1)}"
             else -> throw RuntimeException("Invalid state, please report a bug (Integer compareTo invalid)")
         }
     }
@@ -287,11 +287,11 @@ class BigDecimal private constructor(
                 val diffBigInt = (exponent - digits + 1)
                 val diffInt = diffBigInt.magnitude[0].toInt()
 
-                if (diffInt > 0) {
+                if (diffBigInt > 0) {
                     val expandZeroes = diffBigInt * '0'
                     significandString + expandZeroes
                 } else {
-                    significandString
+                    placeADotInString(significandString, exponent.magnitude[0].toInt())
                 }
 
             }
@@ -306,7 +306,7 @@ class BigDecimal private constructor(
                     placeADotInString(significandString, significandString.length - 1)
                 }
             }
-            exponent == BigInteger.ZERO -> significandString
+            exponent == BigInteger.ZERO -> "${placeADotInString(significandString, significandString.length - 1)}"
 
             else -> throw RuntimeException("Invalid state, please report a bug (Integer compareTo invalid)")
         }

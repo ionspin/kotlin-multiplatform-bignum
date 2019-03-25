@@ -54,6 +54,18 @@ class BigDecimalReadmeTest {
     @Test
     fun toStringWithoutExponentTest() {
 
+        assertTrue {
+            val bigDecimal = BigDecimal.fromLongWithExponent(525, (0).toBigInteger())
+            println("BigDecimal ${bigDecimal.toStringExpanded()}")
+            bigDecimal.toStringExpanded() == "5.25"
+        }
+
+        assertTrue {
+            val bigDecimal = BigDecimal.fromLongWithExponent(525, (1).toBigInteger())
+            println("BigDecimal ${bigDecimal.toStringExpanded()}")
+            bigDecimal.toStringExpanded() == "52.5"
+        }
+
 
         assertTrue {
             val bigDecimal = BigDecimal.fromLongWithExponent(525, (5).toBigInteger())
@@ -65,6 +77,12 @@ class BigDecimalReadmeTest {
             val bigDecimal = BigDecimal.fromLongWithExponent(250001, (-5).toBigInteger())
             println("BigDecimal ${bigDecimal.toStringExpanded()}")
             bigDecimal.toStringExpanded() == "0.0000250001"
+        }
+
+        assertTrue {
+            val bigDecimal = BigDecimal.fromLongWithExponent(71, (-1).toBigInteger())
+            println("BigDecimal ${bigDecimal.toStringExpanded()}")
+            bigDecimal.toStringExpanded() == "0.71"
         }
 
         assertTrue {
