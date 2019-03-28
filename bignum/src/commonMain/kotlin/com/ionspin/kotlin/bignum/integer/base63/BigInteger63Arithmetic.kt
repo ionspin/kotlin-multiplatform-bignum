@@ -21,6 +21,7 @@ import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
 import com.ionspin.kotlin.bignum.integer.util.toDigit
+import kotlin.math.abs
 import kotlin.math.absoluteValue
 
 /**
@@ -293,7 +294,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         while (i < smallerLength) {
             diff = largerData[i] - smallerData[i] - diff
             if ((diff and overflowMask) shr 63 == 1UL) {
-                result[i] = diff and baseMask
+                result[i] = (diff and baseMask)
             } else {
                 result[i] = diff and baseMask
             }
@@ -304,7 +305,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         while (diff != 0UL) {
             diff = largerData[i] - diff
             if ((diff and overflowMask) shr 63 == 1UL) {
-                result[i] = (diff - 1UL) and baseMask
+                result[i] = diff and baseMask
             } else {
                 result[i] = diff and baseMask
                 diff = 0UL

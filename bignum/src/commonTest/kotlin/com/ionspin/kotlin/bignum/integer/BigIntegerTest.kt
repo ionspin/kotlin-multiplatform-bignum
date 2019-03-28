@@ -18,6 +18,8 @@
 package com.ionspin.kotlin.bignum.integer.arithmetic
 
 import com.ionspin.kotlin.bignum.integer.BigInteger
+import com.ionspin.kotlin.bignum.integer.Sign
+import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
@@ -136,6 +138,5 @@ BigIntegerTest {
         val b = BigInteger.parseString("-6866244039176730022", 10)
         val res = a + b
     }
-
 
 }

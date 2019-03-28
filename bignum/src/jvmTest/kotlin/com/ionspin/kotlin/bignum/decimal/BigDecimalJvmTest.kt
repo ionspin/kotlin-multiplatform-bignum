@@ -201,8 +201,8 @@ class BigDecimalJvmTest {
 
     @Test
     fun debugAdditionTest() {
-        val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("-5898808888175174646", 10), 194.toBigInteger())
-        val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("449499580239338463", 10), 194.toBigInteger())
+        val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("2577512651365090736", 10), 152.toBigInteger())
+        val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("-6866244039176730022", 10), 7.toBigInteger())
         val result = first + second
         val firstJava = first.toJavaBigDecimal()
         val secondJava = second.toJavaBigDecimal()
