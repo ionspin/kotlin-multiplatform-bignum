@@ -344,7 +344,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 //        }
         var tmp = this
         var counter = 0
-        while (tmp > 0) {
+        while (tmp.compareTo(0) != 0) {
             tmp /= 10
             counter ++
         }

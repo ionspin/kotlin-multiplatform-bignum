@@ -26,6 +26,11 @@ import com.ionspin.kotlin.bignum.integer.base63.toJavaBigInteger
  */
 @UseExperimental(ExperimentalUnsignedTypes::class)
 fun BigDecimal.toJavaBigDecimal() : java.math.BigDecimal {
-    println("Expanded ${this.toStringExpanded()}")
-    return java.math.BigDecimal(this.toStringExpanded())
+//    println("Expanded ${this.toStringExpanded()}")
+    if (exponent > 0) {
+    return java.math.BigDecimal(this.significand.toJavaBigInteger(), (this.significand.numberOfDigits() - this.exponent.magnitude[0].toInt() - 1))
+    } else {
+        return java.math.BigDecimal(this.significand.toJavaBigInteger(), (this.significand.numberOfDigits() + this.exponent.magnitude[0].toInt() - 1) )
+    }
+//    return java.math.BigDecimal(this.toStringExpanded())
 }

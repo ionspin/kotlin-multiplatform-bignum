@@ -17,9 +17,11 @@
 
 package com.ionspin.kotlin.bignum.decimal
 
+import com.ionspin.kotlin.bignum.integer.BigInteger
+import com.ionspin.kotlin.bignum.integer.toBigInteger
+import kotlinx.coroutines.*
 import org.junit.Test
-import java.math.MathContext
-import java.math.RoundingMode
+import kotlin.random.Random
 import kotlin.test.assertTrue
 
 /**
@@ -29,6 +31,46 @@ import kotlin.test.assertTrue
  */
 @ExperimentalUnsignedTypes
 class BigDecimalJvmTest {
+
+    val seed = 1
+    val random = Random(seed)
+
+    @Test
+    fun whatIsScale() {
+        var a = java.math.BigDecimal.valueOf(1, 0)
+        println("A: $a")
+        a = java.math.BigDecimal.valueOf(1, 1)
+        println("A: $a")
+        a = java.math.BigDecimal.valueOf(1, 2)
+        println("A: $a")
+        a = java.math.BigDecimal.valueOf(1, 3)
+        println("A: $a")
+        a = java.math.BigDecimal.valueOf(1, -1)
+        println("A: $a")
+        a = java.math.BigDecimal.valueOf(1, -2)
+        println("A: $a")
+        a = java.math.BigDecimal.valueOf(1, -3)
+        println("A: $a")
+
+
+
+        println ("-----------")
+
+        a = java.math.BigDecimal.valueOf(12345678, 0)
+        println("A: $a")
+        a = java.math.BigDecimal.valueOf(12345678, 1)
+        println("A: $a")
+        a = java.math.BigDecimal.valueOf(12345678, 2)
+        println("A: $a")
+        a = java.math.BigDecimal.valueOf(12345678, 3)
+        println("A: $a")
+        a = java.math.BigDecimal.valueOf(12345678, -1)
+        println("A: $a")
+        a = java.math.BigDecimal.valueOf(12345678, -2)
+        println("A: $a")
+        a = java.math.BigDecimal.valueOf(12345678, -3)
+        println("A: $a")
+    }
 
 
     @Test
@@ -49,14 +91,13 @@ class BigDecimalJvmTest {
             val bigDecimal = BigDecimal.fromLongWithExponent(71, -2)
             val javaBigDecimal = java.math.BigDecimal.valueOf(71, 3)
 
-            val bigDecimalConverted = bigDecimal.toJavaBigDecimal()
-
             bigDecimal.toJavaBigDecimal().compareTo(javaBigDecimal) == 0 // <- Ignores java bigint scale difference
         }
 
         assertTrue {
             val bigDecimal = BigDecimal.fromLongWithExponent(125L, -7)
             val javaBigDecimal = java.math.BigDecimal.valueOf(125, 9)
+            val compar = bigDecimal.toJavaBigDecimal()
             bigDecimal.toJavaBigDecimal().compareTo(javaBigDecimal) == 0
         }
 
@@ -65,6 +106,33 @@ class BigDecimalJvmTest {
             val javaBigDecimal = java.math.BigDecimal.valueOf(71, -14)
             bigDecimal.toJavaBigDecimal().compareTo(javaBigDecimal) == 0
         }
+
+    }
+
+    @Test
+    fun testALotOfCreations() {
+        val jobList : MutableList<Job> = mutableListOf()
+
+        for (i in 0 .. Int.MAX_VALUE step 100001) {
+            jobList.add(singleCreationTestLong(random.nextLong(), random.nextInt(5000)))
+        }
+
+        runBlocking {
+            jobList.forEach {
+                it.join()
+            }
+        }
+    }
+
+    fun singleCreationTestLong(long : Long, exponent : Int) : Job {
+        return GlobalScope.launch {
+            assertTrue("Failed on $long $exponent") {
+                val bigDecimal = BigDecimal.fromLongWithExponent(long, exponent)
+                val javaBigDecimal = bigDecimal.toJavaBigDecimal()
+                bigDecimal.toJavaBigDecimal().compareTo(javaBigDecimal) == 0
+            }
+        }
+
     }
 
     @Test
@@ -128,6 +196,53 @@ class BigDecimalJvmTest {
             result.toJavaBigDecimal().compareTo(javaBigResult) == 0
 
 
+        }
+    }
+
+    @Test
+    fun debugAdditionTest() {
+        val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("-5898808888175174646", 10), 194.toBigInteger())
+        val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("449499580239338463", 10), 194.toBigInteger())
+        val result = first + second
+        val firstJava = first.toJavaBigDecimal()
+        val secondJava = second.toJavaBigDecimal()
+        val resultJavaBigInt = firstJava + secondJava
+        assertTrue {
+            result.toJavaBigDecimal().compareTo(resultJavaBigInt) == 0
+        }
+    }
+
+    @Test
+    fun aLotOfAdditionTests() {
+        val jobList : MutableList<Job> = mutableListOf()
+        for (i in 0 .. Int.MAX_VALUE step 1_000_000) {
+            val first = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextInt(200))
+            val second = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextInt(200))
+//            jobList.add(singleAdditionTest(i, first, second))
+            singleAdditionTest(i, first, second)
+        }
+
+        runBlocking {
+            jobList.forEach {
+                it.join()
+            }
+        }
+    }
+
+
+    fun singleAdditionTest(i : Int, first : BigDecimal, second : BigDecimal)  {
+
+            assertTrue("Failed on \n" +
+                    "val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString(\"${first.significand}\", 10), ${first.exponent}.toBigInteger())\n " +
+                    "val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString(\"${second.significand}\", 10), ${second.exponent}.toBigInteger())") {
+                println("Doing $i $first $second")
+                val result = first + second
+                val resultJavaBigInt = first.toJavaBigDecimal() + second.toJavaBigDecimal()
+                val resultConverted = result.toJavaBigDecimal()
+                println("Done conversion")
+                val bool = resultConverted.compareTo(resultJavaBigInt) == 0
+                println("Done $i $first $second $result")
+                bool
         }
     }
 

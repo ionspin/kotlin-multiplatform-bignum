@@ -108,6 +108,9 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun shiftLeft(operand: ULongArray, places: Int): ULongArray {
+        if (operand == ZERO) {
+            return operand
+        }
         if (operand.isEmpty() || places == 0) {
             return operand
         }
@@ -504,7 +507,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             quotient[j] = if (qjhat < (baseMask - 1UL)) {
                 qjhat[0]
             } else {
-                baseMask - 1U
+                baseMask
             }
             // We don't have signed integers here so we need to check if reconstructed quotient is larger than the dividend
             // instead of just doing  (dividend = dividend − qj * β^j * divisor) and then looping. Final effect is the same.

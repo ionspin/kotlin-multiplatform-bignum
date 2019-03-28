@@ -202,37 +202,93 @@ class BigDecimal private constructor(
         return BigDecimal(significand, exponent * powerExponent)
     }
 
+    private fun getRidOfRadix(bigDecimal: BigDecimal) : BigDecimal {
+        val precision = bigDecimal.significand.numberOfDigits()
+        val newExponent = bigDecimal.exponent - precision + 1
+        return BigDecimal(bigDecimal.significand, newExponent)
+    }
+
     private fun bringSignificandToSameExponent(
         first: BigDecimal,
         second: BigDecimal
     ): Triple<BigInteger, BigInteger, BigInteger> {
-        val firstDigits = first.significand.numberOfDigits()
-        val secondDigits = second.significand.numberOfDigits()
-        val firstExponent = first.exponent
-        val secondExponent = second.exponent
+//        if (first.exponent == second.exponent) {
+//            return Triple(first.significand, second.significand, first.exponent)
+//        }
+        val firstPrepared = getRidOfRadix(first)
+        val secondPrepared = getRidOfRadix(second)
 
-        val firstMove = firstDigits  - 1
-        val secondMove = secondDigits - 1
-
+        val firstPreparedExponent = firstPrepared.exponent
+        val secondPreparedExponent = secondPrepared.exponent
 
         return when {
-            firstExponent > secondExponent -> {
-                val exponentDifference = firstExponent - secondExponent + secondMove - firstMove
-                val preparedFirst = first.significand * 10.toBigInteger().pow(exponentDifference)
-                return Triple(preparedFirst, second.significand, firstExponent)
+            first.exponent > second.exponent -> {
+                val moveFirstBy  = firstPreparedExponent - secondPreparedExponent
+                val movedFirst = firstPrepared.significand * 10.toBigInteger().pow(moveFirstBy)
+                return Triple(movedFirst, second.significand, secondPreparedExponent)
             }
-            firstExponent < secondExponent -> {
-                val exponentDifference = secondExponent - firstExponent + firstMove - secondMove
-                val preparedSecond = second.significand * 10.toBigInteger().pow(exponentDifference)
-                return Triple(first.significand, preparedSecond, secondExponent)
+            first.exponent < second.exponent -> {
+                val moveSecondBy = secondPreparedExponent - firstPreparedExponent
+                val movedSecond = secondPrepared.significand * 10.toBigInteger().pow(moveSecondBy)
+                return Triple(first.significand, movedSecond, firstPreparedExponent)
             }
-            firstExponent == secondExponent -> {
-                return Triple(first.significand, second.significand, firstExponent)
+            first.exponent == second.exponent -> {
+                val delta = firstPreparedExponent - secondPreparedExponent
+                return when  {
+                    delta > 0 -> {
+                        val movedFirst = first.significand * 10.toBigInteger().pow(delta)
+                        Triple(movedFirst, second.significand, firstPreparedExponent)
+                    }
+                    delta < 0 -> {
+                        val movedSecond = second.significand * 10.toBigInteger().pow(delta.negate())
+                        Triple(first.significand, movedSecond, firstPreparedExponent)
+                    }
+                    delta.compareTo(0) == 0 -> {
+                        Triple(first.significand, second.significand, firstPreparedExponent)
+                    }
+                    else -> throw RuntimeException("Invalid delta: $delta")
+
+                }
+
             }
             else -> {
-                throw RuntimeException("Invalid comparison state BigInteger: $firstExponent, $secondExponent")
+                throw RuntimeException("Invalid comparison state BigInteger: ${first.exponent}, ${second.exponent}")
             }
         }
+
+
+//
+//
+//        val firstDigits = first.significand.numberOfDigits()
+//        val secondDigits = second.significand.numberOfDigits()
+//        val firstExponent = first.exponent
+//        val secondExponent = second.exponent
+//
+//        val firstMove = firstDigits  - 1
+//        val secondMove = secondDigits - 1
+//
+//        val firstFreeOfRadix =
+//
+//
+//        return when {
+//            firstExponent > secondExponent -> {
+//                val exponentDifference = firstExponent - secondExponent + secondMove - firstMove
+//
+//                val preparedFirst = first.significand * 10.toBigInteger().pow(exponentDifference)
+//                return Triple(preparedFirst, second.significand, firstExponent)
+//            }
+//            firstExponent < secondExponent -> {
+//                val exponentDifference = secondExponent - firstExponent + firstMove - secondMove
+//                val preparedSecond = second.significand * 10.toBigInteger().pow(exponentDifference)
+//                return Triple(first.significand, preparedSecond, secondExponent)
+//            }
+//            firstExponent == secondExponent -> {
+//                return Triple(first.significand, second.significand, firstExponent)
+//            }
+//            else -> {
+//                throw RuntimeException("Invalid comparison state BigInteger: $firstExponent, $secondExponent")
+//            }
+//        }
 
     }
 
@@ -271,6 +327,11 @@ class BigDecimal private constructor(
 
     override fun toString(): String {
         val significandString = significand.toString(10)
+        val modifier = if (significand < 0) {
+            2
+        } else {
+            1
+        }
         val expand = if (significandString.length == 1) {
             "0"
         } else {
@@ -278,9 +339,9 @@ class BigDecimal private constructor(
         }
 
         return when {
-            exponent > 0 -> "${placeADotInString(significandString, significandString.length - 1)}${expand}E+$exponent"
-            exponent < 0 -> "${placeADotInString(significandString, significandString.length - 1)}${expand}E$exponent"
-            exponent == BigInteger.ZERO -> "${placeADotInString(significandString, significandString.length - 1)}"
+            exponent > 0 -> "${placeADotInString(significandString, significandString.length - modifier)}${expand}E+$exponent"
+            exponent < 0 -> "${placeADotInString(significandString, significandString.length - modifier)}${expand}E$exponent"
+            exponent == BigInteger.ZERO -> "${placeADotInString(significandString, significandString.length - modifier)}"
             else -> throw RuntimeException("Invalid state, please report a bug (Integer compareTo invalid)")
         }
     }

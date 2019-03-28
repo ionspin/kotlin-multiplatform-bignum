@@ -29,7 +29,8 @@ import kotlin.test.assertTrue
  * on 23-Mar-2019
  */
 @ExperimentalUnsignedTypes
-class BigIntegerTest {
+class
+BigIntegerTest {
 
     @Test
     fun testPow() {
@@ -44,6 +45,18 @@ class BigIntegerTest {
         val a = BigInteger.fromInt(10)
         val b = a.pow(2)
         val expected = BigInteger.fromInt(100)
+        assertTrue { b == expected }
+    }
+
+    @Test
+    fun testPow10to145() {
+        val a = BigInteger.fromInt(10)
+        val b = a.pow(145)
+        val expectedString = "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" +
+                "000000000000000000000000000000000000000000000000000000000"
+
+        val expected = BigInteger.parseString(expectedString, 10)
+
         assertTrue { b == expected }
     }
 
@@ -110,6 +123,18 @@ class BigIntegerTest {
         assertFailsWith(ArithmeticException::class) {
             one.bitAt(Long.MAX_VALUE)
         }
+    }
+
+
+
+
+    @Test
+    fun testAddition() {
+        val a = BigInteger.parseString("257751265136509073600000000000000000000000000000000000000000000000000" +
+                "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            10)
+        val b = BigInteger.parseString("-6866244039176730022", 10)
+        val res = a + b
     }
 
 
