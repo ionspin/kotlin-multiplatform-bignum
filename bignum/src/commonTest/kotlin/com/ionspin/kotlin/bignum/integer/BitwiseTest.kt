@@ -18,6 +18,7 @@
 package com.ionspin.kotlin.bignum.integer.arithmetic
 
 import com.ionspin.kotlin.bignum.integer.BigInteger
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -44,18 +45,17 @@ class BitwiseTest {
     fun numberOfDigitsTest() {
         val bigInteger = BigInteger.parseString("123456789012345678901234567890123456", 10)
         val numberOfDigits = bigInteger.numberOfDigits()
-        val expectedDigits = 36
+        val expectedDigits = 36L
         assertTrue { numberOfDigits == expectedDigits }
     }
 
     @Test
     fun numberOfDigitsBigTest() {
-        for (i in 1 .. 5000 step 101) {
-            val string = buildString (i) { for (j in 1 .. i) this.append('1')  }
+        for (i in 1 .. 504L step 101) {
+            val string = buildString (i.toInt()) { for (j in 1 .. i) this.append('1')  }
             val bigInteger = BigInteger.parseString(string, 10)
             val numberOfDigits = bigInteger.numberOfDigits()
-            val expectedDigits = i
-            assertTrue { numberOfDigits == expectedDigits }
+            assertTrue { numberOfDigits == i }
         }
 
     }

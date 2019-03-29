@@ -35,13 +35,16 @@ class BigDecimal private constructor(
     val decimalMode: DecimalMode = DecimalMode()
 ) : Comparable<Any> {
 
+    val precision = significand.numberOfDigits()
+
     companion object {
         val ZERO = BigDecimal(BigInteger.ZERO)
         val ONE = BigDecimal(BigInteger.ONE)
 
         private fun roundOrDont(significand: BigInteger, exponent: BigInteger, decimalMode: DecimalMode): BigDecimal {
             return if (decimalMode.roundingMode != RoundingMode.NONE) {
-                round(significand, exponent, decimalMode)
+                BigDecimal(significand, exponent)
+                //round(significand, exponent, decimalMode)
             } else {
                 BigDecimal(significand, exponent)
             }
@@ -144,25 +147,60 @@ class BigDecimal private constructor(
     }
 
 
-    fun div(other: BigDecimal, decimalMode: DecimalMode = DecimalMode()): BigDecimal {
-        var newExponent = this.exponent - other.exponent
 
-        var divRem = this.significand divrem other.significand
+
+    fun div(other: BigDecimal, decimalMode: DecimalMode = DecimalMode()): BigDecimal {
+        var newExponent = this.exponent - other.exponent - 1
+
+        val desiredPrecision = if (decimalMode.precision == 0L) {
+            val precisionSum = this.precision + other.precision
+            if (precisionSum < this.precision) {
+                Long.MAX_VALUE
+            } else {
+                precisionSum
+            }
+        } else {
+            decimalMode.precision
+        }
+
+
+
+        val thisPrepared = this.significand * 10.toBigInteger().pow(desiredPrecision - this.precision + other.precision)
+
+
+        var divRem = thisPrepared divrem other.significand
         var result = divRem.quotient
         if (result == BigInteger.ZERO) {
             newExponent--
         }
-        var counter = 0
-        while (divRem.remainder != BigInteger.ZERO) {
-            divRem = (divRem.remainder * 10) divrem other.significand
-            counter++
-            //Until rounding and precision is fully implemented
-            if (counter == 100) {
-                break
+        if (divRem.remainder != BigInteger.ZERO) {
+            when (decimalMode.roundingMode) {
+                RoundingMode.NONE -> { throw ArithmeticException("Non-terminating result of division operation. Specify precision")}
+                RoundingMode.UP -> { if (result.sign == Sign.POSITIVE) { result++ } else {result -- } }
+                RoundingMode.DOWN -> { if (result.sign == Sign.NEGATIVE) { result++ } else {result -- } }
+                else -> {}
             }
-            result = result * 10 + divRem.quotient
         }
         return roundOrDont(result, newExponent, decimalMode)
+
+//        var newExponent = this.exponent - other.exponent
+//
+//        var divRem = this.significand divrem other.significand
+//        var result = divRem.quotient
+//        if (result == BigInteger.ZERO) {
+//            newExponent--
+//        }
+//        var counter = 0
+//        while (divRem.remainder != BigInteger.ZERO) {
+//            divRem = (divRem.remainder * 10) divrem other.significand
+//            counter++
+//            //Until rounding and precision is fully implemented
+//            if (counter == 100) {
+//                break
+//            }
+//            result = result * 10 + divRem.quotient
+//        }
+//        return roundOrDont(result, newExponent, decimalMode)
     }
 
     //TODO

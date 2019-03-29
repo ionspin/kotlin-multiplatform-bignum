@@ -345,7 +345,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         return (word and (1UL shl bitPosition.toInt()) == 1UL)
     }
 
-    fun numberOfDigits() : Int {
+    fun numberOfDigits() : Long {
 //        val bitLenght = arithmetic.bitLength(magnitude)
 ////        val minDigit = ceil((bitLenght - 1) * LOG_10_OF_2)
 //        val maxDigit = floor(bitLenght * LOG_10_OF_2) + 1
@@ -356,7 +356,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 //            else -> -1
 //        }
         var tmp = this
-        var counter = 0
+        var counter = 0L
         while (tmp.compareTo(0) != 0) {
             tmp /= 10
             counter ++
@@ -604,6 +604,5 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
     operator fun rem(byte: Byte): BigInteger {
         return this.rem(BigInteger.fromByte(byte))
     }
-
 
 }

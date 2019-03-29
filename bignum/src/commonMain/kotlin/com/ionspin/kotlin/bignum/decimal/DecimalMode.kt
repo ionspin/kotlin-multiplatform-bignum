@@ -27,4 +27,4 @@ enum class RoundingMode {
     FLOOR, CEILING, UP, DOWN, NONE
 }
 
-data class DecimalMode(val precision : Int = 0, val roundingMode : RoundingMode = RoundingMode.NONE)
+data class DecimalMode(val precision : Long = 0, val roundingMode : RoundingMode = RoundingMode.NONE)

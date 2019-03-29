@@ -22,7 +22,6 @@ import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlinx.coroutines.*
 import org.junit.Test
 import java.math.MathContext
-import java.math.RoundingMode
 import kotlin.random.Random
 import kotlin.test.assertTrue
 
@@ -351,20 +350,20 @@ class BigDecimalJvmTest {
 
     @Test
     fun testDivision() {
-//        assertTrue {
-//            val first = BigDecimal.fromLongWithExponent(123L, 4)
-//            val javaBigFirst = first.toJavaBigDecimal()
-//
-//            val second = BigDecimal.fromLongWithExponent(71, -2)
-//            val javaBigSecond = second.toJavaBigDecimal()
-//
-//            val result = first / second
-//            val javaBigResult = javaBigFirst.divide(javaBigSecond, MathContext(99, RoundingMode.UNNECESSARY))
-//
-//            result.toJavaBigDecimal() == javaBigResult
-//
-//
-//        }
+        assertTrue {
+            val first = BigDecimal.fromLongWithExponent(123L, 4)
+            val javaBigFirst = first.toJavaBigDecimal()
+
+            val second = BigDecimal.fromLongWithExponent(71, -2)
+            val javaBigSecond = second.toJavaBigDecimal()
+
+            val result = first.div(second, DecimalMode(99, RoundingMode.UP))
+            val javaBigResult = javaBigFirst.divide(javaBigSecond, MathContext(99, java.math.RoundingMode.UP))
+
+            result.toJavaBigDecimal().compareTo(javaBigResult) == 0
+
+
+        }
 
         assertTrue {
             val first = BigDecimal.fromLongWithExponent(1L, 0)
@@ -373,10 +372,40 @@ class BigDecimalJvmTest {
             val second = BigDecimal.fromLongWithExponent(3L, 0)
             val javaBigSecond = second.toJavaBigDecimal()
 
-            val result = first / second
-            val javaBigResult = javaBigFirst.divide(javaBigSecond, MathContext(99, RoundingMode.UNNECESSARY))
+            val result = first.div(second, DecimalMode(99, RoundingMode.UP))
+            val javaBigResult = javaBigFirst.divide(javaBigSecond, MathContext(99, java.math.RoundingMode.UP))
 
-            result.toJavaBigDecimal() == javaBigResult
+            result.toJavaBigDecimal().compareTo(javaBigResult) == 0
+
+
+        }
+
+        assertTrue {
+            val first = BigDecimal.fromLongWithExponent(123L, 4)
+            val javaBigFirst = first.toJavaBigDecimal()
+
+            val second = BigDecimal.fromLongWithExponent(71, -2)
+            val javaBigSecond = second.toJavaBigDecimal()
+
+            val result = first.div(second, DecimalMode(123, RoundingMode.UP))
+            val javaBigResult = javaBigFirst.divide(javaBigSecond, MathContext(123, java.math.RoundingMode.UP))
+
+            result.toJavaBigDecimal().compareTo(javaBigResult) == 0
+
+
+        }
+
+        assertTrue {
+            val first = BigDecimal.fromLongWithExponent(1L, 0)
+            val javaBigFirst = first.toJavaBigDecimal()
+
+            val second = BigDecimal.fromLongWithExponent(3L, 0)
+            val javaBigSecond = second.toJavaBigDecimal()
+
+            val result = first.div(second, DecimalMode(123, RoundingMode.UP))
+            val javaBigResult = javaBigFirst.divide(javaBigSecond, MathContext(123, java.math.RoundingMode.UP))
+
+            result.toJavaBigDecimal().compareTo(javaBigResult) == 0
 
 
         }

@@ -18,6 +18,7 @@
 package com.ionspin.kotlin.bignum.decimal
 
 import com.ionspin.kotlin.bignum.integer.base63.toJavaBigInteger
+import java.lang.RuntimeException
 
 /**
  * Created by Ugljesa Jovanovic
@@ -26,11 +27,13 @@ import com.ionspin.kotlin.bignum.integer.base63.toJavaBigInteger
  */
 @UseExperimental(ExperimentalUnsignedTypes::class)
 fun BigDecimal.toJavaBigDecimal() : java.math.BigDecimal {
-//    println("Expanded ${this.toStringExpanded()}")
-    if (exponent > 0) {
-    return java.math.BigDecimal(this.significand.toJavaBigInteger(), (this.significand.numberOfDigits() - this.exponent.magnitude[0].toInt() - 1))
+    if (this.precision > Int.MAX_VALUE) {
+        throw RuntimeException("Numbers with more digits than Int.MAX_VALUE cannot be converted to java BigDecimal")
+    }
+    return if (exponent > 0) {
+        java.math.BigDecimal(this.significand.toJavaBigInteger(), (this.precision.toInt() - this.exponent.magnitude[0].toInt() - 1))
     } else {
-        return java.math.BigDecimal(this.significand.toJavaBigInteger(), (this.significand.numberOfDigits() + this.exponent.magnitude[0].toInt() - 1) )
+        java.math.BigDecimal(this.significand.toJavaBigInteger(), (this.precision.toInt() + this.exponent.magnitude[0].toInt() - 1) )
     }
 //    return java.math.BigDecimal(this.toStringExpanded())
 }
