@@ -288,8 +288,8 @@ class BigDecimalJvmTest {
                         "val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString(\"${first.significand}\", 10), ${first.exponent}.toBigInteger())\n " +
                         "val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString(\"${second.significand}\", 10), ${second.exponent}.toBigInteger())"
             ) {
-                val result = first + second
-                val resultJavaBigInt = first.toJavaBigDecimal() + second.toJavaBigDecimal()
+                val result = first - second
+                val resultJavaBigInt = first.toJavaBigDecimal() - second.toJavaBigDecimal()
                 val resultConverted = result.toJavaBigDecimal()
                 resultConverted.compareTo(resultJavaBigInt) == 0
             }
@@ -311,6 +311,39 @@ class BigDecimalJvmTest {
             result.toJavaBigDecimal() == javaBigResult
 
 
+        }
+    }
+
+
+    @Test
+    fun aLotOfMultiplicationTests() {
+        val jobList : MutableList<Job> = mutableListOf()
+        for (i in 0 .. Int.MAX_VALUE step 100_000) {
+            val first = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextInt(200))
+            val second = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextInt(200))
+            jobList.add(singleSubtractionTest(i, first, second))
+            singleAdditionTest(i, first, second)
+        }
+
+        runBlocking {
+            jobList.forEach {
+                it.join()
+            }
+        }
+    }
+
+    fun singleMultiplicationTest(i : Int, first : BigDecimal, second : BigDecimal) : Job {
+        return GlobalScope.launch {
+            assertTrue(
+                "Failed on \n" +
+                        "val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString(\"${first.significand}\", 10), ${first.exponent}.toBigInteger())\n " +
+                        "val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString(\"${second.significand}\", 10), ${second.exponent}.toBigInteger())"
+            ) {
+                val result = first * second
+                val resultJavaBigInt = first.toJavaBigDecimal() * second.toJavaBigDecimal()
+                val resultConverted = result.toJavaBigDecimal()
+                resultConverted.compareTo(resultJavaBigInt) == 0
+            }
         }
     }
 
