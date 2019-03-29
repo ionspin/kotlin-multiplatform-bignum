@@ -118,21 +118,6 @@ class BigDecimalReadmeTest {
             println("Expected: ${product}")
              product == expectedResult
         }
-
-//        assertTrue {
-//            val first = BigDecimal.fromLongWithExponent(125, (-7).toBigInteger())
-//            val second = BigDecimal.fromLongWithExponent(71, (-2).toBigInteger())
-//            println("First: $first \nSecond: $second")
-//            val product = first + second
-//
-//            println("Sum without exponent: ${product.toStringExpanded()}")
-//            println("Sum: ${product}")
-//            val expectedResult = BigDecimal.fromLongWithExponent(8875, (-9).toBigInteger())
-//            true
-////            product == expectedResult
-//        }
-
-
     }
 
     @Test

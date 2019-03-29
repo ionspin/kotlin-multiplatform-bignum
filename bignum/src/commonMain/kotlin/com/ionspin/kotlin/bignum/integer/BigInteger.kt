@@ -263,9 +263,20 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         } else {
             Sign.POSITIVE
         }
+        val result = arithmetic.divide(this.magnitude, other.magnitude)
+        val quotient = if (result.first == arithmetic.ZERO) {
+            ZERO
+        } else {
+            BigInteger(result.first, sign)
+        }
+        val remainder = if (result.second == arithmetic.ZERO) {
+            ZERO
+        } else {
+            BigInteger(result.second, sign)
+        }
         return Pair(
-            BigInteger(arithmetic.divide(this.magnitude, other.magnitude).first, sign),
-            BigInteger(arithmetic.divide(this.magnitude, other.magnitude).second, sign)
+            quotient,
+            remainder
         )
     }
 

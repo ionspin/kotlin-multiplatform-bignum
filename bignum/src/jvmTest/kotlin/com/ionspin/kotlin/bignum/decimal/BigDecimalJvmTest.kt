@@ -21,6 +21,8 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlinx.coroutines.*
 import org.junit.Test
+import java.math.MathContext
+import java.math.RoundingMode
 import kotlin.random.Random
 import kotlin.test.assertTrue
 
@@ -349,15 +351,30 @@ class BigDecimalJvmTest {
 
     @Test
     fun testDivision() {
-        assertTrue {
-            val first = BigDecimal.fromLongWithExponent(123L, 4)
-            val javaBigFirst = java.math.BigDecimal.valueOf(123, -2)
+//        assertTrue {
+//            val first = BigDecimal.fromLongWithExponent(123L, 4)
+//            val javaBigFirst = first.toJavaBigDecimal()
+//
+//            val second = BigDecimal.fromLongWithExponent(71, -2)
+//            val javaBigSecond = second.toJavaBigDecimal()
+//
+//            val result = first / second
+//            val javaBigResult = javaBigFirst.divide(javaBigSecond, MathContext(99, RoundingMode.UNNECESSARY))
+//
+//            result.toJavaBigDecimal() == javaBigResult
+//
+//
+//        }
 
-            val second = BigDecimal.fromLongWithExponent(71, -2)
-            val javaBigSecond = java.math.BigDecimal.valueOf(71, 3)
+        assertTrue {
+            val first = BigDecimal.fromLongWithExponent(1L, 0)
+            val javaBigFirst = first.toJavaBigDecimal()
+
+            val second = BigDecimal.fromLongWithExponent(3L, 0)
+            val javaBigSecond = second.toJavaBigDecimal()
 
             val result = first / second
-            val javaBigResult = javaBigFirst / javaBigSecond
+            val javaBigResult = javaBigFirst.divide(javaBigSecond, MathContext(99, RoundingMode.UNNECESSARY))
 
             result.toJavaBigDecimal() == javaBigResult
 

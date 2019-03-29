@@ -145,9 +145,24 @@ class BigDecimal private constructor(
 
 
     fun div(other: BigDecimal, decimalMode: DecimalMode = DecimalMode()): BigDecimal {
-        val newExponent = this.exponent - other.exponent
-        val newSignificand = this.significand / other.significand //TODO
-        return roundOrDont(newSignificand, newExponent, decimalMode)
+        var newExponent = this.exponent - other.exponent
+
+        var divRem = this.significand divrem other.significand
+        var result = divRem.quotient
+        if (result == BigInteger.ZERO) {
+            newExponent--
+        }
+        var counter = 0
+        while (divRem.remainder != BigInteger.ZERO) {
+            divRem = (divRem.remainder * 10) divrem other.significand
+            counter++
+            //Until rounding and precision is fully implemented
+            if (counter == 100) {
+                break
+            }
+            result = result * 10 + divRem.quotient
+        }
+        return roundOrDont(result, newExponent, decimalMode)
     }
 
     //TODO
@@ -371,7 +386,7 @@ class BigDecimal private constructor(
         return when {
             exponent > 0 -> "${placeADotInString(significandString, significandString.length - modifier)}${expand}E+$exponent"
             exponent < 0 -> "${placeADotInString(significandString, significandString.length - modifier)}${expand}E$exponent"
-            exponent == BigInteger.ZERO -> "${placeADotInString(significandString, significandString.length - modifier)}"
+            exponent == BigInteger.ZERO -> "${placeADotInString(significandString, significandString.length - modifier)}0"
             else -> throw RuntimeException("Invalid state, please report a bug (Integer compareTo invalid)")
         }
     }
