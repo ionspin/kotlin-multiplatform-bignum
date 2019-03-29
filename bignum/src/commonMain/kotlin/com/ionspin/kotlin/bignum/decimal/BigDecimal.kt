@@ -244,13 +244,23 @@ class BigDecimal private constructor(
         return when {
             first.exponent > second.exponent -> {
                 val moveFirstBy  = firstPreparedExponent - secondPreparedExponent
-                val movedFirst = firstPrepared.significand * 10.toBigInteger().pow(moveFirstBy)
-                return Triple(movedFirst, second.significand, secondPreparedExponent)
+                if (moveFirstBy >= 0) {
+                    val movedFirst = firstPrepared.significand * 10.toBigInteger().pow(moveFirstBy)
+                    return Triple(movedFirst, second.significand, secondPreparedExponent)
+                } else {
+                    val movedSecond = secondPrepared.significand * 10.toBigInteger().pow(moveFirstBy.negate())
+                    Triple(first.significand, movedSecond, firstPreparedExponent)
+                }
             }
             first.exponent < second.exponent -> {
                 val moveSecondBy = secondPreparedExponent - firstPreparedExponent
-                val movedSecond = secondPrepared.significand * 10.toBigInteger().pow(moveSecondBy)
-                return Triple(first.significand, movedSecond, firstPreparedExponent)
+                return if (moveSecondBy >= 0 ) {
+                    val movedSecond = secondPrepared.significand * 10.toBigInteger().pow(moveSecondBy)
+                    Triple(first.significand, movedSecond, firstPreparedExponent)
+                } else {
+                    val movedFirst = firstPrepared.significand * 10.toBigInteger().pow(moveSecondBy.negate())
+                    Triple(movedFirst, second.significand, firstPreparedExponent)
+                }
             }
             first.exponent == second.exponent -> {
                 val delta = firstPreparedExponent - secondPreparedExponent

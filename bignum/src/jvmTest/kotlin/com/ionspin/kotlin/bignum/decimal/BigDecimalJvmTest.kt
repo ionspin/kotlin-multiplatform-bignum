@@ -266,7 +266,7 @@ class BigDecimalJvmTest {
     @Test
     fun aLotOfSubtractionTests() {
         val jobList : MutableList<Job> = mutableListOf()
-        for (i in 0 .. Int.MAX_VALUE step 1000_000) {
+        for (i in 0 .. Int.MAX_VALUE step 100_000) {
             val first = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextInt(200))
             val second = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextInt(200))
             jobList.add(singleSubtractionTest(i, first, second))
