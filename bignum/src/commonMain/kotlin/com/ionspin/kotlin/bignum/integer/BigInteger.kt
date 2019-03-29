@@ -185,6 +185,8 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 
     fun subtract(other: BigInteger): BigInteger {
         val comparison = arithmetic.compare(this.magnitude, other.magnitude)
+        if (this == ZERO) { return other.negate()}
+        if (other == ZERO) { return this }
         return if (other.sign == this.sign) {
             when {
                 comparison > 0 -> {

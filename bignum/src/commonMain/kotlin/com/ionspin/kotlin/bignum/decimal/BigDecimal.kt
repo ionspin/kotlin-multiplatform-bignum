@@ -18,6 +18,7 @@
 package com.ionspin.kotlin.bignum.decimal
 
 import com.ionspin.kotlin.bignum.integer.BigInteger
+import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlin.math.absoluteValue
 
@@ -101,18 +102,35 @@ class BigDecimal private constructor(
 
 
     fun plus(other: BigDecimal, decimalMode: DecimalMode = DecimalMode()): BigDecimal {
-
         val (first, second, exponent) = bringSignificandToSameExponent(this, other)
+        //Temporary way to detect a carry happened, proper solution is to add
+        //methods that return information about carry in arithmetic classes, this way it's going
+        //to be rather slow
+        val firstNumOfDigits = first.numberOfDigits()
+        val secondNumOfDigits = second.numberOfDigits()
         val newSignificand = first + second
-        val newExponent = BigInteger.max(this.exponent, other.exponent)
+        val newSignificandNumOfDigit = newSignificand.numberOfDigits()
+        val largerOperand = if (firstNumOfDigits > secondNumOfDigits) { firstNumOfDigits } else { secondNumOfDigits }
+        val carryDetected = newSignificandNumOfDigit - largerOperand
+        val newExponent = BigInteger.max(this.exponent, other.exponent) + carryDetected
 
         return roundOrDont(newSignificand, newExponent, decimalMode)
     }
 
     fun minus(other: BigDecimal, decimalMode: DecimalMode = DecimalMode()): BigDecimal {
         val (first, second, exponent) = bringSignificandToSameExponent(this, other)
+
+        val firstNumOfDigits = first.numberOfDigits()
+        val secondNumOfDigits = second.numberOfDigits()
+
         val newSignificand = first - second
-        val newExponent = BigInteger.max(this.exponent, other.exponent)
+
+        val newSignificandNumOfDigit = newSignificand.numberOfDigits()
+
+        val largerOperand = if (firstNumOfDigits > secondNumOfDigits) { firstNumOfDigits } else { secondNumOfDigits }
+        val borrowDetected = newSignificandNumOfDigit - largerOperand
+
+        val newExponent = BigInteger.max(this.exponent, other.exponent) + borrowDetected
         return roundOrDont(newSignificand, newExponent, decimalMode)
     }
 
@@ -201,6 +219,8 @@ class BigDecimal private constructor(
     fun pow(powerExponent: Long): BigDecimal {
         return BigDecimal(significand, exponent * powerExponent)
     }
+
+
 
     private fun getRidOfRadix(bigDecimal: BigDecimal) : BigDecimal {
         val precision = bigDecimal.significand.numberOfDigits()
