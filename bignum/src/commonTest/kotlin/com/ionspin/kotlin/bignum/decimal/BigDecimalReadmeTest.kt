@@ -53,10 +53,43 @@ class BigDecimalReadmeTest {
 
 
         assertTrue {
-            val bigDecimal = BigDecimal.fromLongWithExponent(7111, (7).toBigInteger())
+            val bigDecimal = BigDecimal.fromLongAsSignificand(7111)
             println("BigDecimal $bigDecimal")
-            bigDecimal.toString() == "7.111E+7"
+            bigDecimal.toString() == "7.111"
         }
+
+        assertTrue {
+            val bigDecimal = BigDecimal.fromIntAsSignificand(10 )
+            println("BigDecimal $bigDecimal")
+            bigDecimal.toString() == "1.0"
+        }
+
+        assertTrue {
+            val bigDecimal = BigDecimal.fromShort(301)
+            println("BigDecimal $bigDecimal")
+            bigDecimal.toString() == "3.01E+2"
+        }
+
+        assertTrue {
+            val bigDecimal = BigDecimal.fromByte(11)
+            println("BigDecimal $bigDecimal")
+            bigDecimal.toString() == "1.1E+1"
+        }
+
+        assertTrue {
+            val bigDecimal = BigDecimal.fromLong(7111)
+            println("BigDecimal $bigDecimal")
+            bigDecimal.toString() == "7.111E+3"
+        }
+
+        assertTrue {
+            val bigDecimal = BigDecimal.fromInt(10 )
+            println("BigDecimal $bigDecimal")
+            bigDecimal.toString() == "1.0E+1"
+        }
+
+
+
     }
 
     @Test

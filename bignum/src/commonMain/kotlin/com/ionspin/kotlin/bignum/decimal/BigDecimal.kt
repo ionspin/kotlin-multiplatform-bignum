@@ -19,7 +19,6 @@ package com.ionspin.kotlin.bignum.decimal
 
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigInteger.Companion.TEN
-import com.ionspin.kotlin.bignum.integer.BigInteger.Companion.ZERO
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.toBigInteger
 
@@ -51,7 +50,11 @@ class BigDecimal private constructor(
             }
         }
 
-        private fun roundDiscarded(significand : BigInteger, discarded : BigInteger, decimalMode: DecimalMode) : BigInteger {
+        private fun roundDiscarded(
+            significand: BigInteger,
+            discarded: BigInteger,
+            decimalMode: DecimalMode
+        ): BigInteger {
             var result = significand
             val sign = if (significand == BigInteger.ZERO) {
                 discarded.sign
@@ -86,7 +89,7 @@ class BigDecimal private constructor(
 
                 }
                 RoundingMode.ROUND_HALF_AWAY_FROM_ZERO -> {
-                    when(sign) {
+                    when (sign) {
                         Sign.POSITIVE -> {
                             if (significantRemainderDigit >= 5) {
                                 result++
@@ -103,7 +106,7 @@ class BigDecimal private constructor(
                     }
                 }
                 RoundingMode.ROUND_HALF_TOWARDS_ZERO -> {
-                    when(sign) {
+                    when (sign) {
                         Sign.POSITIVE -> {
                             if (significantRemainderDigit > 5) {
                                 result++
@@ -120,7 +123,7 @@ class BigDecimal private constructor(
                     }
                 }
                 RoundingMode.ROUND_HALF_CEILING -> {
-                    when(sign) {
+                    when (sign) {
                         Sign.POSITIVE -> {
                             if (significantRemainderDigit >= 5) {
                                 result++
@@ -137,7 +140,7 @@ class BigDecimal private constructor(
                     }
                 }
                 RoundingMode.ROUND_HALF_FLOOR -> {
-                    when(sign) {
+                    when (sign) {
                         Sign.POSITIVE -> {
                             if (significantRemainderDigit > 5) {
                                 result++
@@ -193,44 +196,239 @@ class BigDecimal private constructor(
 
         }
 
-        fun fromLong(long: Long) = BigDecimal(BigInteger.fromLong(long), BigInteger.ZERO)
-        fun fromInt(int: Int) = BigDecimal(BigInteger.fromInt(int), BigInteger.ZERO)
-        fun fromShort(short: Short) = BigDecimal(BigInteger.fromShort(short), BigInteger.ZERO)
-        fun fromByte(byte: Byte) = BigDecimal(BigInteger.fromByte(byte), BigInteger.ZERO)
-
-        fun fromBigIntegerWithExponent(bigInteger: BigInteger, exponent: BigInteger): BigDecimal {
-            return BigDecimal(bigInteger, exponent)
-        }
-
-        fun fromLongWithExponent(long: Long, exponent: BigInteger): BigDecimal {
+        fun fromLong(long: Long, decimalMode: DecimalMode = DecimalMode()): BigDecimal {
             val bigint = BigInteger.fromLong(long)
-            return BigDecimal(bigint, exponent)
+            return BigDecimal(bigint, bigint.numberOfDigits().toBigInteger() - 1, decimalMode).round(decimalMode)
         }
 
-        fun fromIntWithExponent(int: Int, exponent: BigInteger): BigDecimal {
+        fun fromInt(int: Int, decimalMode: DecimalMode = DecimalMode()): BigDecimal {
             val bigint = BigInteger.fromInt(int)
-            return BigDecimal(bigint, exponent)
+            return BigDecimal(bigint, bigint.numberOfDigits().toBigInteger() - 1, decimalMode).round(decimalMode)
         }
 
-        fun fromShortWithExponent(short: Short, exponent: BigInteger): BigDecimal {
+        fun fromShort(short: Short, decimalMode: DecimalMode = DecimalMode()): BigDecimal {
             val bigint = BigInteger.fromShort(short)
-            return BigDecimal(bigint, exponent)
+            return BigDecimal(bigint, bigint.numberOfDigits().toBigInteger() - 1, decimalMode).round(decimalMode)
         }
 
-        fun fromByteWithExponent(byte: Byte, exponent: BigInteger): BigDecimal {
+        fun fromByte(byte: Byte, decimalMode: DecimalMode = DecimalMode()): BigDecimal {
             val bigint = BigInteger.fromByte(byte)
-            return BigDecimal(bigint, exponent)
+            return BigDecimal(bigint, bigint.numberOfDigits().toBigInteger() - 1, decimalMode).round(decimalMode)
         }
 
-        fun fromLongWithExponent(long: Long, exponent: Int): BigDecimal =
-            fromLongWithExponent(long, exponent.toBigInteger())
+        fun fromLongAsSignificand(long: Long, decimalMode: DecimalMode = DecimalMode()) =
+            BigDecimal(BigInteger.fromLong(long), BigInteger.ZERO, decimalMode).round(decimalMode)
 
-        fun fromIntWithExponent(int: Int, exponent: Int): BigDecimal = fromIntWithExponent(int, exponent.toBigInteger())
-        fun fromShortWithExponent(short: Short, exponent: Int): BigDecimal =
-            fromShortWithExponent(short, exponent.toBigInteger())
+        fun fromIntAsSignificand(int: Int, decimalMode: DecimalMode = DecimalMode()) =
+            BigDecimal(BigInteger.fromInt(int), BigInteger.ZERO, decimalMode).round(decimalMode)
 
-        fun fromByteWithExponent(byte: Byte, exponent: Int): BigDecimal =
-            fromByteWithExponent(byte, exponent.toBigInteger())
+        fun fromShortAsSignificand(short: Short, decimalMode: DecimalMode = DecimalMode()) =
+            BigDecimal(BigInteger.fromShort(short), BigInteger.ZERO, decimalMode).round(decimalMode)
+
+        fun fromByteAsSignificand(byte: Byte, decimalMode: DecimalMode = DecimalMode()) =
+            BigDecimal(BigInteger.fromByte(byte), BigInteger.ZERO, decimalMode).round(decimalMode)
+
+        fun fromFloat(float: Float, decimalMode: DecimalMode = DecimalMode()): BigDecimal {
+            val exponent = float.toBits() and 0x7F800000
+            val significand = float.toBits() and 0x007fffff
+            return BigDecimal(BigInteger.fromInt(significand), BigInteger.fromInt(exponent), decimalMode).round(
+                decimalMode
+            )
+        }
+
+        fun fromDouble(double: Double, decimalMode: DecimalMode = DecimalMode()): BigDecimal {
+            val rawbit = double.toRawBits()
+            val bit = double.toBits()
+            val exponent = (double.toBits() and 0x7FF0000000000000L shr 52) - 1023
+            val significand = double.toBits() and 0x000FFFFFFFFFFFFFL
+            return BigDecimal(BigInteger.fromLong(significand), BigInteger.fromLong(exponent), decimalMode).round(
+                decimalMode
+            )
+        }
+
+        fun fromBigIntegerWithExponent(
+            bigInteger: BigInteger,
+            exponent: BigInteger,
+            decimalMode: DecimalMode = DecimalMode()
+        ): BigDecimal {
+            return BigDecimal(bigInteger, exponent, decimalMode).round(decimalMode)
+        }
+
+        fun fromLongWithExponent(
+            long: Long,
+            exponent: BigInteger,
+            decimalMode: DecimalMode = DecimalMode()
+        ): BigDecimal {
+            val bigint = BigInteger.fromLong(long)
+            return BigDecimal(bigint, exponent, decimalMode).round(decimalMode)
+        }
+
+        fun fromIntWithExponent(int: Int, exponent: BigInteger, decimalMode: DecimalMode = DecimalMode()): BigDecimal {
+            val bigint = BigInteger.fromInt(int)
+            return BigDecimal(bigint, exponent, decimalMode).round(decimalMode)
+        }
+
+        fun fromShortWithExponent(
+            short: Short,
+            exponent: BigInteger,
+            decimalMode: DecimalMode = DecimalMode()
+        ): BigDecimal {
+            val bigint = BigInteger.fromShort(short)
+            return BigDecimal(bigint, exponent, decimalMode).round(decimalMode)
+        }
+
+        fun fromByteWithExponent(
+            byte: Byte,
+            exponent: BigInteger,
+            decimalMode: DecimalMode = DecimalMode()
+        ): BigDecimal {
+            val bigint = BigInteger.fromByte(byte)
+            return BigDecimal(bigint, exponent, decimalMode).round(decimalMode)
+        }
+
+        fun fromLongWithExponent(long: Long, exponent: Int, decimalMode: DecimalMode = DecimalMode()): BigDecimal =
+            fromLongWithExponent(long, exponent.toBigInteger(), decimalMode)
+
+        fun fromIntWithExponent(int: Int, exponent: Int, decimalMode: DecimalMode = DecimalMode()): BigDecimal =
+            fromIntWithExponent(int, exponent.toBigInteger())
+
+        fun fromShortWithExponent(short: Short, exponent: Int, decimalMode: DecimalMode = DecimalMode()): BigDecimal =
+            fromShortWithExponent(short, exponent.toBigInteger(), decimalMode)
+
+        fun fromByteWithExponent(byte: Byte, exponent: Int, decimalMode: DecimalMode = DecimalMode()): BigDecimal =
+            fromByteWithExponent(byte, exponent.toBigInteger(), decimalMode)
+
+        fun parseString(floatingPointString: String, decimalMode: DecimalMode = DecimalMode()): BigDecimal {
+            if (floatingPointString.isEmpty()) {
+                return ZERO
+            }
+            if (floatingPointString.contains('E') || floatingPointString.contains('e')) {
+                //Sci notation
+                val split = floatingPointString.split('.')
+                when (split.size) {
+                    2 -> {
+                        val signPresent = (floatingPointString[0] == '-' || floatingPointString[0] == '+')
+                        val leftStart = if (signPresent) {
+                            1
+                        } else {
+                            0
+                        }
+                        var sign = if (signPresent) {
+                            if (floatingPointString[0] == '-') {
+                                Sign.NEGATIVE
+                            } else {
+                                Sign.POSITIVE
+                            }
+                        } else {
+                            Sign.POSITIVE
+                        }
+                        val left = split[0].substring(startIndex = leftStart)
+                        val rightSplit = split[1].split('E', 'e')
+                        val right = rightSplit[0]
+                        val exponentSplit = rightSplit[1]
+                        if (exponentSplit[0] != '-' && exponentSplit[0] != '+') {
+                            throw ArithmeticException("Invalid floating point format! $floatingPointString")
+                        }
+                        val exponentSign = if (exponentSplit[0] == '-') {
+                            Sign.NEGATIVE
+                        } else {
+                            Sign.POSITIVE
+                        }
+                        val exponentString = exponentSplit.substring(startIndex = 1)
+                        val exponent = if (exponentSign == Sign.POSITIVE) {
+                            BigInteger.parseString(exponentString, 10)
+                        } else {
+                            BigInteger.parseString(exponentString, 10).negate()
+                        }
+
+
+                        var leftFirstNonZero = left.indexOfFirst { it != '0' }
+
+                        if (leftFirstNonZero == -1) {
+                            leftFirstNonZero = 0
+                        }
+
+                        var rightLastNonZero = right.indexOfLast { it != '0' }
+
+                        if (rightLastNonZero == -1) {
+                            rightLastNonZero = right.length - 1
+                        }
+                        val leftTruncated = left.substring(leftFirstNonZero, left.length)
+                        val rightTruncated = right.substring(0, rightLastNonZero + 1)
+                        var significand = BigInteger.parseString(leftTruncated + rightTruncated, 10)
+
+                        if (significand == BigInteger.ZERO) {
+                            sign = Sign.ZERO
+                        }
+                        if (sign == Sign.NEGATIVE) {
+                            significand = significand.negate()
+                        }
+                        return BigDecimal(significand, exponent, decimalMode)
+                    }
+                    else -> throw ArithmeticException("Invalid (or unsupported) floating point number format: $floatingPointString")
+
+                }
+            } else {
+                //Expanded notation
+                if (floatingPointString.contains('.')) {
+                    val split = floatingPointString.split('.')
+                    when (split.size) {
+                        2 -> {
+                            val signPresent = (floatingPointString[0] == '-' || floatingPointString[0] == '+')
+                            val leftStart = if (signPresent) {
+                                1
+                            } else {
+                                0
+                            }
+                            var sign = if (signPresent) {
+                                if (floatingPointString[0] == '-') {
+                                    Sign.NEGATIVE
+                                } else {
+                                    Sign.POSITIVE
+                                }
+                            } else {
+                                Sign.POSITIVE
+                            }
+                            val left = split[0].substring(startIndex = leftStart)
+                            val right = split[1]
+                            var leftFirstNonZero = left.indexOfFirst { it != '0' }
+
+                            if (leftFirstNonZero == -1) {
+                                leftFirstNonZero = 0
+                            }
+
+                            var rightLastNonZero = right.indexOfLast { it != '0' }
+
+                            if (rightLastNonZero == -1) {
+                                rightLastNonZero = right.length - 1
+                            }
+                            val leftTruncated = left.substring(leftFirstNonZero, left.length)
+                            val rightTruncated = right.substring(0, rightLastNonZero + 1)
+                            var significand = BigInteger.parseString(leftTruncated + rightTruncated, 10)
+                            var exponent = if (leftTruncated.length >= 1 && leftTruncated[0] != '0') {
+                                BigInteger.fromInt(leftTruncated.length - 1)
+                            } else {
+                                BigInteger.fromInt(rightTruncated.indexOfFirst { it != '0' } + 1).negate()
+                            }
+
+                            if (significand == BigInteger.ZERO) {
+                                sign = Sign.ZERO
+                            }
+                            if (sign == Sign.NEGATIVE) {
+                                significand = significand.negate()
+                            }
+                            return BigDecimal(significand, exponent, decimalMode)
+                        }
+                        else -> throw ArithmeticException("Invalid (or unsupported) floating point number format: $floatingPointString")
+
+                    }
+                } else {
+                    return BigDecimal(BigInteger.parseString(floatingPointString, 10), BigInteger.ZERO, decimalMode)
+                }
+            }
+
+
+        }
     }
 
     val isExponentLong = exponent.numberOfWords == 0
@@ -402,7 +600,10 @@ class BigDecimal private constructor(
         return BigDecimal(significand, exponent * powerExponent)
     }
 
-    fun round(decimalMode: DecimalMode) : BigDecimal {
+    fun round(decimalMode: DecimalMode): BigDecimal {
+        if (decimalMode == DecimalMode()) {
+            return this
+        }
         return Companion.round(this.significand, this.exponent, decimalMode)
     }
 
@@ -518,10 +719,10 @@ class BigDecimal private constructor(
     override fun compareTo(other: Any): Int {
         return when (other) {
             is BigDecimal -> compare(other)
-            is Long -> compare(BigDecimal.fromLong(other))
-            is Int -> compare(BigDecimal.fromInt(other))
-            is Short -> compare(BigDecimal.fromShort(other))
-            is Byte -> compare(BigDecimal.fromByte(other))
+            is Long -> compare(BigDecimal.fromLongAsSignificand(other))
+            is Int -> compare(BigDecimal.fromIntAsSignificand(other))
+            is Short -> compare(BigDecimal.fromShortAsSignificand(other))
+            is Byte -> compare(BigDecimal.fromByteAsSignificand(other))
             else -> throw RuntimeException("Invalid comparison type for BigDecimal: ${other::class.simpleName}")
         }
 
@@ -530,10 +731,10 @@ class BigDecimal private constructor(
     override fun equals(other: Any?): Boolean {
         val comparison = when (other) {
             is BigDecimal -> compare(other)
-            is Long -> compare(BigDecimal.fromLong(other))
-            is Int -> compare(BigDecimal.fromInt(other))
-            is Short -> compare(BigDecimal.fromShort(other))
-            is Byte -> compare(BigDecimal.fromByte(other))
+            is Long -> compare(BigDecimal.fromLongAsSignificand(other))
+            is Int -> compare(BigDecimal.fromIntAsSignificand(other))
+            is Short -> compare(BigDecimal.fromShortAsSignificand(other))
+            is Byte -> compare(BigDecimal.fromByteAsSignificand(other))
             else -> -1
         }
         return comparison == 0
@@ -546,25 +747,32 @@ class BigDecimal private constructor(
         } else {
             1
         }
-        val expand = if (significandString.length == 1) {
+        val expand = if (significand.toString().dropLastWhile { it == '0' }.length == 1) {
             "0"
         } else {
             ""
         }
 
         return when {
-            exponent > 0 -> "${placeADotInString(
-                significandString,
-                significandString.length - modifier
-            )}${expand}E+$exponent"
-            exponent < 0 -> "${placeADotInString(
-                significandString,
-                significandString.length - modifier
-            )}${expand}E$exponent"
-            exponent == BigInteger.ZERO -> "${placeADotInString(
-                significandString,
-                significandString.length - modifier
-            )}0"
+            exponent > 0 -> {
+                "${placeADotInString(
+                    significandString,
+                    significandString.length - modifier
+                )}${expand}E+$exponent"
+            }
+            exponent < 0 -> {
+
+                "${placeADotInString(
+                    significandString,
+                    significandString.length - modifier
+                )}${expand}E$exponent"
+            }
+            exponent == BigInteger.ZERO -> {
+                "${placeADotInString(
+                    significandString,
+                    significandString.length - modifier
+                )}$expand"
+            }
             else -> throw RuntimeException("Invalid state, please report a bug (Integer compareTo invalid)")
         }
     }
@@ -622,120 +830,120 @@ class BigDecimal private constructor(
     }
 
 
-    //
-    //
-    // ----------------- Interop with basic types ----------------------
-    //
-    //
+//
+//
+// ----------------- Interop with basic types ----------------------
+//
+//
 
 
-    // ------------- Addition -----------
+// ------------- Addition -----------
 
 
     operator fun plus(int: Int): BigDecimal {
-        return this.plus(BigDecimal.fromInt(int))
+        return this.plus(BigDecimal.fromIntAsSignificand(int))
     }
 
 
     operator fun plus(long: Long): BigDecimal {
-        return this.plus(BigDecimal.fromLong(long))
+        return this.plus(BigDecimal.fromLongAsSignificand(long))
     }
 
 
     operator fun plus(short: Short): BigDecimal {
-        return this.plus(BigDecimal.fromShort(short))
+        return this.plus(BigDecimal.fromShortAsSignificand(short))
     }
 
 
     operator fun plus(byte: Byte): BigDecimal {
-        return this.plus(BigDecimal.fromByte(byte))
+        return this.plus(BigDecimal.fromByteAsSignificand(byte))
     }
 
-    // ------------- Multiplication -----------
+// ------------- Multiplication -----------
 
 
     operator fun times(int: Int): BigDecimal {
-        return this.multiply(BigDecimal.fromInt(int))
+        return this.multiply(BigDecimal.fromIntAsSignificand(int))
     }
 
 
     operator fun times(long: Long): BigDecimal {
-        return this.multiply(BigDecimal.fromLong(long))
+        return this.multiply(BigDecimal.fromLongAsSignificand(long))
     }
 
 
     operator fun times(short: Short): BigDecimal {
-        return this.multiply(BigDecimal.fromShort(short))
+        return this.multiply(BigDecimal.fromShortAsSignificand(short))
     }
 
 
     operator fun times(byte: Byte): BigDecimal {
-        return this.multiply(BigDecimal.fromByte(byte))
+        return this.multiply(BigDecimal.fromByteAsSignificand(byte))
     }
 
 
-    // ------------- Subtraction -----------
+// ------------- Subtraction -----------
 
 
     operator fun minus(int: Int): BigDecimal {
-        return this.minus(BigDecimal.fromInt(int))
+        return this.minus(BigDecimal.fromIntAsSignificand(int))
     }
 
 
     operator fun minus(long: Long): BigDecimal {
-        return this.minus(BigDecimal.fromLong(long))
+        return this.minus(BigDecimal.fromLongAsSignificand(long))
     }
 
 
     operator fun minus(short: Short): BigDecimal {
-        return this.minus(BigDecimal.fromShort(short))
+        return this.minus(BigDecimal.fromShortAsSignificand(short))
     }
 
 
     operator fun minus(byte: Byte): BigDecimal {
-        return this.minus(BigDecimal.fromByte(byte))
+        return this.minus(BigDecimal.fromByteAsSignificand(byte))
     }
 
-    // ------------- Division -----------
+// ------------- Division -----------
 
 
     operator fun div(int: Int): BigDecimal {
-        return this.div(BigDecimal.fromInt(int))
+        return this.div(BigDecimal.fromIntAsSignificand(int))
     }
 
 
     operator fun div(long: Long): BigDecimal {
-        return this.div(BigDecimal.fromLong(long))
+        return this.div(BigDecimal.fromLongAsSignificand(long))
     }
 
 
     operator fun div(short: Short): BigDecimal {
-        return this.div(BigDecimal.fromShort(short))
+        return this.div(BigDecimal.fromShortAsSignificand(short))
     }
 
 
     operator fun div(byte: Byte): BigDecimal {
-        return this.div(BigDecimal.fromByte(byte))
+        return this.div(BigDecimal.fromByteAsSignificand(byte))
     }
 
 
     operator fun rem(int: Int): BigDecimal {
-        return this.rem(BigDecimal.fromInt(int))
+        return this.rem(BigDecimal.fromIntAsSignificand(int))
     }
 
 
     operator fun rem(long: Long): BigDecimal {
-        return this.rem(BigDecimal.fromLong(long))
+        return this.rem(BigDecimal.fromLongAsSignificand(long))
     }
 
 
     operator fun rem(short: Short): BigDecimal {
-        return this.rem(BigDecimal.fromShort(short))
+        return this.rem(BigDecimal.fromShortAsSignificand(short))
     }
 
 
     operator fun rem(byte: Byte): BigDecimal {
-        return this.rem(BigDecimal.fromByte(byte))
+        return this.rem(BigDecimal.fromByteAsSignificand(byte))
     }
 
 

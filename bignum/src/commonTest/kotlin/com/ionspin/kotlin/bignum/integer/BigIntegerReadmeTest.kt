@@ -176,4 +176,9 @@ class BigIntegerReadmeTest {
 
     }
 
+    @Test
+    fun `Test_readme_big_decimal_creation`() {
+
+    }
+
 }

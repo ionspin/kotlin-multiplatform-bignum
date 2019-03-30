@@ -26,25 +26,25 @@ package com.ionspin.kotlin.bignum.decimal
 
 @ExperimentalUnsignedTypes
 fun Long.toBigDecimal(): BigDecimal {
-    return BigDecimal.fromLong(this)
+    return BigDecimal.fromLongAsSignificand(this)
 }
 
 
 @ExperimentalUnsignedTypes
 fun Int.toBigDecimal(): BigDecimal {
-    return BigDecimal.fromInt(this)
+    return BigDecimal.fromIntAsSignificand(this)
 }
 
 
 @ExperimentalUnsignedTypes
 fun Short.toBigDecimal(): BigDecimal {
-    return BigDecimal.fromShort(this)
+    return BigDecimal.fromShortAsSignificand(this)
 }
 
 
 @ExperimentalUnsignedTypes
 fun Byte.toBigDecimal(): BigDecimal {
-    return BigDecimal.fromByte(this)
+    return BigDecimal.fromByteAsSignificand(this)
 }
 
 
