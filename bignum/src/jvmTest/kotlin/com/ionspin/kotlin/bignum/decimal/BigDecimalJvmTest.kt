@@ -74,9 +74,9 @@ class BigDecimalJvmTest {
 
     @Test
     fun testALotOfCreations() {
-        val jobList : MutableList<Job> = mutableListOf()
+        val jobList: MutableList<Job> = mutableListOf()
 
-        for (i in 0 .. Int.MAX_VALUE step 100001) {
+        for (i in 0..Int.MAX_VALUE step 100001) {
             jobList.add(singleCreationTestLong(random.nextLong(), random.nextInt(5000)))
         }
 
@@ -87,7 +87,7 @@ class BigDecimalJvmTest {
         }
     }
 
-    fun singleCreationTestLong(long : Long, exponent : Int) : Job {
+    fun singleCreationTestLong(long: Long, exponent: Int): Job {
         return GlobalScope.launch {
             assertTrue("Failed on $long $exponent") {
                 val bigDecimal = BigDecimal.fromLongWithExponent(long, exponent)
@@ -148,7 +148,7 @@ class BigDecimalJvmTest {
 
         assertTrue {
             val first = BigDecimal.fromLongWithExponent(125L, 15) // 15
-            val javaBigFirst = java.math.BigDecimal.valueOf(125, -13 ) // -14
+            val javaBigFirst = java.math.BigDecimal.valueOf(125, -13) // -14
 
             val second = BigDecimal.fromLongWithExponent(71, -7) // -7
             val javaBigSecond = java.math.BigDecimal.valueOf(71, 8) // 9
@@ -164,8 +164,10 @@ class BigDecimalJvmTest {
 
     @Test
     fun debugAdditionTest() {
-        val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("-71946752722652910", 10), 192.toBigInteger())
-        val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("7834199654291277674", 10), 193.toBigInteger())
+        val first =
+            BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("-71946752722652910", 10), 192.toBigInteger())
+        val second =
+            BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("7834199654291277674", 10), 193.toBigInteger())
         val result = first + second
         val firstJava = first.toJavaBigDecimal()
         val secondJava = second.toJavaBigDecimal()
@@ -177,8 +179,8 @@ class BigDecimalJvmTest {
 
     @Test
     fun aLotOfAdditionTests() {
-        val jobList : MutableList<Job> = mutableListOf()
-        for (i in 0 .. Int.MAX_VALUE step 100_000) {
+        val jobList: MutableList<Job> = mutableListOf()
+        for (i in 0..Int.MAX_VALUE step 100_000) {
             val first = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextInt(200))
             val second = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextInt(200))
             jobList.add(singleAdditionTest(i, first, second))
@@ -193,7 +195,7 @@ class BigDecimalJvmTest {
     }
 
 
-    fun singleAdditionTest(i : Int, first : BigDecimal, second : BigDecimal) : Job {
+    fun singleAdditionTest(i: Int, first: BigDecimal, second: BigDecimal): Job {
         return GlobalScope.launch {
             assertTrue(
                 "Failed on \n" +
@@ -228,8 +230,8 @@ class BigDecimalJvmTest {
 
     @Test
     fun aLotOfSubtractionTests() {
-        val jobList : MutableList<Job> = mutableListOf()
-        for (i in 0 .. Int.MAX_VALUE step 100_000) {
+        val jobList: MutableList<Job> = mutableListOf()
+        for (i in 0..Int.MAX_VALUE step 100_000) {
             val first = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextInt(200))
             val second = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextInt(200))
             jobList.add(singleSubtractionTest(i, first, second))
@@ -244,7 +246,7 @@ class BigDecimalJvmTest {
     }
 
 
-    fun singleSubtractionTest(i : Int, first : BigDecimal, second : BigDecimal) : Job {
+    fun singleSubtractionTest(i: Int, first: BigDecimal, second: BigDecimal): Job {
         return GlobalScope.launch {
             assertTrue(
                 "Failed on \n" +
@@ -277,15 +279,31 @@ class BigDecimalJvmTest {
         }
     }
 
+    @Test
+    fun testDebugMultiplication() {
+        val first =
+            BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("-884653051988182590", 10), 124.toBigInteger())
+        val second =
+            BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("686869704857289531", 10), 51.toBigInteger())
+        val result = first * second
+        val firstJava = first.toJavaBigDecimal()
+        val secondJava = second.toJavaBigDecimal()
+        val resultJavaBigInt = firstJava * secondJava
+        val resultConverted = result.toJavaBigDecimal()
+
+        assertTrue {
+            resultConverted.compareTo(resultJavaBigInt) == 0
+        }
+    }
+
 
     @Test
     fun aLotOfMultiplicationTests() {
-        val jobList : MutableList<Job> = mutableListOf()
-        for (i in 0 .. Int.MAX_VALUE step 100_000) {
+        val jobList: MutableList<Job> = mutableListOf()
+        for (i in 0..Int.MAX_VALUE step 100_000) {
             val first = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextInt(200))
             val second = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextInt(200))
-            jobList.add(singleSubtractionTest(i, first, second))
-            singleAdditionTest(i, first, second)
+            jobList.add(singleMultiplicationTest(i, first, second))
         }
 
         runBlocking {
@@ -295,7 +313,7 @@ class BigDecimalJvmTest {
         }
     }
 
-    fun singleMultiplicationTest(i : Int, first : BigDecimal, second : BigDecimal) : Job {
+    fun singleMultiplicationTest(i: Int, first: BigDecimal, second: BigDecimal): Job {
         return GlobalScope.launch {
             assertTrue(
                 "Failed on \n" +
@@ -364,12 +382,68 @@ class BigDecimalJvmTest {
             val second = BigDecimal.fromLongWithExponent(3L, 0)
             val javaBigSecond = second.toJavaBigDecimal()
 
-            val result = first.div(second, DecimalMode(123, RoundingMode.AWAY_FROM_ZERO))
-            val javaBigResult = javaBigFirst.divide(javaBigSecond, MathContext(123, java.math.RoundingMode.UP))
+            val result = first.div(second, DecimalMode(401, RoundingMode.AWAY_FROM_ZERO))
+            val javaBigResult = javaBigFirst.divide(javaBigSecond, MathContext(401, java.math.RoundingMode.UP))
 
             result.toJavaBigDecimal().compareTo(javaBigResult) == 0
 
 
+        }
+    }
+
+    @Test
+    fun debugTestDivision() {
+//        val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("-884653051988182590", 10), 124.toBigInteger())
+//        val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("686869704857289531", 10), 51.toBigInteger())
+//        val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("-2573868278004278171", 10), 86.toBigInteger())
+//        val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("7343078399229486119", 10), 16.toBigInteger())
+        val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("-7823836971981477152", 10), 167.toBigInteger())
+        val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("-1241920988109618346", 10), 118.toBigInteger())
+
+        val javaBigFirst = first.toJavaBigDecimal()
+
+        val javaBigSecond = second.toJavaBigDecimal()
+
+        val result = first.div(second, DecimalMode(401, RoundingMode.AWAY_FROM_ZERO))
+        val javaBigResult = javaBigFirst.divide(javaBigSecond, MathContext(401, java.math.RoundingMode.UP))
+        assertTrue {
+            result.toJavaBigDecimal().compareTo(javaBigResult) == 0
+        }
+    }
+
+    @Test
+    fun aLotOfDivisionTests() {
+        val jobList: MutableList<Job> = mutableListOf()
+        for (i in 0..Int.MAX_VALUE step 100_001) {
+            val first = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextInt(200))
+            val second = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextInt(200))
+            jobList.add(singleDivisionTest(first, second))
+//            singleDivisionTest(first, second)
+        }
+
+        runBlocking {
+            jobList.forEach {
+                it.join()
+            }
+        }
+    }
+
+    fun singleDivisionTest(first: BigDecimal, second: BigDecimal): Job {
+        return GlobalScope.launch {
+            assertTrue(
+                "Failed on \n" +
+                        "val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString(\"${first.significand}\", 10), ${first.exponent}.toBigInteger())\n " +
+                        "val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString(\"${second.significand}\", 10), ${second.exponent}.toBigInteger())"
+            ) {
+                val javaBigFirst = first.toJavaBigDecimal()
+
+                val javaBigSecond = second.toJavaBigDecimal()
+
+                val result = first.div(second, DecimalMode(401, RoundingMode.AWAY_FROM_ZERO))
+                val javaBigResult = javaBigFirst.divide(javaBigSecond, MathContext(401, java.math.RoundingMode.UP))
+
+                result.toJavaBigDecimal().compareTo(javaBigResult) == 0
+            }
         }
     }
 }

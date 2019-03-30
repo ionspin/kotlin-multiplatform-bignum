@@ -110,8 +110,17 @@ class BigDecimalCreationTest {
     @Test
     fun fromDoubleTest() {
         assertTrue {
-            val a = BigDecimal.fromDouble(0.023)
-            val b = BigDecimal.fromIntWithExponent(123, -2)
+            val a = BigDecimal.fromDouble(0.000000123)
+            val b = BigDecimal.fromIntWithExponent(123, -7)
+            a == b
+        }
+    }
+
+    @Test
+    fun fromFloatTest() {
+        assertTrue {
+            val a = BigDecimal.fromFloat(0.000000000000123f)
+            val b = BigDecimal.fromIntWithExponent(123, -13)
             a == b
         }
     }

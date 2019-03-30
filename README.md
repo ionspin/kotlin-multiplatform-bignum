@@ -8,11 +8,15 @@ familiar.
 
 ## Notes & Roadmap
 
-This is the first version of the library, and has the base implementation of **integer** operations. Floating point arithmetic,
-and modular arithmetic are planned for future releases, as well as improvements such as Karatsuba multiplication, 
+This is very early version of the library, and has the base implementation of **integer** and **floating point** operations. 
+Modular arithmetic is planned for future releases, as well as improvements such as Karatsuba multiplication, 
 Toom-Cook, division using multiplication by reciprocal, and other.
 
+**The API will move fast and break often until v1.0**
+
 Also, there is a plan to implement platform native versions.
+
+Testing to verify that the library works properly is mostly done against Java BigInteger and BigDecimal implementations.
 
 ## Should I use this in production?
 
@@ -21,29 +25,31 @@ No. Even though the tests pass, and it seems to be working fine, the library is 
 ## Integration
 
 #### Gradle
-```
-    implementation("com.ionspin.kotlin:bignum:0.0.5")
+```kotlin
+    implementation("com.ionspin.kotlin:bignum:0.0.6")
 ```
 
 
 ## Usage
 
-### Creating Big Integers
+###Integers
+
+#### Creating Big Integers
 
 To create a big integer you can parse a string:
-```
+```kotlin
 BigInteger.parse("-1122334455667788990011223344556677889900", 10)
 ```
 
 Or use the extensions function for `Long`, `Int`, `Byte` or `Short`
-```
+```kotlin
 BigInteger.fromLong(234L)
 ```
 
 ### Basic Arithmetic Operations
 
 #### Addition
-```
+```kotlin
 val a = BigInteger.fromLong(Long.MAX_VALUE)
 val b = BigInteger.fromInt(Integer.MAX_VALUE)
 
@@ -54,7 +60,7 @@ Sum: Sum: 9223372039002259454
 ```
 
 #### Subtraction
-```
+```kotlin
 val a = BigInteger.fromLong(1L)
 val b = BigInteger.fromInt(2L)
 
@@ -65,7 +71,7 @@ Difference: 3
 ```
 
 #### Multiplication
-```
+```kotlin
 val a = BigInteger.fromLong(Long.MAX_VALUE)
 val b = BigInteger.fromLong(Long.MIN_VALUE)
 
@@ -77,7 +83,7 @@ Product: -85070591730234615856620279821087277056
 ```
 
 #### Division - Quotient
-```
+```kotlin
 val a = BigInteger.fromLong(Long.MAX_VALUE)
 val b = BigInteger.fromInt(Int.MAX_VALUE)
 
@@ -91,7 +97,7 @@ Quotient: 1
 ```
 
 #### Division - Remainder
-```
+```kotlin
 val a = BigInteger.fromLong(Long.MAX_VALUE)
 val b = BigInteger.fromInt(Int.MAX_VALUE)
 
@@ -105,7 +111,7 @@ Remainder: 2147483647
 ```
 
 #### Division - Quotient and Remainder
-```
+```kotlin
 val a = BigInteger.fromLong(Long.MAX_VALUE)
 val b = BigInteger.fromInt(Int.MAX_VALUE)
 
@@ -123,7 +129,7 @@ Remainder: 2147483647
 ### Bitwise Operations
 
 #### Shift Left
-```
+```kotlin
 val a = BigInteger.fromByte(1)
 
 val shifted = a shl 215
@@ -133,7 +139,7 @@ Shifted: 52656145834278593348959013841835216159447547700274555627155488768
 ```
 
 #### Shift Right
-```
+```kotlin
 val a = BigInteger.parseString("100000000000000000000000000000000", 10)
 
 val shifted = a shr 90
@@ -143,7 +149,7 @@ Shifted: 80779
 ```
 
 #### Xor
-```
+```kotlin
 val operand = BigInteger.parseString("11110000", 2)
 val mask = BigInteger.parseString("00111100", 2)
 
@@ -156,7 +162,7 @@ Xor result: 11001100
 
 
 #### And
-```
+```kotlin
 val operand = BigInteger.parseString("FFFFFFFFFF000000000000", 16)
 val mask =    BigInteger.parseString("00000000FFFF0000000000", 16)
 val andResult = operand and mask
@@ -166,7 +172,7 @@ And result: ff000000000000
 ```
 
 #### Or
-```
+```kotlin
 val operand = BigInteger.parseString("FFFFFFFFFF000000000000", 16)
 val mask =    BigInteger.parseString("00000000FFFF0000000000", 16)
 val orResult = operand or mask
@@ -182,10 +188,146 @@ Unlike Java BigInteger which does two's complement inversion, this method does b
 i.e.: If the number was "1100" binary, invPrecise returns "0011" => "11" => 4 in base 10 
 
 In the same case Java BigInteger would return "1011" => -13 two's complement base 10
-```
+```kotlin
 val operand = BigInteger.parseString("11110000", 2)
 val invResult = operand.invPrecise()
 println("Inv result: ${invResult.toString(2)}")
 ----- Output -----
 Inv result: 1111
 ```
+
+## Floating Point
+
+### Creating
+
+#### Parsing
+To create a BigDecimal you can parse a string in _expanded_ or scientific notation
+
+**Scientific** 
+
+```kotlin
+val bigDecimal = BigDecimal.parseString("1.23E-6)")
+println("BigDecimal: $bigDecimal")
+----- Output -----
+BigDecimal: 1.23E-6
+```
+
+**Expanded**
+
+```kotlin
+val bigDecimal = BigDecimal.parseString("0.00000123")
+println("BigDecimal: $bigDecimal")
+----- Output -----
+BigDecimal: 1.23E-6
+```
+
+#### From Long, Int, Short, Byte
+
+You can convert standard types to BigDecimal, i.e. Long
+```kotlin
+val bigDecimal = BigDecimal.fromLong(7111)
+println("BigDecimal: $bigDecimal")
+----- Output -----
+BigDecimal: 7.111E+3
+``` 
+
+Or you can specify an exponent. when you do specify an exponent, input value (long, int, short, byte) is considered to 
+be in **scientific notation**.
+```kotlin
+val bigDecimal = BigDecimal.fromLongWithExponent(1, (-5).toBigInteger())
+println("BigDecimal: $bigDecimal")
+println("BigDecimalExpanded: ${bigDecimal.toStringExpanded()}")
+----- Output -----
+BigDecimal: 1.0E-5
+BigDecimalExpanded: 0.00001
+
+```
+
+## toString
+
+By default toString() is returned in scientific output, but expanded output is also available
+```kotlin
+val bigDecimal = BigDecimal.parseString("123.456")
+println("BigDecimal: ${bigDecimal.toStringExpanded()}")
+bigDecimal.toStringExpanded() == "123.456"
+----- Output -----
+BigDecimal: 123.456
+```
+
+### Arithmetic operations
+
+Standard arithmetic operations that are present:
+* Addition
+* Subtraction
+* Multiplication
+* Division
+* Exponentiation
+* Increase by one
+* Decrease by one
+* Absolute value
+* Negate
+* Signum
+
+(Suspiciously missing is square root, both from BigInteger and BigDecimal, should be added soon™)
+
+Operations are executed with existing significands and then rounded down afterwards. Decimal mode parameter controls the precision and rounding mode
+
+### DecimalMode
+This is a counterpart to the Java BigDecimal MathContext. 
+
+```kotlin
+data class DecimalMode(val decimalPrecision : Long = 0, val roundingMode : RoundingMode = RoundingMode.NONE)
+``` 
+
+`decimalPrecision` defines how many digits should significand have
+
+`roundingMode` defines rounding mode. 
+
+##### Decimal mode resolution
+
+* `DecimalMode` supplied to the operation always overrides all other `DecimalModes` set in `BigDecimal`s
+
+* If a `DecimalMode` is set when creating a `BigDecimal` that mode will be used for all operations.
+
+* If two `BigDecimal`s have different `DecimalModes` with different RoundingModes an `ArithmeticException` will be thrown. 
+If the modes are same, but the precision is different, larger precision will be used.
+
+##### Infinite precision  
+
+Precision 0 and roundingMode none attempt to provide infinite precisions. Exception is division, where default precision is
+is the sum of precisions of operands (or 6, if the sum is below 6). If result of the operation cannot fit inside precision and RoundingMode is NONE, `ArithmeticException` 
+will be thrown.
+
+Example from the tests:
+```kotlin
+   fun readmeDivisionTest() {
+        assertFailsWith(ArithmeticException::class) {
+            val a = 1.toBigDecimal()
+            val b = 3.toBigDecimal()
+            val result = a/b
+        }
+
+        assertTrue {
+            val a = 1.toBigDecimal()
+            val b = 3.toBigDecimal()
+            val result = a.div(b, DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
+            result.toString() == "3.3333333333333333333E-1"
+        }
+    }
+```
+
+#### Rounding modes
+Name | Description
+-----|----------------------------
+FLOOR | Towards negative infinity
+CEILING|Towards positive infinity
+AWAY_FROM_ZERO|Away from zero
+TOWARDS_ZERO| Towards zero
+NONE|Infinite decimalPrecision, and beyond
+ROUND_HALF_AWAY_FROM_ZERO|Round towards nearest integer, using towards zero as tie breaker when significant digit being rounded is 5
+ROUND_HALF_TOWARDS_ZERO|Round towards nearest integer, using away from zero as tie breaker when significant digit being rounded is 5
+ROUND_HALF_CEILING|Round towards nearest integer, using towards infinity as tie breaker when significant digit being rounded is 5
+ROUND_HALF_FLOOR|Round towards nearest integer, using towards negative infinity as tie breaker when significant digit being rounded is 5
+
+For examples of rounding modes consult [Comparison of approaches for rounding to an integer](https://en.wikipedia.org/wiki/Rounding) 
+on Wikipedia

@@ -19,8 +19,6 @@ package com.ionspin.kotlin.bignum.integer.base32
 
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.times
 import com.ionspin.kotlin.bignum.integer.util.toDigit
 import kotlin.math.absoluteValue
 
@@ -372,15 +370,15 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
     }
 
-    override fun pow(operand: UIntArray, exponent: Long): UIntArray {
+    override fun pow(base: UIntArray, exponent: Long): UIntArray {
         if (exponent == 0L) {
             return ONE
         }
         if (exponent == 1L) {
-            return operand
+            return base
         }
         return (0 until exponent).fold(ONE) { acc, _ ->
-            acc * operand
+            acc * base
         }
     }
 
@@ -592,7 +590,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
         val bitPosition = position % 63
         val word = operand[wordPosition.toInt()]
-        val getMask = (word and (1U shl bitPosition.toInt()) == 1U)
         val setMask = 1U shl bitPosition.toInt()
         return UIntArray(operand.size) {
             if (it == wordPosition.toInt()) {

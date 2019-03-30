@@ -50,6 +50,11 @@ enum class Sign {
     }
 }
 
+/**
+ * Arbitrary precision integer arithmetic.
+ *
+ * Based on unsigned arrays, currently limited to [Int.MAX_VALUE] words.
+ */
 @ExperimentalUnsignedTypes
 class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Comparable<Any> {
 

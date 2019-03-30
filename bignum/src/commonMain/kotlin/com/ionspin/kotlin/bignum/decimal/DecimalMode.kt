@@ -41,7 +41,7 @@ enum class RoundingMode {
      */
     TOWARDS_ZERO,
     /**
-     * Infinite precision, and beyond
+     * Infinite decimalPrecision, and beyond
      */
     NONE,
     /**
@@ -71,4 +71,4 @@ enum class RoundingMode {
 //    ROUND_HALF_TO_ODD
 }
 
-data class DecimalMode(val precision : Long = 0, val roundingMode : RoundingMode = RoundingMode.NONE)
+data class DecimalMode(val decimalPrecision : Long = 0, val roundingMode : RoundingMode = RoundingMode.NONE)

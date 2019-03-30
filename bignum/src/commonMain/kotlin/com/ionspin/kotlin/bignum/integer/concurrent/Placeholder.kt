@@ -26,7 +26,7 @@ suspend fun concurrentMultiply() {
 //    if (BigInteger32Arithmetic.useCoroutines) {
 //        val partialResults = second.mapIndexed { index, element ->
 //            GlobalScope.async {
-//                BigInteger32Arithmetic.multiply(first, element) shl (index * BigInteger32Arithmetic.basePowerOfTwo)
+//                BigInteger32Arithmetic.multiplication(first, element) shl (index * BigInteger32Arithmetic.basePowerOfTwo)
 //            }
 //        }
 //
