@@ -348,8 +348,8 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
     }
 
     fun numberOfDigits() : Long {
-//        val bitLenght = arithmetic.bitLength(magnitude)
-////        val minDigit = ceil((bitLenght - 1) * LOG_10_OF_2)
+        val bitLenght = arithmetic.bitLength(magnitude)
+        val minDigit = ceil((bitLenght - 1) * LOG_10_OF_2)
 //        val maxDigit = floor(bitLenght * LOG_10_OF_2) + 1
 //        val correct = this / 10.toBigInteger().pow(maxDigit.toInt())
 //        return when {
@@ -357,13 +357,14 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 //            correct > 0 && correct < 10 -> maxDigit.toInt()
 //            else -> -1
 //        }
-        var tmp = this
+
+        var tmp = this / 10.toBigInteger().pow(minDigit.toInt())
         var counter = 0L
         while (tmp.compareTo(0) != 0) {
             tmp /= 10
             counter ++
         }
-        return counter
+        return counter + minDigit.toInt()
 
 
     }

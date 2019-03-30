@@ -139,7 +139,6 @@ class BigDecimal private constructor(
 
 
     internal fun multiply(other: BigDecimal, decimalMode: DecimalMode = DecimalMode()): BigDecimal {
-//        val (first, second) = bringSignificandToSameExponent(this, other)
         val newSignificand = this.significand * other.significand
         val newExponent = this.exponent + other.exponent
         return roundOrDont(newSignificand, newExponent, decimalMode)
