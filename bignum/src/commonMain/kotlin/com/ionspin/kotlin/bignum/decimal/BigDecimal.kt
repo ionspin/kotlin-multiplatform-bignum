@@ -350,7 +350,7 @@ class BigDecimal private constructor(
         fun fromLongWithExponent(
             long: Long,
             exponent: BigInteger,
-            decimalMode: DecimalMode = DecimalMode()
+            decimalMode: DecimalMode? = null
         ): BigDecimal {
             val bigint = BigInteger.fromLong(long)
             return BigDecimal(bigint, exponent, decimalMode).round(decimalMode)
@@ -358,7 +358,7 @@ class BigDecimal private constructor(
         /**
          * Create BigDecimal from Int significand and BigInteger exponent
          */
-        fun fromIntWithExponent(int: Int, exponent: BigInteger, decimalMode: DecimalMode = DecimalMode()): BigDecimal {
+        fun fromIntWithExponent(int: Int, exponent: BigInteger, decimalMode: DecimalMode? = null): BigDecimal {
             val bigint = BigInteger.fromInt(int)
             return BigDecimal(bigint, exponent, decimalMode).round(decimalMode)
         }
@@ -368,7 +368,7 @@ class BigDecimal private constructor(
         fun fromShortWithExponent(
             short: Short,
             exponent: BigInteger,
-            decimalMode: DecimalMode = DecimalMode()
+            decimalMode: DecimalMode? = null
         ): BigDecimal {
             val bigint = BigInteger.fromShort(short)
             return BigDecimal(bigint, exponent, decimalMode).round(decimalMode)
@@ -379,7 +379,7 @@ class BigDecimal private constructor(
         fun fromByteWithExponent(
             byte: Byte,
             exponent: BigInteger,
-            decimalMode: DecimalMode = DecimalMode()
+            decimalMode: DecimalMode? = null
         ): BigDecimal {
             val bigint = BigInteger.fromByte(byte)
             return BigDecimal(bigint, exponent, decimalMode).round(decimalMode)
@@ -387,23 +387,23 @@ class BigDecimal private constructor(
         /**
          * Create BigDecimal from Long significand and Int exponent
          */
-        fun fromLongWithExponent(long: Long, exponent: Int, decimalMode: DecimalMode = DecimalMode()): BigDecimal =
-            fromLongWithExponent(long, exponent.toBigInteger(), decimalMode)
+        fun fromLongWithExponent(long: Long, exponent: Int, decimalMode: DecimalMode? = null): BigDecimal =
+            fromLongWithExponent(long, exponent.toBigInteger(), decimalMode).round(decimalMode)
         /**
          * Create BigDecimal from Int significand and Int exponent
          */
-        fun fromIntWithExponent(int: Int, exponent: Int, decimalMode: DecimalMode = DecimalMode()): BigDecimal =
-            fromIntWithExponent(int, exponent.toBigInteger())
+        fun fromIntWithExponent(int: Int, exponent: Int, decimalMode: DecimalMode? = null): BigDecimal =
+            fromIntWithExponent(int, exponent.toBigInteger()).round(decimalMode)
         /**
          * Create BigDecimal from Short significand and Int exponent
          */
         fun fromShortWithExponent(short: Short, exponent: Int, decimalMode: DecimalMode = DecimalMode()): BigDecimal =
-            fromShortWithExponent(short, exponent.toBigInteger(), decimalMode)
+            fromShortWithExponent(short, exponent.toBigInteger(), decimalMode).round(decimalMode)
         /**
          * Create BigDecimal from Byte significand and Int exponent
          */
-        fun fromByteWithExponent(byte: Byte, exponent: Int, decimalMode: DecimalMode = DecimalMode()): BigDecimal =
-            fromByteWithExponent(byte, exponent.toBigInteger(), decimalMode)
+        fun fromByteWithExponent(byte: Byte, exponent: Int, decimalMode: DecimalMode? = null): BigDecimal =
+            fromByteWithExponent(byte, exponent.toBigInteger(), decimalMode).round(decimalMode)
 
         /**
          * Parse BigDecimal from a supplied string. The string can be in either of two different formats:
