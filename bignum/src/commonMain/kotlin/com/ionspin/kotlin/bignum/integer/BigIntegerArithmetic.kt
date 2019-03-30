@@ -22,11 +22,13 @@ package com.ionspin.kotlin.bignum.integer
  *
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 10-Mar-3/10/19
+ * on 10-Mar-2019
  */
 interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
     val ZERO : BackingCollectionType
     val ONE : BackingCollectionType
+    val TEN : BackingCollectionType
+
     val basePowerOfTwo: Int
     /**
      * Returns the number of leading zeroes in highest word
@@ -37,6 +39,11 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
      * Number of bits needed to represent this number
      */
     fun bitLength(value: BackingCollectionType): Int
+
+    /**
+     * Number of consecutive zeroes count from the right in binary representation
+     */
+    fun trailingZeroBits(value: BackingCollectionType) : Int
 
     /**
      * Arithmetic shift left. Shifts the number to the left, by required places of bits, creating new words if necessary
@@ -79,6 +86,12 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
     fun divide(first: BackingCollectionType, second: BackingCollectionType): Pair<BackingCollectionType, BackingCollectionType>
 
     /**
+     * Exponentiation function
+     * @return BigInteger result of exponentiation of number by exponent
+     */
+    fun pow(base : BackingCollectionType, exponent : Long) : BackingCollectionType
+
+    /**
      * Parse a string in a specific base into a big integer
      */
     fun parseForBase(number : String, base : Int) : BackingCollectionType
@@ -98,6 +111,9 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
     fun xor(operand: BackingCollectionType, mask: BackingCollectionType) : BackingCollectionType
     fun and(operand: BackingCollectionType, mask: BackingCollectionType) : BackingCollectionType
     fun inv(operand: BackingCollectionType) : BackingCollectionType
+
+    fun bitAt(operand : BackingCollectionType, position : Long) : Boolean
+    fun setBitAt(operand : BackingCollectionType, position : Long, bit : Boolean) : BackingCollectionType
 
 
 }

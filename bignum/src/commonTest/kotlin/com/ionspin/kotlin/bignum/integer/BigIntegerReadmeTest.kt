@@ -23,7 +23,7 @@ import kotlin.test.assertTrue
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 17-Mar-3/17/19
+ * on 17-Mar-2019
  */
 @ExperimentalUnsignedTypes
 class BigIntegerReadmeTest {
@@ -173,6 +173,11 @@ class BigIntegerReadmeTest {
 
         assertTrue { invResult == expectedResult }
 
+
+    }
+
+    @Test
+    fun `Test_readme_big_decimal_creation`() {
 
     }
 

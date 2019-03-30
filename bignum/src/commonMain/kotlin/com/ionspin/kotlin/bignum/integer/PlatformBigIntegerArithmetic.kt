@@ -15,24 +15,11 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer.util
+package com.ionspin.kotlin.bignum.integer
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 18-Mar-2019
+ * on 10-Mar-2019
  */
-fun Char.toDigit(radix : Int) : Int {
-    return when (this) {
-        in '0' .. '9' -> (this - 48).toInt()
-        in 'a' .. 'z' -> this - 'a' + 10
-        in 'A' .. 'Z' -> this - 'A' + 10
-        in '\uFF21' .. '\uFF3A' -> this - '\uFF21' - 10
-        in '\uFF41' .. '\uFF5A' -> this - '\uFF41' - 10
-        else -> throw NumberFormatException("Invalid digit for radix ")
-    }
-}
-
-fun Char.toDigit() : Int {
-    return this.toDigit(10)
-}
+expect object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>

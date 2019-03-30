@@ -20,11 +20,12 @@ package com.ionspin.kotlin.bignum.integer.base32
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.util.toDigit
+import kotlin.math.absoluteValue
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 09-Mar-3/9/19
+ * on 09-Mar-2019
  */
 @ExperimentalUnsignedTypes
 internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
@@ -36,6 +37,8 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     override val ZERO = UIntArray(0)
     override val ONE = UIntArray(1) { 1U }
+    override val TEN = UIntArray(1) { 10U }
+
 
 
     /**
@@ -85,6 +88,10 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return basePowerOfTwo - numberOfLeadingZeroes(
             value
         )
+    }
+
+    override fun trailingZeroBits(value : UIntArray) : Int {
+        TODO()
     }
 
     fun removeLeadingZeroes(bigInteger: UIntArray): UIntArray {
@@ -363,6 +370,18 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
     }
 
+    override fun pow(base: UIntArray, exponent: Long): UIntArray {
+        if (exponent == 0L) {
+            return ONE
+        }
+        if (exponent == 1L) {
+            return base
+        }
+        return (0 until exponent).fold(ONE) { acc, _ ->
+            acc * base
+        }
+    }
+
     override fun divide(first: UIntArray, second: UIntArray): Pair<UIntArray, UIntArray> {
         return basicDivide(first, second)
     }
@@ -546,6 +565,45 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return shiftRight(this, places)
     }
 
+    override fun bitAt(operand: UIntArray, position: Long): Boolean {
+        if (position / 63 > Int.MAX_VALUE) {
+            throw RuntimeException("Invalid bit index, too large, cannot access word (Word position > Int.MAX_VALUE")
+        }
+
+        val wordPosition = position / 63
+        if (wordPosition >= operand.size) {
+            return false
+        }
+        val bitPosition = position % 63
+        val word = operand[wordPosition.toInt()]
+        return (word and (1U shl bitPosition.toInt()) == 1U)
+    }
+
+    override fun setBitAt(operand: UIntArray, position: Long, bit : Boolean): UIntArray {
+        if (position / 63 > Int.MAX_VALUE) {
+            throw RuntimeException("Invalid bit index, too large, cannot access word (Word position > Int.MAX_VALUE")
+        }
+
+        val wordPosition = position / 63
+        if (wordPosition >= operand.size) {
+            throw IndexOutOfBoundsException("Invalid position, addressed word $wordPosition larger than number of words ${operand.size}")
+        }
+        val bitPosition = position % 63
+        val word = operand[wordPosition.toInt()]
+        val setMask = 1U shl bitPosition.toInt()
+        return UIntArray(operand.size) {
+            if (it == wordPosition.toInt()) {
+                if (bit) {
+                    operand[it] or setMask
+                } else {
+                    operand[it] xor setMask
+                }
+            } else {
+                operand[it]
+            }
+        }
+    }
+
 
     internal operator fun UIntArray.plus(other: UIntArray): UIntArray {
         return add(this, other)
@@ -605,11 +663,11 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
     }
 
-    override fun fromLong(long: Long): UIntArray = uintArrayOf(long.toUInt())
+    override fun fromLong(long: Long): UIntArray = uintArrayOf(long.absoluteValue.toUInt())
 
-    override fun fromInt(int: Int): UIntArray = uintArrayOf(int.toUInt())
+    override fun fromInt(int: Int): UIntArray = uintArrayOf(int.absoluteValue.toUInt())
 
-    override fun fromShort(short: Short): UIntArray = uintArrayOf(short.toUInt())
+    override fun fromShort(short: Short): UIntArray = uintArrayOf(short.toInt().absoluteValue.toUInt())
 
-    override fun fromByte(byte: Byte): UIntArray = uintArrayOf(byte.toUInt())
+    override fun fromByte(byte: Byte): UIntArray = uintArrayOf(byte.toInt().absoluteValue.toUInt())
 }

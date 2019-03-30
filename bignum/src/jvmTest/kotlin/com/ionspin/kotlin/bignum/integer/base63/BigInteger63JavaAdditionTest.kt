@@ -23,7 +23,7 @@ import kotlin.test.assertTrue
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 17-Mar-3/17/19
+ * on 17-Mar-2019
  */
 /*
 0 = 9223372036854775800

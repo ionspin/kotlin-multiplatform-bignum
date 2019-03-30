@@ -15,19 +15,25 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer.base32
+package com.ionspin.kotlin.bignum.decimal
 
-import java.math.BigInteger
+import com.ionspin.kotlin.bignum.integer.base63.toJavaBigInteger
+import java.lang.RuntimeException
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 09-Mar-2019
+ * on 24-Mar-2019
  */
 @UseExperimental(ExperimentalUnsignedTypes::class)
-fun UIntArray.toJavaBigInteger(): BigInteger {
-    return this.foldIndexed(BigInteger.valueOf(0)) { index, acc, digit ->
-        acc.or(BigInteger(digit.toString(), 10).shiftLeft((index) * 32))
-
+fun BigDecimal.toJavaBigDecimal() : java.math.BigDecimal {
+    if (this.precision > Int.MAX_VALUE) {
+        throw RuntimeException("Numbers with more digits than Int.MAX_VALUE cannot be converted to java BigDecimal")
     }
+    return if (exponent > 0) {
+        java.math.BigDecimal(this.significand.toJavaBigInteger(), (this.precision.toInt() - this.exponent.magnitude[0].toInt() - 1))
+    } else {
+        java.math.BigDecimal(this.significand.toJavaBigInteger(), (this.precision.toInt() + this.exponent.magnitude[0].toInt() - 1) )
+    }
+//    return java.math.BigDecimal(this.toStringExpanded())
 }

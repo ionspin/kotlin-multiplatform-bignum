@@ -17,23 +17,31 @@
 
 package com.ionspin.kotlin.bignum.integer
 
+import kotlinx.coroutines.coroutineScope
+import kotlin.math.ceil
+import kotlin.math.floor
+import kotlin.math.log10
+import kotlin.math.pow
+
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 10-Mar-3/10/19
+ * on 10-Mar-2019
  */
 
 enum class Sign {
     POSITIVE, NEGATIVE, ZERO;
-    operator fun not() : Sign {
+
+    operator fun not(): Sign {
         return when (this) {
             POSITIVE -> NEGATIVE
             NEGATIVE -> POSITIVE
             ZERO -> ZERO
         }
     }
-    fun toInt() : Int {
+
+    fun toInt(): Int {
         return when (this) {
             POSITIVE -> 1
             NEGATIVE -> -1
@@ -42,16 +50,24 @@ enum class Sign {
     }
 }
 
+/**
+ * Arbitrary precision integer arithmetic.
+ *
+ * Based on unsigned arrays, currently limited to [Int.MAX_VALUE] words.
+ */
 @ExperimentalUnsignedTypes
 class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Comparable<Any> {
 
 
     @ExperimentalUnsignedTypes
     companion object {
-        private val arithmetic = chosenArithmetic
+        private val arithmetic : BigIntegerArithmetic<WordArray, Word> = chosenArithmetic
 
         val ZERO = BigInteger(arithmetic.ZERO, Sign.ZERO)
         val ONE = BigInteger(arithmetic.ONE, Sign.POSITIVE)
+        val TEN = BigInteger(arithmetic.TEN, Sign.POSITIVE)
+
+        val LOG_10_OF_2 = log10(2.0)
 
         fun parseString(string: String, base: Int = 10): BigInteger {
             val signed = (string[0] == '-' || string[0] == '+')
@@ -67,7 +83,10 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
                 if (string.length == 2 && string[1] == '0') {
                     return ZERO
                 }
-                BigInteger(arithmetic.parseForBase(string.substring(startIndex = 1, endIndex = string.length), base), isNegative)
+                BigInteger(
+                    arithmetic.parseForBase(string.substring(startIndex = 1, endIndex = string.length), base),
+                    isNegative
+                )
             } else {
                 if (string.length == 1 && string[0] == '0') {
                     return ZERO
@@ -75,6 +94,10 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
                 BigInteger(arithmetic.parseForBase(string, base), Sign.POSITIVE)
             }
 
+        }
+
+        internal fun fromWordArray(wordArray: WordArray, sign: Sign): BigInteger {
+            return BigInteger(wordArray, sign)
         }
 
         private inline fun <reified T> determinSignFromNumber(number: Comparable<T>): Sign {
@@ -121,16 +144,33 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         fun fromInt(int: Int) = BigInteger(arithmetic.fromInt(int), determinSignFromNumber(int))
         fun fromShort(short: Short) = BigInteger(arithmetic.fromShort(short), determinSignFromNumber(short))
         fun fromByte(byte: Byte) = BigInteger(arithmetic.fromByte(byte), determinSignFromNumber(byte))
+
+        fun max(first: BigInteger, second: BigInteger): BigInteger {
+            return if (first > second) {
+                first
+            } else {
+                second
+            }
+        }
+
+        fun min(first: BigInteger, second: BigInteger): BigInteger {
+            return if (first < second) {
+                first
+            } else {
+                second
+            }
+        }
     }
 
     internal val magnitude: WordArray = wordArray
 
-    private fun isResultZero(resultMagnitude : WordArray) : Boolean {
+    private fun isResultZero(resultMagnitude: WordArray): Boolean {
         return arithmetic.compare(resultMagnitude, arithmetic.ZERO) == 0
     }
 
+    val numberOfWords = magnitude.size
 
-
+    var stringRepresentation : String? = null
 
     fun add(other: BigInteger): BigInteger {
         val comparison = arithmetic.compare(this.magnitude, other.magnitude)
@@ -154,6 +194,8 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 
     fun subtract(other: BigInteger): BigInteger {
         val comparison = arithmetic.compare(this.magnitude, other.magnitude)
+        if (this == ZERO) { return other.negate()}
+        if (other == ZERO) { return this }
         return if (other.sign == this.sign) {
             when {
                 comparison > 0 -> {
@@ -192,13 +234,20 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         if (other.isZero()) {
             throw ArithmeticException("Division by zero! $this / $other")
         }
-        val sign = if (this.sign != other.sign) {
-            Sign.NEGATIVE
+
+        val result = arithmetic.divide(this.magnitude, other.magnitude).first
+        return if (result == arithmetic.ZERO) {
+            ZERO
         } else {
-            Sign.POSITIVE
+            val sign = if (this.sign != other.sign) {
+                Sign.NEGATIVE
+            } else {
+                Sign.POSITIVE
+            }
+            BigInteger(result, sign)
         }
 
-        return BigInteger(arithmetic.divide(this.magnitude, other.magnitude).first, sign)
+
     }
 
     fun remainder(other: BigInteger): BigInteger {
@@ -223,21 +272,112 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         } else {
             Sign.POSITIVE
         }
+        val result = arithmetic.divide(this.magnitude, other.magnitude)
+        val quotient = if (result.first == arithmetic.ZERO) {
+            ZERO
+        } else {
+            BigInteger(result.first, sign)
+        }
+        val remainder = if (result.second == arithmetic.ZERO) {
+            ZERO
+        } else {
+            BigInteger(result.second, sign)
+        }
         return Pair(
-            BigInteger(arithmetic.divide(this.magnitude, other.magnitude).first, sign),
-            BigInteger(arithmetic.divide(this.magnitude, other.magnitude).second, sign)
+            quotient,
+            remainder
         )
     }
 
     fun compare(other: BigInteger): Int {
         if (isZero() && other.isZero()) return 0
-        if (other.isZero()) return 1
-        if (this.isZero()) return -1
+        if (other.isZero() && this.sign == Sign.POSITIVE) return 1
+        if (other.isZero() && this.sign == Sign.NEGATIVE) return -1
+        if (this.isZero() && other.sign == Sign.POSITIVE) return -1
+        if (this.isZero() && other.sign == Sign.NEGATIVE) return 1
         if (sign != other.sign) return if (sign == Sign.POSITIVE) 1 else -1
         return arithmetic.compare(this.magnitude, other.magnitude)
     }
 
     fun isZero(): Boolean = this.sign == Sign.ZERO
+
+    fun negate(): BigInteger {
+        return BigInteger(wordArray = this.magnitude.copyOf(), sign = sign.not())
+    }
+
+    fun abs(): BigInteger {
+        return BigInteger(wordArray = this.magnitude.copyOf(), sign = Sign.POSITIVE)
+    }
+
+    fun pow(exponent: BigInteger) : BigInteger {
+        if (exponent <= Long.MAX_VALUE) {
+            return pow(exponent.magnitude[0].toLong())
+        }
+        //TODO this is not efficient
+        var counter = exponent
+        var result = ONE
+        while(counter > 0) {
+            counter--
+            result *= this
+        }
+
+        return result
+    }
+
+    fun pow(exponent: Long): BigInteger {
+        val sign = if (sign == Sign.NEGATIVE) {
+            if (exponent % 2 == 0L) {
+                Sign.POSITIVE
+            } else {
+                Sign.NEGATIVE
+            }
+        } else {
+            Sign.POSITIVE
+        }
+        return BigInteger(arithmetic.pow(magnitude, exponent), sign)
+    }
+
+    fun pow(exponent: Int): BigInteger {
+        return pow(exponent.toLong())
+    }
+
+    fun signum(): Int = when (sign) {
+        Sign.POSITIVE -> 1
+        Sign.NEGATIVE -> -1
+        Sign.ZERO -> 0
+    }
+
+    fun bitAt(position: Long): Boolean {
+        return arithmetic.bitAt(magnitude, position)
+    }
+
+    fun setBitAt(position: Long, bit : Boolean) : BigInteger {
+        return BigInteger(arithmetic.setBitAt(magnitude, position, bit), sign)
+    }
+
+    fun numberOfDigits() : Long {
+        val bitLenght = arithmetic.bitLength(magnitude)
+        val minDigit = ceil((bitLenght - 1) * LOG_10_OF_2)
+//        val maxDigit = floor(bitLenght * LOG_10_OF_2) + 1
+//        val correct = this / 10.toBigInteger().pow(maxDigit.toInt())
+//        return when {
+//            correct == ZERO -> maxDigit.toInt() - 1
+//            correct > 0 && correct < 10 -> maxDigit.toInt()
+//            else -> -1
+//        }
+
+        var tmp = this / 10.toBigInteger().pow(minDigit.toInt())
+        var counter = 0L
+        while (tmp.compareTo(0) != 0) {
+            tmp /= 10
+            counter ++
+        }
+        return counter + minDigit.toInt()
+
+
+    }
+
+
 
 
     infix fun shl(places: Int): BigInteger {
@@ -248,6 +388,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         return BigInteger(arithmetic.shiftRight(this.magnitude, places), sign)
     }
 
+    operator fun unaryMinus(): BigInteger = negate()
 
     operator fun plus(other: BigInteger): BigInteger {
         return add(other)
@@ -267,6 +408,14 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 
     operator fun rem(other: BigInteger): BigInteger {
         return remainder(other)
+    }
+
+    operator fun dec() : BigInteger {
+        return this - 1
+    }
+
+    operator fun inc() : BigInteger {
+        return this + 1
     }
 
     infix fun divrem(other: BigInteger): QuotientAndRemainder {
@@ -292,7 +441,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
      *
      * I.e.: If the number was "1100" binary, invPrecise returns "0011" => "11" => 4 decimal
      */
-    fun invPrecise() : BigInteger {
+    fun invPrecise(): BigInteger {
         return BigInteger(arithmetic.inv(this.magnitude), sign)
     }
 
@@ -321,8 +470,14 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
     }
 
 
-
     override fun toString(): String {
+        //TODO think about limiting the size of string, and offering a stream of characters instead of huge strings
+//        if (stringRepresentation == null) {
+//            stringRepresentation = toString(10)
+//        }
+//        return stringRepresentation!!
+
+        //Linux build complains about mutating a frozen object, let's try without this representation caching
         return toString(10)
     }
 
@@ -337,5 +492,135 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 
     data class QuotientAndRemainder(val quotient: BigInteger, val remainder: BigInteger)
 
+    //
+    //
+    // ----------------- Interop with basic types ----------------------
+    //
+    //
+
+
+
+    // ------------- Addition -----------
+
+
+    operator fun plus(int: Int): BigInteger {
+        return this.plus(BigInteger.fromInt(int))
+    }
+
+
+    operator fun plus(long: Long): BigInteger {
+        return this.plus(BigInteger.fromLong(long))
+    }
+
+
+    operator fun plus(short: Short): BigInteger {
+        return this.plus(BigInteger.fromShort(short))
+    }
+
+
+    operator fun plus(byte: Byte): BigInteger {
+        return this.plus(BigInteger.fromByte(byte))
+    }
+
+    // ------------- Multiplication -----------
+
+
+    operator fun times(int: Int): BigInteger {
+        return this.multiply(BigInteger.fromInt(int))
+    }
+
+
+    operator fun times(long: Long): BigInteger {
+        return this.multiply(BigInteger.fromLong(long))
+    }
+
+
+    operator fun times(short: Short): BigInteger {
+        return this.multiply(BigInteger.fromShort(short))
+    }
+
+
+    operator fun times(byte: Byte): BigInteger {
+        return this.multiply(BigInteger.fromByte(byte))
+    }
+
+
+    //TODO eh
+    internal operator fun times(char: Char) : String {
+        if (this < 0) {
+            throw RuntimeException("Char cannot be multiplied with negative number")
+        }
+        var counter = this
+        val stringBuilder = StringBuilder()
+        while (counter > 0) {
+            stringBuilder.append(char)
+            counter--
+        }
+        return stringBuilder.toString()
+    }
+
+    // ------------- Subtraction -----------
+
+
+    operator fun minus(int: Int): BigInteger {
+        return this.minus(BigInteger.fromInt(int))
+    }
+
+
+    operator fun minus(long: Long): BigInteger {
+        return this.minus(BigInteger.fromLong(long))
+    }
+
+
+    operator fun minus(short: Short): BigInteger {
+        return this.minus(BigInteger.fromShort(short))
+    }
+
+
+    operator fun minus(byte: Byte): BigInteger {
+        return this.minus(BigInteger.fromByte(byte))
+    }
+
+    // ------------- Division -----------
+
+
+    operator fun div(int: Int): BigInteger {
+        return this.div(BigInteger.fromInt(int))
+    }
+
+
+    operator fun div(long: Long): BigInteger {
+        return this.div(BigInteger.fromLong(long))
+    }
+
+
+    operator fun div(short: Short): BigInteger {
+        return this.div(BigInteger.fromShort(short))
+    }
+
+
+    operator fun div(byte: Byte): BigInteger {
+        return this.div(BigInteger.fromByte(byte))
+    }
+
+
+    operator fun rem(int: Int): BigInteger {
+        return this.rem(BigInteger.fromInt(int))
+    }
+
+
+    operator fun rem(long: Long): BigInteger {
+        return this.rem(BigInteger.fromLong(long))
+    }
+
+
+    operator fun rem(short: Short): BigInteger {
+        return this.rem(BigInteger.fromShort(short))
+    }
+
+
+    operator fun rem(byte: Byte): BigInteger {
+        return this.rem(BigInteger.fromByte(byte))
+    }
 
 }

@@ -20,13 +20,13 @@ package com.ionspin.kotlin.bignum.integer.concurrent
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 17-Mar-3/17/19
+ * on 17-Mar-2019
  */
 suspend fun concurrentMultiply() {
 //    if (BigInteger32Arithmetic.useCoroutines) {
 //        val partialResults = second.mapIndexed { index, element ->
 //            GlobalScope.async {
-//                BigInteger32Arithmetic.multiply(first, element) shl (index * BigInteger32Arithmetic.basePowerOfTwo)
+//                BigInteger32Arithmetic.multiplication(first, element) shl (index * BigInteger32Arithmetic.basePowerOfTwo)
 //            }
 //        }
 //

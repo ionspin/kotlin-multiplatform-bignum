@@ -15,24 +15,40 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer.util
+package com.ionspin.kotlin.bignum.decimal
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 18-Mar-2019
+ * on 10-Mar-2019
  */
-fun Char.toDigit(radix : Int) : Int {
-    return when (this) {
-        in '0' .. '9' -> (this - 48).toInt()
-        in 'a' .. 'z' -> this - 'a' + 10
-        in 'A' .. 'Z' -> this - 'A' + 10
-        in '\uFF21' .. '\uFF3A' -> this - '\uFF21' - 10
-        in '\uFF41' .. '\uFF5A' -> this - '\uFF41' - 10
-        else -> throw NumberFormatException("Invalid digit for radix ")
-    }
+
+
+@ExperimentalUnsignedTypes
+fun Long.toBigDecimal(): BigDecimal {
+    return BigDecimal.fromLongAsSignificand(this)
 }
 
-fun Char.toDigit() : Int {
-    return this.toDigit(10)
+
+@ExperimentalUnsignedTypes
+fun Int.toBigDecimal(): BigDecimal {
+    return BigDecimal.fromIntAsSignificand(this)
 }
+
+
+@ExperimentalUnsignedTypes
+fun Short.toBigDecimal(): BigDecimal {
+    return BigDecimal.fromShortAsSignificand(this)
+}
+
+
+@ExperimentalUnsignedTypes
+fun Byte.toBigDecimal(): BigDecimal {
+    return BigDecimal.fromByteAsSignificand(this)
+}
+
+
+
+
+
+
