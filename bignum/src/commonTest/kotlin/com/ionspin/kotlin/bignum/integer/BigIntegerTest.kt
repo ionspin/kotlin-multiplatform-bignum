@@ -52,16 +52,17 @@ BigIntegerTest {
 
     @Test
     fun testPow10ButAlsoGenerateTable() {
+        val generateTable = false
         val a = BigInteger.fromInt(10)
-        println("    val powersOf10 = arrayOf(")
+        if (generateTable) { println("    val powersOf10 = arrayOf(") }
         for (i in 0 .. 100) {
             val powered = a.pow(i)
-            println("        ulongArrayOf(${powered.magnitude.joinToString(separator = "UL, "){ it.toString() }}UL), ")
+            if (generateTable) { println("        ulongArrayOf(${powered.magnitude.joinToString(separator = "UL, "){ it.toString() }}UL), ") }
             assertTrue {
                 powered.toString(10) == "1" + i.toBigInteger() * '0'
             }
         }
-        println("    )")
+        if (generateTable) { println("    )") }
     }
 
     @Test

@@ -60,6 +60,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 
         val ZERO = BigInteger(arithmetic.ZERO, Sign.ZERO)
         val ONE = BigInteger(arithmetic.ONE, Sign.POSITIVE)
+        val TEN = BigInteger(arithmetic.TEN, Sign.POSITIVE)
 
         val LOG_10_OF_2 = log10(2.0)
 
@@ -163,6 +164,8 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
     }
 
     val numberOfWords = magnitude.size
+
+    var stringRepresentation : String? = null
 
     fun add(other: BigInteger): BigInteger {
         val comparison = arithmetic.compare(this.magnitude, other.magnitude)
@@ -463,6 +466,13 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 
 
     override fun toString(): String {
+        //TODO think about limiting the size of string, and offering a stream of characters instead of huge strings
+//        if (stringRepresentation == null) {
+//            stringRepresentation = toString(10)
+//        }
+//        return stringRepresentation!!
+
+        //Linux build complains about mutating a frozen object, let's try without this representation caching
         return toString(10)
     }
 

@@ -27,6 +27,8 @@ actual object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>
         get() = TODO("not implemented yet")
     override val ONE: IntArray
         get() = TODO("not implemented yet")
+    override val TEN: IntArray
+        get() = TODO("not implemented yet")
     val base: Int = 0x7FFFFFFF
     override val basePowerOfTwo: Int = 32
 

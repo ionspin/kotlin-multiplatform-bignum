@@ -27,6 +27,8 @@ package com.ionspin.kotlin.bignum.integer
 interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
     val ZERO : BackingCollectionType
     val ONE : BackingCollectionType
+    val TEN : BackingCollectionType
+
     val basePowerOfTwo: Int
     /**
      * Returns the number of leading zeroes in highest word

@@ -34,6 +34,7 @@ import kotlin.math.absoluteValue
 internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
     override val ZERO: ULongArray = ulongArrayOf(0u)
     override val ONE: ULongArray = ulongArrayOf(1u)
+    override val TEN: ULongArray = ulongArrayOf(10UL)
     override val basePowerOfTwo: Int = 63
 
     val baseMask: ULong = 0x7FFFFFFFFFFFFFFFUL
