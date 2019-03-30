@@ -22,4 +22,4 @@ package com.ionspin.kotlin.bignum.integer
  * ugljesa.jovanovic@ionspin.com
  * on 10-Mar-2019
  */
-expect object NativeBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>
+expect object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>

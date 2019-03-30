@@ -19,6 +19,8 @@ package com.ionspin.kotlin.bignum.integer.base32
 
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.times
 import com.ionspin.kotlin.bignum.integer.util.toDigit
 import kotlin.math.absoluteValue
 
@@ -368,6 +370,12 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
     }
 
+    override fun pow(operand: UIntArray, exponent: Long): UIntArray {
+        return (0 until exponent).fold(ONE) { acc, _ ->
+            acc * operand
+        }
+    }
+
     override fun divide(first: UIntArray, second: UIntArray): Pair<UIntArray, UIntArray> {
         return basicDivide(first, second)
     }
@@ -549,6 +557,46 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     internal infix fun UIntArray.shr(places: Int): UIntArray {
         return shiftRight(this, places)
+    }
+
+    override fun bitAt(operand: UIntArray, position: Long): Boolean {
+        if (position / 63 > Int.MAX_VALUE) {
+            throw RuntimeException("Invalid bit index, too large, cannot access word (Word position > Int.MAX_VALUE")
+        }
+
+        val wordPosition = position / 63
+        if (wordPosition >= operand.size) {
+            return false
+        }
+        val bitPosition = position % 63
+        val word = operand[wordPosition.toInt()]
+        return (word and (1U shl bitPosition.toInt()) == 1U)
+    }
+
+    override fun setBitAt(operand: UIntArray, position: Long, bit : Boolean): UIntArray {
+        if (position / 63 > Int.MAX_VALUE) {
+            throw RuntimeException("Invalid bit index, too large, cannot access word (Word position > Int.MAX_VALUE")
+        }
+
+        val wordPosition = position / 63
+        if (wordPosition >= operand.size) {
+            throw IndexOutOfBoundsException("Invalid position, addressed word $wordPosition larger than number of words ${operand.size}")
+        }
+        val bitPosition = position % 63
+        val word = operand[wordPosition.toInt()]
+        val getMask = (word and (1U shl bitPosition.toInt()) == 1U)
+        val setMask = 1U shl bitPosition.toInt()
+        return UIntArray(operand.size) {
+            if (it == wordPosition.toInt()) {
+                if (bit) {
+                    operand[it] or setMask
+                } else {
+                    operand[it] xor setMask
+                }
+            } else {
+                operand[it]
+            }
+        }
     }
 
 

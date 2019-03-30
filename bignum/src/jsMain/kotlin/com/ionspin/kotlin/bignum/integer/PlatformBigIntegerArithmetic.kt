@@ -22,7 +22,9 @@ package com.ionspin.kotlin.bignum.integer
  * ugljesa.jovanovic@ionspin.com
  * on 10-Mar-2019
  */
-actual object NativeBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int> {
+actual object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int> {
+
+
     override val ZERO: IntArray
         get() = TODO("not implemented yet")
     override val ONE: IntArray
@@ -70,9 +72,14 @@ actual object NativeBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int> {
         TODO("not implemented yet")
     }
 
+    override fun pow(operand: IntArray, exponent: Long): IntArray {
+        TODO("not implemented yet")
+    }
+
     override fun divide(first: IntArray, second: IntArray): Pair<IntArray, IntArray> {
         TODO("not implemented yet")
     }
+
     override fun parseForBase(number: String, base: Int) : IntArray {
         TODO("not implemented yet")
     }
@@ -104,5 +111,14 @@ actual object NativeBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int> {
     override fun inv(operand: IntArray): IntArray {
         TODO("not implemented yet")
     }
+
+    override fun bitAt(operand: IntArray, position: Long): Boolean {
+        TODO("not implemented yet")
+    }
+
+    override fun setBitAt(operand: IntArray, position: Long, bit: Boolean): IntArray {
+        TODO("not implemented yet")
+    }
+
 
 }

@@ -84,6 +84,12 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
     fun divide(first: BackingCollectionType, second: BackingCollectionType): Pair<BackingCollectionType, BackingCollectionType>
 
     /**
+     * Exponentiation function
+     * @return BigInteger result of exponentiation of number by exponent
+     */
+    fun pow(base : BackingCollectionType, exponent : Long) : BackingCollectionType
+
+    /**
      * Parse a string in a specific base into a big integer
      */
     fun parseForBase(number : String, base : Int) : BackingCollectionType
@@ -103,6 +109,9 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
     fun xor(operand: BackingCollectionType, mask: BackingCollectionType) : BackingCollectionType
     fun and(operand: BackingCollectionType, mask: BackingCollectionType) : BackingCollectionType
     fun inv(operand: BackingCollectionType) : BackingCollectionType
+
+    fun bitAt(operand : BackingCollectionType, position : Long) : Boolean
+    fun setBitAt(operand : BackingCollectionType, position : Long, bit : Boolean) : BackingCollectionType
 
 
 }

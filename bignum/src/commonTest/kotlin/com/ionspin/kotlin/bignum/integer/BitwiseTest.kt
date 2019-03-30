@@ -18,7 +18,7 @@
 package com.ionspin.kotlin.bignum.integer.arithmetic
 
 import com.ionspin.kotlin.bignum.integer.BigInteger
-import kotlin.test.Ignore
+import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -57,6 +57,35 @@ class BitwiseTest {
             val numberOfDigits = bigInteger.numberOfDigits()
             assertTrue { numberOfDigits == i }
         }
+
+    }
+
+    @Test
+    fun setBitAtTest() {
+        assertTrue {
+            val bigInt = BigInteger.fromInt(4)
+            val result = bigInt.setBitAt(1, true)
+            result == 6.toBigInteger()
+        }
+
+        assertTrue {
+            val bigInt = BigInteger.fromInt(6)
+            val result = bigInt.setBitAt(1, false)
+            result == 4.toBigInteger()
+        }
+
+        assertTrue {
+            val bigInt = BigInteger.fromLong(Long.MAX_VALUE)
+            val result = bigInt.setBitAt(32, false)
+            result == (Long.MAX_VALUE.toBigInteger() - 2.toBigInteger().pow(32))
+        }
+
+        assertTrue {
+            val bigInt = BigInteger.fromLong(Long.MAX_VALUE) - 2.toBigInteger().pow(32)
+            val result = bigInt.setBitAt(32, true)
+            result == (Long.MAX_VALUE.toBigInteger())
+        }
+
 
     }
 

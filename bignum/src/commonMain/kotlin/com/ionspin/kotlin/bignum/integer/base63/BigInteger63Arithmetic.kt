@@ -17,6 +17,7 @@
 
 package com.ionspin.kotlin.bignum.integer.base63
 
+import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
@@ -413,6 +414,12 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return removeLeadingZeroes(ulongArrayOf(lowResult and baseMask, highResult))
     }
 
+    override fun pow(operand: ULongArray, exponent: Long): ULongArray {
+        return (0 until exponent).fold(ONE) { acc, _ ->
+            acc * operand
+        }
+    }
+
     fun normalize(dividend: ULongArray, divisor: ULongArray): Triple<ULongArray, ULongArray, Int> {
         val divisorSize = divisor.size
         val normalizationShift = numberOfLeadingZeroes(divisor[divisorSize - 1])
@@ -704,30 +711,6 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
     // -------------- Bitwise ---------------- //
 
-    private infix fun ULongArray.andX(other: ULongArray): ULongArray {
-        return and(this, other)
-    }
-
-    private infix fun ULongArray.orX(other: ULongArray): ULongArray {
-        return or(this, other)
-    }
-
-    private infix fun ULongArray.xorX(other: ULongArray): ULongArray {
-        return xor(this, other)
-    }
-
-    private infix fun ULongArray.andX(other: ULong): ULongArray {
-        return and(this, ulongArrayOf(other))
-    }
-
-    private infix fun ULongArray.orX(other: ULong): ULongArray {
-        return or(this, ulongArrayOf(other))
-    }
-
-    private infix fun ULongArray.xorX(other: ULong): ULongArray {
-        return xor(this, ulongArrayOf(other))
-    }
-
 
     internal infix fun ULongArray.shl(places: Int): ULongArray {
         return shiftLeft(this, places)
@@ -735,6 +718,46 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
     internal infix fun ULongArray.shr(places: Int): ULongArray {
         return shiftRight(this, places)
+    }
+
+    override fun bitAt(operand: ULongArray, position: Long): Boolean {
+        if (position / 63 > Int.MAX_VALUE) {
+            throw RuntimeException("Invalid bit index, too large, cannot access word (Word position > Int.MAX_VALUE")
+        }
+
+        val wordPosition = position / 63
+        if (wordPosition >= operand.size) {
+            return false
+        }
+        val bitPosition = position % 63
+        val word = operand[wordPosition.toInt()]
+        return (word and (1UL shl bitPosition.toInt()) == 1UL)
+    }
+
+    override fun setBitAt(operand: ULongArray, position: Long, bit : Boolean): ULongArray {
+        if (position / 63 > Int.MAX_VALUE) {
+            throw RuntimeException("Invalid bit index, too large, cannot access word (Word position > Int.MAX_VALUE")
+        }
+
+        val wordPosition = position / 63
+        if (wordPosition >= operand.size) {
+            throw IndexOutOfBoundsException("Invalid position, addressed word $wordPosition larger than number of words ${operand.size}")
+        }
+        val bitPosition = position % 63
+        val word = operand[wordPosition.toInt()]
+        val getMask = (word and (1UL shl bitPosition.toInt()) == 1UL)
+        val setMask = 1UL shl bitPosition.toInt()
+        return ULongArray(operand.size) {
+            if (it == wordPosition.toInt()) {
+                if (bit) {
+                    operand[it] or setMask
+                } else {
+                    operand[it] xor setMask
+                }
+            } else {
+                operand[it]
+            }
+        }
     }
 
     // -------------- Operations ---------------- //

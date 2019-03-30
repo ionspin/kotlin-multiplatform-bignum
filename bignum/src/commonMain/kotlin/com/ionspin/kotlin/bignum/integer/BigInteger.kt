@@ -17,6 +17,7 @@
 
 package com.ionspin.kotlin.bignum.integer
 
+import kotlinx.coroutines.coroutineScope
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.log10
@@ -316,9 +317,16 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
     }
 
     fun pow(exponent: Long): BigInteger {
-        return (0 until exponent).fold(ONE) { acc, _ ->
-            acc * this
+        val sign = if (sign == Sign.NEGATIVE) {
+            if (exponent % 2 == 0L) {
+                Sign.POSITIVE
+            } else {
+                Sign.NEGATIVE
+            }
+        } else {
+            Sign.POSITIVE
         }
+        return BigInteger(arithmetic.pow(magnitude, exponent), sign)
     }
 
     fun pow(exponent: Int): BigInteger {
@@ -332,17 +340,11 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
     }
 
     fun bitAt(position: Long): Boolean {
-        if (position / 63 > Int.MAX_VALUE) {
-            throw ArithmeticException("Invalid bit index, too large, cannot access word (Word position > Int.MAX_VALUE")
-        }
+        return arithmetic.bitAt(magnitude, position)
+    }
 
-        val wordPosition = position / 63
-        if (wordPosition >= magnitude.size) {
-            return false
-        }
-        val bitPosition = position % 63
-        val word = magnitude[wordPosition.toInt()]
-        return (word and (1UL shl bitPosition.toInt()) == 1UL)
+    fun setBitAt(position: Long, bit : Boolean) : BigInteger {
+        return BigInteger(arithmetic.setBitAt(magnitude, position, bit), sign)
     }
 
     fun numberOfDigits() : Long {

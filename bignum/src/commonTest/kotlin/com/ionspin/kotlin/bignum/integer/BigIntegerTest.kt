@@ -54,7 +54,7 @@ BigIntegerTest {
     fun testPow10ButAlsoGenerateTable() {
         val a = BigInteger.fromInt(10)
         println("    val powersOf10 = arrayOf(")
-        for (i in 1 .. 100) {
+        for (i in 0 .. 100) {
             val powered = a.pow(i)
             println("        ulongArrayOf(${powered.magnitude.joinToString(separator = "UL, "){ it.toString() }}UL), ")
             assertTrue {
