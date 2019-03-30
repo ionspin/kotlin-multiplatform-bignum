@@ -136,7 +136,7 @@ BigIntegerTest {
         assertFalse { bitAtOne }
         assertFalse { bitAtNinety }
 
-        assertFailsWith(ArithmeticException::class) {
+        assertFailsWith(RuntimeException::class) {
             one.bitAt(Long.MAX_VALUE)
         }
     }

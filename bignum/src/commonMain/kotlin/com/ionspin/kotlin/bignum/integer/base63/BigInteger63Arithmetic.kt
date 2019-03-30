@@ -415,6 +415,15 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun pow(operand: ULongArray, exponent: Long): ULongArray {
+        if (exponent == 0L) {
+            return ONE
+        }
+        if (exponent == 1L) {
+            return operand
+        }
+        if (operand.size == 1 && operand[0] == 10UL && exponent < powersOf10.size) {
+            return powersOf10[exponent.toInt()]
+        }
         return (0 until exponent).fold(ONE) { acc, _ ->
             acc * operand
         }
@@ -840,6 +849,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
     // ------------- Useful constants --------------
     val powersOf10 = arrayOf(
+        ulongArrayOf(1UL),
         ulongArrayOf(10UL),
         ulongArrayOf(100UL),
         ulongArrayOf(1000UL),

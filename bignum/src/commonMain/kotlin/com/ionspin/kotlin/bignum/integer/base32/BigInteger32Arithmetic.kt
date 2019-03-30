@@ -371,6 +371,12 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
     override fun pow(operand: UIntArray, exponent: Long): UIntArray {
+        if (exponent == 0L) {
+            return ONE
+        }
+        if (exponent == 1L) {
+            return operand
+        }
         return (0 until exponent).fold(ONE) { acc, _ ->
             acc * operand
         }
