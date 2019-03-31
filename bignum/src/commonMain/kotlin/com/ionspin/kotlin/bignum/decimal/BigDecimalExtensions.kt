@@ -25,26 +25,30 @@ package com.ionspin.kotlin.bignum.decimal
 
 
 @ExperimentalUnsignedTypes
-fun Long.toBigDecimal(): BigDecimal {
-    return BigDecimal.fromLongAsSignificand(this)
+fun Long.toBigDecimal(decimalMode: DecimalMode? = null): BigDecimal {
+    return BigDecimal.fromLongAsSignificand(this, decimalMode)
 }
 
 
 @ExperimentalUnsignedTypes
-fun Int.toBigDecimal(): BigDecimal {
-    return BigDecimal.fromIntAsSignificand(this)
+fun Int.toBigDecimal(decimalMode: DecimalMode? = null): BigDecimal {
+    return BigDecimal.fromIntAsSignificand(this, decimalMode)
 }
 
 
 @ExperimentalUnsignedTypes
-fun Short.toBigDecimal(): BigDecimal {
-    return BigDecimal.fromShortAsSignificand(this)
+fun Short.toBigDecimal(decimalMode: DecimalMode? = null): BigDecimal {
+    return BigDecimal.fromShortAsSignificand(this, decimalMode)
 }
 
 
 @ExperimentalUnsignedTypes
-fun Byte.toBigDecimal(): BigDecimal {
-    return BigDecimal.fromByteAsSignificand(this)
+fun Byte.toBigDecimal(decimalMode: DecimalMode? = null): BigDecimal {
+    return BigDecimal.fromByteAsSignificand(this, decimalMode)
+}
+
+fun String.toBigDecimal(decimalMode: DecimalMode? = null) : BigDecimal {
+    return BigDecimal.parseString(this, decimalMode)
 }
 
 
