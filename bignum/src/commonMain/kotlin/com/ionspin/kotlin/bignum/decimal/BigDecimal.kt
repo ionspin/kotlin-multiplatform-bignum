@@ -19,9 +19,9 @@ package com.ionspin.kotlin.bignum.decimal
 
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigInteger.Companion.TEN
+import com.ionspin.kotlin.bignum.integer.BigInteger.Companion.fromLong
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.toBigInteger
-import kotlin.js.JsName
 import kotlin.math.max
 
 /**
@@ -320,7 +320,7 @@ class BigDecimal private constructor(
          * @return BigDecimal representing input
          */
         fun fromFloat(float: Float, decimalMode: DecimalMode? = null): BigDecimal {
-            return parseString(float.toString(), decimalMode)
+            return parseString(float.toString().dropLastWhile { it == '0' }, decimalMode)
         }
         /**
          * Convert a Double into a BigDecimal
@@ -331,7 +331,7 @@ class BigDecimal private constructor(
          * @return BigDecimal representing input
          */
         fun fromDouble(double: Double, decimalMode: DecimalMode? = null): BigDecimal {
-            return parseString(double.toString(), decimalMode)
+            return parseString(double.toString().dropLastWhile { it == '0' }, decimalMode)
         }
 
         /**
@@ -445,15 +445,18 @@ class BigDecimal private constructor(
                         val rightSplit = split[1].split('E', 'e')
                         val right = rightSplit[0]
                         val exponentSplit = rightSplit[1]
-                        if (exponentSplit[0] != '-' && exponentSplit[0] != '+') {
-                            throw ArithmeticException("Invalid floating point format! $floatingPointString")
-                        }
+                        val exponentSignPresent = (exponentSplit[0] == '-' || exponentSplit[0] == '+')
                         val exponentSign = if (exponentSplit[0] == '-') {
                             Sign.NEGATIVE
                         } else {
                             Sign.POSITIVE
                         }
-                        val exponentString = exponentSplit.substring(startIndex = 1)
+                        val skipSignIfPresent = if (exponentSignPresent) {
+                            1
+                        } else {
+                            0
+                        }
+                        val exponentString = exponentSplit.substring(startIndex = skipSignIfPresent)
                         val exponent = if (exponentSign == Sign.POSITIVE) {
                             BigInteger.parseString(exponentString, 10)
                         } else {
@@ -542,7 +545,8 @@ class BigDecimal private constructor(
 
                     }
                 } else {
-                    return BigDecimal(BigInteger.parseString(floatingPointString, 10), BigInteger.ZERO, decimalMode)
+                    val significand = BigInteger.parseString(floatingPointString, 10)
+                    return BigDecimal(significand, BigInteger.fromLong(significand.numberOfDigits() - 1), decimalMode)
                 }
             }
 

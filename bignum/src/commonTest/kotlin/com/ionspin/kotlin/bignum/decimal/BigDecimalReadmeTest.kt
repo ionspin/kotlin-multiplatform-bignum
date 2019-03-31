@@ -225,5 +225,26 @@ class BigDecimalReadmeTest {
         }
     }
 
+    @Test
+    fun readmeBigDecimalExtensionsTest() {
+        assertTrue("String to big decimal failed") {
+            val bigint = "123456789012345678901234567890.1234567890".toBigDecimal()
+            val expected = BigDecimal.parseString("123456789012345678901234567890.1234567890")
+            bigint == expected
+        }
+
+        assertTrue("Float to big decimal failed") {
+            val bigint = 1234f.toBigDecimal()
+            val expected = BigDecimal.parseString("1.234E+3")
+            bigint == expected
+        }
+
+        assertTrue("Double to big decimal dailed") {
+            val bigint = 123456789012.0.toBigDecimal()
+            val expected = BigDecimal.parseString("1.23456789012E+11")
+            bigint == expected
+        }
+    }
+
 
 }

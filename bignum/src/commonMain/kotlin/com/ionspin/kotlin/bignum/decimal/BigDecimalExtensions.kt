@@ -47,8 +47,19 @@ fun Byte.toBigDecimal(decimalMode: DecimalMode? = null): BigDecimal {
     return BigDecimal.fromByteAsSignificand(this, decimalMode)
 }
 
+@ExperimentalUnsignedTypes
 fun String.toBigDecimal(decimalMode: DecimalMode? = null) : BigDecimal {
     return BigDecimal.parseString(this, decimalMode)
+}
+
+@ExperimentalUnsignedTypes
+fun Float.toBigDecimal(decimalMode: DecimalMode? = null) : BigDecimal {
+    return BigDecimal.fromFloat(this, decimalMode)
+}
+
+@ExperimentalUnsignedTypes
+fun Double.toBigDecimal(decimalMode: DecimalMode? = null) : BigDecimal {
+    return BigDecimal.fromDouble(this, decimalMode)
 }
 
 

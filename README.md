@@ -26,7 +26,7 @@ No. Even though the tests pass, and it seems to be working fine, the library is 
 
 #### Gradle
 ```kotlin
-    implementation("com.ionspin.kotlin:bignum:0.0.6")
+    implementation("com.ionspin.kotlin:bignum:0.0.7")
 ```
 
 
@@ -41,11 +41,17 @@ To create a big integer you can parse a string:
 BigInteger.parse("-1122334455667788990011223344556677889900", 10)
 ```
 
-Or use the extensions function for `Long`, `Int`, `Byte` or `Short`
+Or use the extensions or companion function for `Long`, `Int`, `Byte` or `Short`
 ```kotlin
-BigInteger.fromLong(234L)
+val bigIntegerExtension = 234L.toBigInteger()
+val bigIntegerCompanion = BigInteger.fromLong(234L)
+
 ```
 
+Or use extensions functions for `String`
+```kotlin
+"12345678".toBigInteger()
+```
 ### Basic Arithmetic Operations
 
 #### Addition
@@ -243,6 +249,22 @@ BigDecimalExpanded: 0.00001
 
 ```
 
+### Extension functions
+
+For `String`
+```kotlin
+
+val bigDecimal = "12345678.123".toBigInteger
+```
+
+Or for `Double` of `Float`
+
+```kotlin
+val bigDecimalFromFloat = 123.456f.toBigDecimal() 
+val bigDecimalFromDouble = 123.456.toBigDecimal()
+
+```
+
 ## toString
 
 By default toString() is returned in scientific output, but expanded output is also available
@@ -331,3 +353,25 @@ ROUND_HALF_FLOOR|Round towards nearest integer, using towards negative infinity 
 
 For examples of rounding modes consult [Comparison of approaches for rounding to an integer](https://en.wikipedia.org/wiki/Rounding) 
 on Wikipedia
+
+This library draws inspiration from libraries like Java BigInteger, GNU MP Arithmetic Library, Javolution JScience,
+as well as following literature
+
+```
+Modern Computer Arithmetic
+Richard P. Brent and Paul Zimmermann
+Version 0.5.9 of 7 October 2010
+```
+```
+Hacker`s Delight
+Henry S. Warren, Jr.
+Second Edition
+```
+```
+Art of Computer Programming, Volume 2: Seminumerical Algorithms
+Donald E. Knuth
+3rd Edition
+```
+And many other blogs and posts scattered over the internet.
+
+If you want to try building BigNum library yourself, those are the sources I would recommend to start with.
