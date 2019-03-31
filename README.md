@@ -67,13 +67,13 @@ Sum: Sum: 9223372039002259454
 
 #### Subtraction
 ```kotlin
-val a = BigInteger.fromLong(1L)
-val b = BigInteger.fromInt(2L)
+val a = BigInteger.fromLong(Long.MIN_VALUE)
+val b = BigInteger.fromLong(Long.MAX_VALUE)
 
 val difference = a - b
 println("Difference: $difference")
 ----- Output -----
-Difference: 3
+Difference: -18446744073709551615
 ```
 
 #### Multiplication

@@ -33,18 +33,24 @@ class BigIntegerReadmeTest {
     fun `Test_readme_addition_sample`() {
         val a = BigInteger.fromLong(Long.MAX_VALUE)
         val b = BigInteger.fromInt(Int.MAX_VALUE)
-
         val sum = a + b
         println("Sum: $sum")
+
+        val expectedResult = BigInteger.parseString("9223372039002259454", 10)
+        assertTrue { sum == expectedResult }
+
     }
 
     @Test
     fun `Test_readme_subtraction_sample`() {
         val a = BigInteger.fromLong(Long.MIN_VALUE)
-        val b = BigInteger.fromLong(Long.MIN_VALUE)
+        val b = BigInteger.fromLong(Long.MAX_VALUE)
 
         val difference = a - b
         println("Difference: $difference")
+
+        val expectedResult = BigInteger.parseString("-18446744073709551615", 10)
+        assertTrue { difference == expectedResult }
     }
 
     @Test
