@@ -47,6 +47,11 @@ fun Byte.toBigInteger(): BigInteger {
     return BigInteger.fromByte(this)
 }
 
+@ExperimentalUnsignedTypes
+fun String.toBigInteger(base : Int = 10) : BigInteger {
+    return BigInteger.parseString(this, base)
+}
+
 //
 //  -------- Basic type arithmetic operation extensions -------
 //

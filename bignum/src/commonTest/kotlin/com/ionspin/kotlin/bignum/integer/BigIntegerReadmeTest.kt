@@ -177,8 +177,30 @@ class BigIntegerReadmeTest {
     }
 
     @Test
-    fun `Test_readme_big_decimal_creation`() {
+    fun `Test_readme_big_integer_extensions`() {
+        assertTrue {
+            val bigint = "123456789012345678901234567890".toBigInteger()
+            val expected = BigInteger.parseString("123456789012345678901234567890", 10)
+            bigint == expected
+        }
 
+        assertTrue {
+            val bigint = 1234567890123456L.toBigInteger()
+            val expected = BigInteger.parseString("1234567890123456", 10)
+            bigint == expected
+        }
+
+        assertTrue {
+            val bigint = 1234.toShort().toBigInteger()
+            val expected = BigInteger.parseString("1234", 10)
+            bigint == expected
+        }
+
+        assertTrue {
+            val bigint = 12.toByte().toBigInteger()
+            val expected = BigInteger.parseString("12", 10)
+            bigint == expected
+        }
     }
 
 }
