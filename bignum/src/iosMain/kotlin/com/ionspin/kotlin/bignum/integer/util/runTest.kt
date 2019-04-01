@@ -19,11 +19,3 @@ package com.ionspin.kotlin.bignum.integer.util
 
 import kotlinx.coroutines.runBlocking
 
-/**
- * Created by Ugljesa Jovanovic
- * ugljesa.jovanovic@ionspin.com
- * on 25-Dec-12/25/18
- */
-actual fun <T> runTest(block: suspend () -> T) {
-    runBlocking { block () }
-}

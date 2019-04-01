@@ -17,10 +17,3 @@
 
 package com.ionspin.kotlin.bignum.integer.util
 
-/**
- * Created by Ugljesa Jovanovic
- * ugljesa.jovanovic@ionspin.com
- * on 16-Mar-2019
- */
-actual fun <T> block(block: suspend () -> T) {
-}

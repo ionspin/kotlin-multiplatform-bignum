@@ -129,6 +129,7 @@ kotlin {
             }
         }
         val nativeMain by creating {
+            dependsOn(commonMain)
             dependencies {
                 implementation(Deps.Native.coroutines)
             }
@@ -141,21 +142,21 @@ kotlin {
             dependsOn(nativeMain)
         }
         val iosTest by getting {
-            dependsOn(nativeMain)
+            dependsOn(nativeTest)
         }
 
         val ios64ArmMain by getting {
             dependsOn(nativeMain)
         }
         val ios64ArmTest by getting {
-            dependsOn(nativeMain)
+            dependsOn(nativeTest)
         }
 
         val macosX64Main by getting {
             dependsOn(nativeMain)
         }
         val macosX64Test by getting {
-            dependsOn(nativeMain)
+            dependsOn(nativeTest)
         }
         val linuxMain by getting {
             dependsOn(nativeMain)
