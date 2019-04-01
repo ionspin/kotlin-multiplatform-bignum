@@ -80,7 +80,7 @@ kotlin {
             val linuxOnlyPublication = this@mavenPublication
             tasks.withType<AbstractPublishToMaven>().all {
                 onlyIf {
-                    publication != linuxOnlyPublication || findProperty("isLinux") == "true"
+                    publication != linuxOnlyPublication || findProperty("TRAVIS_OS_NAME") == "linux"
                 }
             }
         }
@@ -128,30 +128,6 @@ kotlin {
                 implementation(kotlin("test-js"))
             }
         }
-        val iosMain by getting {
-            dependencies {
-                implementation(Deps.Native.coroutines)
-            }
-        }
-        val iosTest by getting {
-        }
-
-        val ios64ArmMain by getting {
-            dependencies {
-                implementation(Deps.Native.coroutines)
-            }
-        }
-        val ios64ArmTest by getting {
-        }
-
-        val macosX64Main by getting {
-            dependencies {
-                implementation(Deps.Native.coroutines)
-            }
-        }
-        val macosX64Test by getting {
-        }
-
         val nativeMain by creating {
             dependencies {
                 implementation(Deps.Native.coroutines)
@@ -160,7 +136,27 @@ kotlin {
         val nativeTest by creating {
 
         }
+        
+        val iosMain by getting {
+            dependsOn(nativeMain)
+        }
+        val iosTest by getting {
+            dependsOn(nativeMain)
+        }
 
+        val ios64ArmMain by getting {
+            dependsOn(nativeMain)
+        }
+        val ios64ArmTest by getting {
+            dependsOn(nativeMain)
+        }
+
+        val macosX64Main by getting {
+            dependsOn(nativeMain)
+        }
+        val macosX64Test by getting {
+            dependsOn(nativeMain)
+        }
         val linuxMain by getting {
             dependsOn(nativeMain)
         }
