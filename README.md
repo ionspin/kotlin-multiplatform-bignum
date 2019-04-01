@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.com/ionspin/kotlin-multiplatform-bignum.svg?token=HyeUGwxzSsjXNj8mianH&branch=master)](https://travis-ci.com/ionspin/kotlin-multiplatform-bignum)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/kotlin-multiplatform-bignum/community#)
-![Maven Central](https://img.shields.io/maven-central/v/com.ionspin.kotlin/bignum.svg)
+[![Maven Central](https://img.shields.io/maven-central/v/com.ionspin.kotlin/bignum.svg)](https://repo1.maven.org/maven2/com/ionspin/kotlin/bignum/)
 # Kotlin MP BigNum library 
 
 Kotlin Multiplatform BigNum library is a pure kotlin implementation of arbitrary precision
