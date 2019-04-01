@@ -2,7 +2,7 @@ matrix:
   include:
     - os: linux
       language: java
-      jdk: oraclejdk8
+      jdk: openjdk12
       env:
         KBUILD=linux
         JAVA_OPTS=-Xmx2g
@@ -10,7 +10,7 @@ matrix:
         - ./gradlew build
     - os: osx
       language: java
-      jdk: oraclejdk8
+      jdk: openjdk12
       env:
         KBUILD=linux
         JAVA_OPTS=-Xmx2g
