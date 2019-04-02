@@ -18,7 +18,6 @@
 @file:Suppress("UnstableApiUsage")
 
 import com.moowork.gradle.node.task.NodeTask
-import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
 plugins {
@@ -74,17 +73,6 @@ kotlin {
     }
 
     println(targets.names)
-
-    configure(listOf(jvm(), js(), linuxX64("linux"))) {
-        mavenPublication {
-            val linuxOnlyPublication = this@mavenPublication
-            tasks.withType<AbstractPublishToMaven>().all {
-                onlyIf {
-                    publication != linuxOnlyPublication || findProperty("TRAVIS_OS_NAME") == "linux"
-                }
-            }
-        }
-    }
 
     sourceSets {
         val commonMain by getting {

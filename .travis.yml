@@ -15,7 +15,7 @@ matrix:
         KBUILD=linux
         JAVA_OPTS=-Xmx2g
       script:
-        - ./gradlew build
+        - ./gradlew build -x jvmTest -x jsTest
 cache:
   directories:
     - $HOME/.m2/
