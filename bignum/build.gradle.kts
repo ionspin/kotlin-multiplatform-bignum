@@ -29,6 +29,7 @@ plugins {
 }
 
 val sonatypeStaging = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+val sonatypeSnapshots = "https://oss.sonatype.org/content/repositories/snapshots/"
 
 val sonatypePassword : String? by project
 
@@ -40,7 +41,7 @@ repositories {
 
 }
 group = "com.ionspin.kotlin"
-version = "0.0.8"
+version = "0.0.9-SNAPSHOT"
 
 kotlin {
     jvm()
@@ -269,6 +270,15 @@ publishing {
         maven {
 
             url = uri(sonatypeStaging)
+            credentials {
+                username = sonatypeUsername ?: ""
+                password = sonatypePassword ?: ""
+            }
+        }
+
+        maven {
+            name = "snapshot"
+            url = uri(sonatypeSnapshots)
             credentials {
                 username = sonatypeUsername ?: ""
                 password = sonatypePassword ?: ""
