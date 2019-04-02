@@ -17,7 +17,6 @@
 
 package com.ionspin.kotlin.bignum.integer.base32
 
-import com.ionspin.kotlin.bignum.integer.util.runTest
 import kotlinx.coroutines.*
 import org.junit.Test
 import java.math.BigInteger
@@ -102,7 +101,7 @@ class BigInteger32JavaMultiplyTest {
     }
 
     @Test
-    fun `Multiply two large words`() = runTest {
+    fun `Multiply two large words`()  {
         val seed = 1
         val random = Random(seed)
         val numberOfElements = 15000
@@ -119,7 +118,7 @@ class BigInteger32JavaMultiplyTest {
     }
 
     @Test
-    fun `Test multiplying a lot of words`() = runTest {
+    fun `Test multiplying a lot of words`() {
         val seed = 1
         val random = Random(seed)
         val numberOfElements = 15000

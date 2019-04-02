@@ -17,7 +17,6 @@
 
 package com.ionspin.kotlin.bignum.integer.base63
 
-import com.ionspin.kotlin.bignum.integer.util.runTest
 import org.junit.Test
 import java.math.BigInteger
 import java.time.Duration
@@ -90,7 +89,7 @@ class BigInteger63JavaMultiplyTest {
     }
 
     @Test
-    fun `Multiply two large words`() = runTest {
+    fun `Multiply two large words`() {
         val seed = 1
         val random = Random(seed)
         val numberOfElements = 15000
@@ -107,7 +106,7 @@ class BigInteger63JavaMultiplyTest {
     }
 
     @Test
-    fun `Test multiplying a lot of words`() = runTest {
+    fun `Test multiplying a lot of words`() {
         val seed = 1
         val random = Random(seed)
         val numberOfElements = 15000

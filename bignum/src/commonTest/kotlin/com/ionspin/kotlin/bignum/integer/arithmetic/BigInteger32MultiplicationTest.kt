@@ -15,10 +15,9 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer
+package com.ionspin.kotlin.bignum.integer.arithmetic
 
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
-import com.ionspin.kotlin.bignum.integer.util.runTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -34,7 +33,7 @@ class BigInteger32MultiplicationTest {
 
 
     @Test
-    fun quick() = runTest {
+    fun quick() {
         assertTrue {
             val a = uintArrayOf(10U)
             val b = uintArrayOf(20U)
@@ -47,7 +46,7 @@ class BigInteger32MultiplicationTest {
 
 
     @Test
-    fun slow() = runTest {
+    fun slow() {
         val a = uintArrayOf(600123930U, 2763064752U, 3767748705U, 2696295277U, 3753527898U, 1143743615U, 4128159603U,
             2272083234U, 315684520U, 970147242U, 1329509210U, 3492695163U, 3449361588U, 1278830002U, 3123489057U,
             3720277819U, 486484208U, 2780187700U, 1985022034U, 2285210218U, 3740982094U, 727015520U, 634515817U,

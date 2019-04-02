@@ -18,11 +18,10 @@
 @file:Suppress("UnstableApiUsage")
 
 import com.moowork.gradle.node.task.NodeTask
-import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
 plugins {
-    kotlin(PluginsDeps.multiplatform)    
+    kotlin(PluginsDeps.multiplatform)
     id (PluginsDeps.mavenPublish)
     id (PluginsDeps.signing)
     id (PluginsDeps.node) version Versions.nodePlugin
@@ -30,6 +29,7 @@ plugins {
 }
 
 val sonatypeStaging = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+val sonatypeSnapshots = "https://oss.sonatype.org/content/repositories/snapshots/"
 
 val sonatypePassword : String? by project
 
@@ -41,7 +41,7 @@ repositories {
 
 }
 group = "com.ionspin.kotlin"
-version = "0.0.7"
+version = "0.0.9-SNAPSHOT"
 
 kotlin {
     jvm()
@@ -60,10 +60,20 @@ kotlin {
             }
         }
     }
-    linuxX64("linux")
+    linuxX64("linux") {
+        compilations["main"].outputKinds("static")
+    }
     iosX64("ios") {
         compilations["main"].outputKinds("framework")
     }
+    iosArm64("ios64Arm") {
+        compilations["main"].outputKinds("framework")
+    }
+    macosX64() {
+        compilations["main"].outputKinds("framework")
+    }
+
+    println(targets.names)
 
     sourceSets {
         val commonMain by getting {
@@ -107,23 +117,36 @@ kotlin {
                 implementation(kotlin("test-js"))
             }
         }
-        val iosMain by getting {
-            dependencies {
-                implementation(Deps.Native.coroutines)
-            }
-        }
-        val iosTest by getting {
-        }
-
         val nativeMain by creating {
+            dependsOn(commonMain)
             dependencies {
                 implementation(Deps.Native.coroutines)
             }
         }
         val nativeTest by creating {
-            
+
+        }
+        
+        val iosMain by getting {
+            dependsOn(nativeMain)
+        }
+        val iosTest by getting {
+            dependsOn(nativeTest)
         }
 
+        val ios64ArmMain by getting {
+            dependsOn(nativeMain)
+        }
+        val ios64ArmTest by getting {
+            dependsOn(nativeTest)
+        }
+
+        val macosX64Main by getting {
+            dependsOn(nativeMain)
+        }
+        val macosX64Test by getting {
+            dependsOn(nativeTest)
+        }
         val linuxMain by getting {
             dependsOn(nativeMain)
         }
@@ -247,6 +270,15 @@ publishing {
         maven {
 
             url = uri(sonatypeStaging)
+            credentials {
+                username = sonatypeUsername ?: ""
+                password = sonatypePassword ?: ""
+            }
+        }
+
+        maven {
+            name = "snapshot"
+            url = uri(sonatypeSnapshots)
             credentials {
                 username = sonatypeUsername ?: ""
                 password = sonatypePassword ?: ""
