@@ -1,5 +1,8 @@
 ## Descriptive changelog
 (All dates are DD-MM-YYYY)
+##### Minor update - 0.0.8 - 02.04.2019
+- Released ios (for X64 and arm) and macos X64 artifacts
+- No functional changes
 
 
 ##### Minor update - 0.0.7 - 31.3.2019

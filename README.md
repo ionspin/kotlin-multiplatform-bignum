@@ -27,7 +27,7 @@ No. Even though the tests pass, and it seems to be working fine, the library is 
 
 #### Gradle
 ```kotlin
-    implementation("com.ionspin.kotlin:bignum:0.0.7")
+    implementation("com.ionspin.kotlin:bignum:0.0.8")
 ```
 
 
