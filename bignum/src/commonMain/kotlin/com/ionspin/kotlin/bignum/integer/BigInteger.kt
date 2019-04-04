@@ -17,6 +17,7 @@
 
 package com.ionspin.kotlin.bignum.integer
 
+import com.ionspin.kotlin.bignum.BigNumber
 import kotlinx.coroutines.coroutineScope
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -56,7 +57,7 @@ enum class Sign {
  * Based on unsigned arrays, currently limited to [Int.MAX_VALUE] words.
  */
 @ExperimentalUnsignedTypes
-class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Comparable<Any> {
+class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Comparable<Any>, BigNumber<BigInteger> {
 
 
     @ExperimentalUnsignedTypes
@@ -69,7 +70,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 
         val LOG_10_OF_2 = log10(2.0)
 
-        fun parseString(string: String, base: Int = 10): BigInteger {
+        fun parseString(string: String, base: Int): BigInteger {
             val signed = (string[0] == '-' || string[0] == '+')
             return if (signed) {
                 if (string.length == 1) {
@@ -172,7 +173,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 
     var stringRepresentation : String? = null
 
-    fun add(other: BigInteger): BigInteger {
+    override fun add(other: BigInteger): BigInteger {
         val comparison = arithmetic.compare(this.magnitude, other.magnitude)
         return if (other.sign == this.sign) {
             return BigInteger(arithmetic.add(this.magnitude, other.magnitude), sign)
@@ -192,7 +193,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 
     }
 
-    fun subtract(other: BigInteger): BigInteger {
+    override fun subtract(other: BigInteger): BigInteger {
         val comparison = arithmetic.compare(this.magnitude, other.magnitude)
         if (this == ZERO) { return other.negate()}
         if (other == ZERO) { return this }
@@ -213,7 +214,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         }
     }
 
-    fun multiply(other: BigInteger): BigInteger {
+    override fun multiply(other: BigInteger): BigInteger {
         if (this.isZero() || other.isZero()) {
             return ZERO
         }
@@ -230,7 +231,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         }
     }
 
-    fun divide(other: BigInteger): BigInteger {
+    override fun divide(other: BigInteger): BigInteger {
         if (other.isZero()) {
             throw ArithmeticException("Division by zero! $this / $other")
         }
@@ -250,7 +251,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 
     }
 
-    fun remainder(other: BigInteger): BigInteger {
+    override fun remainder(other: BigInteger): BigInteger {
         if (other.isZero()) {
             throw ArithmeticException("Division by zero! $this / $other")
         }
@@ -263,7 +264,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         return BigInteger(arithmetic.divide(this.magnitude, other.magnitude).second, sign)
     }
 
-    fun divideAndRemainder(other: BigInteger): Pair<BigInteger, BigInteger> {
+    override fun divideAndRemainder(other: BigInteger): Pair<BigInteger, BigInteger> {
         if (other.isZero()) {
             throw ArithmeticException("Division by zero! $this / $other")
         }
@@ -289,7 +290,11 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         )
     }
 
-    fun compare(other: BigInteger): Int {
+    fun gcd(other : BigInteger) {
+        TODO()
+    }
+
+    override fun compare(other: BigInteger): Int {
         if (isZero() && other.isZero()) return 0
         if (other.isZero() && this.sign == Sign.POSITIVE) return 1
         if (other.isZero() && this.sign == Sign.NEGATIVE) return -1
@@ -299,17 +304,17 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         return arithmetic.compare(this.magnitude, other.magnitude)
     }
 
-    fun isZero(): Boolean = this.sign == Sign.ZERO
+    override fun isZero(): Boolean = this.sign == Sign.ZERO
 
-    fun negate(): BigInteger {
+    override fun negate(): BigInteger {
         return BigInteger(wordArray = this.magnitude.copyOf(), sign = sign.not())
     }
 
-    fun abs(): BigInteger {
+    override fun abs(): BigInteger {
         return BigInteger(wordArray = this.magnitude.copyOf(), sign = Sign.POSITIVE)
     }
 
-    fun pow(exponent: BigInteger) : BigInteger {
+    override fun pow(exponent: BigInteger) : BigInteger {
         if (exponent <= Long.MAX_VALUE) {
             return pow(exponent.magnitude[0].toLong())
         }
@@ -324,7 +329,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         return result
     }
 
-    fun pow(exponent: Long): BigInteger {
+    override fun pow(exponent: Long): BigInteger {
         val sign = if (sign == Sign.NEGATIVE) {
             if (exponent % 2 == 0L) {
                 Sign.POSITIVE
@@ -337,25 +342,25 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         return BigInteger(arithmetic.pow(magnitude, exponent), sign)
     }
 
-    fun pow(exponent: Int): BigInteger {
+    override fun pow(exponent: Int): BigInteger {
         return pow(exponent.toLong())
     }
 
-    fun signum(): Int = when (sign) {
+    override fun signum(): Int = when (sign) {
         Sign.POSITIVE -> 1
         Sign.NEGATIVE -> -1
         Sign.ZERO -> 0
     }
 
-    fun bitAt(position: Long): Boolean {
+    override fun bitAt(position: Long): Boolean {
         return arithmetic.bitAt(magnitude, position)
     }
 
-    fun setBitAt(position: Long, bit : Boolean) : BigInteger {
+    override fun setBitAt(position: Long, bit : Boolean) : BigInteger {
         return BigInteger(arithmetic.setBitAt(magnitude, position, bit), sign)
     }
 
-    fun numberOfDigits() : Long {
+    override fun numberOfDigits() : Long {
         val bitLenght = arithmetic.bitLength(magnitude)
         val minDigit = ceil((bitLenght - 1) * LOG_10_OF_2)
 //        val maxDigit = floor(bitLenght * LOG_10_OF_2) + 1
@@ -380,33 +385,33 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 
 
 
-    infix fun shl(places: Int): BigInteger {
+    override infix fun shl(places: Int): BigInteger {
         return BigInteger(arithmetic.shiftLeft(this.magnitude, places), sign)
     }
 
-    infix fun shr(places: Int): BigInteger {
+    override infix fun shr(places: Int): BigInteger {
         return BigInteger(arithmetic.shiftRight(this.magnitude, places), sign)
     }
 
-    operator fun unaryMinus(): BigInteger = negate()
+    override operator fun unaryMinus(): BigInteger = negate()
 
-    operator fun plus(other: BigInteger): BigInteger {
+    override operator fun plus(other: BigInteger): BigInteger {
         return add(other)
     }
 
-    operator fun minus(other: BigInteger): BigInteger {
+    override operator fun minus(other: BigInteger): BigInteger {
         return subtract(other)
     }
 
-    operator fun times(other: BigInteger): BigInteger {
+    override operator fun times(other: BigInteger): BigInteger {
         return multiply(other)
     }
 
-    operator fun div(other: BigInteger): BigInteger {
+    override operator fun div(other: BigInteger): BigInteger {
         return divide(other)
     }
 
-    operator fun rem(other: BigInteger): BigInteger {
+    override operator fun rem(other: BigInteger): BigInteger {
         return remainder(other)
     }
 
@@ -423,15 +428,15 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         return QuotientAndRemainder(result.first, result.second)
     }
 
-    infix fun and(other: BigInteger): BigInteger {
+    override infix fun and(other: BigInteger): BigInteger {
         return BigInteger(arithmetic.and(this.magnitude, other.magnitude), sign)
     }
 
-    infix fun or(other: BigInteger): BigInteger {
+    override infix fun or(other: BigInteger): BigInteger {
         return BigInteger(arithmetic.or(this.magnitude, other.magnitude), sign)
     }
 
-    infix fun xor(other: BigInteger): BigInteger {
+    override infix fun xor(other: BigInteger): BigInteger {
         return BigInteger(arithmetic.xor(this.magnitude, other.magnitude), sign)
     }
 
@@ -441,7 +446,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
      *
      * I.e.: If the number was "1100" binary, invPrecise returns "0011" => "11" => 4 decimal
      */
-    fun invPrecise(): BigInteger {
+    override fun invPrecise(): BigInteger {
         return BigInteger(arithmetic.inv(this.magnitude), sign)
     }
 
@@ -481,7 +486,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         return toString(10)
     }
 
-    fun toString(base: Int): String {
+    override fun toString(base: Int): String {
         val sign = if (sign == Sign.NEGATIVE) {
             "-"
         } else {
@@ -503,50 +508,50 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
     // ------------- Addition -----------
 
 
-    operator fun plus(int: Int): BigInteger {
+    override operator fun plus(int: Int): BigInteger {
         return this.plus(BigInteger.fromInt(int))
     }
 
 
-    operator fun plus(long: Long): BigInteger {
+    override operator fun plus(long: Long): BigInteger {
         return this.plus(BigInteger.fromLong(long))
     }
 
 
-    operator fun plus(short: Short): BigInteger {
+    override operator fun plus(short: Short): BigInteger {
         return this.plus(BigInteger.fromShort(short))
     }
 
 
-    operator fun plus(byte: Byte): BigInteger {
+    override operator fun plus(byte: Byte): BigInteger {
         return this.plus(BigInteger.fromByte(byte))
     }
 
     // ------------- Multiplication -----------
 
 
-    operator fun times(int: Int): BigInteger {
+    override operator fun times(int: Int): BigInteger {
         return this.multiply(BigInteger.fromInt(int))
     }
 
 
-    operator fun times(long: Long): BigInteger {
+    override operator fun times(long: Long): BigInteger {
         return this.multiply(BigInteger.fromLong(long))
     }
 
 
-    operator fun times(short: Short): BigInteger {
+    override operator fun times(short: Short): BigInteger {
         return this.multiply(BigInteger.fromShort(short))
     }
 
 
-    operator fun times(byte: Byte): BigInteger {
+    override operator fun times(byte: Byte): BigInteger {
         return this.multiply(BigInteger.fromByte(byte))
     }
 
 
     //TODO eh
-    internal operator fun times(char: Char) : String {
+    override operator fun times(char: Char) : String {
         if (this < 0) {
             throw RuntimeException("Char cannot be multiplied with negative number")
         }
@@ -562,64 +567,64 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
     // ------------- Subtraction -----------
 
 
-    operator fun minus(int: Int): BigInteger {
+    override operator fun minus(int: Int): BigInteger {
         return this.minus(BigInteger.fromInt(int))
     }
 
 
-    operator fun minus(long: Long): BigInteger {
+    override operator fun minus(long: Long): BigInteger {
         return this.minus(BigInteger.fromLong(long))
     }
 
 
-    operator fun minus(short: Short): BigInteger {
+    override operator fun minus(short: Short): BigInteger {
         return this.minus(BigInteger.fromShort(short))
     }
 
 
-    operator fun minus(byte: Byte): BigInteger {
+    override operator fun minus(byte: Byte): BigInteger {
         return this.minus(BigInteger.fromByte(byte))
     }
 
     // ------------- Division -----------
 
 
-    operator fun div(int: Int): BigInteger {
+    override operator fun div(int: Int): BigInteger {
         return this.div(BigInteger.fromInt(int))
     }
 
 
-    operator fun div(long: Long): BigInteger {
+    override operator fun div(long: Long): BigInteger {
         return this.div(BigInteger.fromLong(long))
     }
 
 
-    operator fun div(short: Short): BigInteger {
+    override operator fun div(short: Short): BigInteger {
         return this.div(BigInteger.fromShort(short))
     }
 
 
-    operator fun div(byte: Byte): BigInteger {
+    override operator fun div(byte: Byte): BigInteger {
         return this.div(BigInteger.fromByte(byte))
     }
 
 
-    operator fun rem(int: Int): BigInteger {
+    override operator fun rem(int: Int): BigInteger {
         return this.rem(BigInteger.fromInt(int))
     }
 
 
-    operator fun rem(long: Long): BigInteger {
+    override operator fun rem(long: Long): BigInteger {
         return this.rem(BigInteger.fromLong(long))
     }
 
 
-    operator fun rem(short: Short): BigInteger {
+    override operator fun rem(short: Short): BigInteger {
         return this.rem(BigInteger.fromShort(short))
     }
 
 
-    operator fun rem(byte: Byte): BigInteger {
+    override operator fun rem(byte: Byte): BigInteger {
         return this.rem(BigInteger.fromByte(byte))
     }
 
