@@ -67,9 +67,9 @@ interface BigNumber<BigType> {
      * Inverts only up to chosen [arithmetic] [BigTypeArithmetic.bitLength] bits.
      * This is different from Java biginteger which returns inverse in two's complement.
      *
-     * I.e.: If the number was "1100" binary, invPrecise returns "0011" => "11" => 4 decimal
+     * I.e.: If the number was "1100" binary, not returns "0011" => "11" => 4 decimal
      */
-    fun invPrecise(): BigType
+    fun not(): BigType
 
     fun compareTo(other: Any): Int
     override fun equals(other: Any?): Boolean

@@ -62,7 +62,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 
     @ExperimentalUnsignedTypes
     companion object {
-        private val arithmetic : BigIntegerArithmetic<WordArray, Word> = chosenArithmetic
+        private val arithmetic: BigIntegerArithmetic<WordArray, Word> = chosenArithmetic
 
         val ZERO = BigInteger(arithmetic.ZERO, Sign.ZERO)
         val ONE = BigInteger(arithmetic.ONE, Sign.POSITIVE)
@@ -171,7 +171,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 
     val numberOfWords = magnitude.size
 
-    var stringRepresentation : String? = null
+    var stringRepresentation: String? = null
 
     override fun add(other: BigInteger): BigInteger {
         val comparison = arithmetic.compare(this.magnitude, other.magnitude)
@@ -195,8 +195,12 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 
     override fun subtract(other: BigInteger): BigInteger {
         val comparison = arithmetic.compare(this.magnitude, other.magnitude)
-        if (this == ZERO) { return other.negate()}
-        if (other == ZERO) { return this }
+        if (this == ZERO) {
+            return other.negate()
+        }
+        if (other == ZERO) {
+            return this
+        }
         return if (other.sign == this.sign) {
             when {
                 comparison > 0 -> {
@@ -290,7 +294,15 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         )
     }
 
-    fun gcd(other : BigInteger) {
+    fun inverse() : BigInteger {
+        TODO()
+    }
+
+    fun sqrt(): SqareRootAndRemainder {
+        TODO()
+    }
+
+    fun gcd(other: BigInteger) {
         TODO()
     }
 
@@ -314,14 +326,14 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         return BigInteger(wordArray = this.magnitude.copyOf(), sign = Sign.POSITIVE)
     }
 
-    override fun pow(exponent: BigInteger) : BigInteger {
+    override fun pow(exponent: BigInteger): BigInteger {
         if (exponent <= Long.MAX_VALUE) {
             return pow(exponent.magnitude[0].toLong())
         }
         //TODO this is not efficient
         var counter = exponent
         var result = ONE
-        while(counter > 0) {
+        while (counter > 0) {
             counter--
             result *= this
         }
@@ -356,11 +368,11 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         return arithmetic.bitAt(magnitude, position)
     }
 
-    override fun setBitAt(position: Long, bit : Boolean) : BigInteger {
+    override fun setBitAt(position: Long, bit: Boolean): BigInteger {
         return BigInteger(arithmetic.setBitAt(magnitude, position, bit), sign)
     }
 
-    override fun numberOfDigits() : Long {
+    override fun numberOfDigits(): Long {
         val bitLenght = arithmetic.bitLength(magnitude)
         val minDigit = ceil((bitLenght - 1) * LOG_10_OF_2)
 //        val maxDigit = floor(bitLenght * LOG_10_OF_2) + 1
@@ -375,14 +387,12 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         var counter = 0L
         while (tmp.compareTo(0) != 0) {
             tmp /= 10
-            counter ++
+            counter++
         }
         return counter + minDigit.toInt()
 
 
     }
-
-
 
 
     override infix fun shl(places: Int): BigInteger {
@@ -415,11 +425,11 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
         return remainder(other)
     }
 
-    operator fun dec() : BigInteger {
+    operator fun dec(): BigInteger {
         return this - 1
     }
 
-    operator fun inc() : BigInteger {
+    operator fun inc(): BigInteger {
         return this + 1
     }
 
@@ -444,9 +454,9 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
      * Inverts only up to chosen [arithmetic] [BigIntegerArithmetic.bitLength] bits.
      * This is different from Java biginteger which returns inverse in two's complement.
      *
-     * I.e.: If the number was "1100" binary, invPrecise returns "0011" => "11" => 4 decimal
+     * I.e.: If the number was "1100" binary, not returns "0011" => "11" => 4 decimal
      */
-    override fun invPrecise(): BigInteger {
+    override fun not(): BigInteger {
         return BigInteger(arithmetic.inv(this.magnitude), sign)
     }
 
@@ -497,12 +507,13 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 
     data class QuotientAndRemainder(val quotient: BigInteger, val remainder: BigInteger)
 
+    data class SqareRootAndRemainder(val squareRoot: BigInteger, val remainder: BigInteger)
+
     //
     //
     // ----------------- Interop with basic types ----------------------
     //
     //
-
 
 
     // ------------- Addition -----------
@@ -551,7 +562,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 
 
     //TODO eh
-    override operator fun times(char: Char) : String {
+    override operator fun times(char: Char): String {
         if (this < 0) {
             throw RuntimeException("Char cannot be multiplied with negative number")
         }

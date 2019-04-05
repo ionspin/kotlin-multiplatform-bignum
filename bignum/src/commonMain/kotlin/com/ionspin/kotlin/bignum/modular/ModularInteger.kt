@@ -140,7 +140,7 @@ class ModularInteger @ExperimentalUnsignedTypes constructor(val residue : BigInt
         TODO("not implemented yet")
     }
 
-    override fun invPrecise(): ModularInteger {
+    override fun not(): ModularInteger {
         TODO("not implemented yet")
     }
 

@@ -172,7 +172,7 @@ class BigIntegerReadmeTest {
     @Test
     fun `Test_readme_inv_sample`(){
         val operand = BigInteger.parseString("11110000", 2)
-        val invResult = operand.invPrecise()
+        val invResult = operand.not()
         println("Inv result: ${invResult.toString(2)}")
 
         val expectedResult = BigInteger.parseString("00001111", 2)
