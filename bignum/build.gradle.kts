@@ -35,6 +35,9 @@ val sonatypePassword : String? by project
 
 val sonatypeUsername : String? by project
 
+val sonatypePasswordEnv : String? = System.getenv()["SONATYPE_PASSWORD"]
+val sonatypeUsernameEnv : String? = System.getenv()["SONATYPE_USERNAME"]
+
 repositories {
     mavenCentral()
     jcenter()
@@ -271,8 +274,8 @@ publishing {
 
             url = uri(sonatypeStaging)
             credentials {
-                username = sonatypeUsername ?: ""
-                password = sonatypePassword ?: ""
+                username = sonatypeUsername ?: sonatypeUsernameEnv ?: ""
+                password = sonatypePassword ?: sonatypePasswordEnv ?: ""
             }
         }
 
@@ -280,8 +283,8 @@ publishing {
             name = "snapshot"
             url = uri(sonatypeSnapshots)
             credentials {
-                username = sonatypeUsername ?: ""
-                password = sonatypePassword ?: ""
+                username = sonatypeUsername ?: sonatypeUsernameEnv ?: ""
+                password = sonatypePassword ?: sonatypePasswordEnv ?: ""
             }
         }
     }
