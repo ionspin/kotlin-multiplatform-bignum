@@ -27,9 +27,19 @@ No. Even though the tests pass, and it seems to be working fine, the library is 
 
 #### Gradle
 ```kotlin
-    implementation("com.ionspin.kotlin:bignum:0.0.8")
+implementation("com.ionspin.kotlin:bignum:0.0.8")
 ```
 
+#### Snapshot builds
+```kotlin
+repositories {
+    maven {
+        url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+    }
+}
+implementation("com.ionspin.kotlin:bignum:0.0.9-SNAPSHOT")
+
+```
 
 ## Usage
 
