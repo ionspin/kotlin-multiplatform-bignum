@@ -23,6 +23,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import java.lang.ArithmeticException
+import java.math.BigDecimal
+import java.math.BigInteger
+import java.math.MathContext
+import java.math.RoundingMode
 import kotlin.random.Random
 import kotlin.random.nextUInt
 import kotlin.test.assertFailsWith
@@ -244,5 +248,102 @@ class BigInteger32JavaDivisionTest {
 
 
         }
+    }
+    @Test
+    fun reciprocalTest() {
+        val a = uintArrayOf(100u)
+        val reciprocal = BigInteger32Arithmetic.reciprocalSingleWord(100u)
+        println("Rec ${reciprocal.first} * 2 ^ - ${reciprocal.second}")
+        val reconstructed = BigInteger32Arithmetic.shiftRight(
+            BigInteger32Arithmetic.multiply(a, reciprocal.first),
+            reciprocal.second
+            )
+        println("Reconstructed: $reconstructed")
+    }
+
+    @Test
+    fun debugSingleReciprocalOneWordTest() {
+        singleReciprocalOneWordTest(1074310744U)
+    }
+
+    @Test
+    fun reciprocalOneWordRandomTest() {
+        val seed = 1
+        val random = Random(seed)
+        val jobList: MutableList<Job> = mutableListOf()
+        for (i in 1..Int.MAX_VALUE step 10001) {
+            val word = random.nextUInt()
+            jobList.add(
+                GlobalScope.launch {
+                    singleReciprocalOneWordTest(word)
+                }
+            )
+        }
+        runBlocking {
+            jobList.forEach {
+                it.join()
+            }
+        }
+
+
+    }
+
+    fun singleReciprocalOneWordTest(word : UInt) {
+        assertTrue ("Failed on $word") {
+            val reciprocal = BigInteger32Arithmetic.reciprocalSingleWord(word)
+            val resultJavaBigDecimal = reciprocal.first.toJavaBigInteger().toBigDecimal()
+            val wordJavaBigDecimal = uintArrayOf(word).toJavaBigInteger().toBigDecimal()
+            val multiplication = (resultJavaBigDecimal * wordJavaBigDecimal)
+            val result = multiplication / 2.toBigInteger().pow(reciprocal.second).toBigDecimal()
+            val rounded = result.round(MathContext(2, RoundingMode.HALF_EVEN))
+            rounded.compareTo(BigDecimal.valueOf(1.0)) == 0
+
+        }
+    }
+
+    @Test
+    fun testRandomReciprocalDivisionWithOneWord() {
+        val seed = 1
+        val random = Random(seed)
+        val jobList: MutableList<Job> = mutableListOf()
+        for (i in 1..1000 step 101) {
+            val word = random.nextUInt()
+            val dividend = uintArrayOf(random.nextUInt(), random.nextUInt(), random.nextUInt())
+            jobList.add(
+                GlobalScope.launch {
+                    testSingleReciprocalDivisonWithOneWord(dividend, word)
+                }
+            )
+        }
+        runBlocking {
+            jobList.forEach {
+                it.join()
+            }
+        }
+    }
+
+    @Test
+    fun singleReciprocalDivisionTest() {
+        val dividend = uintArrayOf(3504818262U, 3616430151U, 2530148830U)
+        val divisor = (3959362403U)
+        testSingleReciprocalDivisonWithOneWord(dividend, divisor)
+    }
+
+    fun testSingleReciprocalDivisonWithOneWord(dividend: UIntArray, divisor : UInt) {
+
+        val arrayDivisor = uintArrayOf(divisor)
+        val javaDividend = dividend.toJavaBigInteger()
+        val javaDivisor = arrayDivisor.toJavaBigInteger()
+        val expectedQuotient = javaDividend / javaDivisor
+        val expectedRemainder = javaDividend.rem(javaDivisor)
+        val (resultQuotient, resultRemainder) = BigInteger32Arithmetic.reciprocalDivide(dividend, arrayDivisor)
+        val javaResultQuotient = resultQuotient.toJavaBigInteger()
+        val javaResultRemainder = resultRemainder.toJavaBigInteger()
+        assertTrue ("Failed on \nval dividend = uintArrayOf(${dividend.joinToString(separator = ", ") { "${it}U"}})" +
+                "\nval divisor = ${divisor}U\n"){
+            javaResultQuotient.compareTo(expectedQuotient) == 0 &&
+                    javaResultRemainder.compareTo(expectedRemainder) == 0
+        }
+
     }
 }

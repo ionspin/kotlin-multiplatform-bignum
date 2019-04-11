@@ -17,10 +17,14 @@
 
 package com.ionspin.kotlin.bignum.integer.base32
 
+import com.ionspin.kotlin.bignum.QuotientAndRemainder
+import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.util.toDigit
 import kotlin.math.absoluteValue
+import kotlin.math.ceil
+import kotlin.math.floor
 
 /**
  * Created by Ugljesa Jovanovic
@@ -38,7 +42,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     override val ZERO = UIntArray(0)
     override val ONE = UIntArray(1) { 1U }
     override val TEN = UIntArray(1) { 10U }
-
 
 
     /**
@@ -90,7 +93,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         )
     }
 
-    override fun trailingZeroBits(value : UIntArray) : Int {
+    override fun trailingZeroBits(value: UIntArray): Int {
         TODO()
     }
 
@@ -496,6 +499,92 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     }
 
+    fun testReciprocal(operand: UIntArray): UIntArray {
+        val (normalizedOperand, normalizationShift) = normalize(operand)
+        val base2n = 0xFFFFFFFFFFFFFFFFUL
+        val base2nLong = base2n.toLong()
+        val base2nDouble = base2nLong.toDouble()
+        if (operand.size <= 2) {
+            val resultLong = if (operand.size == 2) {
+                ceil(baseMask.shl(1).toLong().toDouble() / (normalizedOperand[1].toLong().shl(32).toDouble() + normalizedOperand[0].toLong().toDouble())).toLong()
+            } else {
+                ceil(baseMask.shl(1).toLong().toDouble() / normalizedOperand[0].toLong().toDouble()).toLong()
+            }
+            val high = (resultLong.shr(32).toULong() and baseMask).toUInt()
+            val low = (resultLong.toULong() and baseMask).toUInt()
+            val result = denormalize(uintArrayOf(low, high), normalizationShift)
+            return result
+        }
+
+
+        TODO()
+    }
+
+    fun reciprocalSingleWord(operand: UInt): Pair<UIntArray, Int> {
+        val bitLength = bitLength(operand)
+        val requiredPrecision = bitLength * 4
+        if (bitLength * 2 <= 63) {
+            val base =
+                1UL shl (requiredPrecision) //We are sure that precision is less or equal to 63, so inside int range
+            var result = base / operand
+
+            return checkReeciprocal(uintArrayOf(operand), Pair(uintArrayOf(result.toUInt()), requiredPrecision))
+        } else {
+            val base = ONE.shl(requiredPrecision)
+            val result = base / operand
+            return checkReeciprocal(uintArrayOf(operand), Pair(result, requiredPrecision))
+        }
+    }
+
+    private fun checkReeciprocal(
+        operand: UIntArray,
+        reciprocal: Pair<UIntArray, Int>
+    ): Pair<UIntArray, Int> {
+        val product = (operand * reciprocal.first)
+        val check = product shr reciprocal.second
+        return if (check != ONE) {
+            val check2 = product shr reciprocal.second - 1
+            val diff = operand - check2
+
+            Pair(reciprocal.first, reciprocal.second - 1)
+        } else {
+            Pair(reciprocal.first, reciprocal.second)
+        }
+    }
+
+    fun reciprocal(operand: UIntArray): Pair<UIntArray, Int> {
+        if (operand.size == 1) {
+            val reciprocal = reciprocalSingleWord(operand[0])
+            return Pair(reciprocal.first, reciprocal.second)
+
+        }
+        val low = floor(operand.size / 2.0).toInt()
+        val high = (operand.size - low).toInt()
+        val operandHigh = operand.copyOfRange(low, high + 1)
+        var (approximateReciprocal, reciprocalShiftAmount) = reciprocal(operandHigh)
+        var shifted = (operand * approximateReciprocal) shr (reciprocalShiftAmount)
+        val basePowered = ONE shr (operand.size + high)
+        while (shifted > basePowered) {
+            approximateReciprocal = approximateReciprocal - ONE
+            shifted = shifted - operand
+        }
+        shifted = basePowered - shifted
+        val tm = shifted shr low
+        val u = tm * approximateReciprocal
+        val reciprocal = (approximateReciprocal shl low) + (u shl (low - 2 * high))
+        return Pair(reciprocal, bitLength(reciprocal))
+
+    }
+
+    fun reciprocalDivide(dividend: UIntArray, divisor: UIntArray): Pair<UIntArray, UIntArray> {
+        val divisorReciprocalAndShift = reciprocal(divisor)
+        val quotient = (dividend * divisorReciprocalAndShift.first) shr divisorReciprocalAndShift.second
+        val remainder = dividend - (divisor * quotient)
+        return Pair(quotient, remainder)
+
+
+    }
+
     override fun parseForBase(number: String, base: Int): UIntArray {
         var parsed = ZERO
         number.forEach { char ->
@@ -519,6 +608,26 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             copy = divremResult.first
         }
         return stringBuilder.toString().reversed()
+    }
+
+    override fun numberOfDecimalDigits(operand: UIntArray): Long {
+        val bitLenght = bitLength(operand)
+        val minDigit = ceil((bitLenght - 1) * BigInteger.LOG_10_OF_2)
+//        val maxDigit = floor(bitLenght * LOG_10_OF_2) + 1
+//        val correct = this / 10.toBigInteger().pow(maxDigit.toInt())
+//        return when {
+//            correct == ZERO -> maxDigit.toInt() - 1
+//            correct > 0 && correct < 10 -> maxDigit.toInt()
+//            else -> -1
+//        }
+
+        var tmp = operand / pow(TEN, minDigit.toLong())
+        var counter = 0L
+        while (compare(tmp, ZERO) != 0) {
+            tmp /= TEN
+            counter++
+        }
+        return counter + minDigit.toInt()
     }
 
     override fun and(operand: UIntArray, mask: UIntArray): UIntArray {
@@ -551,7 +660,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
     }
 
-    override fun inv(operand: UIntArray): UIntArray {
+    override fun not(operand: UIntArray): UIntArray {
         return UIntArray(operand.size) {
             operand[it].inv()
         }
@@ -579,7 +688,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return (word and (1U shl bitPosition.toInt()) == 1U)
     }
 
-    override fun setBitAt(operand: UIntArray, position: Long, bit : Boolean): UIntArray {
+    override fun setBitAt(operand: UIntArray, position: Long, bit: Boolean): UIntArray {
         if (position / 63 > Int.MAX_VALUE) {
             throw RuntimeException("Invalid bit index, too large, cannot access word (Word position > Int.MAX_VALUE")
         }

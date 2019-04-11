@@ -183,6 +183,28 @@ class BigIntegerReadmeTest {
     }
 
     @Test
+    fun `Test_readme_negate_sample`(){
+        val a = (-5).toBigInteger()
+        val negated = a.negate()
+        println("Negated: ${negated}")
+
+        val expectedResult = 5.toBigInteger()
+
+        assertTrue { negated == expectedResult }
+    }
+
+    @Test
+    fun `Test_readme_abs_sample`(){
+        val a = (-5).toBigInteger()
+        val negated = a.abs()
+        println("Absolute value: ${negated}")
+
+        val expectedResult = 5.toBigInteger()
+
+        assertTrue { negated == expectedResult }
+    }
+
+    @Test
     fun `Test_readme_big_integer_extensions`() {
         assertTrue {
             val bigint = "123456789012345678901234567890".toBigInteger()

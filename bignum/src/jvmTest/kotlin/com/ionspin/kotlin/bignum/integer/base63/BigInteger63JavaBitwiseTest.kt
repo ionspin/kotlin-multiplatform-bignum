@@ -215,7 +215,7 @@ class BigInteger63JavaBitwiseTest {
 
     //Hmmm this is not behaving as I would expect it to on java side
     fun singleInvTest(operand: ULongArray) {
-        val result = BigInteger63Arithmetic.inv(operand)
+        val result = BigInteger63Arithmetic.not(operand)
         val bigIntResult = operand.toJavaBigInteger()
             .xor(1.toBigInteger().shr(operand.toJavaBigInteger().bitLength()) - 1.toBigInteger())
 

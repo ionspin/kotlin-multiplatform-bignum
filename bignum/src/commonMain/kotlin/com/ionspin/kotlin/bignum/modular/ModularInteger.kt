@@ -52,7 +52,7 @@ class ModularInteger @ExperimentalUnsignedTypes constructor(val residue : BigInt
         TODO("not implemented yet")
     }
 
-    override fun compare(other: ModularInteger): Int {
+    fun compare(other: ModularInteger): Int {
         TODO("not implemented yet")
     }
 
@@ -84,23 +84,7 @@ class ModularInteger @ExperimentalUnsignedTypes constructor(val residue : BigInt
         TODO("not implemented yet")
     }
 
-    override fun bitAt(position: Long): Boolean {
-        TODO("not implemented yet")
-    }
-
-    override fun setBitAt(position: Long, bit: Boolean): ModularInteger {
-        TODO("not implemented yet")
-    }
-
-    override fun numberOfDigits(): Long {
-        TODO("not implemented yet")
-    }
-
-    override fun shl(places: Int): ModularInteger {
-        TODO("not implemented yet")
-    }
-
-    override fun shr(places: Int): ModularInteger {
+    override fun numberOfDecimalDigits(): Long {
         TODO("not implemented yet")
     }
 
@@ -125,22 +109,6 @@ class ModularInteger @ExperimentalUnsignedTypes constructor(val residue : BigInt
     }
 
     override fun rem(other: ModularInteger): ModularInteger {
-        TODO("not implemented yet")
-    }
-
-    override fun and(other: ModularInteger): ModularInteger {
-        TODO("not implemented yet")
-    }
-
-    override fun or(other: ModularInteger): ModularInteger {
-        TODO("not implemented yet")
-    }
-
-    override fun xor(other: ModularInteger): ModularInteger {
-        TODO("not implemented yet")
-    }
-
-    override fun not(): ModularInteger {
         TODO("not implemented yet")
     }
 

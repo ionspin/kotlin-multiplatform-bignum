@@ -92,6 +92,10 @@ actual object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>
         TODO("not implemented yet")
     }
 
+    override fun numberOfDecimalDigits(operand: IntArray): Long {
+        TODO("not implemented yet")
+    }
+
     override fun fromLong(long: Long): IntArray = intArrayOf((long and baseMask).toInt(), (long shr basePowerOfTwo).toInt() )
 
     override fun fromInt(int: Int): IntArray = intArrayOf(int)
@@ -112,7 +116,7 @@ actual object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>
         TODO("not implemented yet")
     }
 
-    override fun inv(operand: IntArray): IntArray {
+    override fun not(operand: IntArray): IntArray {
         TODO("not implemented yet")
     }
 

@@ -21,9 +21,12 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
+import com.ionspin.kotlin.bignum.integer.toBigInteger
 import com.ionspin.kotlin.bignum.integer.util.toDigit
 import kotlin.math.abs
 import kotlin.math.absoluteValue
+import kotlin.math.ceil
+import kotlin.math.floor
 
 /**
  * Created by Ugljesa Jovanovic
@@ -92,11 +95,11 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return 63 - numberOfLeadingZeroes(value)
     }
 
-    fun trailingZeroBits(value : ULong) : Int {
+    fun trailingZeroBits(value: ULong): Int {
         return 63 - bitLength(value.inv() and baseMask)
     }
 
-    override fun trailingZeroBits(value : ULongArray) : Int {
+    override fun trailingZeroBits(value: ULongArray): Int {
         TODO()
     }
 
@@ -223,6 +226,28 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         } else {
             return -1
         }
+    }
+
+    override fun numberOfDecimalDigits(operand : ULongArray): Long {
+        val bitLenght = bitLength(operand)
+        val minDigit = ceil((bitLenght - 1) * BigInteger.LOG_10_OF_2)
+//        val maxDigit = floor(bitLenght * LOG_10_OF_2) + 1
+//        val correct = this / 10.toBigInteger().pow(maxDigit.toInt())
+//        return when {
+//            correct == ZERO -> maxDigit.toInt() - 1
+//            correct > 0 && correct < 10 -> maxDigit.toInt()
+//            else -> -1
+//        }
+
+        var tmp = operand / pow(TEN, minDigit.toLong())
+        var counter = 0L
+        while (compare(tmp, ZERO) != 0) {
+            tmp /= TEN
+            counter++
+        }
+        return counter + minDigit.toInt()
+
+
     }
 
     override fun add(first: ULongArray, second: ULongArray): ULongArray {
@@ -547,6 +572,15 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return Pair(removeLeadingZeroes(quotient), denormRemainder)
     }
 
+    fun reciprocal(operand: ULongArray): Pair<ULongArray, ULongArray> {
+        TODO()
+//        val reciprocal32Bit = BigInteger32Arithmetic.reciprocal(convertTo32BitRepresentation(operand))
+//        return Pair(
+//            convertFrom32BitRepresentation(reciprocal32Bit.first),
+//            convertFrom32BitRepresentation(reciprocal32Bit.second)
+//        )
+    }
+
     fun convertTo64BitRepresentation(operand: ULongArray): ULongArray {
         if (operand == ZERO) return ZERO
         val length = bitLength(operand)
@@ -644,6 +678,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return baseDivide(first, second)
     }
 
+
     override fun parseForBase(number: String, base: Int): ULongArray {
         var parsed = ZERO
         number.toLowerCase().forEach { char ->
@@ -705,7 +740,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         )
     }
 
-    override fun inv(operand: ULongArray): ULongArray {
+    override fun not(operand: ULongArray): ULongArray {
         val leadingZeroes = numberOfLeadingZeroes(operand[operand.size - 1])
         val cleanupMask = (((1UL shl leadingZeroes + 1) - 1U) shl (basePowerOfTwo - leadingZeroes)).inv()
         val inverted = ULongArray(operand.size) {
@@ -744,7 +779,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return (word and (1UL shl bitPosition.toInt()) == 1UL)
     }
 
-    override fun setBitAt(operand: ULongArray, position: Long, bit : Boolean): ULongArray {
+    override fun setBitAt(operand: ULongArray, position: Long, bit: Boolean): ULongArray {
         if (position / 63 > Int.MAX_VALUE) {
             throw RuntimeException("Invalid bit index, too large, cannot access word (Word position > Int.MAX_VALUE")
         }
@@ -945,12 +980,54 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         ulongArrayOf(0UL, 4692406261390508032UL, 4125506992759596769UL, 3695050361890294256UL, 13817869688151111UL),
         ulongArrayOf(0UL, 807202429631201280UL, 4361581780176864463UL, 57015471483839332UL, 138178696881511114UL),
         ulongArrayOf(0UL, 8072024296312012800UL, 6722329654349541398UL, 570154714838393324UL, 1381786968815111140UL),
-        ulongArrayOf(0UL, 6933266668281921536UL, 2659692285511983332UL, 5701547148383933247UL, 4594497651296335592UL, 1UL),
-        ulongArrayOf(0UL, 4769062424835784704UL, 8150178781410281711UL, 1675239262710677624UL, 9051488365544252694UL, 14UL),
-        ulongArrayOf(0UL, 1573764064083968000UL, 7714811519264610651UL, 7529020590252000440UL, 7504535323749544669UL, 149UL),
-        ulongArrayOf(0UL, 6514268603984904192UL, 3361138897807900047UL, 1503229607681797944UL, 1258376942657240234UL, 1498UL),
-        ulongArrayOf(0UL, 579081781865611264UL, 5941272867514673053UL, 5808924039963203635UL, 3360397389717626533UL, 14981UL),
-        ulongArrayOf(0UL, 5790817818656112640UL, 4072496454018075682UL, 2749008178503381508UL, 5933857786611937912UL, 149813UL)
+        ulongArrayOf(
+            0UL,
+            6933266668281921536UL,
+            2659692285511983332UL,
+            5701547148383933247UL,
+            4594497651296335592UL,
+            1UL
+        ),
+        ulongArrayOf(
+            0UL,
+            4769062424835784704UL,
+            8150178781410281711UL,
+            1675239262710677624UL,
+            9051488365544252694UL,
+            14UL
+        ),
+        ulongArrayOf(
+            0UL,
+            1573764064083968000UL,
+            7714811519264610651UL,
+            7529020590252000440UL,
+            7504535323749544669UL,
+            149UL
+        ),
+        ulongArrayOf(
+            0UL,
+            6514268603984904192UL,
+            3361138897807900047UL,
+            1503229607681797944UL,
+            1258376942657240234UL,
+            1498UL
+        ),
+        ulongArrayOf(
+            0UL,
+            579081781865611264UL,
+            5941272867514673053UL,
+            5808924039963203635UL,
+            3360397389717626533UL,
+            14981UL
+        ),
+        ulongArrayOf(
+            0UL,
+            5790817818656112640UL,
+            4072496454018075682UL,
+            2749008178503381508UL,
+            5933857786611937912UL,
+            149813UL
+        )
     )
 
 

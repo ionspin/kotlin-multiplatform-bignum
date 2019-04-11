@@ -101,6 +101,8 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
      */
     fun toString(operand: BackingCollectionType, base : Int) : String
 
+    fun numberOfDecimalDigits(operand : BackingCollectionType): Long
+
 
     fun fromLong(long : Long) : BackingCollectionType
     fun fromInt(int : Int) : BackingCollectionType
@@ -110,7 +112,7 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
     fun or(operand: BackingCollectionType, mask: BackingCollectionType) : BackingCollectionType
     fun xor(operand: BackingCollectionType, mask: BackingCollectionType) : BackingCollectionType
     fun and(operand: BackingCollectionType, mask: BackingCollectionType) : BackingCollectionType
-    fun inv(operand: BackingCollectionType) : BackingCollectionType
+    fun not(operand: BackingCollectionType) : BackingCollectionType
 
     fun bitAt(operand : BackingCollectionType, position : Long) : Boolean
     fun setBitAt(operand : BackingCollectionType, position : Long, bit : Boolean) : BackingCollectionType

@@ -17,11 +17,14 @@
 
 package com.ionspin.kotlin.bignum.integer.base63
 
+import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.div
 import com.ionspin.kotlin.bignum.integer.util.toDigit
 import kotlin.math.absoluteValue
+import kotlin.math.ceil
 
 /**
  * Just to experiment and see if using immutable lists is better optimized than using arrays.
@@ -668,6 +671,28 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         return stringBuilder.toString().reversed()
     }
 
+    override fun numberOfDecimalDigits(operand : List<ULong>): Long {
+        val bitLenght = bitLength(operand)
+        val minDigit = ceil((bitLenght - 1) * BigInteger.LOG_10_OF_2)
+//        val maxDigit = floor(bitLenght * LOG_10_OF_2) + 1
+//        val correct = this / 10.toBigInteger().pow(maxDigit.toInt())
+//        return when {
+//            correct == ZERO -> maxDigit.toInt() - 1
+//            correct > 0 && correct < 10 -> maxDigit.toInt()
+//            else -> -1
+//        }
+
+        var tmp = operand / pow(TEN, minDigit.toLong())
+        var counter = 0L
+        while (compare(tmp, ZERO) != 0) {
+            tmp /= TEN
+            counter++
+        }
+        return counter + minDigit.toInt()
+
+
+    }
+
     override fun and(operand: List<ULong>, mask: List<ULong>): List<ULong> {
         return removeLeadingZeroes(
             List<ULong>(operand.size) {
@@ -704,7 +729,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         )
     }
 
-    override fun inv(operand: List<ULong>): List<ULong> {
+    override fun not(operand: List<ULong>): List<ULong> {
         val leadingZeroes = numberOfLeadingZeroes(operand[operand.size - 1])
         val cleanupMask = (((1UL shl leadingZeroes + 1) - 1U) shl (basePowerOfTwo - leadingZeroes)).inv()
         val inverted = List<ULong>(operand.size) {

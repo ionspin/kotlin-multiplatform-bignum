@@ -17,34 +17,94 @@
 
 package com.ionspin.kotlin.bignum
 
+import com.ionspin.kotlin.bignum.integer.BigInteger
+
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
  * on 04-Apr-2019
  */
+
+typealias BigBla = BigNumber<BigInteger>
+class Test {
+    val a : BigBla = BigInteger.fromLong(1L)
+}
 interface BigNumber<BigType> {
+
+    interface Creator<BigType> {
+        fun parseString(string: String, base: Int = 10): BigType
+        fun fromLong(long: Long): BigType
+        fun fromInt(int: Int): BigType
+        fun fromShort(short: Short): BigType
+        fun fromByte(byte: Byte): BigType
+    }
+    
+    interface Util<BigType> {
+        fun max(first: BigType, second: BigType): BigType
+        fun min(first: BigType, second: BigType): BigType
+    }
+
     fun add(other: BigType): BigType
     fun subtract(other: BigType): BigType
     fun multiply(other: BigType): BigType
     fun divide(other: BigType): BigType
     fun remainder(other: BigType): BigType
     fun divideAndRemainder(other: BigType): Pair<BigType, BigType>
-    fun compare(other: BigType): Int
+
     fun isZero(): Boolean
+    /**
+     * Return additive inverse of this number
+     *
+     * i.e.
+     * ```  val a = 5.toBigInteger()
+     *      b = a.negate
+     *      b == -5.toBigInteger()
+     * ```
+     */
     fun negate(): BigType
+
+    /**
+     * Return absolute value of this big integer
+     *
+     * i.e.
+     * ```  val a = -5.toBigInteger()
+     *      b = a.negate
+     *      b == -5.toBigInteger()
+     * ```
+     */
     fun abs(): BigType
+
+    /**
+     * Return result of exponentiation of this number by supplied exponent
+     * i.e.
+     * ```  val a = 10.toBigInteger()
+     *      b = a.exp(2.toBigInteger())
+     *      b == 100.toBigInteger()
+     * ```
+     */
     fun pow(exponent: BigType) : BigType
+    /**
+     * Return result of exponentiation of this number by supplied long exponent
+     * i.e.
+     * ```  val a = 10.toBigInteger()
+     *      b = a.exp(2L)
+     *      b == 100.toBigInteger()
+     * ```
+     */
     fun pow(exponent: Long): BigType
+    /**
+     * Return result of exponentiation of this number by supplied integer exponent
+     * i.e.
+     * ```  val a = 10.toBigInteger()
+     *      b = a.exp(2)
+     *      b == 100.toBigInteger()
+     * ```
+     */
     fun pow(exponent: Int): BigType
     fun signum(): Int
-    fun bitAt(position: Long): Boolean
-    fun setBitAt(position: Long, bit : Boolean) : BigType
-    fun numberOfDigits() : Long
 
-    infix fun shl(places: Int): BigType
-
-    infix fun shr(places: Int): BigType
+    fun numberOfDecimalDigits() : Long
 
     operator fun unaryMinus(): BigType
 
@@ -57,19 +117,6 @@ interface BigNumber<BigType> {
     operator fun div(other: BigType): BigType
 
     operator fun rem(other: BigType): BigType
-
-    infix fun and(other: BigType): BigType
-
-    infix fun or(other: BigType): BigType
-
-    infix fun xor(other: BigType): BigType
-    /**
-     * Inverts only up to chosen [arithmetic] [BigTypeArithmetic.bitLength] bits.
-     * This is different from Java biginteger which returns inverse in two's complement.
-     *
-     * I.e.: If the number was "1100" binary, not returns "0011" => "11" => 4 decimal
-     */
-    fun not(): BigType
 
     fun compareTo(other: Any): Int
     override fun equals(other: Any?): Boolean
@@ -118,5 +165,31 @@ interface BigNumber<BigType> {
     operator fun rem(short: Short): BigType
 
     operator fun rem(byte: Byte): BigType
+
+}
+
+interface BitwiseCapable<BigType> {
+
+    infix fun shl(places: Int): BigType
+
+    infix fun shr(places: Int): BigType
+
+    infix fun and(other: BigType): BigType
+
+    infix fun or(other: BigType): BigType
+
+    infix fun xor(other: BigType): BigType
+
+    fun bitAt(position: Long): Boolean
+
+    fun setBitAt(position: Long, bit : Boolean) : BigType
+
+    /**
+     * Inverts only up to chosen [arithmetic] [BigTypeArithmetic.bitLength] bits.
+     * This is different from Java biginteger which returns inverse in two's complement.
+     *
+     * I.e.: If the number was "1100" binary, not returns "0011" => "11" => 4 decimal
+     */
+    fun not(): BigType
 
 }
