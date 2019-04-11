@@ -7,7 +7,8 @@ matrix:
         KBUILD=linux
         JAVA_OPTS=-Xmx2g
       script:
-        - ./gradlew build
+        - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./linuxBuild.sh; fi'
+        - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./linuxBuildAndPublish.sh; fi'
     - os: osx
       language: java
       jdk: openjdk12
@@ -15,7 +16,8 @@ matrix:
         KBUILD=linux
         JAVA_OPTS=-Xmx2g
       script:
-        - ./gradlew build -x jvmTest -x jsTest
+        - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./macBuild.sh; fi'
+        - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./macBuildAndPublish.sh; fi'
 cache:
   directories:
     - $HOME/.m2/
