@@ -283,8 +283,8 @@ publishing {
             name = "snapshot"
             url = uri(sonatypeSnapshots)
             credentials {
-                username = sonatypeUsername ?: ""
-                password = sonatypePassword ?: ""
+                username = sonatypeUsername ?: sonatypeUsernameEnv ?: ""
+                password = sonatypePassword ?: sonatypePasswordEnv ?: ""
             }
         }
     }
