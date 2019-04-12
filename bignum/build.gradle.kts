@@ -64,16 +64,32 @@ kotlin {
         }
     }
     linuxX64("linux") {
-        compilations["main"].outputKinds("static")
+        binaries {
+            staticLib {
+
+            }
+        }
     }
     iosX64("ios") {
-        compilations["main"].outputKinds("framework")
+        binaries {
+            framework {
+
+            }
+        }
     }
     iosArm64("ios64Arm") {
-        compilations["main"].outputKinds("framework")
+        binaries {
+            framework {
+
+            }
+        }
     }
     macosX64() {
-        compilations["main"].outputKinds("framework")
+        binaries {
+            framework {
+
+            }
+        }
     }
 
     println(targets.names)

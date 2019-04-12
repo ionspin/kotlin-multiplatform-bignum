@@ -23,6 +23,7 @@ cache:
     - $HOME/.m2/
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+    - $HOME/.konan/cache
 branches:
   only:
     - master
