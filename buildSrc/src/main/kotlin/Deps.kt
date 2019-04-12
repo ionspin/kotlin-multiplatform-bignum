@@ -17,10 +17,10 @@
 
 object Versions {
     val klock = "1.1.1"
-    val kotlinCoroutines = "1.1.1"
+    val kotlinCoroutines = "1.2.0"
     val timber = "5.0.0-SNAPSHOT"
     val oshi = "3.12.0"
-    val kotlin = "1.3.20"
+    val kotlin = "1.3.30"
     val ktor = "1.1.1"
     val kotlinSerialization = "0.10.0"
     val nodePlugin = "1.3.0"
