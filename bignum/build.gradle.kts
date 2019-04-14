@@ -84,6 +84,14 @@ kotlin {
             }
         }
     }
+
+    iosArm32("ios32Arm") {
+        binaries {
+            framework {
+
+            }
+        }
+    }
     macosX64() {
         binaries {
             framework {
@@ -157,6 +165,13 @@ kotlin {
             dependsOn(nativeMain)
         }
         val ios64ArmTest by getting {
+            dependsOn(nativeTest)
+        }
+
+        val ios32ArmMain by getting {
+            dependsOn(nativeMain)
+        }
+        val ios32ArmTest by getting {
             dependsOn(nativeTest)
         }
 
