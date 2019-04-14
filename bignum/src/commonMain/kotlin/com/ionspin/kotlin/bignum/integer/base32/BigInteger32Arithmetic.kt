@@ -663,6 +663,15 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
     }
 
+
+    override fun fromULong(uLong: ULong): UIntArray = uintArrayOf(uLong.toUInt())
+
+    override fun fromUInt(uInt: UInt): UIntArray = uintArrayOf(uInt)
+
+    override fun fromUShort(uShort: UShort): UIntArray = uintArrayOf(uShort.toUInt())
+
+    override fun fromUByte(uByte: UByte): UIntArray = uintArrayOf(uByte.toUInt())
+
     override fun fromLong(long: Long): UIntArray = uintArrayOf(long.absoluteValue.toUInt())
 
     override fun fromInt(int: Int): UIntArray = uintArrayOf(int.absoluteValue.toUInt())

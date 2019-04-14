@@ -90,6 +90,22 @@ actual object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>
         TODO("not implemented yet")
     }
 
+    override fun fromULong(uLong: ULong): IntArray {
+        TODO("not implemented yet")
+    }
+
+    override fun fromUInt(uInt: UInt): IntArray {
+        TODO("not implemented yet")
+    }
+
+    override fun fromUShort(uShort: UShort): IntArray {
+        TODO("not implemented yet")
+    }
+
+    override fun fromUByte(uByte: UByte): IntArray {
+        TODO("not implemented yet")
+    }
+
     override fun fromLong(long: Long): IntArray = intArrayOf((long and baseMask).toInt(), (long shr basePowerOfTwo).toInt() )
 
     override fun fromInt(int: Int): IntArray = intArrayOf(int)

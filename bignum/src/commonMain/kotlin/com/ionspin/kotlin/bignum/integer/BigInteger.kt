@@ -17,11 +17,8 @@
 
 package com.ionspin.kotlin.bignum.integer
 
-import kotlinx.coroutines.coroutineScope
 import kotlin.math.ceil
-import kotlin.math.floor
 import kotlin.math.log10
-import kotlin.math.pow
 
 
 /**
@@ -57,6 +54,11 @@ enum class Sign {
  */
 @ExperimentalUnsignedTypes
 class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Comparable<Any> {
+
+    constructor(long : Long) : this(arithmetic.fromLong(long), determinSignFromNumber(long))
+    constructor(int : Int) : this(arithmetic.fromInt(int), determinSignFromNumber(int))
+    constructor(short : Short) : this(arithmetic.fromShort(short), determinSignFromNumber(short))
+    constructor(byte : Byte) : this(arithmetic.fromByte(byte), determinSignFromNumber(byte))
 
 
     @ExperimentalUnsignedTypes
@@ -139,11 +141,14 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 
         }
 
-
-        fun fromLong(long: Long) = BigInteger(arithmetic.fromLong(long), determinSignFromNumber(long))
-        fun fromInt(int: Int) = BigInteger(arithmetic.fromInt(int), determinSignFromNumber(int))
-        fun fromShort(short: Short) = BigInteger(arithmetic.fromShort(short), determinSignFromNumber(short))
-        fun fromByte(byte: Byte) = BigInteger(arithmetic.fromByte(byte), determinSignFromNumber(byte))
+        fun fromULong(uLong: ULong) = BigInteger(arithmetic.fromULong(uLong), Sign.POSITIVE)
+        fun fromUInt(uInt: UInt) = BigInteger(arithmetic.fromUInt(uInt), Sign.POSITIVE)
+        fun fromUShort(uShort: UShort) = BigInteger(arithmetic.fromUShort(uShort), Sign.POSITIVE)
+        fun fromUByte(uByte: UByte) = BigInteger(arithmetic.fromUByte(uByte), Sign.POSITIVE)
+        fun fromLong(long: Long) = BigInteger(long)
+        fun fromInt(int: Int) = BigInteger(int)
+        fun fromShort(short: Short) = BigInteger(short)
+        fun fromByte(byte: Byte) = BigInteger(byte)
 
         fun max(first: BigInteger, second: BigInteger): BigInteger {
             return if (first > second) {

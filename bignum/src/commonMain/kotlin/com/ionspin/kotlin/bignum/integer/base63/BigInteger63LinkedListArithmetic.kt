@@ -831,6 +831,14 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         return convertFrom32BitRepresentation(this)
     }
 
+    override fun fromULong(uLong: ULong): List<ULong> = listOf(uLong)
+
+    override fun fromUInt(uInt: UInt): List<ULong> = listOf(uInt.toULong())
+
+    override fun fromUShort(uShort: UShort): List<ULong> = listOf(uShort.toULong())
+
+    override fun fromUByte(uByte: UByte): List<ULong> = listOf(uByte.toULong())
+
     override fun fromLong(long: Long): List<ULong> {
         if ((long.absoluteValue.toULong() and overflowMask shr 63) == 1UL) {
             return listOf(baseMask) + 1U
