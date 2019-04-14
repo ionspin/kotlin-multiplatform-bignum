@@ -833,6 +833,14 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return convertFrom32BitRepresentation(this)
     }
 
+    override fun fromULong(uLong: ULong): ULongArray = ulongArrayOf(uLong)
+
+    override fun fromUInt(uInt: UInt): ULongArray = ulongArrayOf(uInt.toULong())
+
+    override fun fromUShort(uShort: UShort): ULongArray = ulongArrayOf(uShort.toULong())
+
+    override fun fromUByte(uByte: UByte): ULongArray = ulongArrayOf(uByte.toULong())
+
     override fun fromLong(long: Long): ULongArray {
         if ((long.absoluteValue.toULong() and overflowMask shr 63) == 1UL) {
             return ulongArrayOf(baseMask) + 1U
