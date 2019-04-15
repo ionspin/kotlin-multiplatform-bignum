@@ -24,6 +24,7 @@ package com.ionspin.kotlin.bignum.integer
  * ugljesa.jovanovic@ionspin.com
  * on 10-Mar-2019
  */
+@ExperimentalUnsignedTypes
 interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
     val ZERO : BackingCollectionType
     val ONE : BackingCollectionType
@@ -103,7 +104,10 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
 
     fun numberOfDecimalDigits(operand : BackingCollectionType): Long
 
-
+    fun fromULong(uLong : ULong) : BackingCollectionType
+    fun fromUInt(uInt : UInt) : BackingCollectionType
+    fun fromUShort(uShort : UShort): BackingCollectionType
+    fun fromUByte(uByte : UByte) : BackingCollectionType
     fun fromLong(long : Long) : BackingCollectionType
     fun fromInt(int : Int) : BackingCollectionType
     fun fromShort(short : Short): BackingCollectionType

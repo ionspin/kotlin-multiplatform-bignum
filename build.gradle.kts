@@ -16,8 +16,6 @@
  */
 
 
-val kotlin_version: String by extra
-
 buildscript {
     
     repositories {

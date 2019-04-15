@@ -17,8 +17,6 @@
 
 package com.ionspin.kotlin.bignum.integer
 
-import com.ionspin.kotlin.bignum.BigNumber
-import com.ionspin.kotlin.bignum.BitwiseCapable
 import kotlin.math.ceil
 import kotlin.math.log10
 
@@ -55,7 +53,13 @@ enum class Sign {
  * Based on unsigned arrays, currently limited to [Int.MAX_VALUE] words.
  */
 @ExperimentalUnsignedTypes
-class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Comparable<Any>, BigNumber<BigInteger>, BitwiseCapable<BigInteger> {
+class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Comparable<Any> {
+
+    constructor(long : Long) : this(arithmetic.fromLong(long), determinSignFromNumber(long))
+    constructor(int : Int) : this(arithmetic.fromInt(int), determinSignFromNumber(int))
+    constructor(short : Short) : this(arithmetic.fromShort(short), determinSignFromNumber(short))
+    constructor(byte : Byte) : this(arithmetic.fromByte(byte), determinSignFromNumber(byte))
+
 
     @ExperimentalUnsignedTypes
     companion object : BigNumber.Creator<BigInteger>, BigNumber.Util<BigInteger> {
@@ -67,7 +71,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 
         val LOG_10_OF_2 = log10(2.0)
 
-        override fun parseString(string: String, base: Int): BigInteger {
+        fun parseString(string: String, base: Int = 10): BigInteger {
             val signed = (string[0] == '-' || string[0] == '+')
             return if (signed) {
                 if (string.length == 1) {
@@ -137,13 +141,16 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
 
         }
 
+        fun fromULong(uLong: ULong) = BigInteger(arithmetic.fromULong(uLong), Sign.POSITIVE)
+        fun fromUInt(uInt: UInt) = BigInteger(arithmetic.fromUInt(uInt), Sign.POSITIVE)
+        fun fromUShort(uShort: UShort) = BigInteger(arithmetic.fromUShort(uShort), Sign.POSITIVE)
+        fun fromUByte(uByte: UByte) = BigInteger(arithmetic.fromUByte(uByte), Sign.POSITIVE)
+        fun fromLong(long: Long) = BigInteger(long)
+        fun fromInt(int: Int) = BigInteger(int)
+        fun fromShort(short: Short) = BigInteger(short)
+        fun fromByte(byte: Byte) = BigInteger(byte)
 
-        override fun fromLong(long: Long) = BigInteger(arithmetic.fromLong(long), determinSignFromNumber(long))
-        override fun fromInt(int: Int) = BigInteger(arithmetic.fromInt(int), determinSignFromNumber(int))
-        override fun fromShort(short: Short) = BigInteger(arithmetic.fromShort(short), determinSignFromNumber(short))
-        override fun fromByte(byte: Byte) = BigInteger(arithmetic.fromByte(byte), determinSignFromNumber(byte))
-
-        override fun max(first: BigInteger, second: BigInteger): BigInteger {
+        fun max(first: BigInteger, second: BigInteger): BigInteger {
             return if (first > second) {
                 first
             } else {
@@ -151,7 +158,7 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Com
             }
         }
 
-        override fun min(first: BigInteger, second: BigInteger): BigInteger {
+        fun min(first: BigInteger, second: BigInteger): BigInteger {
             return if (first < second) {
                 first
             } else {

@@ -64,16 +64,40 @@ kotlin {
         }
     }
     linuxX64("linux") {
-        compilations["main"].outputKinds("static")
+        binaries {
+            staticLib {
+
+            }
+        }
     }
     iosX64("ios") {
-        compilations["main"].outputKinds("framework")
+        binaries {
+            framework {
+
+            }
+        }
     }
     iosArm64("ios64Arm") {
-        compilations["main"].outputKinds("framework")
+        binaries {
+            framework {
+
+            }
+        }
+    }
+
+    iosArm32("ios32Arm") {
+        binaries {
+            framework {
+
+            }
+        }
     }
     macosX64() {
-        compilations["main"].outputKinds("framework")
+        binaries {
+            framework {
+
+            }
+        }
     }
 
     println(targets.names)
@@ -141,6 +165,13 @@ kotlin {
             dependsOn(nativeMain)
         }
         val ios64ArmTest by getting {
+            dependsOn(nativeTest)
+        }
+
+        val ios32ArmMain by getting {
+            dependsOn(nativeMain)
+        }
+        val ios32ArmTest by getting {
             dependsOn(nativeTest)
         }
 

@@ -1,10 +1,12 @@
 ## Descriptive changelog
 (All dates are DD-MM-YYYY)
+
 ##### Adding modular integer support, changing api
-- Added modular integers
+- Added modular integers //TODO
 - Renamed invPrecise() bigInteger method to not()
-- renamed numberOfDigits() to numberOfDecimalDigits()
-- introduced BigNumber and BitwiseOperations interfaces 
+- Renamed numberOfDigits() to numberOfDecimalDigits()
+- Introduced BigNumber and BitwiseOperations interfaces 
+- Added iOS ARM 32bit support 
 
 
 ##### Minor update - 0.0.8 - 02.04.2019
