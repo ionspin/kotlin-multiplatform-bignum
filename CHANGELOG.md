@@ -1,7 +1,7 @@
 ## Descriptive changelog
 (All dates are DD-MM-YYYY)
 
-##### Adding modular integer support, changing api
+##### 0.0.9-SNAPSHOT Adding modular integer support, changing api
 - Added modular integers //TODO
 - Renamed invPrecise() bigInteger method to not()
 - Renamed numberOfDigits() to numberOfDecimalDigits()

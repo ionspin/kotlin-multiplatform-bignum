@@ -26,14 +26,14 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
  * on 04-Apr-2019
  */
 
-typealias BigBla = BigNumber<BigInteger>
-class Test {
-    val a : BigBla = BigInteger.fromLong(1L)
-}
 interface BigNumber<BigType> {
 
     interface Creator<BigType> {
         fun parseString(string: String, base: Int = 10): BigType
+        fun fromULong(uLong: ULong): BigType
+        fun fromUInt(uInt: UInt): BigType
+        fun fromUShort(uShort: UShort): BigType
+        fun fromUByte(uByte: UByte): BigType
         fun fromLong(long: Long): BigType
         fun fromInt(int: Int): BigType
         fun fromShort(short: Short): BigType
