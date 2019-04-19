@@ -21,9 +21,13 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
-import com.ionspin.kotlin.bignum.integer.toBigInteger
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.compareTo
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.minus
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.plus
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.shl
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.shr
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.times
 import com.ionspin.kotlin.bignum.integer.util.toDigit
-import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -228,7 +232,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         }
     }
 
-    override fun numberOfDecimalDigits(operand : ULongArray): Long {
+    override fun numberOfDecimalDigits(operand: ULongArray): Long {
         val bitLenght = bitLength(operand)
         val minDigit = ceil((bitLenght - 1) * BigInteger.LOG_10_OF_2)
 //        val maxDigit = floor(bitLenght * LOG_10_OF_2) + 1
@@ -572,13 +576,90 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return Pair(removeLeadingZeroes(quotient), denormRemainder)
     }
 
-    fun reciprocal(operand: ULongArray): Pair<ULongArray, ULongArray> {
-        TODO()
-//        val reciprocal32Bit = BigInteger32Arithmetic.reciprocal(convertTo32BitRepresentation(operand))
-//        return Pair(
-//            convertFrom32BitRepresentation(reciprocal32Bit.first),
-//            convertFrom32BitRepresentation(reciprocal32Bit.second)
-//        )
+    override fun reciprocal(operand: ULongArray): Pair<ULongArray, ULongArray> {
+        return d1ReciprocalRecursiveWordVersion(operand)
+    }
+
+    fun d1ReciprocalRecursive(a: ULongArray): Pair<ULongArray, ULongArray> {
+        val fullBitLenght = bitLength(a)
+        val n = if (fullBitLenght > 63) {
+            fullBitLenght - 63
+        } else {
+            fullBitLenght
+        }
+        if (n <= 30) {
+            val rhoPowered = 1UL shl (n * 2)
+            val longA = a[0]
+            val x = rhoPowered / longA
+            val r = rhoPowered - x * longA
+            return Pair(ulongArrayOf(x), ulongArrayOf(r))
+        }
+        val l = floor((n - 1).toDouble() / 2).toInt()
+        val h = n - l
+        val mask = (ONE shl l) - ONE
+        val ah = a shr l
+        val al = and(a, mask)
+        var (xh, rh) = d1ReciprocalRecursive(ah)
+        val s = al * xh
+//        val rhoL = (ONE shl l)
+        val rhRhoL = rh shl l
+        val t = if (rhRhoL >= s) {
+            rhRhoL - s
+        } else {
+            xh = xh - ONE
+            (rhRhoL + a) - s
+        }
+        val tm = t shr h
+        val d = (xh * tm) shr h
+        var x = (xh shl l) + d
+        var r = (t shl l) - a * d
+        if (r >= a) {
+            x = x + ONE
+            r = r - a
+            if (r >= a) {
+                x = x + ONE
+                r = r - a
+            }
+        }
+        return Pair(x, r)
+    }
+
+    fun d1ReciprocalRecursiveWordVersion(a: ULongArray): Pair<ULongArray, ULongArray> {
+        val n = a.size - 1
+        if (n <= 2) {
+            val corrected = if (n == 0) { 1 } else { n }
+            val rhoPowered = ONE shl (corrected * 2 * 63)
+            val x = rhoPowered / a
+            val r = rhoPowered - (x * a)
+            return Pair(x, r)
+        }
+        val l = floor((n - 1).toDouble() / 2).toInt()
+        val h = n - l
+        val ah = a.copyOfRange(a.size - h, a.size)
+        val al = a.copyOfRange(0, l)
+        var (xh, rh) = d1ReciprocalRecursiveWordVersion(ah)
+        val s = al * xh
+//        val rhoL = (ONE shl l)
+        val rhRhoL = rh shl (l * 63)
+        val t = if (rhRhoL >= s) {
+            rhRhoL - s
+        } else {
+            xh = xh - ONE
+            (rhRhoL + a) - s
+        }
+        val tm = t shr (h * 63)
+        val d = (xh * tm) shr (h * 63)
+        var x = (xh shl (l * 63)) + d
+        var r = (t shl (l * 63)) - a * d
+        if (r >= a) {
+            x = x + ONE
+            r = r - a
+            if (r >= a) {
+                x = x + ONE
+                r = r - a
+            }
+        }
+        return Pair(x, r)
     }
 
     fun convertTo64BitRepresentation(operand: ULongArray): ULongArray {

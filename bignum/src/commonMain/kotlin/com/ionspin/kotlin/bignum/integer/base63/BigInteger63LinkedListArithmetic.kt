@@ -646,6 +646,10 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         return baseDivide(first, second)
     }
 
+    override fun reciprocal(operand: List<ULong>): Pair<List<ULong>, List<ULong>> {
+        TODO("not implemented yet")
+    }
+
     override fun parseForBase(number: String, base: Int): List<ULong> {
         var parsed = ZERO
         number.toLowerCase().forEach { char ->

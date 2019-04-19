@@ -70,8 +70,6 @@ actual object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>
         TODO("not implemented yet")
     }
 
-
-
     override fun multiply(first: IntArray, second: IntArray): IntArray {
         TODO("not implemented yet")
     }
@@ -81,6 +79,10 @@ actual object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>
     }
 
     override fun divide(first: IntArray, second: IntArray): Pair<IntArray, IntArray> {
+        TODO("not implemented yet")
+    }
+
+    override fun reciprocal(operand: IntArray): Pair<IntArray, IntArray> {
         TODO("not implemented yet")
     }
 

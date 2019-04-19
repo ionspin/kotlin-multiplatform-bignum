@@ -87,6 +87,12 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
     fun divide(first: BackingCollectionType, second: BackingCollectionType): Pair<BackingCollectionType, BackingCollectionType>
 
     /**
+     * Returns a integer reciprocal of this number such that 0 <= base ^ word - operand * reciprocal <= operand,
+     * and remainder such that 0 < reciprocal < operand
+     */
+    fun reciprocal(operand : BackingCollectionType) : Pair<BackingCollectionType, BackingCollectionType>
+
+    /**
      * Exponentiation function
      * @return BigInteger result of exponentiation of number by exponent
      */

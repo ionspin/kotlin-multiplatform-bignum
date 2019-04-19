@@ -17,7 +17,6 @@
 
 package com.ionspin.kotlin.bignum.integer.base32
 
-import com.ionspin.kotlin.bignum.QuotientAndRemainder
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
@@ -390,6 +389,8 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
 
+
+
     /*
      * Based on Basecase DivRem algorithm from
      * Modern Computer Arithmetic, Richard Brent and Paul Zimmermann, Cambridge University Press, 2010.
@@ -528,15 +529,15 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
                 1UL shl (requiredPrecision) //We are sure that precision is less or equal to 63, so inside int range
             var result = base / operand
 
-            return checkReeciprocal(uintArrayOf(operand), Pair(uintArrayOf(result.toUInt()), requiredPrecision))
+            return checkReciprocal(uintArrayOf(operand), Pair(uintArrayOf(result.toUInt()), requiredPrecision))
         } else {
             val base = ONE.shl(requiredPrecision)
             val result = base / operand
-            return checkReeciprocal(uintArrayOf(operand), Pair(result, requiredPrecision))
+            return checkReciprocal(uintArrayOf(operand), Pair(result, requiredPrecision))
         }
     }
 
-    private fun checkReeciprocal(
+    private fun checkReciprocal(
         operand: UIntArray,
         reciprocal: Pair<UIntArray, Int>
     ): Pair<UIntArray, Int> {
@@ -552,7 +553,8 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
     }
 
-    fun reciprocal(operand: UIntArray): Pair<UIntArray, Int> {
+    //TODO Does this work?
+    private fun reciprocal2(operand: UIntArray): Pair<UIntArray, Int> {
         if (operand.size == 1) {
             val reciprocal = reciprocalSingleWord(operand[0])
             return Pair(reciprocal.first, reciprocal.second)
@@ -561,7 +563,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         val low = floor(operand.size / 2.0).toInt()
         val high = (operand.size - low).toInt()
         val operandHigh = operand.copyOfRange(low, high + 1)
-        var (approximateReciprocal, reciprocalShiftAmount) = reciprocal(operandHigh)
+        var (approximateReciprocal, reciprocalShiftAmount) = reciprocal2(operandHigh)
         var shifted = (operand * approximateReciprocal) shr (reciprocalShiftAmount)
         val basePowered = ONE shr (operand.size + high)
         while (shifted > basePowered) {
@@ -576,8 +578,12 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     }
 
+    override fun reciprocal(operand: UIntArray): Pair<UIntArray, UIntArray> {
+        TODO("not implemented yet")
+    }
+
     fun reciprocalDivide(dividend: UIntArray, divisor: UIntArray): Pair<UIntArray, UIntArray> {
-        val divisorReciprocalAndShift = reciprocal(divisor)
+        val divisorReciprocalAndShift = reciprocal2(divisor)
         val quotient = (dividend * divisorReciprocalAndShift.first) shr divisorReciprocalAndShift.second
         val remainder = dividend - (divisor * quotient)
         return Pair(quotient, remainder)

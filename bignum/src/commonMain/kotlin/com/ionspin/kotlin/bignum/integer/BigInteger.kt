@@ -20,6 +20,7 @@ package com.ionspin.kotlin.bignum.integer
 import com.ionspin.kotlin.bignum.BigNumber
 import com.ionspin.kotlin.bignum.BitwiseCapable
 import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.math.log10
 
 
@@ -300,13 +301,22 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Big
         )
     }
 
-    fun divideByReciprocal(other : BigInteger) : Pair<BigInteger, BigInteger> {
+
+
+    /**
+     * D1Balanced reciprocal
+     */
+    private fun d1reciprocalRecursive() : BigInteger {
+        return BigInteger(arithmetic.reciprocal(this.magnitude).first, sign)
+
+
+    }
+
+    private fun d1ReciprocalIterative() : BigInteger {
         TODO()
     }
 
-    private fun reciprocal() : BigInteger {
-        TODO()
-    }
+
 
     fun sqrt(): SqareRootAndRemainder {
         TODO()

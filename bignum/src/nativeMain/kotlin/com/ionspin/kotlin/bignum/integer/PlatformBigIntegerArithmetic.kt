@@ -79,6 +79,11 @@ actual object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>
     override fun divide(first: IntArray, second: IntArray): Pair<IntArray, IntArray> {
         TODO("not implemented yet")
     }
+
+    override fun reciprocal(operand: IntArray): Pair<IntArray, IntArray> {
+        TODO("not implemented yet")
+    }
+    
     override fun parseForBase(number: String, base: Int) : IntArray {
         TODO("not implemented yet")
     }
