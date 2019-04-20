@@ -635,7 +635,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         }
         val l = floor((n - 1).toDouble() / 2).toInt()
         val h = n - l
-        val ah = a.copyOfRange(a.size - h, a.size)
+        val ah = a.copyOfRange(a.size - h - 1, a.size)
         val al = a.copyOfRange(0, l)
         var (xh, rh) = d1ReciprocalRecursiveWordVersion(ah)
         val s = al * xh
@@ -914,23 +914,23 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     internal operator fun ULongArray.div(other: ULong): ULongArray {
-        return baseDivide(this, ulongArrayOf(other)).first
+        return divide(this, ulongArrayOf(other)).first
     }
 
     internal operator fun ULongArray.rem(other: ULong): ULongArray {
-        return baseDivide(this, ulongArrayOf(other)).second
+        return divide(this, ulongArrayOf(other)).second
     }
 
     internal operator fun ULongArray.div(other: ULongArray): ULongArray {
-        return baseDivide(this, other).first
+        return divide(this, other).first
     }
 
     internal operator fun ULongArray.rem(other: ULongArray): ULongArray {
-        return baseDivide(this, other).second
+        return divide(this, other).second
     }
 
     internal infix fun ULongArray.divrem(other: ULongArray): Pair<ULongArray, ULongArray> {
-        return baseDivide(this, other)
+        return divide(this, other)
     }
 
     internal operator fun ULongArray.compareTo(other: ULongArray): Int {
