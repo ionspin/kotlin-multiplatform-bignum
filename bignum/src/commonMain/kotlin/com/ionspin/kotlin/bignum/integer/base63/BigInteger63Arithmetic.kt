@@ -627,7 +627,11 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     fun d1ReciprocalRecursiveWordVersion(a: ULongArray): Pair<ULongArray, ULongArray> {
         val n = a.size - 1
         if (n <= 2) {
-            val corrected = if (n == 0) { 1 } else { n }
+            val corrected = if (n == 0) {
+                1
+            } else {
+                n
+            }
             val rhoPowered = ONE shl (corrected * 2 * 63)
             val x = rhoPowered / a
             val r = rhoPowered - (x * a)
@@ -657,6 +661,31 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             if (r >= a) {
                 x = x + ONE
                 r = r - a
+            }
+        }
+        return Pair(x, r)
+    }
+
+    private fun unbalancedReciprocal(a: ULongArray, diff: Int): Pair<ULongArray, ULongArray> {
+        val n = a.size - 1 - diff
+        val a0 = a.copyOfRange(n + 1, a.size)
+        val a1 = a.copyOfRange(0, n)
+        var (x, r) = d1ReciprocalRecursiveWordVersion(a0)
+        if (x == ONE shl (n * 63)) {
+            if (a1.compareTo(ZERO) == 0) {
+                r = ZERO
+            } else {
+                x = x - ONE
+                r = a - (a1 shl (n * 63))
+            }
+        } else {
+            val rRhoD = r shl diff
+            val a1x = a1 * x
+            if (rRhoD > a1x) {
+                r = rRhoD - a1x
+            } else {
+                x = x - ONE
+                r = rRhoD - (a1 * x)
             }
         }
         return Pair(x, r)
@@ -757,6 +786,43 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
     override fun divide(first: ULongArray, second: ULongArray): Pair<ULongArray, ULongArray> {
         return baseDivide(first, second)
+    }
+
+    fun reciprocalDivision(first: ULongArray, second: ULongArray): Pair<ULongArray, ULongArray> {
+        val shift = if (second.size == 1) {
+            1
+        } else {
+            second.size - 1
+        }
+        val precisionShift = (first.size - second.size) * 2 * 63
+        val secondHighPrecision = second shl precisionShift
+
+        val secondReciprocalWithRemainder = d1ReciprocalRecursiveWordVersion(secondHighPrecision)
+
+        val secondReciprocal = secondReciprocalWithRemainder.first
+        var product = first * secondReciprocal
+        //TODO Proper rounding
+        if (product.compareTo(0UL) == 0) {
+            return Pair(ZERO, first)
+        }
+        if (product.size == 1) {
+            if (product >= baseMask - 1UL) {
+                product = product + ONE
+            }
+        } else {
+            val importantWord = product[product.size - second.size]
+            if (importantWord >= baseMask) {
+                product = ULongArray(product.size) {
+                    when (it) {
+                        product.size - 1 -> product[product.size - 1] + 1UL
+                        else -> 0UL
+                    }
+                }
+            }
+        }
+        val result = (product shr (shift * 2 * 63)) shr precisionShift
+        val remainder = first - (result * second)
+        return Pair(result, remainder)
     }
 
 
