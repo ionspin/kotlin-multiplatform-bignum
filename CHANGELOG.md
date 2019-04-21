@@ -2,7 +2,11 @@
 (All dates are DD-MM-YYYY)
 
 ##### 0.0.9-SNAPSHOT Adding modular integer support, changing api
-- Added modular integers //TODO
+- Added modular integers - ModularBigInteger
+- Extracted interfaces that model big numbers better (BigNumber<BigType> interface and accompanying interfaces)
+- Implemented integer reciprocal based on newton iteration (Based on paper by Yiping Cheng, Ze Lie : Refinement of a newton reciprocal algorithm for arbitrary precision numbers)
+- Implemented division by reciprocal multiplication. Not used by division at the moment as it is unoptimized and slower than basecase division in ealry benchmarks.
+- Fixed a bug in Int32 shift right when shift amount was an exact multiple of word size 
 - Renamed invPrecise() bigInteger method to not()
 - Renamed numberOfDigits() to numberOfDecimalDigits()
 - Introduced BigNumber and BitwiseOperations interfaces 

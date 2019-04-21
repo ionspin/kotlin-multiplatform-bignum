@@ -21,6 +21,7 @@ import kotlinx.coroutines.*
 import org.junit.Test
 import java.lang.Exception
 import java.lang.RuntimeException
+import java.math.BigInteger
 import kotlin.random.Random
 import kotlin.random.nextULong
 import kotlin.test.assertTrue
@@ -312,6 +313,9 @@ class DivisionBenchmark {
 
     @Test
     fun runReciprocalVsBaseCaseBenchmark() {
+        runBlocking {
+            delay(10000)
+        }
         val seed = 1
         val random = Random(seed)
         val sampleList = mutableListOf<BenchmarkSample>()
@@ -320,10 +324,11 @@ class DivisionBenchmark {
         val generationStartTime = System.currentTimeMillis()
         for (i in 0..1000 step 1) {
             val job = GlobalScope.launch {
-                val dividend = ULongArray(1000) {
+                println("Doing $i")
+                val dividend = ULongArray(10) {
                     random.nextULong() shr 1
                 }
-                val divisor = ULongArray(900) {
+                val divisor = ULongArray(9) {
                     random.nextULong() shr 1
                 }
                 val expectedQuotient = dividend.toJavaBigInteger() / divisor.toJavaBigInteger()
@@ -333,7 +338,7 @@ class DivisionBenchmark {
                     divisor,
                     BigInteger63Arithmetic.parseForBase(expectedQuotient.toString(10), 10),
                     BigInteger63Arithmetic.parseForBase(expectedRemainder.toString(10), 10)))
-
+                println("Done $i")
             }
             jobList.add(job)
         }
@@ -393,3 +398,4 @@ class DivisionBenchmark {
     }
 
 }
+

@@ -98,7 +98,7 @@ class BigDecimalReadmeTest {
     fun toStringWithoutExponentTest() {
 
         assertTrue {
-            val bigDecimal = BigDecimal.parseString("123.456")
+            val bigDecimal = BigDecimal.parseStringWithMode("123.456")
             println("BigDecimal: ${bigDecimal.toStringExpanded()}")
             bigDecimal.toStringExpanded() == "123.456"
         }
@@ -164,14 +164,14 @@ class BigDecimalReadmeTest {
     @Test
     fun readmeCreationTest() {
         assertTrue {
-            val bigDecimal = BigDecimal.parseString("0.00000123")
+            val bigDecimal = BigDecimal.parseStringWithMode("0.00000123")
             println("BigDecimal: $bigDecimal")
             bigDecimal.toString() == "1.23E-6"
 
         }
 
         assertTrue {
-            val bigDecimal = BigDecimal.parseString("1.23E-6")
+            val bigDecimal = BigDecimal.parseStringWithMode("1.23E-6")
             println("BigDecimal: $bigDecimal")
             bigDecimal.toString() == "1.23E-6"
 
@@ -214,13 +214,13 @@ class BigDecimalReadmeTest {
         assertFailsWith(ArithmeticException::class) {
             val a = 1.toBigDecimal()
             val b = 3.toBigDecimal()
-            val result = a/b
+            val result = a.divide(b)
         }
 
         assertTrue {
             val a = 1.toBigDecimal()
             val b = 3.toBigDecimal()
-            val result = a.div(b, DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
+            val result = a.divide(b, DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
             result.toString() == "3.3333333333333333333E-1"
         }
     }
@@ -229,19 +229,19 @@ class BigDecimalReadmeTest {
     fun readmeBigDecimalExtensionsTest() {
         assertTrue("String to big decimal failed") {
             val bigint = "123456789012345678901234567890.1234567890".toBigDecimal()
-            val expected = BigDecimal.parseString("123456789012345678901234567890.1234567890")
+            val expected = BigDecimal.parseStringWithMode("123456789012345678901234567890.1234567890")
             bigint == expected
         }
 
         assertTrue("Float to big decimal failed") {
             val bigint = 1234f.toBigDecimal()
-            val expected = BigDecimal.parseString("1.234E+3")
+            val expected = BigDecimal.parseStringWithMode("1.234E+3")
             bigint == expected
         }
 
         assertTrue("Double to big decimal dailed") {
             val bigint = 123456789012.0.toBigDecimal()
-            val expected = BigDecimal.parseString("1.23456789012E+11")
+            val expected = BigDecimal.parseStringWithMode("1.23456789012E+11")
             bigint == expected
         }
     }

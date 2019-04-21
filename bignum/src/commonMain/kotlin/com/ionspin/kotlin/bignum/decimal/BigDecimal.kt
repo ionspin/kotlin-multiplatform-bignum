@@ -17,6 +17,8 @@
 
 package com.ionspin.kotlin.bignum.decimal
 
+import com.ionspin.kotlin.bignum.BigNumber
+import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigInteger.Companion.TEN
 import com.ionspin.kotlin.bignum.integer.Sign
@@ -42,11 +44,13 @@ class BigDecimal private constructor(
     val significand: BigInteger,
     val exponent: BigInteger = BigInteger.ZERO,
     val decimalMode: DecimalMode? = null
-) : Comparable<Any> {
+) : BigNumber<BigDecimal>,
+    CommonBigNumberOperations<BigDecimal>,
+    Comparable<Any> {
 
     val precision = significand.numberOfDecimalDigits()
 
-    companion object {
+    companion object : BigNumber.Creator<BigDecimal> {
         val ZERO = BigDecimal(BigInteger.ZERO)
         val ONE = BigDecimal(BigInteger.ONE)
 
@@ -77,7 +81,9 @@ class BigDecimal private constructor(
                 significand.sign
             }
             val significantRemainderDigit = if (toDiscard > 0) {
-                (discarded / (discarded.numberOfDecimalDigits())).abs() + (significand divrem TEN.pow(toDiscard)).remainder * TEN.pow(toDiscard)
+                (discarded / (discarded.numberOfDecimalDigits())).abs() + (significand divrem TEN.pow(toDiscard)).remainder * TEN.pow(
+                    toDiscard
+                )
             } else {
                 (discarded / (discarded.numberOfDecimalDigits())).abs()
             }
@@ -229,6 +235,19 @@ class BigDecimal private constructor(
         }
 
         /**
+         * Convert a Long into a BigDecimal.
+         *
+         * i.e. 7111 -> 7.111E+3
+         *
+         * @param long Long value to conver
+         * @return BigDecimal representing input
+         */
+        fun fromULong(uLong: ULong, decimalMode: DecimalMode? = null): BigDecimal {
+            val bigint = BigInteger.fromULong(uLong)
+            return BigDecimal(bigint, bigint.numberOfDecimalDigits().toBigInteger() - 1, decimalMode).round(decimalMode)
+        }
+
+        /**
          * Convert a Int into a BigDecimal.
          *
          * i.e. 7111 -> 7.111E+3
@@ -242,6 +261,32 @@ class BigDecimal private constructor(
         }
 
         /**
+         * Convert a Int into a BigDecimal.
+         *
+         * i.e. 7111 -> 7.111E+3
+         *
+         * @param int Int value to conver
+         * @return BigDecimal representing input
+         */
+        fun fromUInt(uInt: UInt, decimalMode: DecimalMode? = null): BigDecimal {
+            val bigint = BigInteger.fromUInt(uInt)
+            return BigDecimal(bigint, bigint.numberOfDecimalDigits().toBigInteger() - 1, decimalMode).round(decimalMode)
+        }
+
+        /**
+         * Convert a Short into a BigDecimal.
+         *
+         * i.e. 7111 -> 7.111E+3
+         *
+         * @param short Short value to conver
+         * @return BigDecimal representing input
+         */
+        fun fromUShort(uShort: UShort, decimalMode: DecimalMode? = null): BigDecimal {
+            val bigint = BigInteger.fromUShort(uShort)
+            return BigDecimal(bigint, bigint.numberOfDecimalDigits().toBigInteger() - 1, decimalMode).round(decimalMode)
+        }
+
+        /**
          * Convert a Short into a BigDecimal.
          *
          * i.e. 7111 -> 7.111E+3
@@ -251,6 +296,19 @@ class BigDecimal private constructor(
          */
         fun fromShort(short: Short, decimalMode: DecimalMode? = null): BigDecimal {
             val bigint = BigInteger.fromShort(short)
+            return BigDecimal(bigint, bigint.numberOfDecimalDigits().toBigInteger() - 1, decimalMode).round(decimalMode)
+        }
+
+        /**
+         * Convert a Byte into a BigDecimal.
+         *
+         * i.e. 11 -> 1.1E+2
+         *
+         * @param byte Byte value to conver
+         * @return BigDecimal representing input
+         */
+        fun fromUByte(uByte: UByte, decimalMode: DecimalMode? = null): BigDecimal {
+            val bigint = BigInteger.fromUByte(uByte)
             return BigDecimal(bigint, bigint.numberOfDecimalDigits().toBigInteger() - 1, decimalMode).round(decimalMode)
         }
 
@@ -277,6 +335,7 @@ class BigDecimal private constructor(
          */
         fun fromLongAsSignificand(long: Long, decimalMode: DecimalMode? = null) =
             BigDecimal(BigInteger.fromLong(long), BigInteger.ZERO, decimalMode).round(decimalMode)
+
         /**
          * Convert a Int into a BigDecimal, but use supplied value directly as significant.
          *
@@ -319,8 +378,9 @@ class BigDecimal private constructor(
          * @return BigDecimal representing input
          */
         fun fromFloat(float: Float, decimalMode: DecimalMode? = null): BigDecimal {
-            return parseString(float.toString().dropLastWhile { it == '0' }, decimalMode)
+            return parseStringWithMode(float.toString().dropLastWhile { it == '0' }, decimalMode)
         }
+
         /**
          * Convert a Double into a BigDecimal
          *
@@ -330,7 +390,7 @@ class BigDecimal private constructor(
          * @return BigDecimal representing input
          */
         fun fromDouble(double: Double, decimalMode: DecimalMode? = null): BigDecimal {
-            return parseString(double.toString().dropLastWhile { it == '0' }, decimalMode)
+            return parseStringWithMode(double.toString().dropLastWhile { it == '0' }, decimalMode)
         }
 
         /**
@@ -339,10 +399,11 @@ class BigDecimal private constructor(
         fun fromBigIntegerWithExponent(
             bigInteger: BigInteger,
             exponent: BigInteger,
-            decimalMode: DecimalMode = DecimalMode()
+            decimalMode: DecimalMode? = null
         ): BigDecimal {
             return BigDecimal(bigInteger, exponent, decimalMode).round(decimalMode)
         }
+
         /**
          * Create BigDecimal from Long significand and BigInteger exponent
          */
@@ -354,6 +415,7 @@ class BigDecimal private constructor(
             val bigint = BigInteger.fromLong(long)
             return BigDecimal(bigint, exponent, decimalMode).round(decimalMode)
         }
+
         /**
          * Create BigDecimal from Int significand and BigInteger exponent
          */
@@ -361,6 +423,7 @@ class BigDecimal private constructor(
             val bigint = BigInteger.fromInt(int)
             return BigDecimal(bigint, exponent, decimalMode).round(decimalMode)
         }
+
         /**
          * Create BigDecimal from Short significand and BigInteger exponent
          */
@@ -372,6 +435,7 @@ class BigDecimal private constructor(
             val bigint = BigInteger.fromShort(short)
             return BigDecimal(bigint, exponent, decimalMode).round(decimalMode)
         }
+
         /**
          * Create BigDecimal from Short significand and BigInteger exponent
          */
@@ -383,26 +447,130 @@ class BigDecimal private constructor(
             val bigint = BigInteger.fromByte(byte)
             return BigDecimal(bigint, exponent, decimalMode).round(decimalMode)
         }
+
         /**
          * Create BigDecimal from Long significand and Int exponent
          */
         fun fromLongWithExponent(long: Long, exponent: Int, decimalMode: DecimalMode? = null): BigDecimal =
             fromLongWithExponent(long, exponent.toBigInteger(), decimalMode).round(decimalMode)
+
         /**
          * Create BigDecimal from Int significand and Int exponent
          */
         fun fromIntWithExponent(int: Int, exponent: Int, decimalMode: DecimalMode? = null): BigDecimal =
             fromIntWithExponent(int, exponent.toBigInteger()).round(decimalMode)
+
         /**
          * Create BigDecimal from Short significand and Int exponent
          */
         fun fromShortWithExponent(short: Short, exponent: Int, decimalMode: DecimalMode = DecimalMode()): BigDecimal =
             fromShortWithExponent(short, exponent.toBigInteger(), decimalMode).round(decimalMode)
+
         /**
          * Create BigDecimal from Byte significand and Int exponent
          */
         fun fromByteWithExponent(byte: Byte, exponent: Int, decimalMode: DecimalMode? = null): BigDecimal =
             fromByteWithExponent(byte, exponent.toBigInteger(), decimalMode).round(decimalMode)
+
+        /**
+         * Convert a Long into a BigDecimal, but use supplied value directly as significant.
+         *
+         * i.e. 7111 -> 7.111E+0
+         *
+         * @param long Long value to conver
+         * @return BigDecimal representing input
+         */
+        override fun fromULong(uLong: ULong): BigDecimal {
+            return fromULong(uLong, null)
+        }
+
+        /**
+         * Convert a Int into a BigDecimal, but use supplied value directly as significant.
+         *
+         * i.e. 7111 -> 7.111E+0
+         *
+         * @param int Int value to conver
+         * @return BigDecimal representing input
+         */
+        override fun fromUInt(uInt: UInt): BigDecimal {
+            return fromUInt(uInt,null)
+        }
+
+        /**
+         * Convert a Short into a BigDecimal, but use supplied value directly as significant.
+         *
+         * i.e. 7111 -> 7.111E+0
+         *
+         * @param short Short value to conver
+         * @return BigDecimal representing input
+         */
+        override fun fromUShort(uShort: UShort): BigDecimal {
+            return fromUShort(uShort, null)
+        }
+
+        /**
+         * Convert a Short into a BigDecimal, but use supplied value directly as significant.
+         *
+         * i.e. 7111 -> 7.111E+0
+         *
+         * @param short Short value to conver
+         * @return BigDecimal representing input
+         */
+        override fun fromUByte(uByte: UByte): BigDecimal {
+            return fromUByte(uByte, null)
+        }
+
+        /**
+         * Convert a Long into a BigDecimal
+         *
+         * i.e. 7111 -> 7.111E+3
+         *
+         * @param long Long value to conver
+         * @return BigDecimal representing input
+         */
+        override fun fromLong(long: Long): BigDecimal {
+            return fromLong(long, null)
+        }
+
+        /**
+         * Convert a Int into a BigDecimal
+         *
+         * i.e. 7111 -> 7.111E+3
+         *
+         * @param int Int value to conver
+         * @return BigDecimal representing input
+         */
+        override fun fromInt(int: Int): BigDecimal {
+            return fromInt(int, null)
+        }
+
+        /**
+         * Convert a Short into a BigDecimal, but use supplied value directly as significant.
+         *
+         * i.e. 7111 -> 7.111E+3
+         *
+         * @param short Short value to conver
+         * @return BigDecimal representing input
+         */
+        override fun fromShort(short: Short): BigDecimal {
+            return fromShort(short, null)
+        }
+
+        /**
+         * Convert a Short into a BigDecimal, but use supplied value directly as significant.
+         *
+         * i.e. 7111 -> 7.111E+0
+         *
+         * @param short Short value to conver
+         * @return BigDecimal representing input
+         */
+        override fun fromByte(byte: Byte): BigDecimal {
+            return fromByte(byte, null)
+        }
+
+        override fun parseString(string: String, base: Int): BigDecimal {
+            return parseStringWithMode(string, null)
+        }
 
         /**
          * Parse BigDecimal from a supplied string. The string can be in either of two different formats:
@@ -416,7 +584,7 @@ class BigDecimal private constructor(
          * @return Parsed string
          * @throws ArithmeticException if parsing fails
          */
-        fun parseString(floatingPointString: String, decimalMode: DecimalMode? = null): BigDecimal {
+        fun parseStringWithMode(floatingPointString: String, decimalMode: DecimalMode? = null): BigDecimal {
             if (floatingPointString.isEmpty()) {
                 return ZERO
             }
@@ -545,17 +713,27 @@ class BigDecimal private constructor(
                     }
                 } else {
                     val significand = BigInteger.parseString(floatingPointString, 10)
-                    return BigDecimal(significand, BigInteger.fromLong(significand.numberOfDecimalDigits() - 1), decimalMode)
+                    return BigDecimal(
+                        significand,
+                        BigInteger.fromLong(significand.numberOfDecimalDigits() - 1),
+                        decimalMode
+                    )
                 }
             }
 
         }
 
-        private fun resolveDecimalMode(firstDecimalMode: DecimalMode?, secondDecimalMode : DecimalMode?, suppliedDecimalMode: DecimalMode?) : DecimalMode {
+        private fun resolveDecimalMode(
+            firstDecimalMode: DecimalMode?,
+            secondDecimalMode: DecimalMode?,
+            suppliedDecimalMode: DecimalMode?
+        ): DecimalMode {
             return if (suppliedDecimalMode != null) {
                 suppliedDecimalMode
             } else {
-                if (firstDecimalMode == null && secondDecimalMode == null) { return DecimalMode() }
+                if (firstDecimalMode == null && secondDecimalMode == null) {
+                    return DecimalMode()
+                }
                 if (firstDecimalMode == null && secondDecimalMode != null) {
                     return secondDecimalMode
                 }
@@ -575,16 +753,30 @@ class BigDecimal private constructor(
         }
     }
 
+    override fun getCreator(): BigNumber.Creator<BigDecimal> = BigDecimal
+    override fun getInstance(): BigDecimal = this
+
     val isExponentLong = exponent.numberOfWords == 0
     val longExponent = exponent.magnitude[0]
 
+
     /**
-     * Add two BigDecimal and return result in a new instance of BigDecimal
+     * Add two BigDecimal and return result in a new instance of BigDecimal. Default decimal mode will be used.
      *
      * @param other BigDecimal (addend)
      * @return BigDecimal containing result of the operation
      */
-    fun addition(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
+    override fun add(other: BigDecimal): BigDecimal {
+        return add(other, null)
+    }
+
+    /**
+     * Add two BigDecimal and return result in a new instance of BigDecimal.
+     *
+     * @param other BigDecimal (addend)
+     * @return BigDecimal containing result of the operation
+     */
+    fun add(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
         val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
         val (first, second, _) = bringSignificandToSameExponent(this, other)
         //Temporary way to detect a carry happened, proper solution is to add
@@ -604,13 +796,25 @@ class BigDecimal private constructor(
 
         return roundOrDont(newSignificand, newExponent, resolvedDecimalMode)
     }
+
+    /**
+     * Subtract two BigDecimal and return result in a new instance of BigDecimal.
+     * Default decimal mode will be used
+     *
+     * @param other BigDecimal (subtrahend)
+     * @return BigDecimal containing result of the operation
+     */
+    override fun subtract(other: BigDecimal): BigDecimal {
+        return subtract(other, null)
+    }
+
     /**
      * Subtract two BigDecimal and return result in a new instance of BigDecimal
      *
      * @param other BigDecimal (subtrahend)
      * @return BigDecimal containing result of the operation
      */
-    fun subtraction(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
+    fun subtract(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
         val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
         val (first, second, _) = bringSignificandToSameExponent(this, other)
 
@@ -634,11 +838,21 @@ class BigDecimal private constructor(
 
     /**
      * Multiply two BigDecimal and return result in a new instance of BigDecimal
+     * Default decimal mode will be used
+     * @param other BigDecimal (multiplicand)
+     * @return BigDecimal containing result of the operation
+     */
+    override fun multiply(other: BigDecimal): BigDecimal {
+        return multiply(other, null)
+    }
+
+    /**
+     * Multiply two BigDecimal and return result in a new instance of BigDecimal
      *
      * @param other BigDecimal (multiplicand)
      * @return BigDecimal containing result of the operation
      */
-    fun multiplication(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
+    fun multiply(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
         val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
         //Temporary way to detect a carry happened, proper solution is to add
         //methods that return information about carry in arithmetic classes, this way it's going
@@ -655,13 +869,18 @@ class BigDecimal private constructor(
         return roundOrDont(newSignificand, newExponent, resolvedDecimalMode)
 
     }
+
+    override fun divide(other : BigDecimal) : BigDecimal {
+        return divide(other, null)
+    }
+
     /**
      * Divide two BigDecimal and return result in a new instance of BigDecimal
      *
      * @param other BigDecimal (divisor)
      * @return BigDecimal containing result of the operation
      */
-    fun div(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
+    fun divide(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
         val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
         var newExponent = this.exponent - other.exponent - 1
 
@@ -694,27 +913,43 @@ class BigDecimal private constructor(
             resolvedDecimalMode
         )
 
-//        var newExponent = this.exponent - other.exponent
-//
-//        var divRem = this.significand divrem other.significand
-//        var result = divRem.quotient
-//        if (result == BigInteger.ZERO) {
-//            newExponent--
-//        }
-//        var counter = 0
-//        while (divRem.remainder != BigInteger.ZERO) {
-//            divRem = (divRem.remainder * 10) divrem other.significand
-//            counter++
-//            //Until rounding and decimalPrecision is fully implemented
-//            if (counter == 100) {
-//                break
-//            }
-//            result = result * 10 + divRem.quotient
-//        }
-//        return roundOrDont(result, newExponent, decimalMode)
+    }
+
+    override fun remainder(other: BigDecimal): BigDecimal {
+        TODO()
+    }
+
+    override fun divideAndRemainder(other: BigDecimal): Pair<BigDecimal, BigDecimal> {
+        TODO("not implemented yet")
+    }
+
+    override fun isZero(): Boolean {
+        return significand.isZero()
+    }
+
+    override fun pow(exponent: BigDecimal): BigDecimal {
+        TODO()
+    }
+
+    override fun pow(exponent: Int): BigDecimal {
+        TODO("not implemented yet")
+    }
+
+    /**
+     * Returns the number of digits representing this number
+     * i.e. 12.345 will return 5
+     */
+    override fun numberOfDecimalDigits(): Long {
+        return significand.numberOfDecimalDigits()
     }
 
 
+    override fun toString(base: Int): String {
+        if (base != 10) {
+            throw RuntimeException("BigDecimal in base other than 10 is not supported yet")
+        }
+        return toString()
+    }
 
     //TODO
     private fun integerDiv(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
@@ -745,30 +980,30 @@ class BigDecimal private constructor(
         )
     }
 
-    operator fun plus(other: BigDecimal): BigDecimal {
-        return this.addition(other, DecimalMode())
+    override operator fun plus(other: BigDecimal): BigDecimal {
+        return this.add(other, null)
     }
 
-    operator fun minus(other: BigDecimal): BigDecimal {
-        return this.subtraction(other, DecimalMode())
+    override operator fun minus(other: BigDecimal): BigDecimal {
+        return this.subtract(other, null)
     }
 
-    operator fun times(other: BigDecimal): BigDecimal {
-        return this.multiplication(other, DecimalMode())
+    override operator fun times(other: BigDecimal): BigDecimal {
+        return this.multiply(other, null)
     }
 
-    operator fun div(other: BigDecimal): BigDecimal {
-        return this.div(other, DecimalMode())
+    override operator fun div(other: BigDecimal): BigDecimal {
+        return this.divide(other, null)
     }
 
-    operator fun rem(other: BigDecimal): BigDecimal {
-        return this.rem(other, DecimalMode())
+    override operator fun rem(other: BigDecimal): BigDecimal {
+        return this.rem(other, null)
     }
 
     /**
      * Returns a new negated instance
      */
-    fun unaryMinus(): BigDecimal {
+    override fun unaryMinus(): BigDecimal {
         return BigDecimal(significand.negate(), exponent)
     }
 
@@ -789,21 +1024,21 @@ class BigDecimal private constructor(
     /**
      * Return Absolute value
      */
-    fun abs(): BigDecimal {
+    override fun abs(): BigDecimal {
         return BigDecimal(significand.abs(), exponent)
     }
 
     /**
      * Negate this BigDecimal
      */
-    fun negate(): BigDecimal {
+    override fun negate(): BigDecimal {
         return BigDecimal(significand.negate(), exponent)
     }
 
     /**
      * Exponentiate this BigDecimal by some exponent
      */
-    fun pow(powerExponent: Long): BigDecimal {
+    override fun pow(powerExponent: Long): BigDecimal {
         return BigDecimal(significand, exponent * powerExponent)
     }
 
@@ -811,7 +1046,7 @@ class BigDecimal private constructor(
      * Signum function
      * @return Result of signum function for this BigDecimal (-1 negative, 0 zero, 1 positive)
      */
-    fun signum() : Int = significand.signum()
+    override fun signum(): Int = significand.signum()
 
     /**
      * Round using specific [DecimalMode] and return rounded instance
@@ -820,7 +1055,7 @@ class BigDecimal private constructor(
         if (decimalMode == null) {
             return this
         }
-        if (decimalMode == DecimalMode()) {
+        if (decimalMode == null) {
             return this
         }
         return Companion.round(this.significand, this.exponent, decimalMode)
@@ -891,43 +1126,10 @@ class BigDecimal private constructor(
         }
 
 
-//
-//
-//        val firstDigits = first.significand.numberOfDecimalDigits()
-//        val secondDigits = second.significand.numberOfDecimalDigits()
-//        val firstExponent = first.exponent
-//        val secondExponent = second.exponent
-//
-//        val firstMove = firstDigits  - 1
-//        val secondMove = secondDigits - 1
-//
-//        val firstFreeOfRadix =
-//
-//
-//        return when {
-//            firstExponent > secondExponent -> {
-//                val exponentDifference = firstExponent - secondExponent + secondMove - firstMove
-//
-//                val preparedFirst = first.significand * 10.toBigInteger().pow(exponentDifference)
-//                return Triple(preparedFirst, second.significand, firstExponent)
-//            }
-//            firstExponent < secondExponent -> {
-//                val exponentDifference = secondExponent - firstExponent + firstMove - secondMove
-//                val preparedSecond = second.significand * 10.toBigInteger().pow(exponentDifference)
-//                return Triple(first.significand, preparedSecond, secondExponent)
-//            }
-//            firstExponent == secondExponent -> {
-//                return Triple(first.significand, second.significand, firstExponent)
-//            }
-//            else -> {
-//                throw RuntimeException("Invalid comparison state BigInteger: $firstExponent, $secondExponent")
-//            }
-//        }
-
     }
 
     /**
-     * Compare to ther BigDecimal
+     * Compare to other BigDecimal
      */
     fun compare(other: BigDecimal): Int {
         if (exponent == other.exponent) {
@@ -1061,123 +1263,5 @@ class BigDecimal private constructor(
         return prepared.dropLastWhile { it == '0' }
 
     }
-
-
-//
-//
-// ----------------- Interop with basic types ----------------------
-//
-//
-
-
-// ------------- Addition -----------
-
-
-    operator fun plus(int: Int): BigDecimal {
-        return this.plus(BigDecimal.fromIntAsSignificand(int))
-    }
-
-
-    operator fun plus(long: Long): BigDecimal {
-        return this.plus(BigDecimal.fromLongAsSignificand(long))
-    }
-
-
-    operator fun plus(short: Short): BigDecimal {
-        return this.plus(BigDecimal.fromShortAsSignificand(short))
-    }
-
-
-    operator fun plus(byte: Byte): BigDecimal {
-        return this.plus(BigDecimal.fromByteAsSignificand(byte))
-    }
-
-// ------------- Multiplication -----------
-
-
-    operator fun times(int: Int): BigDecimal {
-        return this.multiplication(BigDecimal.fromIntAsSignificand(int))
-    }
-
-
-    operator fun times(long: Long): BigDecimal {
-        return this.multiplication(BigDecimal.fromLongAsSignificand(long))
-    }
-
-
-    operator fun times(short: Short): BigDecimal {
-        return this.multiplication(BigDecimal.fromShortAsSignificand(short))
-    }
-
-
-    operator fun times(byte: Byte): BigDecimal {
-        return this.multiplication(BigDecimal.fromByteAsSignificand(byte))
-    }
-
-
-// ------------- Subtraction -----------
-
-
-    operator fun minus(int: Int): BigDecimal {
-        return this.minus(BigDecimal.fromIntAsSignificand(int))
-    }
-
-
-    operator fun minus(long: Long): BigDecimal {
-        return this.minus(BigDecimal.fromLongAsSignificand(long))
-    }
-
-
-    operator fun minus(short: Short): BigDecimal {
-        return this.minus(BigDecimal.fromShortAsSignificand(short))
-    }
-
-
-    operator fun minus(byte: Byte): BigDecimal {
-        return this.minus(BigDecimal.fromByteAsSignificand(byte))
-    }
-
-// ------------- Division -----------
-
-
-    operator fun div(int: Int): BigDecimal {
-        return this.div(BigDecimal.fromIntAsSignificand(int))
-    }
-
-
-    operator fun div(long: Long): BigDecimal {
-        return this.div(BigDecimal.fromLongAsSignificand(long))
-    }
-
-
-    operator fun div(short: Short): BigDecimal {
-        return this.div(BigDecimal.fromShortAsSignificand(short))
-    }
-
-
-    operator fun div(byte: Byte): BigDecimal {
-        return this.div(BigDecimal.fromByteAsSignificand(byte))
-    }
-
-
-    operator fun rem(int: Int): BigDecimal {
-        return this.rem(BigDecimal.fromIntAsSignificand(int))
-    }
-
-
-    operator fun rem(long: Long): BigDecimal {
-        return this.rem(BigDecimal.fromLongAsSignificand(long))
-    }
-
-
-    operator fun rem(short: Short): BigDecimal {
-        return this.rem(BigDecimal.fromShortAsSignificand(short))
-    }
-
-
-    operator fun rem(byte: Byte): BigDecimal {
-        return this.rem(BigDecimal.fromByteAsSignificand(byte))
-    }
-
 
 }

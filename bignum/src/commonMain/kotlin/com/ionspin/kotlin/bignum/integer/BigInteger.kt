@@ -19,8 +19,8 @@ package com.ionspin.kotlin.bignum.integer
 
 import com.ionspin.kotlin.bignum.BigNumber
 import com.ionspin.kotlin.bignum.BitwiseCapable
+import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import kotlin.math.ceil
-import kotlin.math.floor
 import kotlin.math.log10
 
 
@@ -56,13 +56,23 @@ enum class Sign {
  * Based on unsigned arrays, currently limited to [Int.MAX_VALUE] words.
  */
 @ExperimentalUnsignedTypes
-class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : BigNumber<BigInteger>, BitwiseCapable<BigInteger>, Comparable<Any> {
+class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : BigNumber<BigInteger>,
+    CommonBigNumberOperations<BigInteger>,
+    BitwiseCapable<BigInteger>, Comparable<Any> {
 
-    constructor(long : Long) : this(arithmetic.fromLong(long), determinSignFromNumber(long))
-    constructor(int : Int) : this(arithmetic.fromInt(int), determinSignFromNumber(int))
-    constructor(short : Short) : this(arithmetic.fromShort(short), determinSignFromNumber(short))
-    constructor(byte : Byte) : this(arithmetic.fromByte(byte), determinSignFromNumber(byte))
 
+    constructor(long: Long) : this(arithmetic.fromLong(long), determinSignFromNumber(long))
+    constructor(int: Int) : this(arithmetic.fromInt(int), determinSignFromNumber(int))
+    constructor(short: Short) : this(arithmetic.fromShort(short), determinSignFromNumber(short))
+    constructor(byte: Byte) : this(arithmetic.fromByte(byte), determinSignFromNumber(byte))
+
+    override fun getCreator(): BigNumber.Creator<BigInteger> {
+        return BigInteger
+    }
+
+    override fun getInstance(): BigInteger {
+        return this
+    }
 
     @ExperimentalUnsignedTypes
     companion object : BigNumber.Creator<BigInteger>, BigNumber.Util<BigInteger> {
@@ -302,21 +312,14 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Big
     }
 
 
-
     /**
      * D1Balanced reciprocal
      */
-    private fun d1reciprocalRecursive() : BigInteger {
+    private fun d1reciprocalRecursive(): BigInteger {
         return BigInteger(arithmetic.reciprocal(this.magnitude).first, sign)
 
 
     }
-
-    private fun d1ReciprocalIterative() : BigInteger {
-        TODO()
-    }
-
-
 
     fun sqrt(): SqareRootAndRemainder {
         TODO()
@@ -425,32 +428,13 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Big
 
     override operator fun unaryMinus(): BigInteger = negate()
 
-    override operator fun plus(other: BigInteger): BigInteger {
-        return add(other)
-    }
-
-    override operator fun minus(other: BigInteger): BigInteger {
-        return subtract(other)
-    }
-
-    override operator fun times(other: BigInteger): BigInteger {
-        return multiply(other)
-    }
-
-    override operator fun div(other: BigInteger): BigInteger {
-        return divide(other)
-    }
-
-    override operator fun rem(other: BigInteger): BigInteger {
-        return remainder(other)
-    }
 
     operator fun dec(): BigInteger {
-        return this - 1
+        return this - ONE
     }
 
     operator fun inc(): BigInteger {
-        return this + 1
+        return this + ONE
     }
 
     infix fun divrem(other: BigInteger): QuotientAndRemainder {
@@ -483,10 +467,10 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Big
     override fun compareTo(other: Any): Int {
         return when (other) {
             is BigInteger -> compare(other)
-            is Long -> compare(BigInteger.fromLong(other))
-            is Int -> compare(BigInteger.fromInt(other))
-            is Short -> compare(BigInteger.fromShort(other))
-            is Byte -> compare(BigInteger.fromByte(other))
+            is Long -> compare(fromLong(other))
+            is Int -> compare(fromInt(other))
+            is Short -> compare(fromShort(other))
+            is Byte -> compare(fromByte(other))
             else -> throw RuntimeException("Invalid comparison type for BigInteger: ${other::class.simpleName}")
         }
 
@@ -495,10 +479,10 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Big
     override fun equals(other: Any?): Boolean {
         val comparison = when (other) {
             is BigInteger -> compare(other)
-            is Long -> compare(BigInteger.fromLong(other))
-            is Int -> compare(BigInteger.fromInt(other))
-            is Short -> compare(BigInteger.fromShort(other))
-            is Byte -> compare(BigInteger.fromByte(other))
+            is Long -> compare(fromLong(other))
+            is Int -> compare(fromInt(other))
+            is Short -> compare(fromShort(other))
+            is Byte -> compare(fromByte(other))
             else -> -1
         }
         return comparison == 0
@@ -532,60 +516,8 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Big
 
     data class SqareRootAndRemainder(val squareRoot: BigInteger, val remainder: BigInteger)
 
-    //
-    //
-    // ----------------- Interop with basic types ----------------------
-    //
-    //
-
-
-    // ------------- Addition -----------
-
-
-    override operator fun plus(int: Int): BigInteger {
-        return this.plus(BigInteger.fromInt(int))
-    }
-
-
-    override operator fun plus(long: Long): BigInteger {
-        return this.plus(BigInteger.fromLong(long))
-    }
-
-
-    override operator fun plus(short: Short): BigInteger {
-        return this.plus(BigInteger.fromShort(short))
-    }
-
-
-    override operator fun plus(byte: Byte): BigInteger {
-        return this.plus(BigInteger.fromByte(byte))
-    }
-
-    // ------------- Multiplication -----------
-
-
-    override operator fun times(int: Int): BigInteger {
-        return this.multiply(BigInteger.fromInt(int))
-    }
-
-
-    override operator fun times(long: Long): BigInteger {
-        return this.multiply(BigInteger.fromLong(long))
-    }
-
-
-    override operator fun times(short: Short): BigInteger {
-        return this.multiply(BigInteger.fromShort(short))
-    }
-
-
-    override operator fun times(byte: Byte): BigInteger {
-        return this.multiply(BigInteger.fromByte(byte))
-    }
-
-
     //TODO eh
-    override operator fun times(char: Char): String {
+    operator fun times(char: Char): String {
         if (this < 0) {
             throw RuntimeException("Char cannot be multiplied with negative number")
         }
@@ -598,68 +530,5 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Big
         return stringBuilder.toString()
     }
 
-    // ------------- Subtraction -----------
-
-
-    override operator fun minus(int: Int): BigInteger {
-        return this.minus(BigInteger.fromInt(int))
-    }
-
-
-    override operator fun minus(long: Long): BigInteger {
-        return this.minus(BigInteger.fromLong(long))
-    }
-
-
-    override operator fun minus(short: Short): BigInteger {
-        return this.minus(BigInteger.fromShort(short))
-    }
-
-
-    override operator fun minus(byte: Byte): BigInteger {
-        return this.minus(BigInteger.fromByte(byte))
-    }
-
-    // ------------- Division -----------
-
-
-    override operator fun div(int: Int): BigInteger {
-        return this.div(BigInteger.fromInt(int))
-    }
-
-
-    override operator fun div(long: Long): BigInteger {
-        return this.div(BigInteger.fromLong(long))
-    }
-
-
-    override operator fun div(short: Short): BigInteger {
-        return this.div(BigInteger.fromShort(short))
-    }
-
-
-    override operator fun div(byte: Byte): BigInteger {
-        return this.div(BigInteger.fromByte(byte))
-    }
-
-
-    override operator fun rem(int: Int): BigInteger {
-        return this.rem(BigInteger.fromInt(int))
-    }
-
-
-    override operator fun rem(long: Long): BigInteger {
-        return this.rem(BigInteger.fromLong(long))
-    }
-
-
-    override operator fun rem(short: Short): BigInteger {
-        return this.rem(BigInteger.fromShort(short))
-    }
-
-
-    override operator fun rem(byte: Byte): BigInteger {
-        return this.rem(BigInteger.fromByte(byte))
-    }
 
 }

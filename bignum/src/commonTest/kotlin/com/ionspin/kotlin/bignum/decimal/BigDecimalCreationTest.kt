@@ -17,7 +17,6 @@
 
 package com.ionspin.kotlin.bignum.decimal
 
-import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -32,37 +31,37 @@ class BigDecimalCreationTest {
     @Test
     fun testExpandedParsing() {
         assertTrue {
-            val a = BigDecimal.parseString("1.23")
+            val a = BigDecimal.parseStringWithMode("1.23")
             val b = BigDecimal.fromIntWithExponent(123, 0)
             a == b
         }
 
         assertTrue {
-            val a = BigDecimal.parseString("-1.23")
+            val a = BigDecimal.parseStringWithMode("-1.23")
             val b = BigDecimal.fromIntWithExponent(-123, 0)
             a == b
         }
 
         assertTrue {
-            val a = BigDecimal.parseString("0.0123")
+            val a = BigDecimal.parseStringWithMode("0.0123")
             val b = BigDecimal.fromIntWithExponent(123, -2)
             a == b
         }
 
         assertTrue {
-            val a = BigDecimal.parseString("-0.0123")
+            val a = BigDecimal.parseStringWithMode("-0.0123")
             val b = BigDecimal.fromIntWithExponent(-123, -2)
             a == b
         }
 
         assertTrue {
-            val a = BigDecimal.parseString("123.123")
+            val a = BigDecimal.parseStringWithMode("123.123")
             val b = BigDecimal.fromIntWithExponent(123123, 2)
             a == b
         }
 
         assertTrue {
-            val a = BigDecimal.parseString("-123.123")
+            val a = BigDecimal.parseStringWithMode("-123.123")
             val b = BigDecimal.fromIntWithExponent(-123123, 2)
             a == b
         }
@@ -71,37 +70,37 @@ class BigDecimalCreationTest {
     @Test
     fun testSciNotationParsing() {
         assertTrue {
-            val a = BigDecimal.parseString("1.23E+0")
+            val a = BigDecimal.parseStringWithMode("1.23E+0")
             val b = BigDecimal.fromIntWithExponent(123, 0)
             a == b
         }
 
         assertTrue {
-            val a = BigDecimal.parseString("-1.23e+0")
+            val a = BigDecimal.parseStringWithMode("-1.23e+0")
             val b = BigDecimal.fromIntWithExponent(-123, 0)
             a == b
         }
 
         assertTrue {
-            val a = BigDecimal.parseString("1.23E-2")
+            val a = BigDecimal.parseStringWithMode("1.23E-2")
             val b = BigDecimal.fromIntWithExponent(123, -2)
             a == b
         }
 
         assertTrue {
-            val a = BigDecimal.parseString("-1.23E-2")
+            val a = BigDecimal.parseStringWithMode("-1.23E-2")
             val b = BigDecimal.fromIntWithExponent(-123, -2)
             a == b
         }
 
         assertTrue {
-            val a = BigDecimal.parseString("1.23123e+2")
+            val a = BigDecimal.parseStringWithMode("1.23123e+2")
             val b = BigDecimal.fromIntWithExponent(123123, 2)
             a == b
         }
 
         assertTrue {
-            val a = BigDecimal.parseString("-1.23123E+2")
+            val a = BigDecimal.parseStringWithMode("-1.23123E+2")
             val b = BigDecimal.fromIntWithExponent(-123123, 2)
             a == b
         }

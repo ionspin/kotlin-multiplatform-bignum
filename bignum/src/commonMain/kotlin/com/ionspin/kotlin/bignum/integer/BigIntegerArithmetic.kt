@@ -64,19 +64,19 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
 
     /**
      * Adds two big integers
-     * @return result of addition
+     * @return result of add
      */
     fun add(first: BackingCollectionType, second: BackingCollectionType): BackingCollectionType
 
     /**
      * Substracts two big integers
-     * @return result of subtraction
+     * @return result of subtract
      */
     fun substract(first: BackingCollectionType, second: BackingCollectionType): BackingCollectionType
 
     /**
      * Multiplies two big integers
-     * @return result of multiplication
+     * @return result of multiply
      */
     fun multiply(first: BackingCollectionType, second: BackingCollectionType): BackingCollectionType
 

@@ -26,7 +26,7 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
  * on 04-Apr-2019
  */
 
-interface BigNumber<BigType> {
+interface BigNumber<BigType> where BigType : BigNumber<BigType> {
 
     interface Creator<BigType> {
         fun parseString(string: String, base: Int = 10): BigType
@@ -45,11 +45,21 @@ interface BigNumber<BigType> {
         fun min(first: BigType, second: BigType): BigType
     }
 
+    fun getCreator() : Creator<BigType>
+
     fun add(other: BigType): BigType
     fun subtract(other: BigType): BigType
     fun multiply(other: BigType): BigType
     fun divide(other: BigType): BigType
+
+    /**
+     * Remainder of integer division operation
+     */
     fun remainder(other: BigType): BigType
+
+    /**
+     * Perform integer division and return quotient and remainder
+     */
     fun divideAndRemainder(other: BigType): Pair<BigType, BigType>
 
     fun isZero(): Boolean
@@ -104,19 +114,12 @@ interface BigNumber<BigType> {
     fun pow(exponent: Int): BigType
     fun signum(): Int
 
+    /**
+     * Return the number of decimal digits representing this number
+     */
     fun numberOfDecimalDigits() : Long
 
-    operator fun unaryMinus(): BigType
 
-    operator fun plus(other: BigType): BigType
-
-    operator fun minus(other: BigType): BigType
-
-    operator fun times(other: BigType): BigType
-
-    operator fun div(other: BigType): BigType
-
-    operator fun rem(other: BigType): BigType
 
     fun compareTo(other: Any): Int
     override fun equals(other: Any?): Boolean
@@ -124,49 +127,71 @@ interface BigNumber<BigType> {
     override fun toString(): String
     fun toString(base: Int): String
 
-    operator fun plus(int: Int): BigType
+    operator fun unaryMinus(): BigType
 
-    operator fun plus(long: Long): BigType
 
-    operator fun plus(short: Short): BigType
-
-    operator fun plus(byte: Byte): BigType
-
-    operator fun times(int: Int): BigType
-
-    operator fun times(long: Long): BigType
-
-    operator fun times(short: Short): BigType
-
-    operator fun times(byte: Byte): BigType
-    
-    operator fun times(char: Char) : String
-
-    operator fun minus(int: Int): BigType
-
-    operator fun minus(long: Long): BigType
-
-    operator fun minus(short: Short): BigType
-
-    operator fun minus(byte: Byte): BigType
-
-    operator fun div(int: Int): BigType
-
-    operator fun div(long: Long): BigType
-
-    operator fun div(short: Short): BigType
-
-    operator fun div(byte: Byte): BigType
-
-    operator fun rem(int: Int): BigType
-
-    operator fun rem(long: Long): BigType
-
-    operator fun rem(short: Short): BigType
-
-    operator fun rem(byte: Byte): BigType
 
 }
+
+internal interface CommonBigNumberOperations<BigType> where BigType : BigNumber<BigType> {
+
+    fun getCreator() : BigNumber.Creator<BigType>
+
+    fun getInstance() : BigType
+
+    operator fun plus(other: BigType): BigType = getInstance().add(other)
+
+    operator fun minus(other: BigType): BigType = getInstance().subtract(other)
+
+    operator fun times(other: BigType): BigType = getInstance().multiply(other)
+
+    operator fun div(other: BigType): BigType = getInstance().divide(other)
+
+    operator fun rem(other: BigType): BigType = getInstance().remainder(other)
+
+    operator fun plus(int: Int): BigType = getInstance().add(getCreator().fromInt(int))
+
+    operator fun plus(long: Long): BigType = getInstance().add(getCreator().fromLong(long))
+
+    operator fun plus(short: Short): BigType = getInstance().add(getCreator().fromShort(short))
+
+    operator fun plus(byte: Byte): BigType = getInstance().add(getCreator().fromByte(byte))
+
+    operator fun times(int: Int): BigType = getInstance().multiply(getCreator().fromInt(int))
+
+    operator fun times(long: Long): BigType = getInstance().multiply(getCreator().fromLong(long))
+
+    operator fun times(short: Short): BigType = getInstance().multiply(getCreator().fromShort(short))
+
+    operator fun times(byte: Byte): BigType = getInstance().multiply(getCreator().fromByte(byte))
+
+    operator fun minus(int: Int): BigType = getInstance().subtract(getCreator().fromInt(int))
+
+    operator fun minus(long: Long): BigType = getInstance().subtract(getCreator().fromLong(long))
+
+    operator fun minus(short: Short): BigType = getInstance().subtract(getCreator().fromShort(short))
+
+    operator fun minus(byte: Byte): BigType = getInstance().subtract(getCreator().fromByte(byte))
+
+    operator fun div(int: Int): BigType = getInstance().divide(getCreator().fromInt(int))
+
+    operator fun div(long: Long): BigType = getInstance().divide(getCreator().fromLong(long))
+
+    operator fun div(short: Short): BigType = getInstance().divide(getCreator().fromShort(short))
+
+    operator fun div(byte: Byte): BigType = getInstance().divide(getCreator().fromByte(byte))
+
+    operator fun rem(int: Int): BigType = getInstance().remainder(getCreator().fromInt(int))
+
+    operator fun rem(long: Long): BigType = getInstance().remainder(getCreator().fromLong(long))
+
+    operator fun rem(short: Short): BigType = getInstance().remainder(getCreator().fromShort(short))
+
+    operator fun rem(byte: Byte): BigType = getInstance().remainder(getCreator().fromByte(byte))
+
+}
+
+
 
 interface BitwiseCapable<BigType> {
 

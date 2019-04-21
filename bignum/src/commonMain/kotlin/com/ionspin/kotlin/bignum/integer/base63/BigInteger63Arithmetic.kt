@@ -43,6 +43,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     override val ONE: ULongArray = ulongArrayOf(1u)
     override val TEN: ULongArray = ulongArrayOf(10UL)
     override val basePowerOfTwo: Int = 63
+    val wordSizeInBits = 63
 
     val baseMask: ULong = 0x7FFFFFFFFFFFFFFFUL
 
@@ -312,7 +313,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
         // Lets throw this just to catch when we didn't prepare the operands correctly
         if (!firstIsLarger) {
-            throw RuntimeException("subtraction result less than zero")
+            throw RuntimeException("subtract result less than zero")
         }
         val (largerLength, smallerLength, largerData, smallerData) = if (firstIsLarger) {
             Quadruple(firstPrepared.size, secondPrepared.size, firstPrepared, secondPrepared)
@@ -632,7 +633,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             } else {
                 n
             }
-            val rhoPowered = ONE shl (corrected * 2 * 63)
+            val rhoPowered = ONE shl (corrected * 2 * wordSizeInBits)
             val x = rhoPowered / a
             val r = rhoPowered - (x * a)
             return Pair(x, r)
@@ -644,17 +645,17 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         var (xh, rh) = d1ReciprocalRecursiveWordVersion(ah)
         val s = al * xh
 //        val rhoL = (ONE shl l)
-        val rhRhoL = rh shl (l * 63)
+        val rhRhoL = rh shl (l * wordSizeInBits)
         val t = if (rhRhoL >= s) {
             rhRhoL - s
         } else {
             xh = xh - ONE
             (rhRhoL + a) - s
         }
-        val tm = t shr (h * 63)
-        val d = (xh * tm) shr (h * 63)
-        var x = (xh shl (l * 63)) + d
-        var r = (t shl (l * 63)) - a * d
+        val tm = t shr (h * wordSizeInBits)
+        val d = (xh * tm) shr (h * wordSizeInBits)
+        var x = (xh shl (l * wordSizeInBits)) + d
+        var r = (t shl (l * wordSizeInBits)) - a * d
         if (r >= a) {
             x = x + ONE
             r = r - a
@@ -775,12 +776,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
 
         }
-//        if (operand.size % 2 != 0) {
-//            val lastI = requiredLength - 1 + skipWordCount
-//            result[lastI] =
-//                (operand[(lastI * 2) - 1].toULong() shr (32 - lastI)) or (operand[(lastI * 2)].toULong() shl lastI)
-//        }
-//        result[requiredLength - 1] = (operand[operand.size - 1].toULong() shl ((operand.size - 1) / 2)) or (operand[operand.size - 2].toULong() shr (32 - (operand.size - 1)/2))
+
         return result
     }
 
@@ -788,13 +784,13 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return baseDivide(first, second)
     }
 
-    fun reciprocalDivision(first: ULongArray, second: ULongArray): Pair<ULongArray, ULongArray> {
+    internal fun reciprocalDivision(first: ULongArray, second: ULongArray): Pair<ULongArray, ULongArray> {
         val shift = if (second.size == 1) {
             1
         } else {
             second.size - 1
         }
-        val precisionShift = (first.size - second.size) * 2 * 63
+        val precisionShift = (first.size - second.size) * 2 * wordSizeInBits
         val secondHighPrecision = second shl precisionShift
 
         val secondReciprocalWithRemainder = d1ReciprocalRecursiveWordVersion(secondHighPrecision)
@@ -820,7 +816,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
                 }
             }
         }
-        val result = (product shr (shift * 2 * 63)) shr precisionShift
+        val result = (product shr (shift * 2 * wordSizeInBits)) shr precisionShift
         val remainder = first - (result * second)
         return Pair(result, remainder)
     }

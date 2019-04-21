@@ -285,7 +285,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
 
         // Lets throw this just to catch when we didn't prepare the operands correctly
         if (!firstIsLarger) {
-            throw RuntimeException("subtraction result less than zero")
+            throw RuntimeException("subtract result less than zero")
         }
         val (largerLength, smallerLength, largerData, smallerData) = if (firstIsLarger) {
             Quadruple(firstPrepared.size, secondPrepared.size, firstPrepared, secondPrepared)

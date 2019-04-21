@@ -33,10 +33,12 @@ import kotlin.math.floor
 @ExperimentalUnsignedTypes
 internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     val baseMask = 0xFFFFFFFFUL
+    val baseMaskInt = 0xFFFFFFFFU
     val overflowMask = 0x100000000U
     val lowerMask = 0xFFFFUL
     val base: UInt = 0xFFFFFFFFU
     override val basePowerOfTwo = 32
+    val wordSizeInBits = 32
 
     override val ZERO = UIntArray(0)
     override val ONE = UIntArray(1) { 1U }
@@ -159,7 +161,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
 
         if (shiftBits == 0) {
-            operand.copyOfRange(operand.size - wordsToDiscard, operand.size)
+            return operand.copyOfRange(wordsToDiscard, operand.size)
         }
 
         if (operand.size > 1 && operand.size - wordsToDiscard == 1) {
@@ -486,40 +488,48 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return Pair(removeLeadingZeroes(quotient), denormRemainder)
     }
 
-    fun baseReciprocal(unnormalized: UIntArray, precision: Int): UIntArray {
-        val (operand, _) = normalize(
-            unnormalized
-        )
-        val operandSize = operand.size
-        if (operandSize <= 2) {
-            return (((uintArrayOf(1U) shl (2 * basePowerOfTwo)) / operand) - 1U)
-        }
-
-        TODO("Soon")
-
-
-    }
-
-    fun testReciprocal(operand: UIntArray): UIntArray {
-        val (normalizedOperand, normalizationShift) = normalize(operand)
-        val base2n = 0xFFFFFFFFFFFFFFFFUL
-        val base2nLong = base2n.toLong()
-        val base2nDouble = base2nLong.toDouble()
-        if (operand.size <= 2) {
-            val resultLong = if (operand.size == 2) {
-                ceil(baseMask.shl(1).toLong().toDouble() / (normalizedOperand[1].toLong().shl(32).toDouble() + normalizedOperand[0].toLong().toDouble())).toLong()
+    fun d1ReciprocalRecursiveWordVersion(a: UIntArray): Pair<UIntArray, UIntArray> {
+        val n = a.size - 1
+        if (n <= 2) {
+            val corrected = if (n == 0) {
+                1
             } else {
-                ceil(baseMask.shl(1).toLong().toDouble() / normalizedOperand[0].toLong().toDouble()).toLong()
+                n
             }
-            val high = (resultLong.shr(32).toULong() and baseMask).toUInt()
-            val low = (resultLong.toULong() and baseMask).toUInt()
-            val result = denormalize(uintArrayOf(low, high), normalizationShift)
-            return result
+            val rhoPowered = ONE shl (corrected * 2 * wordSizeInBits)
+            val x = rhoPowered / a
+            val r = rhoPowered - (x * a)
+            return Pair(x, r)
         }
-
-
-        TODO()
+        val l = floor((n - 1).toDouble() / 2).toInt()
+        val h = n - l
+        val ah = a.copyOfRange(a.size - h - 1, a.size)
+        val al = a.copyOfRange(0, l)
+        var (xh, rh) = d1ReciprocalRecursiveWordVersion(ah)
+        val s = al * xh
+//        val rhoL = (ONE shl l)
+        val rhRhoL = rh shl (l * wordSizeInBits)
+        val t = if (rhRhoL >= s) {
+            rhRhoL - s
+        } else {
+            xh = xh - ONE
+            (rhRhoL + a) - s
+        }
+        val tm = t shr (h * wordSizeInBits)
+        val d = (xh * tm) shr (h * wordSizeInBits)
+        var x = (xh shl (l * wordSizeInBits)) + d
+        var r = (t shl (l * wordSizeInBits)) - a * d
+        if (r >= a) {
+            x = x + ONE
+            r = r - a
+            if (r >= a) {
+                x = x + ONE
+                r = r - a
+            }
+        }
+        return Pair(x, r)
     }
+
 
     fun reciprocalSingleWord(operand: UInt): Pair<UIntArray, Int> {
         val bitLength = bitLength(operand)
@@ -579,16 +589,43 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
     override fun reciprocal(operand: UIntArray): Pair<UIntArray, UIntArray> {
-        TODO("not implemented yet")
+        return d1ReciprocalRecursiveWordVersion(operand)
     }
 
-    fun reciprocalDivide(dividend: UIntArray, divisor: UIntArray): Pair<UIntArray, UIntArray> {
-        val divisorReciprocalAndShift = reciprocal2(divisor)
-        val quotient = (dividend * divisorReciprocalAndShift.first) shr divisorReciprocalAndShift.second
-        val remainder = dividend - (divisor * quotient)
-        return Pair(quotient, remainder)
+    internal fun reciprocalDivision(first: UIntArray, second: UIntArray): Pair<UIntArray, UIntArray> {
+        val reciprocalExtension = first.size - second.size
+        val precisionShift = (reciprocalExtension * 2 * wordSizeInBits)
+        val secondHighPrecision = second shl precisionShift
 
+        val secondReciprocalWithRemainder = d1ReciprocalRecursiveWordVersion(secondHighPrecision)
 
+        val secondReciprocal = secondReciprocalWithRemainder.first
+        var product = first * secondReciprocal
+        //TODO Proper rounding
+        if (product.compareTo(0U) == 0) {
+            return Pair(ZERO, first)
+        }
+        if (product.size == 1) {
+            if (product >= baseMaskInt - 1U) {
+                product = product + ONE
+            }
+        } else {
+            val importantWord = product[product.size - second.size]
+            if (importantWord >= baseMask) {
+                product = UIntArray(product.size) {
+                    when (it) {
+                        product.size - 1 -> product[product.size - 1] + 1U
+                        else -> 0U
+                    }
+                }
+            }
+        }
+
+        var numberOfWords = product.size - (secondReciprocal.size * 2) + reciprocalExtension * 2
+        if (numberOfWords == 0) { numberOfWords = 1 }
+        val result = product.copyOfRange(product.size - numberOfWords, product.size)
+        val remainder = first - (result * second)
+        return Pair(result, remainder)
     }
 
     override fun parseForBase(number: String, base: Int): UIntArray {

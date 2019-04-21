@@ -90,6 +90,17 @@ class BigInteger32JavaBitwiseTest {
 
     }
 
+    @Test
+    fun `Test shift right with specific values`() {
+        val a = intArrayOf(752029288,
+        -964625924,
+        479674580,
+        -1697013934,
+        -1956440078,
+        -1550357085).toUIntArray()
+        shiftRightSingleTest(128, number = a)
+    }
+
     fun shiftRightSingleTest(places : Int, number : UIntArray) {
         assertTrue ("Failed for $places and elements ${number.contentToString()}") {
             val result = BigInteger32Arithmetic.shiftRight(number, places)
