@@ -34,11 +34,12 @@ import kotlin.test.assertTrue
  * ugljesa.jovanovic@ionspin.com
  * on 22-Apr-2019
  */
+@ExperimentalUnsignedTypes
 class ModularBigIntegerDivisionTest {
     @Test
     fun testRandomModularMultiplication() {
         val seed = 1
-        var random = Random(seed)
+        val random = Random(seed)
         val jobList: MutableList<Job> = mutableListOf()
         for (i in 1..1000) {
             val aLength = random.nextInt(2, 500)

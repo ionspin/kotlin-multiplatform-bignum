@@ -21,7 +21,6 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.div
 import com.ionspin.kotlin.bignum.integer.util.toDigit
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
@@ -417,18 +416,18 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         return removeLeadingZeroes(listOf(lowResult and baseMask, highResult))
     }
 
-    override fun pow(operand: List<ULong>, exponent: Long): List<ULong> {
+    override fun pow(base: List<ULong>, exponent: Long): List<ULong> {
         if (exponent == 0L) {
             return ONE
         }
         if (exponent == 1L) {
-            return operand
+            return base
         }
-        if (operand.size == 1 && operand[0] == 10UL && exponent < powersOf10.size) {
+        if (base.size == 1 && base[0] == 10UL && exponent < powersOf10.size) {
             return powersOf10[exponent.toInt()]
         }
         return (0 until exponent).fold(ONE) { acc, _ ->
-            acc * operand
+            acc * base
         }
     }
 
@@ -496,7 +495,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         )
         val dividendSize = dividend.size
         val divisorSize = divisor.size
-        var wordPrecision = dividendSize - divisorSize
+        val wordPrecision = dividendSize - divisorSize
 
 
         var qjhat: List<ULong>

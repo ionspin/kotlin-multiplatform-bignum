@@ -25,11 +25,12 @@ import kotlinx.coroutines.Job
  * ugljesa.jovanovic@ionspin.com
  * on 20-Apr-2019
  */
+@ExperimentalUnsignedTypes
 class DivisionBenchmark {
 
 
-    fun divideUsingReciprocal(dividend : ULongArray, divisor : ULongArray, expectedQuotient : ULongArray, expectedRemainder : ULongArray) {
-        val result = BigInteger63Arithmetic.reciprocalDivision(dividend, divisor)
-    }
+//    fun divideUsingReciprocal(dividend : ULongArray, divisor : ULongArray, expectedQuotient : ULongArray, expectedRemainder : ULongArray) {
+//        val result = BigInteger63Arithmetic.reciprocalDivision(dividend, divisor)
+//    }
 
 }

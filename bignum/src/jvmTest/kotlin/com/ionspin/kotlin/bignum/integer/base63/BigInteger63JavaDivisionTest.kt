@@ -290,7 +290,7 @@ class BigInteger63JavaDivisionTest {
     @Test
     fun `Test random number of word divided using reciprocal division`() {
         val seed = 1
-        var random = Random(seed)
+        val random = Random(seed)
         val jobList: MutableList<Job> = mutableListOf()
         for (i in 1..100) {
 
@@ -343,7 +343,7 @@ class BigInteger63JavaDivisionTest {
         reciprocalDivisionSingleTest(a, b)
     }
 
-    fun reciprocalDivisionSingleTest(first: ULongArray, second: ULongArray) {
+    private fun reciprocalDivisionSingleTest(first: ULongArray, second: ULongArray) {
         assertTrue(
             "Failed on \nval a = ulongArrayOf(${first.joinToString(separator = ", ") { it.toString() + "UL" }})\n" +
                     "val b = ulongArrayOf(${second.joinToString(separator = ", ") { it.toString() + "UL" }})"
@@ -356,6 +356,7 @@ class BigInteger63JavaDivisionTest {
 
 }
 
+@ExperimentalUnsignedTypes
 class DivisionBenchmark {
 
     data class BenchmarkSample(
@@ -364,6 +365,7 @@ class DivisionBenchmark {
         val expectedQuotient: ULongArray,
         val expectedRemainder: ULongArray
     )
+    @Suppress("UnusedEquals")
     @Ignore("This should be run only when necessary")
     @Test
     fun runReciprocalVsBaseCaseBenchmark() {

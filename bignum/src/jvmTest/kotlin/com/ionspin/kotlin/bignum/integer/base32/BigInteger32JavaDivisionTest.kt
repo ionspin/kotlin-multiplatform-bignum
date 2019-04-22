@@ -15,6 +15,8 @@
  *
  */
 
+@file:Suppress("SimplifyBooleanWithConstants")
+
 package com.ionspin.kotlin.bignum.integer.base32
 
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
@@ -377,7 +379,8 @@ class BigInteger32JavaDivisionTest {
     }
 
 }
-@UseExperimental(ExperimentalUnsignedTypes::class)
+
+@ExperimentalUnsignedTypes
 class DivisionBenchmark {
 
     data class BenchmarkSample32Bit(val dividend : UIntArray, val divisor : UIntArray, val expectedQuotient : UIntArray, val expectedRemainder : UIntArray)

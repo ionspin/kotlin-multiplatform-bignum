@@ -22,6 +22,7 @@ package com.ionspin.kotlin.bignum.integer
  * ugljesa.jovanovic@ionspin.com
  * on 10-Mar-2019
  */
+@ExperimentalUnsignedTypes
 actual object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int> {
 
 
@@ -74,7 +75,7 @@ actual object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>
         TODO("not implemented yet")
     }
 
-    override fun pow(operand: IntArray, exponent: Long): IntArray {
+    override fun pow(base: IntArray, exponent: Long): IntArray {
         TODO("not implemented yet")
     }
 

@@ -195,6 +195,7 @@ class BigDecimalJvmTest {
     }
 
 
+    @Suppress("UNUSED_PARAMETER")
     fun singleAdditionTest(i: Int, first: BigDecimal, second: BigDecimal): Job {
         return GlobalScope.launch {
             assertTrue(
@@ -245,7 +246,7 @@ class BigDecimalJvmTest {
         }
     }
 
-
+    @Suppress("UNUSED_PARAMETER")
     fun singleSubtractionTest(i: Int, first: BigDecimal, second: BigDecimal): Job {
         return GlobalScope.launch {
             assertTrue(
@@ -312,7 +313,7 @@ class BigDecimalJvmTest {
             }
         }
     }
-
+    @Suppress("UNUSED_PARAMETER")
     fun singleMultiplicationTest(i: Int, first: BigDecimal, second: BigDecimal): Job {
         return GlobalScope.launch {
             assertTrue(
@@ -428,7 +429,7 @@ class BigDecimalJvmTest {
         }
     }
 
-    fun singleDivisionTest(first: BigDecimal, second: BigDecimal): Job {
+    private fun singleDivisionTest(first: BigDecimal, second: BigDecimal): Job {
         return GlobalScope.launch {
             assertTrue(
                 "Failed on \n" +
