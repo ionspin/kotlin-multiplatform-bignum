@@ -21,12 +21,6 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.compareTo
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.minus
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.plus
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.shl
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.shr
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.times
 import com.ionspin.kotlin.bignum.integer.util.toDigit
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
@@ -785,15 +779,23 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     internal fun reciprocalDivision(first: ULongArray, second: ULongArray): Pair<ULongArray, ULongArray> {
+        if (first.size < second.size) {
+            throw RuntimeException("Invalid division: ${first.size} words / ${second.size} words")
+        }
         val shift = if (second.size == 1) {
             1
         } else {
             second.size - 1
         }
-        val precisionShift = (first.size - second.size) * 2 * wordSizeInBits
-        val secondHighPrecision = second shl precisionShift
+        val precisionExtension = (first.size - second.size + 1)
+        val secondHigherPrecision = ULongArray(second.size + precisionExtension) {
+            when {
+                it >= precisionExtension -> second[it - precisionExtension]
+                else -> 0UL
+            }
+        }
 
-        val secondReciprocalWithRemainder = d1ReciprocalRecursiveWordVersion(secondHighPrecision)
+        val secondReciprocalWithRemainder = d1ReciprocalRecursiveWordVersion(secondHigherPrecision)
 
         val secondReciprocal = secondReciprocalWithRemainder.first
         var product = first * secondReciprocal
@@ -816,7 +818,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
                 }
             }
         }
-        val result = (product shr (shift * 2 * wordSizeInBits)) shr precisionShift
+
+        val result = product.copyOfRange(2 * shift + precisionExtension, product.size)
         val remainder = first - (result * second)
         return Pair(result, remainder)
     }

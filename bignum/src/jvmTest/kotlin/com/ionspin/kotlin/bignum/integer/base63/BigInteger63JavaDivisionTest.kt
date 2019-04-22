@@ -280,6 +280,37 @@ class BigInteger63JavaDivisionTest {
 
     }
 
+    @Test
+    fun `Test random number of word divided using reciprocal division`() {
+        val seed = 1
+        var random = Random(seed)
+        val jobList: MutableList<Job> = mutableListOf()
+        for (i in 1..Int.MAX_VALUE step 50001) {
+
+            val length = random.nextInt(2,5000)
+            val a = ULongArray(length) {
+                random.nextULong() shr 1
+            }
+            val divisorLength = random.nextInt(1, length)
+            val b = ULongArray(divisorLength) {
+                random.nextULong() shr 1
+            }
+            val job = GlobalScope.launch {
+                try {
+                    reciprocalDivisionSingleTest(a, b)
+                } catch (exception : Exception) {
+                    println("Failed on $length $divisorLength")
+                    exception.printStackTrace()
+                }
+            }
+
+        }
+        runBlocking {
+            jobList.forEach { it.join() }
+        }
+
+    }
+
 
     @Test
     fun testReciprocalDivision() {
@@ -289,8 +320,19 @@ class BigInteger63JavaDivisionTest {
 //        val b = ulongArrayOf(0UL, 0UL, 2UL, 0UL, 2UL)
 //        val a = ulongArrayOf(0UL, 0UL, 0UL, 4UL, 0UL, 4UL)
 //        val b = ulongArrayOf(2UL, 1UL, 2UL)
-        val a = ulongArrayOf(35526194523336114UL, 5792101143026746304UL, 5736945918018393883UL, 8794898263700565859UL)
-        val b = ulongArrayOf(6486747088144942085UL, 1710444079094491755UL)
+//        val a = ulongArrayOf(35526194523336114UL, 5792101143026746304UL, 5736945918018393883UL, 8794898263700565859UL)
+//        val b = ulongArrayOf(6486747088144942085UL, 1710444079094491755UL)
+        val seed = 1
+        val random = Random(1916)
+        val a = ULongArray(1374) {
+            random.nextULong() shr 1
+        }
+        val b = ULongArray(871) {
+            random.nextULong() shr 1
+        }
+
+
+
         reciprocalDivisionSingleTest(a, b)
     }
 
