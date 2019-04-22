@@ -38,6 +38,16 @@ class ModularBigInteger @ExperimentalUnsignedTypes constructor(
         CommonBigNumberOperations<ModularBigInteger>
 {
     companion object {
+        fun creatorForModulo(modulo: ULong) : BigNumber.Creator<ModularBigInteger> = creatorForModulo(BigInteger.fromULong(modulo))
+        fun creatorForModulo(modulo: UInt) : BigNumber.Creator<ModularBigInteger> = creatorForModulo(BigInteger.fromUInt(modulo))
+        fun creatorForModulo(modulo: UShort) : BigNumber.Creator<ModularBigInteger> = creatorForModulo(BigInteger.fromUShort(modulo))
+        fun creatorForModulo(modulo: UByte) : BigNumber.Creator<ModularBigInteger> = creatorForModulo(BigInteger.fromUByte(modulo))
+        fun creatorForModulo(modulo: Long) : BigNumber.Creator<ModularBigInteger> = creatorForModulo(BigInteger.fromLong(modulo))
+        fun creatorForModulo(modulo: Int) : BigNumber.Creator<ModularBigInteger> = creatorForModulo(BigInteger.fromInt(modulo))
+        fun creatorForModulo(modulo: Short) : BigNumber.Creator<ModularBigInteger> = creatorForModulo(BigInteger.fromShort(modulo))
+        fun creatorForModulo(modulo: Byte) : BigNumber.Creator<ModularBigInteger> = creatorForModulo(BigInteger.fromByte(modulo))
+
+
         fun creatorForModulo(modulo: BigInteger) : BigNumber.Creator<ModularBigInteger> {
             return object : BigNumber.Creator<ModularBigInteger> {
                 override fun fromBigInteger(bigInteger: BigInteger): ModularBigInteger {
@@ -109,17 +119,17 @@ class ModularBigInteger @ExperimentalUnsignedTypes constructor(
 
     override fun add(other: ModularBigInteger): ModularBigInteger {
         assertSameModulo(other)
-        return ModularBigInteger((residue + other.residue) / modulo, modulo, creator)
+        return ModularBigInteger((residue + other.residue) % modulo, modulo, creator)
     }
 
     override fun subtract(other: ModularBigInteger): ModularBigInteger {
         assertSameModulo(other)
-        return ModularBigInteger((residue - other.residue) / modulo, modulo, creator)
+        return ModularBigInteger((residue - other.residue) % modulo, modulo, creator)
     }
 
     override fun multiply(other: ModularBigInteger): ModularBigInteger {
         assertSameModulo(other)
-        return ModularBigInteger((residue * other.residue) / modulo, modulo, creator)
+        return ModularBigInteger((residue * other.residue) % modulo, modulo, creator)
     }
 
     override fun divide(other: ModularBigInteger): ModularBigInteger {
@@ -141,7 +151,7 @@ class ModularBigInteger @ExperimentalUnsignedTypes constructor(
         val quotientAndRemainder = this.residue divrem  other.residue
         val quotient = quotientAndRemainder.quotient % modulo
         val remainder = quotientAndRemainder.remainder % modulo
-        return Pair(ModularBigInteger(quotient, modulo, creator), ModularBigInteger(remainder, modulo, creator)
+        return Pair(ModularBigInteger(quotient, modulo, creator), ModularBigInteger(remainder, modulo, creator))
     }
 
     fun compare(other: ModularBigInteger): Int {

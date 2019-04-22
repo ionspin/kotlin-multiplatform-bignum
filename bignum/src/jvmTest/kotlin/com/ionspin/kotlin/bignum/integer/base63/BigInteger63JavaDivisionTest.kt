@@ -97,13 +97,15 @@ class BigInteger63JavaDivisionTest {
 
             val a = ulongArrayOf(random.nextULong() shr 1, random.nextULong() shr 1)
             val b = ulongArrayOf(random.nextULong() shr 1, random.nextULong() shr 1)
-            GlobalScope.launch {
-                if (BigInteger63Arithmetic.compare(a, b) > 0) {
-                    divisionSingleTest(a, b)
-                } else {
-                    divisionSingleTest(b, a)
+            jobList.add(
+                GlobalScope.launch {
+                    if (BigInteger63Arithmetic.compare(a, b) > 0) {
+                        divisionSingleTest(a, b)
+                    } else {
+                        divisionSingleTest(b, a)
+                    }
                 }
-            }
+            )
 
 
         }
@@ -117,6 +119,8 @@ class BigInteger63JavaDivisionTest {
     fun `Test four words divided by two words`() {
         val seed = 1
         val random = Random(seed)
+
+        val jobList: MutableList<Job> = mutableListOf()
         for (i in 1..Int.MAX_VALUE step 3001) {
 
             val a = ulongArrayOf(
@@ -126,21 +130,23 @@ class BigInteger63JavaDivisionTest {
                 random.nextULong() shr 1
             )
             val b = ulongArrayOf(random.nextULong() shr 1, random.nextULong() shr 1)
-            GlobalScope.launch {
-                try {
-                    if (BigInteger63Arithmetic.compare(a, b) > 0) {
-                        divisionSingleTest(a, b)
-                    } else {
-                        divisionSingleTest(b, a)
+            jobList.add(
+                GlobalScope.launch {
+                    try {
+                        if (BigInteger63Arithmetic.compare(a, b) > 0) {
+                            divisionSingleTest(a, b)
+                        } else {
+                            divisionSingleTest(b, a)
+                        }
+                    } catch (e: Throwable) {
+                        println(
+                            "Failed on ulongArrayOf(${a.joinToString(separator = ",") { it.toString() + "U" }}), " +
+                                    "ulongArrayOf(${b.joinToString(separator = ",") { it.toString() + "U" }})"
+                        )
+                        e.printStackTrace()
                     }
-                } catch (e: Throwable) {
-                    println(
-                        "Failed on ulongArrayOf(${a.joinToString(separator = ",") { it.toString() + "U" }}), " +
-                                "ulongArrayOf(${b.joinToString(separator = ",") { it.toString() + "U" }})"
-                    )
-                    e.printStackTrace()
                 }
-            }
+            )
 
         }
 
@@ -285,9 +291,9 @@ class BigInteger63JavaDivisionTest {
         val seed = 1
         var random = Random(seed)
         val jobList: MutableList<Job> = mutableListOf()
-        for (i in 1..Int.MAX_VALUE step 50001) {
+        for (i in 1..100) {
 
-            val length = random.nextInt(2,5000)
+            val length = random.nextInt(2, 5000)
             val a = ULongArray(length) {
                 random.nextULong() shr 1
             }
@@ -298,11 +304,11 @@ class BigInteger63JavaDivisionTest {
             val job = GlobalScope.launch {
                 try {
                     reciprocalDivisionSingleTest(a, b)
-                } catch (exception : Exception) {
+                } catch (exception: Exception) {
                     println("Failed on $length $divisorLength")
-                    exception.printStackTrace()
                 }
             }
+            jobList.add(job)
 
         }
         runBlocking {
@@ -351,7 +357,12 @@ class BigInteger63JavaDivisionTest {
 
 class DivisionBenchmark {
 
-    data class BenchmarkSample(val dividend : ULongArray, val divisor : ULongArray, val expectedQuotient : ULongArray, val expectedRemainder : ULongArray)
+    data class BenchmarkSample(
+        val dividend: ULongArray,
+        val divisor: ULongArray,
+        val expectedQuotient: ULongArray,
+        val expectedRemainder: ULongArray
+    )
 
     @Test
     fun runReciprocalVsBaseCaseBenchmark() {
@@ -375,11 +386,14 @@ class DivisionBenchmark {
                 }
                 val expectedQuotient = dividend.toJavaBigInteger() / divisor.toJavaBigInteger()
                 val expectedRemainder = dividend.toJavaBigInteger() % divisor.toJavaBigInteger()
-                sampleList.add(BenchmarkSample(
-                    dividend,
-                    divisor,
-                    BigInteger63Arithmetic.parseForBase(expectedQuotient.toString(10), 10),
-                    BigInteger63Arithmetic.parseForBase(expectedRemainder.toString(10), 10)))
+                sampleList.add(
+                    BenchmarkSample(
+                        dividend,
+                        divisor,
+                        BigInteger63Arithmetic.parseForBase(expectedQuotient.toString(10), 10),
+                        BigInteger63Arithmetic.parseForBase(expectedRemainder.toString(10), 10)
+                    )
+                )
                 println("Done $i")
             }
             jobList.add(job)
@@ -402,10 +416,9 @@ class DivisionBenchmark {
         1 == 1
 
 
-
     }
 
-    fun runReciprocalOnSampleList(sampleList : List<BenchmarkSample>) {
+    fun runReciprocalOnSampleList(sampleList: List<BenchmarkSample>) {
         val reciprocalStartTime = System.currentTimeMillis()
         sampleList.forEach {
             divideUsingReciprocal(it.dividend, it.divisor, it.expectedQuotient, it.expectedRemainder)
@@ -424,15 +437,24 @@ class DivisionBenchmark {
     }
 
 
-
-    fun divideUsingReciprocal(dividend : ULongArray, divisor : ULongArray, expectedQuotient : ULongArray, expectedRemainder : ULongArray) {
+    fun divideUsingReciprocal(
+        dividend: ULongArray,
+        divisor: ULongArray,
+        expectedQuotient: ULongArray,
+        expectedRemainder: ULongArray
+    ) {
         val result = BigInteger63Arithmetic.reciprocalDivision(dividend, divisor)
         assertTrue {
             result.first.contentEquals(expectedQuotient) && result.second.contentEquals(expectedRemainder)
         }
     }
 
-    fun divideUsingBaseDivide(dividend : ULongArray, divisor : ULongArray, expectedQuotient : ULongArray, expectedRemainder : ULongArray) {
+    fun divideUsingBaseDivide(
+        dividend: ULongArray,
+        divisor: ULongArray,
+        expectedQuotient: ULongArray,
+        expectedRemainder: ULongArray
+    ) {
         val result = BigInteger63Arithmetic.divide(dividend, divisor)
         assertTrue {
             result.first.contentEquals(expectedQuotient) && result.second.contentEquals(expectedRemainder)

@@ -493,7 +493,7 @@ class BigDecimal private constructor(
          * @return BigDecimal representing input
          */
         override fun fromBigInteger(bigInteger: BigInteger): BigDecimal {
-            Companion.fromBigInteger(bigInteger, null)
+            return fromBigInteger(bigInteger, null)
         }
 
         /**

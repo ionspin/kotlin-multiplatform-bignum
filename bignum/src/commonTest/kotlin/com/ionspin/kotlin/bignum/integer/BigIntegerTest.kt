@@ -154,4 +154,13 @@ BigIntegerTest {
         val res = a + b
     }
 
+    @Test
+    fun testModInverse() {
+        var a = BigInteger(11)
+        var aInverse = a.modInverse(5.toBigInteger())
+        assertTrue {
+            aInverse == BigInteger(1)
+        }
+    }
+
 }

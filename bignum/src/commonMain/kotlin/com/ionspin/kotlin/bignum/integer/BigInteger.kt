@@ -57,7 +57,7 @@ enum class Sign {
  * Based on unsigned arrays, currently limited to [Int.MAX_VALUE] words.
  */
 @ExperimentalUnsignedTypes
-class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : BigNumber<BigInteger>,
+class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : BigNumber<BigInteger>,
     CommonBigNumberOperations<BigInteger>,
     BitwiseCapable<BigInteger>, Comparable<Any> {
 
@@ -328,7 +328,24 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Big
     }
 
     fun gcd(other: BigInteger) {
-        TODO()
+
+    }
+
+    fun modInverse(modulo: BigInteger) : BigInteger {
+        //TODO check b prime to N
+        var u = ONE
+        var w = ZERO
+        var b = this
+        var c = modulo
+        while (c != ZERO) {
+            val (q,r) = b divrem c
+            b = c
+            c = r
+            val tmpU = u
+            u = w
+            w = tmpU - q*w
+        }
+        return u
     }
 
     fun compare(other: BigInteger): Int {
@@ -536,6 +553,10 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Big
         val creator = ModularBigInteger.creatorForModulo(modulo)
         return creator.fromBigInteger(this)
     }
+
+//    fun modularInverse(modulo : BigInteger) : BigInteger {
+//
+//    }
 
 
 }
