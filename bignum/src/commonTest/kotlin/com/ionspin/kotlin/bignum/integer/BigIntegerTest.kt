@@ -156,11 +156,25 @@ BigIntegerTest {
 
     @Test
     fun testModInverse() {
-        var a = BigInteger(11)
-        var aInverse = a.modInverse(5.toBigInteger())
+
         assertTrue {
+            var a = BigInteger(11)
+            var aInverse = a.modInverse(5.toBigInteger())
             aInverse == BigInteger(1)
         }
+        assertFailsWith<ArithmeticException> {
+            var a = BigInteger(10)
+            a.modInverse(5.toBigInteger())
+        }
+    }
+
+    @Test
+    fun testGcd() {
+        val a = 10.toBigInteger()
+        val b = 3.toBigInteger()
+        assertTrue { a.gcd(b) == 1.toBigInteger() }
+        var c = 6.toBigInteger()
+        assertTrue { a.gcd(c) == 2.toBigInteger() }
     }
 
 }

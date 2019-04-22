@@ -278,13 +278,17 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         if (other.isZero()) {
             throw ArithmeticException("Division by zero! $this / $other")
         }
-        val sign = if (this.sign != other.sign) {
+        var sign = if (this.sign != other.sign) {
             Sign.NEGATIVE
         } else {
             Sign.POSITIVE
         }
+        val result = arithmetic.divide(this.magnitude, other.magnitude).second
+        if (result == arithmetic.ZERO) {
+            sign = Sign.ZERO
+        }
 
-        return BigInteger(arithmetic.divide(this.magnitude, other.magnitude).second, sign)
+        return BigInteger(result, sign)
     }
 
     override fun divideAndRemainder(other: BigInteger): Pair<BigInteger, BigInteger> {
@@ -327,12 +331,25 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         TODO()
     }
 
-    fun gcd(other: BigInteger) {
+    fun gcd(other: BigInteger) : BigInteger {
+        return naiveGcd(other)
+    }
 
+    private fun naiveGcd(other : BigInteger) : BigInteger {
+        var u = this
+        var v = other
+        while (v != ZERO) {
+            val tmpU = u
+            u = v
+            v = tmpU % v
+        }
+        return u
     }
 
     fun modInverse(modulo: BigInteger) : BigInteger {
-        //TODO check b prime to N
+        if (gcd(modulo) != ONE) {
+            throw ArithmeticException("BigInteger is not invertible. This and modulo are not relatively prime (coprime)")
+        }
         var u = ONE
         var w = ZERO
         var b = this
