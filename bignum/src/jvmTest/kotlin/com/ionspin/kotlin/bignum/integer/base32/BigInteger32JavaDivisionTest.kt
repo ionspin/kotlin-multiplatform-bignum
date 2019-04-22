@@ -382,7 +382,7 @@ class DivisionBenchmark {
 
     data class BenchmarkSample32Bit(val dividend : UIntArray, val divisor : UIntArray, val expectedQuotient : UIntArray, val expectedRemainder : UIntArray)
 
-
+    @Ignore("This should be run only when necessary")
     @Test
     fun runReciprocalVsBaseCaseBenchmark() {
         runBlocking {

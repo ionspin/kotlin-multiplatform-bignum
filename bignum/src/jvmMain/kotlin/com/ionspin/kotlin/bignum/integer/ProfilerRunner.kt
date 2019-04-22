@@ -30,8 +30,10 @@ import kotlin.test.assertTrue
  * ugljesa.jovanovic@ionspin.com
  * on 20-Apr-2019
  */
+@ExperimentalUnsignedTypes
 class ProfilerRunner {
     companion object {
+        @Suppress("UNUSED_PARAMETER")
         fun main(args : List<String>) {
             ProfilerRunner().runReciprocalVsBaseCaseBenchmark()
         }
@@ -125,7 +127,7 @@ class ProfilerRunner {
         }
     }
 
-    @UseExperimental(ExperimentalUnsignedTypes::class)
+
     private fun ULongArray.toJavaBigInteger(): BigInteger {
         return this.foldIndexed(BigInteger.valueOf(0)) { index, acc, digit ->
             acc.or(BigInteger(digit.toString(), 10).shiftLeft((index) * 63))

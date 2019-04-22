@@ -136,6 +136,7 @@ interface BigNumber<BigType> where BigType : BigNumber<BigType> {
 
 }
 
+@ExperimentalUnsignedTypes
 internal interface CommonBigNumberOperations<BigType> where BigType : BigNumber<BigType> {
 
     fun getCreator() : BigNumber.Creator<BigType>

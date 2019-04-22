@@ -782,7 +782,6 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
             throw IndexOutOfBoundsException("Invalid position, addressed word $wordPosition larger than number of words ${operand.size}")
         }
         val bitPosition = position % 63
-        val word = operand[wordPosition.toInt()]
         val setMask = 1UL shl bitPosition.toInt()
         return List(operand.size) {
             if (it == wordPosition.toInt()) {

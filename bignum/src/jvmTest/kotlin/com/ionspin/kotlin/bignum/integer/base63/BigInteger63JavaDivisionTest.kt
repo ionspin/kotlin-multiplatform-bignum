@@ -24,6 +24,7 @@ import java.lang.RuntimeException
 import java.math.BigInteger
 import kotlin.random.Random
 import kotlin.random.nextULong
+import kotlin.test.Ignore
 import kotlin.test.assertTrue
 
 /**
@@ -363,7 +364,7 @@ class DivisionBenchmark {
         val expectedQuotient: ULongArray,
         val expectedRemainder: ULongArray
     )
-
+    @Ignore("This should be run only when necessary")
     @Test
     fun runReciprocalVsBaseCaseBenchmark() {
         runBlocking {

@@ -1244,7 +1244,6 @@ class BigDecimal private constructor(
         return when {
             exponent > 0 -> {
                 val diffBigInt = (exponent - digits + 1)
-                val diffInt = diffBigInt.magnitude[0].toInt()
 
                 if (diffBigInt > 0) {
                     val expandZeroes = diffBigInt * '0'

@@ -554,8 +554,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         val product = (operand * reciprocal.first)
         val check = product shr reciprocal.second
         return if (check != ONE) {
-            val check2 = product shr reciprocal.second - 1
-
             Pair(reciprocal.first, reciprocal.second - 1)
         } else {
             Pair(reciprocal.first, reciprocal.second)

@@ -439,18 +439,18 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return removeLeadingZeroes(ulongArrayOf(lowResult and baseMask, highResult))
     }
 
-    override fun pow(operand: ULongArray, exponent: Long): ULongArray {
+    override fun pow(base: ULongArray, exponent: Long): ULongArray {
         if (exponent == 0L) {
             return ONE
         }
         if (exponent == 1L) {
-            return operand
+            return base
         }
-        if (operand.size == 1 && operand[0] == 10UL && exponent < powersOf10.size) {
+        if (base.size == 1 && base[0] == 10UL && exponent < powersOf10.size) {
             return powersOf10[exponent.toInt()]
         }
         return (0 until exponent).fold(ONE) { acc, _ ->
-            acc * operand
+            acc * base
         }
     }
 
@@ -935,7 +935,6 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             throw IndexOutOfBoundsException("Invalid position, addressed word $wordPosition larger than number of words ${operand.size}")
         }
         val bitPosition = position % 63
-        val word = operand[wordPosition.toInt()]
         val setMask = 1UL shl bitPosition.toInt()
         return ULongArray(operand.size) {
             if (it == wordPosition.toInt()) {
