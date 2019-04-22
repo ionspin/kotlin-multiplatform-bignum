@@ -44,7 +44,7 @@ class BitwiseTest {
     @Test
     fun numberOfDigitsTest() {
         val bigInteger = BigInteger.parseString("123456789012345678901234567890123456", 10)
-        val numberOfDigits = bigInteger.numberOfDigits()
+        val numberOfDigits = bigInteger.numberOfDecimalDigits()
         val expectedDigits = 36L
         assertTrue { numberOfDigits == expectedDigits }
     }
@@ -54,7 +54,7 @@ class BitwiseTest {
         for (i in 1 .. 2000L step 101) {
             val string = buildString (i.toInt()) { for (j in 1 .. i) this.append('1')  }
             val bigInteger = BigInteger.parseString(string, 10)
-            val numberOfDigits = bigInteger.numberOfDigits()
+            val numberOfDigits = bigInteger.numberOfDecimalDigits()
             assertTrue { numberOfDigits == i }
         }
 

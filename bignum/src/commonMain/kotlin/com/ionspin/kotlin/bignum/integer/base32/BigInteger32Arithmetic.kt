@@ -17,10 +17,13 @@
 
 package com.ionspin.kotlin.bignum.integer.base32
 
+import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.util.toDigit
 import kotlin.math.absoluteValue
+import kotlin.math.ceil
+import kotlin.math.floor
 
 /**
  * Created by Ugljesa Jovanovic
@@ -30,15 +33,16 @@ import kotlin.math.absoluteValue
 @ExperimentalUnsignedTypes
 internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     val baseMask = 0xFFFFFFFFUL
+    val baseMaskInt = 0xFFFFFFFFU
     val overflowMask = 0x100000000U
     val lowerMask = 0xFFFFUL
     val base: UInt = 0xFFFFFFFFU
     override val basePowerOfTwo = 32
+    val wordSizeInBits = 32
 
     override val ZERO = UIntArray(0)
     override val ONE = UIntArray(1) { 1U }
     override val TEN = UIntArray(1) { 10U }
-
 
 
     /**
@@ -90,7 +94,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         )
     }
 
-    override fun trailingZeroBits(value : UIntArray) : Int {
+    override fun trailingZeroBits(value: UIntArray): Int {
         TODO()
     }
 
@@ -157,7 +161,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
 
         if (shiftBits == 0) {
-            operand.copyOfRange(operand.size - wordsToDiscard, operand.size)
+            return operand.copyOfRange(wordsToDiscard, operand.size)
         }
 
         if (operand.size > 1 && operand.size - wordsToDiscard == 1) {
@@ -387,6 +391,8 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
 
+
+
     /*
      * Based on Basecase DivRem algorithm from
      * Modern Computer Arithmetic, Richard Brent and Paul Zimmermann, Cambridge University Press, 2010.
@@ -482,18 +488,141 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return Pair(removeLeadingZeroes(quotient), denormRemainder)
     }
 
-    fun baseReciprocal(unnormalized: UIntArray, precision: Int): UIntArray {
-        val (operand, _) = normalize(
-            unnormalized
-        )
-        val operandSize = operand.size
-        if (operandSize <= 2) {
-            return (((uintArrayOf(1U) shl (2 * basePowerOfTwo)) / operand) - 1U)
+    fun d1ReciprocalRecursiveWordVersion(a: UIntArray): Pair<UIntArray, UIntArray> {
+        val n = a.size - 1
+        if (n <= 2) {
+            val corrected = if (n == 0) {
+                1
+            } else {
+                n
+            }
+            val rhoPowered = ONE shl (corrected * 2 * wordSizeInBits)
+            val x = rhoPowered / a
+            val r = rhoPowered - (x * a)
+            return Pair(x, r)
+        }
+        val l = floor((n - 1).toDouble() / 2).toInt()
+        val h = n - l
+        val ah = a.copyOfRange(a.size - h - 1, a.size)
+        val al = a.copyOfRange(0, l)
+        var (xh, rh) = d1ReciprocalRecursiveWordVersion(ah)
+        val s = al * xh
+//        val rhoL = (ONE shl l)
+        val rhRhoL = rh shl (l * wordSizeInBits)
+        val t = if (rhRhoL >= s) {
+            rhRhoL - s
+        } else {
+            xh = xh - ONE
+            (rhRhoL + a) - s
+        }
+        val tm = t shr (h * wordSizeInBits)
+        val d = (xh * tm) shr (h * wordSizeInBits)
+        var x = (xh shl (l * wordSizeInBits)) + d
+        var r = (t shl (l * wordSizeInBits)) - a * d
+        if (r >= a) {
+            x = x + ONE
+            r = r - a
+            if (r >= a) {
+                x = x + ONE
+                r = r - a
+            }
+        }
+        return Pair(x, r)
+    }
+
+
+    fun reciprocalSingleWord(operand: UInt): Pair<UIntArray, Int> {
+        val bitLength = bitLength(operand)
+        val requiredPrecision = bitLength * 4
+        if (bitLength * 2 <= 63) {
+            val base =
+                1UL shl (requiredPrecision) //We are sure that precision is less or equal to 63, so inside int range
+            var result = base / operand
+
+            return checkReciprocal(uintArrayOf(operand), Pair(uintArrayOf(result.toUInt()), requiredPrecision))
+        } else {
+            val base = ONE.shl(requiredPrecision)
+            val result = base / operand
+            return checkReciprocal(uintArrayOf(operand), Pair(result, requiredPrecision))
+        }
+    }
+
+    private fun checkReciprocal(
+        operand: UIntArray,
+        reciprocal: Pair<UIntArray, Int>
+    ): Pair<UIntArray, Int> {
+        val product = (operand * reciprocal.first)
+        val check = product shr reciprocal.second
+        return if (check != ONE) {
+            Pair(reciprocal.first, reciprocal.second - 1)
+        } else {
+            Pair(reciprocal.first, reciprocal.second)
+        }
+    }
+
+    //TODO Does this work?
+    private fun reciprocal2(operand: UIntArray): Pair<UIntArray, Int> {
+        if (operand.size == 1) {
+            val reciprocal = reciprocalSingleWord(operand[0])
+            return Pair(reciprocal.first, reciprocal.second)
+
+        }
+        val low = floor(operand.size / 2.0).toInt()
+        val high = (operand.size - low).toInt()
+        val operandHigh = operand.copyOfRange(low, high + 1)
+        var (approximateReciprocal, reciprocalShiftAmount) = reciprocal2(operandHigh)
+        var shifted = (operand * approximateReciprocal) shr (reciprocalShiftAmount)
+        val basePowered = ONE shr (operand.size + high)
+        while (shifted > basePowered) {
+            approximateReciprocal = approximateReciprocal - ONE
+            shifted = shifted - operand
+        }
+        shifted = basePowered - shifted
+        val tm = shifted shr low
+        val u = tm * approximateReciprocal
+        val reciprocal = (approximateReciprocal shl low) + (u shl (low - 2 * high))
+        return Pair(reciprocal, bitLength(reciprocal))
+
+    }
+
+    override fun reciprocal(operand: UIntArray): Pair<UIntArray, UIntArray> {
+        return d1ReciprocalRecursiveWordVersion(operand)
+    }
+
+    internal fun reciprocalDivision(first: UIntArray, second: UIntArray): Pair<UIntArray, UIntArray> {
+        val reciprocalExtension = first.size - second.size
+        val precisionShift = (reciprocalExtension * 2 * wordSizeInBits)
+        val secondHighPrecision = second shl precisionShift
+
+        val secondReciprocalWithRemainder = d1ReciprocalRecursiveWordVersion(secondHighPrecision)
+
+        val secondReciprocal = secondReciprocalWithRemainder.first
+        var product = first * secondReciprocal
+        //TODO Proper rounding
+        if (product.compareTo(0U) == 0) {
+            return Pair(ZERO, first)
+        }
+        if (product.size == 1) {
+            if (product >= baseMaskInt - 1U) {
+                product = product + ONE
+            }
+        } else {
+            val importantWord = product[product.size - second.size]
+            if (importantWord >= baseMask) {
+                product = UIntArray(product.size) {
+                    when (it) {
+                        product.size - 1 -> product[product.size - 1] + 1U
+                        else -> 0U
+                    }
+                }
+            }
         }
 
-        TODO("Soon")
-
-
+        var numberOfWords = product.size - (secondReciprocal.size * 2) + reciprocalExtension * 2
+        if (numberOfWords == 0) { numberOfWords = 1 }
+        val result = product.copyOfRange(product.size - numberOfWords, product.size)
+        val remainder = first - (result * second)
+        return Pair(result, remainder)
     }
 
     override fun parseForBase(number: String, base: Int): UIntArray {
@@ -519,6 +648,26 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             copy = divremResult.first
         }
         return stringBuilder.toString().reversed()
+    }
+
+    override fun numberOfDecimalDigits(operand: UIntArray): Long {
+        val bitLenght = bitLength(operand)
+        val minDigit = ceil((bitLenght - 1) * BigInteger.LOG_10_OF_2)
+//        val maxDigit = floor(bitLenght * LOG_10_OF_2) + 1
+//        val correct = this / 10.toBigInteger().pow(maxDigit.toInt())
+//        return when {
+//            correct == ZERO -> maxDigit.toInt() - 1
+//            correct > 0 && correct < 10 -> maxDigit.toInt()
+//            else -> -1
+//        }
+
+        var tmp = operand / pow(TEN, minDigit.toLong())
+        var counter = 0L
+        while (compare(tmp, ZERO) != 0) {
+            tmp /= TEN
+            counter++
+        }
+        return counter + minDigit.toInt()
     }
 
     override fun and(operand: UIntArray, mask: UIntArray): UIntArray {
@@ -551,7 +700,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
     }
 
-    override fun inv(operand: UIntArray): UIntArray {
+    override fun not(operand: UIntArray): UIntArray {
         return UIntArray(operand.size) {
             operand[it].inv()
         }
@@ -579,7 +728,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return (word and (1U shl bitPosition.toInt()) == 1U)
     }
 
-    override fun setBitAt(operand: UIntArray, position: Long, bit : Boolean): UIntArray {
+    override fun setBitAt(operand: UIntArray, position: Long, bit: Boolean): UIntArray {
         if (position / 63 > Int.MAX_VALUE) {
             throw RuntimeException("Invalid bit index, too large, cannot access word (Word position > Int.MAX_VALUE")
         }
@@ -589,7 +738,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             throw IndexOutOfBoundsException("Invalid position, addressed word $wordPosition larger than number of words ${operand.size}")
         }
         val bitPosition = position % 63
-        val word = operand[wordPosition.toInt()]
         val setMask = 1U shl bitPosition.toInt()
         return UIntArray(operand.size) {
             if (it == wordPosition.toInt()) {

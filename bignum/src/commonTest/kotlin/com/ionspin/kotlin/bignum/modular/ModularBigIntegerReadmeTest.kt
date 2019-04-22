@@ -15,12 +15,27 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer
+package com.ionspin.kotlin.bignum.modular
+
+import com.ionspin.kotlin.bignum.integer.toBigInteger
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 10-Mar-2019
+ * on 22-Apr-2019
  */
 @ExperimentalUnsignedTypes
-expect object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>
+class ModularBigIntegerReadmeTest {
+
+    @Test
+    fun createModularBigInteger() {
+        val creator = ModularBigInteger.creatorForModulo(100)
+        val modularBigInteger = creator.fromLong(150)
+        println("ModularBigInteger: ${modularBigInteger.toStringWithModulo()}")
+        assertTrue {
+            modularBigInteger.residue == 50.toBigInteger()
+        }
+    }
+}

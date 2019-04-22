@@ -22,8 +22,9 @@ import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
 import com.ionspin.kotlin.bignum.integer.util.toDigit
-import kotlin.math.abs
 import kotlin.math.absoluteValue
+import kotlin.math.ceil
+import kotlin.math.floor
 
 /**
  * Created by Ugljesa Jovanovic
@@ -36,6 +37,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     override val ONE: ULongArray = ulongArrayOf(1u)
     override val TEN: ULongArray = ulongArrayOf(10UL)
     override val basePowerOfTwo: Int = 63
+    val wordSizeInBits = 63
 
     val baseMask: ULong = 0x7FFFFFFFFFFFFFFFUL
 
@@ -92,11 +94,11 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return 63 - numberOfLeadingZeroes(value)
     }
 
-    fun trailingZeroBits(value : ULong) : Int {
+    fun trailingZeroBits(value: ULong): Int {
         return 63 - bitLength(value.inv() and baseMask)
     }
 
-    override fun trailingZeroBits(value : ULongArray) : Int {
+    override fun trailingZeroBits(value: ULongArray): Int {
         TODO()
     }
 
@@ -225,6 +227,28 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         }
     }
 
+    override fun numberOfDecimalDigits(operand: ULongArray): Long {
+        val bitLenght = bitLength(operand)
+        val minDigit = ceil((bitLenght - 1) * BigInteger.LOG_10_OF_2)
+//        val maxDigit = floor(bitLenght * LOG_10_OF_2) + 1
+//        val correct = this / 10.toBigInteger().pow(maxDigit.toInt())
+//        return when {
+//            correct == ZERO -> maxDigit.toInt() - 1
+//            correct > 0 && correct < 10 -> maxDigit.toInt()
+//            else -> -1
+//        }
+
+        var tmp = operand / pow(TEN, minDigit.toLong())
+        var counter = 0L
+        while (compare(tmp, ZERO) != 0) {
+            tmp /= TEN
+            counter++
+        }
+        return counter + minDigit.toInt()
+
+
+    }
+
     override fun add(first: ULongArray, second: ULongArray): ULongArray {
         if (first.size == 1 && first[0] == 0UL) return second
         if (second.size == 1 && second[0] == 0UL) return first
@@ -283,7 +307,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
         // Lets throw this just to catch when we didn't prepare the operands correctly
         if (!firstIsLarger) {
-            throw RuntimeException("subtraction result less than zero")
+            throw RuntimeException("subtract result less than zero")
         }
         val (largerLength, smallerLength, largerData, smallerData) = if (firstIsLarger) {
             Quadruple(firstPrepared.size, secondPrepared.size, firstPrepared, secondPrepared)
@@ -415,18 +439,18 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return removeLeadingZeroes(ulongArrayOf(lowResult and baseMask, highResult))
     }
 
-    override fun pow(operand: ULongArray, exponent: Long): ULongArray {
+    override fun pow(base: ULongArray, exponent: Long): ULongArray {
         if (exponent == 0L) {
             return ONE
         }
         if (exponent == 1L) {
-            return operand
+            return base
         }
-        if (operand.size == 1 && operand[0] == 10UL && exponent < powersOf10.size) {
+        if (base.size == 1 && base[0] == 10UL && exponent < powersOf10.size) {
             return powersOf10[exponent.toInt()]
         }
         return (0 until exponent).fold(ONE) { acc, _ ->
-            acc * operand
+            acc * base
         }
     }
 
@@ -547,6 +571,121 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return Pair(removeLeadingZeroes(quotient), denormRemainder)
     }
 
+    override fun reciprocal(operand: ULongArray): Pair<ULongArray, ULongArray> {
+        return d1ReciprocalRecursiveWordVersion(operand)
+    }
+
+    fun d1ReciprocalRecursive(a: ULongArray): Pair<ULongArray, ULongArray> {
+        val fullBitLenght = bitLength(a)
+        val n = if (fullBitLenght > 63) {
+            fullBitLenght - 63
+        } else {
+            fullBitLenght
+        }
+        if (n <= 30) {
+            val rhoPowered = 1UL shl (n * 2)
+            val longA = a[0]
+            val x = rhoPowered / longA
+            val r = rhoPowered - x * longA
+            return Pair(ulongArrayOf(x), ulongArrayOf(r))
+        }
+        val l = floor((n - 1).toDouble() / 2).toInt()
+        val h = n - l
+        val mask = (ONE shl l) - ONE
+        val ah = a shr l
+        val al = and(a, mask)
+        var (xh, rh) = d1ReciprocalRecursive(ah)
+        val s = al * xh
+//        val rhoL = (ONE shl l)
+        val rhRhoL = rh shl l
+        val t = if (rhRhoL >= s) {
+            rhRhoL - s
+        } else {
+            xh = xh - ONE
+            (rhRhoL + a) - s
+        }
+        val tm = t shr h
+        val d = (xh * tm) shr h
+        var x = (xh shl l) + d
+        var r = (t shl l) - a * d
+        if (r >= a) {
+            x = x + ONE
+            r = r - a
+            if (r >= a) {
+                x = x + ONE
+                r = r - a
+            }
+        }
+        return Pair(x, r)
+    }
+
+    fun d1ReciprocalRecursiveWordVersion(a: ULongArray): Pair<ULongArray, ULongArray> {
+        val n = a.size - 1
+        if (n <= 2) {
+            val corrected = if (n == 0) {
+                1
+            } else {
+                n
+            }
+            val rhoPowered = ONE shl (corrected * 2 * wordSizeInBits)
+            val x = rhoPowered / a
+            val r = rhoPowered - (x * a)
+            return Pair(x, r)
+        }
+        val l = floor((n - 1).toDouble() / 2).toInt()
+        val h = n - l
+        val ah = a.copyOfRange(a.size - h - 1, a.size)
+        val al = a.copyOfRange(0, l)
+        var (xh, rh) = d1ReciprocalRecursiveWordVersion(ah)
+        val s = al * xh
+//        val rhoL = (ONE shl l)
+        val rhRhoL = rh shl (l * wordSizeInBits)
+        val t = if (rhRhoL >= s) {
+            rhRhoL - s
+        } else {
+            xh = xh - ONE
+            (rhRhoL + a) - s
+        }
+        val tm = t shr (h * wordSizeInBits)
+        val d = (xh * tm) shr (h * wordSizeInBits)
+        var x = (xh shl (l * wordSizeInBits)) + d
+        var r = (t shl (l * wordSizeInBits)) - a * d
+        if (r >= a) {
+            x = x + ONE
+            r = r - a
+            if (r >= a) {
+                x = x + ONE
+                r = r - a
+            }
+        }
+        return Pair(x, r)
+    }
+
+    private fun unbalancedReciprocal(a: ULongArray, diff: Int): Pair<ULongArray, ULongArray> {
+        val n = a.size - 1 - diff
+        val a0 = a.copyOfRange(n + 1, a.size)
+        val a1 = a.copyOfRange(0, n)
+        var (x, r) = d1ReciprocalRecursiveWordVersion(a0)
+        if (x == ONE shl (n * 63)) {
+            if (a1.compareTo(ZERO) == 0) {
+                r = ZERO
+            } else {
+                x = x - ONE
+                r = a - (a1 shl (n * 63))
+            }
+        } else {
+            val rRhoD = r shl diff
+            val a1x = a1 * x
+            if (rRhoD > a1x) {
+                r = rRhoD - a1x
+            } else {
+                x = x - ONE
+                r = rRhoD - (a1 * x)
+            }
+        }
+        return Pair(x, r)
+    }
+
     fun convertTo64BitRepresentation(operand: ULongArray): ULongArray {
         if (operand == ZERO) return ZERO
         val length = bitLength(operand)
@@ -631,18 +770,60 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
 
         }
-//        if (operand.size % 2 != 0) {
-//            val lastI = requiredLength - 1 + skipWordCount
-//            result[lastI] =
-//                (operand[(lastI * 2) - 1].toULong() shr (32 - lastI)) or (operand[(lastI * 2)].toULong() shl lastI)
-//        }
-//        result[requiredLength - 1] = (operand[operand.size - 1].toULong() shl ((operand.size - 1) / 2)) or (operand[operand.size - 2].toULong() shr (32 - (operand.size - 1)/2))
+
         return result
     }
 
     override fun divide(first: ULongArray, second: ULongArray): Pair<ULongArray, ULongArray> {
         return baseDivide(first, second)
     }
+
+    internal fun reciprocalDivision(first: ULongArray, second: ULongArray): Pair<ULongArray, ULongArray> {
+        if (first.size < second.size) {
+            throw RuntimeException("Invalid division: ${first.size} words / ${second.size} words")
+        }
+        val shift = if (second.size == 1) {
+            1
+        } else {
+            second.size - 1
+        }
+        val precisionExtension = (first.size - second.size + 1)
+        val secondHigherPrecision = ULongArray(second.size + precisionExtension) {
+            when {
+                it >= precisionExtension -> second[it - precisionExtension]
+                else -> 0UL
+            }
+        }
+
+        val secondReciprocalWithRemainder = d1ReciprocalRecursiveWordVersion(secondHigherPrecision)
+
+        val secondReciprocal = secondReciprocalWithRemainder.first
+        var product = first * secondReciprocal
+        //TODO Proper rounding
+        if (product.compareTo(0UL) == 0) {
+            return Pair(ZERO, first)
+        }
+        if (product.size == 1) {
+            if (product >= baseMask - 1UL) {
+                product = product + ONE
+            }
+        } else {
+            val importantWord = product[product.size - second.size]
+            if (importantWord >= baseMask) {
+                product = ULongArray(product.size) {
+                    when (it) {
+                        product.size - 1 -> product[product.size - 1] + 1UL
+                        else -> 0UL
+                    }
+                }
+            }
+        }
+
+        val result = product.copyOfRange(2 * shift + precisionExtension, product.size)
+        val remainder = first - (result * second)
+        return Pair(result, remainder)
+    }
+
 
     override fun parseForBase(number: String, base: Int): ULongArray {
         var parsed = ZERO
@@ -705,7 +886,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         )
     }
 
-    override fun inv(operand: ULongArray): ULongArray {
+    override fun not(operand: ULongArray): ULongArray {
         val leadingZeroes = numberOfLeadingZeroes(operand[operand.size - 1])
         val cleanupMask = (((1UL shl leadingZeroes + 1) - 1U) shl (basePowerOfTwo - leadingZeroes)).inv()
         val inverted = ULongArray(operand.size) {
@@ -744,7 +925,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return (word and (1UL shl bitPosition.toInt()) == 1UL)
     }
 
-    override fun setBitAt(operand: ULongArray, position: Long, bit : Boolean): ULongArray {
+    override fun setBitAt(operand: ULongArray, position: Long, bit: Boolean): ULongArray {
         if (position / 63 > Int.MAX_VALUE) {
             throw RuntimeException("Invalid bit index, too large, cannot access word (Word position > Int.MAX_VALUE")
         }
@@ -754,8 +935,6 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             throw IndexOutOfBoundsException("Invalid position, addressed word $wordPosition larger than number of words ${operand.size}")
         }
         val bitPosition = position % 63
-        val word = operand[wordPosition.toInt()]
-        val getMask = (word and (1UL shl bitPosition.toInt()) == 1UL)
         val setMask = 1UL shl bitPosition.toInt()
         return ULongArray(operand.size) {
             if (it == wordPosition.toInt()) {
@@ -798,23 +977,23 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     internal operator fun ULongArray.div(other: ULong): ULongArray {
-        return baseDivide(this, ulongArrayOf(other)).first
+        return divide(this, ulongArrayOf(other)).first
     }
 
     internal operator fun ULongArray.rem(other: ULong): ULongArray {
-        return baseDivide(this, ulongArrayOf(other)).second
+        return divide(this, ulongArrayOf(other)).second
     }
 
     internal operator fun ULongArray.div(other: ULongArray): ULongArray {
-        return baseDivide(this, other).first
+        return divide(this, other).first
     }
 
     internal operator fun ULongArray.rem(other: ULongArray): ULongArray {
-        return baseDivide(this, other).second
+        return divide(this, other).second
     }
 
     internal infix fun ULongArray.divrem(other: ULongArray): Pair<ULongArray, ULongArray> {
-        return baseDivide(this, other)
+        return divide(this, other)
     }
 
     internal operator fun ULongArray.compareTo(other: ULongArray): Int {
@@ -953,12 +1132,54 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         ulongArrayOf(0UL, 4692406261390508032UL, 4125506992759596769UL, 3695050361890294256UL, 13817869688151111UL),
         ulongArrayOf(0UL, 807202429631201280UL, 4361581780176864463UL, 57015471483839332UL, 138178696881511114UL),
         ulongArrayOf(0UL, 8072024296312012800UL, 6722329654349541398UL, 570154714838393324UL, 1381786968815111140UL),
-        ulongArrayOf(0UL, 6933266668281921536UL, 2659692285511983332UL, 5701547148383933247UL, 4594497651296335592UL, 1UL),
-        ulongArrayOf(0UL, 4769062424835784704UL, 8150178781410281711UL, 1675239262710677624UL, 9051488365544252694UL, 14UL),
-        ulongArrayOf(0UL, 1573764064083968000UL, 7714811519264610651UL, 7529020590252000440UL, 7504535323749544669UL, 149UL),
-        ulongArrayOf(0UL, 6514268603984904192UL, 3361138897807900047UL, 1503229607681797944UL, 1258376942657240234UL, 1498UL),
-        ulongArrayOf(0UL, 579081781865611264UL, 5941272867514673053UL, 5808924039963203635UL, 3360397389717626533UL, 14981UL),
-        ulongArrayOf(0UL, 5790817818656112640UL, 4072496454018075682UL, 2749008178503381508UL, 5933857786611937912UL, 149813UL)
+        ulongArrayOf(
+            0UL,
+            6933266668281921536UL,
+            2659692285511983332UL,
+            5701547148383933247UL,
+            4594497651296335592UL,
+            1UL
+        ),
+        ulongArrayOf(
+            0UL,
+            4769062424835784704UL,
+            8150178781410281711UL,
+            1675239262710677624UL,
+            9051488365544252694UL,
+            14UL
+        ),
+        ulongArrayOf(
+            0UL,
+            1573764064083968000UL,
+            7714811519264610651UL,
+            7529020590252000440UL,
+            7504535323749544669UL,
+            149UL
+        ),
+        ulongArrayOf(
+            0UL,
+            6514268603984904192UL,
+            3361138897807900047UL,
+            1503229607681797944UL,
+            1258376942657240234UL,
+            1498UL
+        ),
+        ulongArrayOf(
+            0UL,
+            579081781865611264UL,
+            5941272867514673053UL,
+            5808924039963203635UL,
+            3360397389717626533UL,
+            14981UL
+        ),
+        ulongArrayOf(
+            0UL,
+            5790817818656112640UL,
+            4072496454018075682UL,
+            2749008178503381508UL,
+            5933857786611937912UL,
+            149813UL
+        )
     )
 
 

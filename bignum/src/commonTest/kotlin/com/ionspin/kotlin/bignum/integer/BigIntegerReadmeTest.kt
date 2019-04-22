@@ -172,7 +172,7 @@ class BigIntegerReadmeTest {
     @Test
     fun `Test_readme_inv_sample`(){
         val operand = BigInteger.parseString("11110000", 2)
-        val invResult = operand.invPrecise()
+        val invResult = operand.not()
         println("Inv result: ${invResult.toString(2)}")
 
         val expectedResult = BigInteger.parseString("00001111", 2)
@@ -180,6 +180,28 @@ class BigIntegerReadmeTest {
         assertTrue { invResult == expectedResult }
 
 
+    }
+
+    @Test
+    fun `Test_readme_negate_sample`(){
+        val a = (-5).toBigInteger()
+        val negated = a.negate()
+        println("Negated: ${negated}")
+
+        val expectedResult = 5.toBigInteger()
+
+        assertTrue { negated == expectedResult }
+    }
+
+    @Test
+    fun `Test_readme_abs_sample`(){
+        val a = (-5).toBigInteger()
+        val negated = a.abs()
+        println("Absolute value: ${negated}")
+
+        val expectedResult = 5.toBigInteger()
+
+        assertTrue { negated == expectedResult }
     }
 
     @Test
@@ -207,6 +229,14 @@ class BigIntegerReadmeTest {
             val expected = BigInteger.parseString("12", 10)
             bigint == expected
         }
+    }
+
+    @Test
+    fun testToModularBigInteger() {
+        val a = 100_002.toBigInteger()
+        val modularA = a.toModularBigInteger(500.toBigInteger())
+        println("ModularBigInteger: ${modularA.toStringWithModulo()}")
+        assertTrue { modularA.compareTo(2.toBigInteger()) == 0 }
     }
 
 }

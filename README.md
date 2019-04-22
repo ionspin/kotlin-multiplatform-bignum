@@ -213,6 +213,26 @@ println("Inv result: ${invResult.toString(2)}")
 Inv result: 1111
 ```
 
+#### Modular integers
+
+A `modInverse` function that is equivalent to java BigInteger `modInverse` is available. Note that this method will
+produce a **BigInteger** not a **ModularBigInteger**
+
+Big integers can be converted to modularIntegers with same modulo, and then `inverse()` method is available. This method 
+**will** return ModularBigInteger
+
+```kotlin
+val a = 100_002.toBigInteger()
+val modularA = a.toModularBigInteger(500.toBigInteger())
+println("ModularBigInteger: ${modularA.toStringWithModulo()}")
+----- Output -----
+ModularBigInteger: 2 mod 500
+```
+
+If you want to create more ModularBigIntegers with the same module, you can retrieve creator by calling `getCreator`
+
+More inforamtion about the ModularBigIntegers can be found in the third section
+
 ## Floating Point
 
 ### Creating
@@ -301,6 +321,7 @@ Standard arithmetic operations that are present:
 * Negate
 * Signum
 
+
 (Suspiciously missing is square root, both from BigInteger and BigDecimal, should be added soon™)
 
 Operations are executed with existing significands and then rounded down afterwards. Decimal mode parameter controls the precision and rounding mode
@@ -362,6 +383,29 @@ ROUND_HALF_TOWARDS_ZERO|Round towards nearest integer, using away from zero as t
 ROUND_HALF_CEILING|Round towards nearest integer, using towards infinity as tie breaker when significant digit being rounded is 5
 ROUND_HALF_FLOOR|Round towards nearest integer, using towards negative infinity as tie breaker when significant digit being rounded is 5
 
+### Modular Integers
+
+Modular arithmetic operations are supported only between integers with the same modulo. 
+
+## Creating Modular Integers
+
+First define the modulo you are going to use by getting an instance of the creator, and than 
+use that creator to create instances of modular integers
+
+```kotlin
+val creator = ModularBigInteger.creatorForModulo(100)
+val modularBigInteger = creator.fromLong(150)
+println("ModularBigInteger: ${modularBigInteger.toStringWithModulo()}")
+----- Output -----
+ModularBigInteger: 50 mod 100
+
+```
+
+Otherwise behavior is similar to normal integers
+
+
+### Sources
+
 For examples of rounding modes consult [Comparison of approaches for rounding to an integer](https://en.wikipedia.org/wiki/Rounding) 
 on Wikipedia
 
@@ -382,6 +426,14 @@ Second Edition
 Art of Computer Programming, Volume 2: Seminumerical Algorithms
 Donald E. Knuth
 3rd Edition
+```
+
+``
+Refinement of a newton reciprocal algorithm for arbitrary precision numbers
+Yiping Cheng,
+ Ze Liu
+
+
 ```
 And many other blogs and posts scattered over the internet.
 

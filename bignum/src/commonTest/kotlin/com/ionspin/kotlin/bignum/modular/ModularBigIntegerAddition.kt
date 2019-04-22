@@ -15,12 +15,32 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer
+package com.ionspin.kotlin.bignum.modular
+
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 10-Mar-2019
+ * on 22-Apr-2019
  */
 @ExperimentalUnsignedTypes
-expect object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>
+class ModularBigIntegerAddition {
+    @Test
+    fun testAddition() {
+        val creator = ModularBigInteger.creatorForModulo(10)
+        val a = creator.fromInt(5)
+        val b = creator.fromInt(7)
+        val expected = creator.fromInt(2)
+        testSingleAddition(a, b, expected)
+    }
+
+
+    fun testSingleAddition(a : ModularBigInteger, b : ModularBigInteger, expected :ModularBigInteger) {
+        assertTrue {
+            val c = a + b
+            c == expected
+        }
+    }
+}

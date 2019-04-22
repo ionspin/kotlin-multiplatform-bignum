@@ -49,7 +49,7 @@ fun Byte.toBigDecimal(decimalMode: DecimalMode? = null): BigDecimal {
 
 @ExperimentalUnsignedTypes
 fun String.toBigDecimal(decimalMode: DecimalMode? = null) : BigDecimal {
-    return BigDecimal.parseString(this, decimalMode)
+    return BigDecimal.parseStringWithMode(this, decimalMode)
 }
 
 @ExperimentalUnsignedTypes

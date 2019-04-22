@@ -22,7 +22,7 @@ package com.ionspin.kotlin.bignum.integer.util
  * ugljesa.jovanovic@ionspin.com
  * on 18-Mar-2019
  */
-fun Char.toDigit(radix : Int) : Int {
+fun Char.toDigit() : Int {
     return when (this) {
         in '0' .. '9' -> (this - 48).toInt()
         in 'a' .. 'z' -> this - 'a' + 10
@@ -31,8 +31,4 @@ fun Char.toDigit(radix : Int) : Int {
         in '\uFF41' .. '\uFF5A' -> this - '\uFF41' - 10
         else -> throw NumberFormatException("Invalid digit for radix ")
     }
-}
-
-fun Char.toDigit() : Int {
-    return this.toDigit(10)
 }

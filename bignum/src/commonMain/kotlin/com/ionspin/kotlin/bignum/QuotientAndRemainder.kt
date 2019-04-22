@@ -15,12 +15,19 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer
+package com.ionspin.kotlin.bignum
+
+import com.ionspin.kotlin.bignum.integer.BigInteger
+import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 10-Mar-2019
+ * on 04-Apr-2019
  */
+
 @ExperimentalUnsignedTypes
-expect object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>
+data class QuotientAndRemainder(val quotient: BigInteger, val remainder: BigInteger)
+
+@ExperimentalUnsignedTypes
+data class ModularQuotientAndRemainder(val quotient: ModularBigInteger, val remainder: ModularBigInteger)

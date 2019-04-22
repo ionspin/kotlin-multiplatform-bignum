@@ -195,12 +195,13 @@ class BigDecimalJvmTest {
     }
 
 
+    @Suppress("UNUSED_PARAMETER")
     fun singleAdditionTest(i: Int, first: BigDecimal, second: BigDecimal): Job {
         return GlobalScope.launch {
             assertTrue(
                 "Failed on \n" +
-                        "val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString(\"${first.significand}\", 10), ${first.exponent}.toBigInteger())\n " +
-                        "val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString(\"${second.significand}\", 10), ${second.exponent}.toBigInteger())"
+                        "val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseStringWithMode(\"${first.significand}\", 10), ${first.exponent}.toBigInteger())\n " +
+                        "val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseStringWithMode(\"${second.significand}\", 10), ${second.exponent}.toBigInteger())"
             ) {
                 val result = first + second
                 val resultJavaBigInt = first.toJavaBigDecimal() + second.toJavaBigDecimal()
@@ -245,13 +246,13 @@ class BigDecimalJvmTest {
         }
     }
 
-
+    @Suppress("UNUSED_PARAMETER")
     fun singleSubtractionTest(i: Int, first: BigDecimal, second: BigDecimal): Job {
         return GlobalScope.launch {
             assertTrue(
                 "Failed on \n" +
-                        "val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString(\"${first.significand}\", 10), ${first.exponent}.toBigInteger())\n " +
-                        "val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString(\"${second.significand}\", 10), ${second.exponent}.toBigInteger())"
+                        "val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseStringWithMode(\"${first.significand}\", 10), ${first.exponent}.toBigInteger())\n " +
+                        "val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseStringWithMode(\"${second.significand}\", 10), ${second.exponent}.toBigInteger())"
             ) {
                 val result = first - second
                 val resultJavaBigInt = first.toJavaBigDecimal() - second.toJavaBigDecimal()
@@ -312,13 +313,13 @@ class BigDecimalJvmTest {
             }
         }
     }
-
+    @Suppress("UNUSED_PARAMETER")
     fun singleMultiplicationTest(i: Int, first: BigDecimal, second: BigDecimal): Job {
         return GlobalScope.launch {
             assertTrue(
                 "Failed on \n" +
-                        "val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString(\"${first.significand}\", 10), ${first.exponent}.toBigInteger())\n " +
-                        "val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString(\"${second.significand}\", 10), ${second.exponent}.toBigInteger())"
+                        "val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseStringWithMode(\"${first.significand}\", 10), ${first.exponent}.toBigInteger())\n " +
+                        "val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseStringWithMode(\"${second.significand}\", 10), ${second.exponent}.toBigInteger())"
             ) {
                 val result = first * second
                 val resultJavaBigInt = first.toJavaBigDecimal() * second.toJavaBigDecimal()
@@ -337,7 +338,7 @@ class BigDecimalJvmTest {
             val second = BigDecimal.fromLongWithExponent(71, -2)
             val javaBigSecond = second.toJavaBigDecimal()
 
-            val result = first.div(second, DecimalMode(99, RoundingMode.AWAY_FROM_ZERO))
+            val result = first.divide(second, DecimalMode(99, RoundingMode.AWAY_FROM_ZERO))
             val javaBigResult = javaBigFirst.divide(javaBigSecond, MathContext(99, java.math.RoundingMode.UP))
 
             result.toJavaBigDecimal().compareTo(javaBigResult) == 0
@@ -352,7 +353,7 @@ class BigDecimalJvmTest {
             val second = BigDecimal.fromLongWithExponent(3L, 0)
             val javaBigSecond = second.toJavaBigDecimal()
 
-            val result = first.div(second, DecimalMode(99, RoundingMode.AWAY_FROM_ZERO))
+            val result = first.divide(second, DecimalMode(99, RoundingMode.AWAY_FROM_ZERO))
             val javaBigResult = javaBigFirst.divide(javaBigSecond, MathContext(99, java.math.RoundingMode.UP))
 
             result.toJavaBigDecimal().compareTo(javaBigResult) == 0
@@ -367,7 +368,7 @@ class BigDecimalJvmTest {
             val second = BigDecimal.fromLongWithExponent(71, -2)
             val javaBigSecond = second.toJavaBigDecimal()
 
-            val result = first.div(second, DecimalMode(123, RoundingMode.AWAY_FROM_ZERO))
+            val result = first.divide(second, DecimalMode(123, RoundingMode.AWAY_FROM_ZERO))
             val javaBigResult = javaBigFirst.divide(javaBigSecond, MathContext(123, java.math.RoundingMode.UP))
 
             result.toJavaBigDecimal().compareTo(javaBigResult) == 0
@@ -382,7 +383,7 @@ class BigDecimalJvmTest {
             val second = BigDecimal.fromLongWithExponent(3L, 0)
             val javaBigSecond = second.toJavaBigDecimal()
 
-            val result = first.div(second, DecimalMode(401, RoundingMode.AWAY_FROM_ZERO))
+            val result = first.divide(second, DecimalMode(401, RoundingMode.AWAY_FROM_ZERO))
             val javaBigResult = javaBigFirst.divide(javaBigSecond, MathContext(401, java.math.RoundingMode.UP))
 
             result.toJavaBigDecimal().compareTo(javaBigResult) == 0
@@ -393,10 +394,10 @@ class BigDecimalJvmTest {
 
     @Test
     fun debugTestDivision() {
-//        val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("-884653051988182590", 10), 124.toBigInteger())
-//        val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("686869704857289531", 10), 51.toBigInteger())
-//        val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("-2573868278004278171", 10), 86.toBigInteger())
-//        val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("7343078399229486119", 10), 16.toBigInteger())
+//        val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseStringWithMode("-884653051988182590", 10), 124.toBigInteger())
+//        val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseStringWithMode("686869704857289531", 10), 51.toBigInteger())
+//        val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseStringWithMode("-2573868278004278171", 10), 86.toBigInteger())
+//        val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseStringWithMode("7343078399229486119", 10), 16.toBigInteger())
         val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("-7823836971981477152", 10), 167.toBigInteger())
         val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("-1241920988109618346", 10), 118.toBigInteger())
 
@@ -404,7 +405,7 @@ class BigDecimalJvmTest {
 
         val javaBigSecond = second.toJavaBigDecimal()
 
-        val result = first.div(second, DecimalMode(401, RoundingMode.AWAY_FROM_ZERO))
+        val result = first.divide(second, DecimalMode(401, RoundingMode.AWAY_FROM_ZERO))
         val javaBigResult = javaBigFirst.divide(javaBigSecond, MathContext(401, java.math.RoundingMode.UP))
         assertTrue {
             result.toJavaBigDecimal().compareTo(javaBigResult) == 0
@@ -428,18 +429,18 @@ class BigDecimalJvmTest {
         }
     }
 
-    fun singleDivisionTest(first: BigDecimal, second: BigDecimal): Job {
+    private fun singleDivisionTest(first: BigDecimal, second: BigDecimal): Job {
         return GlobalScope.launch {
             assertTrue(
                 "Failed on \n" +
-                        "val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString(\"${first.significand}\", 10), ${first.exponent}.toBigInteger())\n " +
-                        "val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString(\"${second.significand}\", 10), ${second.exponent}.toBigInteger())"
+                        "val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseStringWithMode(\"${first.significand}\", 10), ${first.exponent}.toBigInteger())\n " +
+                        "val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseStringWithMode(\"${second.significand}\", 10), ${second.exponent}.toBigInteger())"
             ) {
                 val javaBigFirst = first.toJavaBigDecimal()
 
                 val javaBigSecond = second.toJavaBigDecimal()
 
-                val result = first.div(second, DecimalMode(401, RoundingMode.AWAY_FROM_ZERO))
+                val result = first.divide(second, DecimalMode(401, RoundingMode.AWAY_FROM_ZERO))
                 val javaBigResult = javaBigFirst.divide(javaBigSecond, MathContext(401, java.math.RoundingMode.UP))
 
                 result.toJavaBigDecimal().compareTo(javaBigResult) == 0

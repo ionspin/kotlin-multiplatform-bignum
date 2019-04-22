@@ -17,11 +17,13 @@
 
 package com.ionspin.kotlin.bignum.integer.base63
 
+import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
 import com.ionspin.kotlin.bignum.integer.util.toDigit
 import kotlin.math.absoluteValue
+import kotlin.math.ceil
 
 /**
  * Just to experiment and see if using immutable lists is better optimized than using arrays.
@@ -282,7 +284,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
 
         // Lets throw this just to catch when we didn't prepare the operands correctly
         if (!firstIsLarger) {
-            throw RuntimeException("subtraction result less than zero")
+            throw RuntimeException("subtract result less than zero")
         }
         val (largerLength, smallerLength, largerData, smallerData) = if (firstIsLarger) {
             Quadruple(firstPrepared.size, secondPrepared.size, firstPrepared, secondPrepared)
@@ -414,18 +416,18 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         return removeLeadingZeroes(listOf(lowResult and baseMask, highResult))
     }
 
-    override fun pow(operand: List<ULong>, exponent: Long): List<ULong> {
+    override fun pow(base: List<ULong>, exponent: Long): List<ULong> {
         if (exponent == 0L) {
             return ONE
         }
         if (exponent == 1L) {
-            return operand
+            return base
         }
-        if (operand.size == 1 && operand[0] == 10UL && exponent < powersOf10.size) {
+        if (base.size == 1 && base[0] == 10UL && exponent < powersOf10.size) {
             return powersOf10[exponent.toInt()]
         }
         return (0 until exponent).fold(ONE) { acc, _ ->
-            acc * operand
+            acc * base
         }
     }
 
@@ -493,7 +495,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         )
         val dividendSize = dividend.size
         val divisorSize = divisor.size
-        var wordPrecision = dividendSize - divisorSize
+        val wordPrecision = dividendSize - divisorSize
 
 
         var qjhat: List<ULong>
@@ -643,6 +645,10 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         return baseDivide(first, second)
     }
 
+    override fun reciprocal(operand: List<ULong>): Pair<List<ULong>, List<ULong>> {
+        TODO("not implemented yet")
+    }
+
     override fun parseForBase(number: String, base: Int): List<ULong> {
         var parsed = ZERO
         number.toLowerCase().forEach { char ->
@@ -666,6 +672,28 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
             copy = divremResult.first
         }
         return stringBuilder.toString().reversed()
+    }
+
+    override fun numberOfDecimalDigits(operand : List<ULong>): Long {
+        val bitLenght = bitLength(operand)
+        val minDigit = ceil((bitLenght - 1) * BigInteger.LOG_10_OF_2)
+//        val maxDigit = floor(bitLenght * LOG_10_OF_2) + 1
+//        val correct = this / 10.toBigInteger().pow(maxDigit.toInt())
+//        return when {
+//            correct == ZERO -> maxDigit.toInt() - 1
+//            correct > 0 && correct < 10 -> maxDigit.toInt()
+//            else -> -1
+//        }
+
+        var tmp = operand / pow(TEN, minDigit.toLong())
+        var counter = 0L
+        while (compare(tmp, ZERO) != 0) {
+            tmp /= TEN
+            counter++
+        }
+        return counter + minDigit.toInt()
+
+
     }
 
     override fun and(operand: List<ULong>, mask: List<ULong>): List<ULong> {
@@ -704,7 +732,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         )
     }
 
-    override fun inv(operand: List<ULong>): List<ULong> {
+    override fun not(operand: List<ULong>): List<ULong> {
         val leadingZeroes = numberOfLeadingZeroes(operand[operand.size - 1])
         val cleanupMask = (((1UL shl leadingZeroes + 1) - 1U) shl (basePowerOfTwo - leadingZeroes)).inv()
         val inverted = List<ULong>(operand.size) {
@@ -753,7 +781,6 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
             throw IndexOutOfBoundsException("Invalid position, addressed word $wordPosition larger than number of words ${operand.size}")
         }
         val bitPosition = position % 63
-        val word = operand[wordPosition.toInt()]
         val setMask = 1UL shl bitPosition.toInt()
         return List(operand.size) {
             if (it == wordPosition.toInt()) {

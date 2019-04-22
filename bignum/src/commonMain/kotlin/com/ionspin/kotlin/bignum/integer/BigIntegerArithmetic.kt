@@ -64,19 +64,19 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
 
     /**
      * Adds two big integers
-     * @return result of addition
+     * @return result of add
      */
     fun add(first: BackingCollectionType, second: BackingCollectionType): BackingCollectionType
 
     /**
      * Substracts two big integers
-     * @return result of subtraction
+     * @return result of subtract
      */
     fun substract(first: BackingCollectionType, second: BackingCollectionType): BackingCollectionType
 
     /**
      * Multiplies two big integers
-     * @return result of multiplication
+     * @return result of multiply
      */
     fun multiply(first: BackingCollectionType, second: BackingCollectionType): BackingCollectionType
 
@@ -85,6 +85,12 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
      * @return A pair representing quotient (first member of the pair) and remainder (second member of the pair)
      */
     fun divide(first: BackingCollectionType, second: BackingCollectionType): Pair<BackingCollectionType, BackingCollectionType>
+
+    /**
+     * Returns a integer reciprocal of this number such that 0 <= base ^ word - operand * reciprocal <= operand,
+     * and remainder such that 0 < reciprocal < operand
+     */
+    fun reciprocal(operand : BackingCollectionType) : Pair<BackingCollectionType, BackingCollectionType>
 
     /**
      * Exponentiation function
@@ -102,6 +108,8 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
      */
     fun toString(operand: BackingCollectionType, base : Int) : String
 
+    fun numberOfDecimalDigits(operand : BackingCollectionType): Long
+
     fun fromULong(uLong : ULong) : BackingCollectionType
     fun fromUInt(uInt : UInt) : BackingCollectionType
     fun fromUShort(uShort : UShort): BackingCollectionType
@@ -114,7 +122,7 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
     fun or(operand: BackingCollectionType, mask: BackingCollectionType) : BackingCollectionType
     fun xor(operand: BackingCollectionType, mask: BackingCollectionType) : BackingCollectionType
     fun and(operand: BackingCollectionType, mask: BackingCollectionType) : BackingCollectionType
-    fun inv(operand: BackingCollectionType) : BackingCollectionType
+    fun not(operand: BackingCollectionType) : BackingCollectionType
 
     fun bitAt(operand : BackingCollectionType, position : Long) : Boolean
     fun setBitAt(operand : BackingCollectionType, position : Long, bit : Boolean) : BackingCollectionType
