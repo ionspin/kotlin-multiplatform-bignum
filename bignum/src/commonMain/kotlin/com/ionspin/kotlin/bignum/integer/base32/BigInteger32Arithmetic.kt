@@ -555,7 +555,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         val check = product shr reciprocal.second
         return if (check != ONE) {
             val check2 = product shr reciprocal.second - 1
-            val diff = operand - check2
 
             Pair(reciprocal.first, reciprocal.second - 1)
         } else {
@@ -741,7 +740,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             throw IndexOutOfBoundsException("Invalid position, addressed word $wordPosition larger than number of words ${operand.size}")
         }
         val bitPosition = position % 63
-        val word = operand[wordPosition.toInt()]
         val setMask = 1U shl bitPosition.toInt()
         return UIntArray(operand.size) {
             if (it == wordPosition.toInt()) {

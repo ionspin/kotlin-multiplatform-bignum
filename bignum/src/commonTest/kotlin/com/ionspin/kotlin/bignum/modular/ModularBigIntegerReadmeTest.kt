@@ -15,19 +15,27 @@
  *
  */
 
-package com.ionspin.kotlin.bignum
+package com.ionspin.kotlin.bignum.modular
 
-import com.ionspin.kotlin.bignum.integer.BigInteger
-import com.ionspin.kotlin.bignum.modular.ModularBigInteger
+import com.ionspin.kotlin.bignum.integer.toBigInteger
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 04-Apr-2019
+ * on 22-Apr-2019
  */
-
 @ExperimentalUnsignedTypes
-data class QuotientAndRemainder(val quotient: BigInteger, val remainder: BigInteger)
+class ModularBigIntegerReadmeTest {
 
-@ExperimentalUnsignedTypes
-data class ModularQuotientAndRemainder(val quotient: ModularBigInteger, val remainder: ModularBigInteger)
+    @Test
+    fun createModularBigInteger() {
+        val creator = ModularBigInteger.creatorForModulo(100)
+        val modularBigInteger = creator.fromLong(150)
+        println("ModularBigInteger: ${modularBigInteger.toStringWithModulo()}")
+        assertTrue {
+            modularBigInteger.residue == 50.toBigInteger()
+        }
+    }
+}

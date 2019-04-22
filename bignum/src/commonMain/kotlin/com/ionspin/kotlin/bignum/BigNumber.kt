@@ -26,8 +26,10 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
  * on 04-Apr-2019
  */
 
+@ExperimentalUnsignedTypes
 interface BigNumber<BigType> where BigType : BigNumber<BigType> {
 
+    @ExperimentalUnsignedTypes
     interface Creator<BigType> {
         fun parseString(string: String, base: Int = 10): BigType
         fun fromULong(uLong: ULong): BigType

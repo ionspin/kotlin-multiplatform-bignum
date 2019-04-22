@@ -936,7 +936,6 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         }
         val bitPosition = position % 63
         val word = operand[wordPosition.toInt()]
-        val getMask = (word and (1UL shl bitPosition.toInt()) == 1UL)
         val setMask = 1UL shl bitPosition.toInt()
         return ULongArray(operand.size) {
             if (it == wordPosition.toInt()) {

@@ -978,7 +978,7 @@ class BigDecimal private constructor(
     //TODO
     private fun integerDiv(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
         val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
-        val (first, second) = bringSignificandToSameExponent(this, other)
+//        val (first, second) = bringSignificandToSameExponent(this, other)
         val newExponent = this.exponent - other.exponent
         val newSignificand = this.significand / other.significand
         return roundOrDont(newSignificand, newExponent, resolvedDecimalMode)
@@ -986,7 +986,7 @@ class BigDecimal private constructor(
 
     private fun rem(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
         val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
-        val (first, second) = bringSignificandToSameExponent(this, other)
+//        val (first, second) = bringSignificandToSameExponent(this, other)
         val newExponent = this.exponent - other.exponent
         val newSignificand = this.significand % other.significand
         return roundOrDont(newSignificand, newExponent, resolvedDecimalMode)
@@ -1062,8 +1062,8 @@ class BigDecimal private constructor(
     /**
      * Exponentiate this BigDecimal by some exponent
      */
-    override fun pow(powerExponent: Long): BigDecimal {
-        return BigDecimal(significand, exponent * powerExponent)
+    override fun pow(exponent: Long): BigDecimal {
+        return BigDecimal(significand, this.exponent * exponent)
     }
 
     /**
@@ -1076,9 +1076,6 @@ class BigDecimal private constructor(
      * Round using specific [DecimalMode] and return rounded instance
      */
     fun round(decimalMode: DecimalMode?): BigDecimal {
-        if (decimalMode == null) {
-            return this
-        }
         if (decimalMode == null) {
             return this
         }

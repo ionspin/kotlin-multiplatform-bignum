@@ -146,15 +146,6 @@ BigIntegerTest {
 
 
     @Test
-    fun testAddition() {
-        val a = BigInteger.parseString("257751265136509073600000000000000000000000000000000000000000000000000" +
-                "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-            10)
-        val b = BigInteger.parseString("-6866244039176730022", 10)
-        val res = a + b
-    }
-
-    @Test
     fun testModInverse() {
 
         assertTrue {

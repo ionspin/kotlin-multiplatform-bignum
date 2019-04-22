@@ -94,9 +94,9 @@ class ModularBigInteger @ExperimentalUnsignedTypes constructor(
                 private fun BigInteger.prep() : BigInteger {
                     val result = this % modulo
                     return when (result.sign) {
-                        Sign.POSITIVE -> this % modulo
-                        Sign.NEGATIVE -> (this % modulo) + modulo
-                        Sign.ZERO -> this
+                        Sign.POSITIVE -> result
+                        Sign.NEGATIVE -> result + modulo
+                        Sign.ZERO -> BigInteger.ZERO
                     }
                 }
 
@@ -153,6 +153,11 @@ class ModularBigInteger @ExperimentalUnsignedTypes constructor(
         val quotient = quotientAndRemainder.quotient % modulo
         val remainder = quotientAndRemainder.remainder % modulo
         return Pair(ModularBigInteger(quotient, modulo, creator), ModularBigInteger(remainder, modulo, creator))
+    }
+
+    fun inverse() : ModularBigInteger {
+        val inverse = residue.modInverse(modulo)
+        return ModularBigInteger(inverse, modulo, creator)
     }
 
     fun compare(other: ModularBigInteger): Int {
@@ -244,13 +249,17 @@ class ModularBigInteger @ExperimentalUnsignedTypes constructor(
         return residue.toString(base)
     }
 
-    fun toStringWithModulo(base : Int) : String {
+    fun toStringWithModulo(base : Int = 10) : String {
         return residue.toString(base) + " mod " + modulo.toString(base)
     }
 
     infix fun divrem(other: ModularBigInteger): ModularQuotientAndRemainder {
         val result = divideAndRemainder(other)
         return ModularQuotientAndRemainder(result.first, result.second)
+    }
+
+    fun toBigInteger() : BigInteger {
+        return residue
     }
 
 

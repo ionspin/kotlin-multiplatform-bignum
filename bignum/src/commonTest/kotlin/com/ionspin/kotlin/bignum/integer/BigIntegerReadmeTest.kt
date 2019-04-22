@@ -231,4 +231,12 @@ class BigIntegerReadmeTest {
         }
     }
 
+    @Test
+    fun testToModularBigInteger() {
+        val a = 100_002.toBigInteger()
+        val modularA = a.toModularBigInteger(500.toBigInteger())
+        println("ModularBigInteger: ${modularA.toStringWithModulo()}")
+        assertTrue { modularA.compareTo(2.toBigInteger()) == 0 }
+    }
+
 }
