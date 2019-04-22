@@ -20,6 +20,7 @@ package com.ionspin.kotlin.bignum.integer
 import com.ionspin.kotlin.bignum.BigNumber
 import com.ionspin.kotlin.bignum.BitwiseCapable
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
+import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 import kotlin.math.ceil
 import kotlin.math.log10
 
@@ -153,7 +154,8 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Big
             }
 
         }
-
+        //BigIntegers are immutable so this is pointless, but the rest of creator implementations use this.
+        override fun fromBigInteger(bigInteger: BigInteger): BigInteger { return bigInteger }
         override fun fromULong(uLong: ULong) = BigInteger(arithmetic.fromULong(uLong), Sign.POSITIVE)
         override fun fromUInt(uInt: UInt) = BigInteger(arithmetic.fromUInt(uInt), Sign.POSITIVE)
         override fun fromUShort(uShort: UShort) = BigInteger(arithmetic.fromUShort(uShort), Sign.POSITIVE)
@@ -528,6 +530,11 @@ class BigInteger private constructor(wordArray: WordArray, val sign: Sign) : Big
             counter--
         }
         return stringBuilder.toString()
+    }
+
+    fun toModularBigInteger(modulo : BigInteger) : ModularBigInteger {
+        val creator = ModularBigInteger.creatorForModulo(modulo)
+        return creator.fromBigInteger(this)
     }
 
 

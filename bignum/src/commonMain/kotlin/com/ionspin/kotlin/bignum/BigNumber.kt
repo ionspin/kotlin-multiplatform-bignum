@@ -38,6 +38,7 @@ interface BigNumber<BigType> where BigType : BigNumber<BigType> {
         fun fromInt(int: Int): BigType
         fun fromShort(short: Short): BigType
         fun fromByte(byte: Byte): BigType
+        fun fromBigInteger(bigInteger: BigInteger) : BigType
     }
     
     interface Util<BigType> {
@@ -53,7 +54,7 @@ interface BigNumber<BigType> where BigType : BigNumber<BigType> {
     fun divide(other: BigType): BigType
 
     /**
-     * Remainder of integer division operation
+     * Remainder of integer division operation. Remainder has same sign as dividend.
      */
     fun remainder(other: BigType): BigType
 
@@ -147,6 +148,9 @@ internal interface CommonBigNumberOperations<BigType> where BigType : BigNumber<
 
     operator fun div(other: BigType): BigType = getInstance().divide(other)
 
+    /**
+     * Remainder of integer division operation. Returns the *least absolute remainder* (remainder has same sign as dividend)
+     */
     operator fun rem(other: BigType): BigType = getInstance().remainder(other)
 
     operator fun plus(int: Int): BigType = getInstance().add(getCreator().fromInt(int))
@@ -181,12 +185,24 @@ internal interface CommonBigNumberOperations<BigType> where BigType : BigNumber<
 
     operator fun div(byte: Byte): BigType = getInstance().divide(getCreator().fromByte(byte))
 
+    /**
+     * Remainder of integer division operation. Remainder has same sign as dividend
+     */
     operator fun rem(int: Int): BigType = getInstance().remainder(getCreator().fromInt(int))
 
+    /**
+     * Remainder of integer division operation. Remainder has same sign as dividend
+     */
     operator fun rem(long: Long): BigType = getInstance().remainder(getCreator().fromLong(long))
 
+    /**
+     * Remainder of integer division operation. Remainder has same sign as dividend
+     */
     operator fun rem(short: Short): BigType = getInstance().remainder(getCreator().fromShort(short))
 
+    /**
+     * Remainder of integer division operation. Remainder has same sign as dividend.
+     */
     operator fun rem(byte: Byte): BigType = getInstance().remainder(getCreator().fromByte(byte))
 
 }

@@ -229,6 +229,18 @@ class BigDecimal private constructor(
          * @param long Long value to conver
          * @return BigDecimal representing input
          */
+        fun fromBigInteger(bigInteger: BigInteger, decimalMode: DecimalMode? = null): BigDecimal {
+            return BigDecimal(bigInteger, bigInteger.numberOfDecimalDigits().toBigInteger() - 1, decimalMode).round(decimalMode)
+        }
+
+        /**
+         * Convert a Long into a BigDecimal.
+         *
+         * i.e. 7111 -> 7.111E+3
+         *
+         * @param long Long value to conver
+         * @return BigDecimal representing input
+         */
         fun fromLong(long: Long, decimalMode: DecimalMode? = null): BigDecimal {
             val bigint = BigInteger.fromLong(long)
             return BigDecimal(bigint, bigint.numberOfDecimalDigits().toBigInteger() - 1, decimalMode).round(decimalMode)
@@ -471,6 +483,18 @@ class BigDecimal private constructor(
          */
         fun fromByteWithExponent(byte: Byte, exponent: Int, decimalMode: DecimalMode? = null): BigDecimal =
             fromByteWithExponent(byte, exponent.toBigInteger(), decimalMode).round(decimalMode)
+
+        /**
+         * Convert a BigInteger into a BigDecimal, but use supplied value directly as significant.
+         *
+         * i.e. 7111 -> 7.111E+0
+         *
+         * @param long Long value to conver
+         * @return BigDecimal representing input
+         */
+        override fun fromBigInteger(bigInteger: BigInteger): BigDecimal {
+            Companion.fromBigInteger(bigInteger, null)
+        }
 
         /**
          * Convert a Long into a BigDecimal, but use supplied value directly as significant.
