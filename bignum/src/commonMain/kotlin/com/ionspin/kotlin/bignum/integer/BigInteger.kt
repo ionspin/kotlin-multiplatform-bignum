@@ -22,6 +22,7 @@ import com.ionspin.kotlin.bignum.BitwiseCapable
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.math.log10
 
 
@@ -328,8 +329,18 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     }
 
     fun sqrt(): SqareRootAndRemainder {
-        TODO()
+        return naiveSqrtRem()
     }
+
+    fun naiveSqrtRem() : SqareRootAndRemainder {
+        TODO()
+//        var l = floor((numberOfWords - 1).toDouble() / 4).toInt()
+//        if (l == 0) return
+    }
+
+//    fun basecaseSqrt() : SqareRootAndRemainder {
+//
+//    }
 
     fun gcd(other: BigInteger) : BigInteger {
         return naiveGcd(other)

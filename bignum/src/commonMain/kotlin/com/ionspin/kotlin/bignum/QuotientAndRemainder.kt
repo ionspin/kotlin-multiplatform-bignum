@@ -18,6 +18,7 @@
 package com.ionspin.kotlin.bignum
 
 import com.ionspin.kotlin.bignum.integer.BigInteger
+import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 
 /**
  * Created by Ugljesa Jovanovic
@@ -26,3 +27,5 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
  */
 
 data class QuotientAndRemainder(val quotient: BigInteger, val remainder: BigInteger)
+
+data class ModularQuotientAndRemainder(val quotient: ModularBigInteger, val remainder: ModularBigInteger)

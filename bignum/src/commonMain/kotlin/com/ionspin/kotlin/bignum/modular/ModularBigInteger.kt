@@ -19,6 +19,7 @@ package com.ionspin.kotlin.bignum.modular
 
 import com.ionspin.kotlin.bignum.BigNumber
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
+import com.ionspin.kotlin.bignum.ModularQuotientAndRemainder
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.Sign
 
@@ -245,6 +246,11 @@ class ModularBigInteger @ExperimentalUnsignedTypes constructor(
 
     fun toStringWithModulo(base : Int) : String {
         return residue.toString(base) + " mod " + modulo.toString(base)
+    }
+
+    infix fun divrem(other: ModularBigInteger): ModularQuotientAndRemainder {
+        val result = divideAndRemainder(other)
+        return ModularQuotientAndRemainder(result.first, result.second)
     }
 
 
