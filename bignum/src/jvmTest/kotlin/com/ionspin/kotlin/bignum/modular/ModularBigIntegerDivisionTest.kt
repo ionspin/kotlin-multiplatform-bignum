@@ -20,6 +20,7 @@ package com.ionspin.kotlin.bignum.modular
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.base63.toJavaBigInteger
+import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -37,7 +38,7 @@ import kotlin.test.assertTrue
 @ExperimentalUnsignedTypes
 class ModularBigIntegerDivisionTest {
     @Test
-    fun testRandomModularMultiplication() {
+    fun testRandomModularDivision() {
         val seed = 1
         val random = Random(seed)
         val jobList: MutableList<Job> = mutableListOf()
@@ -72,11 +73,19 @@ class ModularBigIntegerDivisionTest {
         }
     }
 
+    @Test
+    fun specificTest() {
+        val creator = ModularBigInteger.creatorForModulo(15)
+        val a = creator.fromInt(-10)
+        val b = creator.fromInt(4)
+        singleDivisionTest(a, b)
+    }
+
     fun singleDivisionTest(a : ModularBigInteger, b : ModularBigInteger) {
         assertTrue {
-            val result = a divrem  b
-            val javaResultQuotient = (a.residue.toJavaBigInteger() / b.residue.toJavaBigInteger()).mod(a.modulo.toJavaBigInteger())
-            val javaResultRemainder = (a.residue.toJavaBigInteger() % b.residue.toJavaBigInteger()).mod(a.modulo.toJavaBigInteger())
+            val result = a divrem b
+            val javaResultQuotient = (a.residue.toJavaBigInteger() / b.residue.toJavaBigInteger()).mod(a.modulus.toJavaBigInteger())
+            val javaResultRemainder = (a.residue.toJavaBigInteger() % b.residue.toJavaBigInteger()).mod(a.modulus.toJavaBigInteger())
             result.quotient.residue.toJavaBigInteger() == javaResultQuotient &&
                     result.remainder.residue.toJavaBigInteger() == javaResultRemainder
         }

@@ -275,6 +275,10 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
 
     }
 
+    /**
+     * Returns the remainder of division operation. Uses truncating division, which means
+     * that the sign of remainder will be same as sign of dividend
+     */
     override fun remainder(other: BigInteger): BigInteger {
         if (other.isZero()) {
             throw ArithmeticException("Division by zero! $this / $other")
@@ -310,7 +314,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         val remainder = if (result.second == arithmetic.ZERO) {
             ZERO
         } else {
-            BigInteger(result.second, sign)
+            BigInteger(result.second, this.sign)
         }
         return Pair(
             quotient,
@@ -359,7 +363,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
 
     fun modInverse(modulo: BigInteger) : BigInteger {
         if (gcd(modulo) != ONE) {
-            throw ArithmeticException("BigInteger is not invertible. This and modulo are not relatively prime (coprime)")
+            throw ArithmeticException("BigInteger is not invertible. This and modulus are not relatively prime (coprime)")
         }
         var u = ONE
         var w = ZERO
@@ -375,6 +379,20 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         }
         return u
     }
+
+    /**
+     * Returns an always positive remainder of division operation
+     */
+    infix fun mod(modulo : BigInteger) : BigInteger {
+        val result = this % modulo
+        return if (result < 0) {
+            result + modulo
+        } else {
+            result
+        }
+    }
+
+
 
     fun compare(other: BigInteger): Int {
         if (isZero() && other.isZero()) return 0
@@ -582,7 +600,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         return creator.fromBigInteger(this)
     }
 
-//    fun modularInverse(modulo : BigInteger) : BigInteger {
+//    fun modularInverse(modulus : BigInteger) : BigInteger {
 //
 //    }
 

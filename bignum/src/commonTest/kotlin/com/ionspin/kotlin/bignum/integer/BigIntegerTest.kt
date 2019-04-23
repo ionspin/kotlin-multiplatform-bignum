@@ -168,4 +168,49 @@ BigIntegerTest {
         assertTrue { a.gcd(c) == 2.toBigInteger() }
     }
 
+    @Test
+    fun divisionSign() {
+        assertTrue {
+            val a = 7.toBigInteger()
+            val b = 3.toBigInteger()
+            val (q,r) = a divrem b
+            a == (q * b + r)
+        }
+        assertTrue {
+            val a = -7.toBigInteger()
+            val b = 3.toBigInteger()
+            val (q,r) = a divrem b
+            a == (q * b + r)
+        }
+        assertTrue {
+            val a = 7.toBigInteger()
+            val b = -3.toBigInteger()
+            val (q,r) = a divrem b
+            a == (q * b + r)
+        }
+        assertTrue {
+            val a = -7.toBigInteger()
+            val b = -3.toBigInteger()
+            val (q,r) = a divrem b
+            a == (q * b + r)
+        }
+    }
+
+    @Test
+    fun testModInfix() {
+        assertTrue {
+            val a = -152.toBigInteger()
+            val b = a.mod(100.toBigInteger())
+            b == 48.toBigInteger()
+        }
+
+        assertTrue {
+            val a = 152.toBigInteger()
+            val b = a.mod(100.toBigInteger())
+            b == 52.toBigInteger()
+        }
+
+
+    }
+
 }

@@ -428,12 +428,9 @@ Donald E. Knuth
 3rd Edition
 ```
 
-``
+```
 Refinement of a newton reciprocal algorithm for arbitrary precision numbers
-Yiping Cheng,
- Ze Liu
-
-
+Yiping Cheng, Ze Liu
 ```
 And many other blogs and posts scattered over the internet.
 

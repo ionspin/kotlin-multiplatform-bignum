@@ -19,6 +19,7 @@ package com.ionspin.kotlin.bignum.integer
 
 import com.ionspin.kotlin.bignum.integer.BigInteger.Companion.ZERO
 import com.ionspin.kotlin.bignum.integer.base63.toJavaBigInteger
+import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -46,6 +47,7 @@ class BigIntegerJvmTest {
             aInverse.toJavaBigInteger() == aJavaInverse
         }
     }
+
     //TODO need to implement better testcase, need better coprime generation
     @Test
     fun testRandomModInverse() {
@@ -90,4 +92,33 @@ class BigIntegerJvmTest {
             inverse.toJavaBigInteger().compareTo(javaInverse) == 0
         }
     }
+
+    @Test
+    fun testModPow() {
+        val creator = ModularBigInteger.creatorForModulo(10)
+
+        assertTrue {
+            val a = creator.fromInt(-3)
+            val aPow = a.pow(3)
+            val javaBigIntPow = (-3).toBigInteger().toJavaBigInteger()
+                .modPow(
+                    3.toBigInteger().toJavaBigInteger(),
+                    10.toBigInteger().toJavaBigInteger()
+                )
+            aPow.residue.toJavaBigInteger().compareTo(javaBigIntPow) == 0
+        }
+
+        assertTrue {
+            val a = creator.fromInt(3)
+            val aPow = a.pow(3)
+            val javaBigIntPow = (3).toBigInteger().toJavaBigInteger()
+                .modPow(
+                    3.toBigInteger().toJavaBigInteger(),
+                    10.toBigInteger().toJavaBigInteger()
+                )
+            aPow.residue.toJavaBigInteger().compareTo(javaBigIntPow) == 0
+        }
+    }
+
+
 }
