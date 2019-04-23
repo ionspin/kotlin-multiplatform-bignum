@@ -383,7 +383,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     /**
      * Returns an always positive remainder of division operation
      */
-    fun mod(modulo : BigInteger) : BigInteger {
+    infix fun mod(modulo : BigInteger) : BigInteger {
         val result = this % modulo
         return if (result < 0) {
             result + modulo
@@ -391,6 +391,8 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
             result
         }
     }
+
+
 
     fun compare(other: BigInteger): Int {
         if (isZero() && other.isZero()) return 0

@@ -184,7 +184,7 @@ class ModularBigInteger @ExperimentalUnsignedTypes constructor(
     override fun negate(): ModularBigInteger {
         return this
         //Code below doesn't make sense as negated number if original was positive, would be the same number we started
-        //from,
+        //from. Also a ModularBigInteger is never negative
 //        return when (residue.sign) {
 //            Sign.ZERO -> this
 //            Sign.POSITIVE -> ModularBigInteger(residue - modulus, modulus, creator)
