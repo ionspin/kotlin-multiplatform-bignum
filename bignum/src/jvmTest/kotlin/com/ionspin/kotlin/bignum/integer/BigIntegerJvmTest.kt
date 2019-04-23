@@ -90,4 +90,33 @@ class BigIntegerJvmTest {
             inverse.toJavaBigInteger().compareTo(javaInverse) == 0
         }
     }
+
+
+    @Test
+    fun divisionSign() {
+        assertTrue {
+            val a = 7.toBigInteger()
+            val b = 3.toBigInteger()
+            val (q,r) = a divrem b
+            a == (q * b + r)
+        }
+        assertTrue {
+            val a = -7.toBigInteger()
+            val b = 3.toBigInteger()
+            val (q,r) = a divrem b
+            a == (q * b + r)
+        }
+        assertTrue {
+            val a = 7.toBigInteger()
+            val b = -3.toBigInteger()
+            val (q,r) = a divrem b
+            a == (q * b + r)
+        }
+        assertTrue {
+            val a = -7.toBigInteger()
+            val b = -3.toBigInteger()
+            val (q,r) = a divrem b
+            a == (q * b + r)
+        }
+    }
 }

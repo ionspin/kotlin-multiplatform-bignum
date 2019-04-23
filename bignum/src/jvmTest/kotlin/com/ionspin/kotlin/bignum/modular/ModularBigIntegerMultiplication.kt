@@ -75,7 +75,7 @@ class ModularBigIntegerMultiplication {
     fun singleMultiplicationTest(a : ModularBigInteger, b : ModularBigInteger) {
         assertTrue {
             val result = a * b
-            val javaResult = (a.residue.toJavaBigInteger() * b.residue.toJavaBigInteger()).mod(a.modulo.toJavaBigInteger())
+            val javaResult = (a.residue.toJavaBigInteger() * b.residue.toJavaBigInteger()).mod(a.modulus.toJavaBigInteger())
             result.residue.toJavaBigInteger() == javaResult
         }
     }
