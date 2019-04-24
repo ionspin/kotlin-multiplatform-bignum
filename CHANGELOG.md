@@ -9,6 +9,7 @@
 - Implemented division by reciprocal multiplication. Not used by division at the moment as it is unoptimized and slower than basecase division in ealry benchmarks.
 - Fixed a bug in Int32 shift right when shift amount was an exact multiple of word size 
 - Added constructor overloads
+- Added value methods (intValue, longValue...)
 - Renamed invPrecise() bigInteger method to not()
 - Renamed numberOfDigits() to numberOfDecimalDigits()
 - Introduced BigNumber and BitwiseOperations interfaces 
