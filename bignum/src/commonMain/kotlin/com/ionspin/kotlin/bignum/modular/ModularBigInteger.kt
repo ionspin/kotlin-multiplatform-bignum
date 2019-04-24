@@ -20,6 +20,7 @@ package com.ionspin.kotlin.bignum.modular
 import com.ionspin.kotlin.bignum.BigNumber
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.ModularQuotientAndRemainder
+import com.ionspin.kotlin.bignum.NarrowingOperations
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigInteger.Companion.ONE
 import com.ionspin.kotlin.bignum.integer.Sign
@@ -37,7 +38,8 @@ class ModularBigInteger @ExperimentalUnsignedTypes constructor(
     val residue : BigInteger,
     val modulus : BigInteger,
     private val creator: BigNumber.Creator<ModularBigInteger>) : BigNumber<ModularBigInteger>,
-        CommonBigNumberOperations<ModularBigInteger>
+        CommonBigNumberOperations<ModularBigInteger>,
+        NarrowingOperations<ModularBigInteger>
 {
 
     init {
@@ -275,6 +277,62 @@ class ModularBigInteger @ExperimentalUnsignedTypes constructor(
         if (other.residue.gcd(modulus) != ONE) {
             throw ArithmeticException("BigInteger is not invertible. This and modulus are not relatively prime (coprime)")
         }
+    }
+
+    override fun intValue(exactRequired: Boolean): Int {
+        if (exactRequired && residue > Int.MAX_VALUE.toUInt()) {
+            throw ArithmeticException("Cannot convert to int and provide exact value")
+        }
+        return residue.magnitude[0].toInt()
+    }
+
+    override fun longValue(exactRequired: Boolean): Long {
+        if (exactRequired && (residue > Long.MAX_VALUE.toUInt())) {
+            throw ArithmeticException("Cannot convert to long and provide exact value")
+        }
+        return residue.magnitude[0].toLong()
+    }
+
+    override fun byteValue(exactRequired: Boolean): Byte {
+        if (exactRequired && residue > Byte.MAX_VALUE.toUInt()) {
+            throw ArithmeticException("Cannot convert to byte and provide exact value")
+        }
+        return residue.magnitude[0].toByte()
+    }
+
+    override fun shortValue(exactRequired: Boolean): Short {
+        if (exactRequired && residue > Short.MAX_VALUE.toUInt()) {
+            throw ArithmeticException("Cannot convert to short and provide exact value")
+        }
+        return residue.magnitude[0].toShort()
+    }
+
+    override fun uintValue(exactRequired: Boolean): UInt {
+        if (exactRequired && residue > UInt.MAX_VALUE.toUInt()) {
+            throw ArithmeticException("Cannot convert to unsigned int and provide exact value")
+        }
+        return residue.magnitude[0].toUInt()
+    }
+
+    override fun ulongValue(exactRequired: Boolean): ULong {
+        if (exactRequired && (residue > ULong.MAX_VALUE.toUInt())) {
+            throw ArithmeticException("Cannot convert to unsigned long and provide exact value")
+        }
+        return residue.magnitude[0]
+    }
+
+    override fun ubyteValue(exactRequired: Boolean): UByte {
+        if (exactRequired && residue > UByte.MAX_VALUE.toUInt()) {
+            throw ArithmeticException("Cannot convert to unsigned byte and provide exact value")
+        }
+        return residue.magnitude[0].toUByte()
+    }
+
+    override fun ushortValue(exactRequired: Boolean): UShort {
+        if (exactRequired && residue > UShort.MAX_VALUE.toUInt()) {
+            throw ArithmeticException("Cannot convert to unsigned short and provide exact value")
+        }
+        return residue.magnitude[0].toUShort()
     }
 
 

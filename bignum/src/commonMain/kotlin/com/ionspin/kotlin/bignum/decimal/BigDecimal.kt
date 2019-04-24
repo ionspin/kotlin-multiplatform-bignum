@@ -1184,6 +1184,8 @@ class BigDecimal private constructor(
         return comparison == 0
     }
 
+
+
     override fun hashCode(): Int {
         return significand.hashCode() + exponent.hashCode() + decimalMode.hashCode()
     }
@@ -1283,5 +1285,7 @@ class BigDecimal private constructor(
         return prepared.dropLastWhile { it == '0' }
 
     }
+
+
 
 }
