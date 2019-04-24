@@ -19,7 +19,6 @@ package com.ionspin.kotlin.bignum.integer
 
 import com.ionspin.kotlin.bignum.integer.BigInteger.Companion.ZERO
 import com.ionspin.kotlin.bignum.integer.base63.toJavaBigInteger
-import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -119,6 +118,11 @@ class BigIntegerJvmTest {
             aPow.residue.toJavaBigInteger().compareTo(javaBigIntPow) == 0
         }
     }
+
+
+
+
+
 
 
 }

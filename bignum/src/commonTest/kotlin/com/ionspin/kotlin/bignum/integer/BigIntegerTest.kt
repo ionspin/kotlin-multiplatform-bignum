@@ -18,7 +18,6 @@
 package com.ionspin.kotlin.bignum.integer.arithmetic
 
 import com.ionspin.kotlin.bignum.integer.BigInteger
-import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
@@ -210,6 +209,135 @@ BigIntegerTest {
             b == 52.toBigInteger()
         }
 
+
+    }
+
+    @Test
+    fun testNarrowingFunctions() {
+        assertFailsWith(ArithmeticException::class) {
+            val a = Long.MAX_VALUE.toBigInteger()
+            a.intValue(exactRequired = true)
+        }
+        assertFailsWith(ArithmeticException::class) {
+            val a = Long.MAX_VALUE.toBigInteger()
+            a.shortValue(exactRequired = true)
+        }
+        assertFailsWith(ArithmeticException::class) {
+            val a = Long.MAX_VALUE.toBigInteger()
+            a.byteValue(exactRequired = true)
+        }
+        assertFailsWith(ArithmeticException::class) {
+            val a = Long.MAX_VALUE.toBigInteger() + 10
+            a.longValue(exactRequired = true)
+        }
+        assertFailsWith(ArithmeticException::class) {
+            val a = Long.MAX_VALUE.toBigInteger()
+            a.uintValue(exactRequired = true)
+        }
+        assertFailsWith(ArithmeticException::class) {
+            val a = Long.MAX_VALUE.toBigInteger()
+            a.ushortValue(exactRequired = true)
+        }
+        assertFailsWith(ArithmeticException::class) {
+            val a = Long.MAX_VALUE.toBigInteger()
+            a.ubyteValue(exactRequired = true)
+        }
+        assertFailsWith(ArithmeticException::class) {
+            val a = Long.MAX_VALUE.toBigInteger() + 10
+            a.ulongValue(exactRequired = true)
+        }
+
+        assertTrue {
+            val a = 2.toBigInteger()
+            a.intValue(exactRequired = true) == 2
+        }
+        assertTrue {
+            val a = 2.toBigInteger()
+            val short : Short = 2
+            a.shortValue(exactRequired = true) == short
+        }
+        assertTrue {
+            val a = 2.toBigInteger()
+            val byte : Byte = 2
+            a.byteValue(exactRequired = true) == byte
+        }
+        assertTrue {
+            val a = 2.toBigInteger()
+            a.longValue(exactRequired = true) == 2L
+        }
+        assertTrue {
+            val a = 2.toBigInteger()
+            a.uintValue(exactRequired = true) == 2U
+        }
+        assertTrue {
+            val a = 2.toBigInteger()
+            val ushort : UShort = 2U
+            a.ushortValue(exactRequired = true) == ushort
+        }
+        assertTrue {
+            val a = 2.toBigInteger()
+            val ubyte : UByte = 2U
+            a.ubyteValue(exactRequired = true) == ubyte
+        }
+        assertTrue {
+            val a = 2.toBigInteger()
+            a.ulongValue(exactRequired = true) == 2UL
+        }
+
+        assertTrue {
+            val a = Long.MAX_VALUE.toBigInteger() + 10
+            a.intValue(exactRequired = false) == 9
+        }
+        assertTrue {
+            val a = Long.MAX_VALUE.toBigInteger() + 10
+            val short : Short = 9
+            a.shortValue(exactRequired = false) == short
+        }
+        assertTrue {
+            val a = Long.MAX_VALUE.toBigInteger() + 10
+            val byte : Byte = 9
+            a.byteValue(exactRequired = false) == byte
+        }
+        assertTrue {
+            val a = Long.MAX_VALUE.toBigInteger() + 10
+            a.longValue(exactRequired = false) == 9L
+        }
+        assertTrue {
+            val a = Long.MAX_VALUE.toBigInteger() + 10
+            a.uintValue(exactRequired = false) == 9U
+        }
+        assertTrue {
+            val a = Long.MAX_VALUE.toBigInteger() + 10
+            val ushort : UShort = 9U
+            a.ushortValue(exactRequired = false) == ushort
+        }
+        assertTrue {
+            val a = Long.MAX_VALUE.toBigInteger() + 10
+            val ubyte : UByte = 9U
+            a.ubyteValue(exactRequired = false) == ubyte
+        }
+        assertTrue {
+            val a = Long.MAX_VALUE.toBigInteger() + 10
+            a.ulongValue(exactRequired = false) == 9UL
+        }
+
+
+
+    }
+
+    @Test
+    fun testRange() {
+
+
+        assertTrue {
+            val range = 1.toBigInteger() .. 10.toBigInteger()
+            range.contains(5.toBigInteger())
+        }
+
+        assertTrue {
+            val range = 1.toBigInteger() .. (Long.MAX_VALUE.toBigInteger() * Long.MAX_VALUE.toBigInteger())
+            range.contains(Long.MAX_VALUE.toBigInteger() * Int.MAX_VALUE)
+        }
 
     }
 

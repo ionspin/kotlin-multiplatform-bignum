@@ -134,6 +134,19 @@ interface BigNumber<BigType> where BigType : BigNumber<BigType> {
 
 
 
+
+
+}
+
+internal interface NarrowingOperations<BigType> where BigType : BigNumber<BigType> {
+    fun intValue(exactRequired : Boolean = false) : Int
+    fun longValue(exactRequired : Boolean = false) : Long
+    fun byteValue(exactRequired : Boolean = false) : Byte
+    fun shortValue(exactRequired : Boolean = false) : Short
+    fun uintValue(exactRequired : Boolean = false) : UInt
+    fun ulongValue(exactRequired : Boolean = false) : ULong
+    fun ubyteValue(exactRequired : Boolean = false) : UByte
+    fun ushortValue(exactRequired : Boolean = false) : UShort
 }
 
 @ExperimentalUnsignedTypes
