@@ -26,6 +26,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.random.Random
 import kotlin.random.nextULong
+import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 import kotlin.test.assertTrue
 
 /**
