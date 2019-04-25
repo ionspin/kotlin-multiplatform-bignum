@@ -20,6 +20,7 @@ package com.ionspin.kotlin.bignum.integer.arithmetic
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.toBigInteger
+import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
@@ -211,6 +212,23 @@ BigIntegerTest {
         }
 
 
+    }
+
+
+    @Test
+    fun irrelevant() {
+        val a = -5
+        val b = 3
+        val aBigInt = a.toBigInteger()
+        val bBigInt = b.toBigInteger()
+        println("a rem b == ${a.rem(b)}")
+        println("aBigInt rem bBigInt == ${aBigInt.remainder(bBigInt)}")
+        println("aBigInt mod bBigInt == ${aBigInt.mod(bBigInt)}")
+
+
+        val creator = ModularBigInteger.creatorForModulo(3)
+        val modBigInt = creator.fromInt(-5)
+        println("ModBigInt: ${modBigInt.toStringWithModulo()}")
     }
 
 }

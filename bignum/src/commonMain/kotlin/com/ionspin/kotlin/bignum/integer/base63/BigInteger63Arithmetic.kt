@@ -686,7 +686,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return Pair(x, r)
     }
 
-    fun convertTo64BitRepresentation(operand: ULongArray): ULongArray {
+    internal fun convertTo64BitRepresentation(operand: ULongArray): ULongArray {
         if (operand == ZERO) return ZERO
         val length = bitLength(operand)
         val requiredLength = if (length % 64 == 0) {
@@ -714,7 +714,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
     }
 
-    fun convertTo32BitRepresentation(operand: ULongArray): UIntArray {
+    internal fun convertTo32BitRepresentation(operand: ULongArray): UIntArray {
         val power64Representation = convertTo64BitRepresentation(operand)
         val result = UIntArray(power64Representation.size * 2)
         for (i in 0 until power64Representation.size) {
@@ -725,7 +725,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return BigInteger32Arithmetic.removeLeadingZeroes(result)
     }
 
-    fun convertFrom32BitRepresentation(operand: UIntArray): ULongArray {
+    internal fun convertFrom32BitRepresentation(operand: UIntArray): ULongArray {
         if (operand.size == 0) {
             return ZERO
         }
@@ -822,6 +822,14 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         val result = product.copyOfRange(2 * shift + precisionExtension, product.size)
         val remainder = first - (result * second)
         return Pair(result, remainder)
+    }
+
+    override fun sqrt(operand: ULongArray): Pair<ULongArray, ULongArray> {
+        TODO("not implemented yet")
+    }
+
+    override fun gcd(first: ULongArray, second: ULongArray): ULongArray {
+        TODO("not implemented yet")
     }
 
 

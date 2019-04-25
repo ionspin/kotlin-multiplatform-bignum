@@ -21,9 +21,17 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.compareTo
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.div
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.minus
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.plus
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.shl
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.shr
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.times
 import com.ionspin.kotlin.bignum.integer.util.toDigit
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
+import kotlin.math.floor
 
 /**
  * Just to experiment and see if using immutable lists is better optimized than using arrays.
@@ -646,6 +654,58 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     }
 
     override fun reciprocal(operand: List<ULong>): Pair<List<ULong>, List<ULong>> {
+        return d1ReciprocalRecursiveWordVersion(operand)
+    }
+
+
+
+    fun d1ReciprocalRecursiveWordVersion(a: List<ULong>): Pair<List<ULong>, List<ULong>> {
+        val n = a.size - 1
+        if (n <= 2) {
+            val corrected = if (n == 0) {
+                1
+            } else {
+                n
+            }
+            val rhoPowered = ONE shl (corrected * 2 * BigInteger63Arithmetic.wordSizeInBits)
+            val x = rhoPowered / a
+            val r = rhoPowered - (x * a)
+            return Pair(x, r)
+        }
+        val l = floor((n - 1).toDouble() / 2).toInt()
+        val h = n - l
+        val ah = a.subList(a.size - h - 1, a.size)
+        val al = a.subList(0, l)
+        var (xh, rh) = d1ReciprocalRecursiveWordVersion(ah)
+        val s = al * xh
+//        val rhoL = (ONE shl l)
+        val rhRhoL = rh shl (l * BigInteger63Arithmetic.wordSizeInBits)
+        val t = if (rhRhoL >= s) {
+            rhRhoL - s
+        } else {
+            xh = xh - BigInteger63Arithmetic.ONE
+            (rhRhoL + a) - s
+        }
+        val tm = t shr (h * BigInteger63Arithmetic.wordSizeInBits)
+        val d = (xh * tm) shr (h * BigInteger63Arithmetic.wordSizeInBits)
+        var x = (xh shl (l * BigInteger63Arithmetic.wordSizeInBits)) + d
+        var r = (t shl (l * BigInteger63Arithmetic.wordSizeInBits)) - a * d
+        if (r >= a) {
+            x = x + BigInteger63Arithmetic.ONE
+            r = r - a
+            if (r >= a) {
+                x = x + BigInteger63Arithmetic.ONE
+                r = r - a
+            }
+        }
+        return Pair(x, r)
+    }
+
+    override fun sqrt(operand: List<ULong>): Pair<List<ULong>, List<ULong>> {
+        TODO("not implemented yet")
+    }
+
+    override fun gcd(first: List<ULong>, second: List<ULong>): List<ULong> {
         TODO("not implemented yet")
     }
 

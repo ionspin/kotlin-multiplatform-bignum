@@ -560,30 +560,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
     }
 
-    //TODO Does this work?
-    private fun reciprocal2(operand: UIntArray): Pair<UIntArray, Int> {
-        if (operand.size == 1) {
-            val reciprocal = reciprocalSingleWord(operand[0])
-            return Pair(reciprocal.first, reciprocal.second)
 
-        }
-        val low = floor(operand.size / 2.0).toInt()
-        val high = (operand.size - low).toInt()
-        val operandHigh = operand.copyOfRange(low, high + 1)
-        var (approximateReciprocal, reciprocalShiftAmount) = reciprocal2(operandHigh)
-        var shifted = (operand * approximateReciprocal) shr (reciprocalShiftAmount)
-        val basePowered = ONE shr (operand.size + high)
-        while (shifted > basePowered) {
-            approximateReciprocal = approximateReciprocal - ONE
-            shifted = shifted - operand
-        }
-        shifted = basePowered - shifted
-        val tm = shifted shr low
-        val u = tm * approximateReciprocal
-        val reciprocal = (approximateReciprocal shl low) + (u shl (low - 2 * high))
-        return Pair(reciprocal, bitLength(reciprocal))
-
-    }
 
     override fun reciprocal(operand: UIntArray): Pair<UIntArray, UIntArray> {
         return d1ReciprocalRecursiveWordVersion(operand)
@@ -623,6 +600,14 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         val result = product.copyOfRange(product.size - numberOfWords, product.size)
         val remainder = first - (result * second)
         return Pair(result, remainder)
+    }
+
+    override fun sqrt(operand: UIntArray): Pair<UIntArray, UIntArray> {
+        TODO("not implemented yet")
+    }
+
+    override fun gcd(first: UIntArray, second: UIntArray): UIntArray {
+        TODO("not implemented yet")
     }
 
     override fun parseForBase(number: String, base: Int): UIntArray {
