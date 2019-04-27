@@ -335,7 +335,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     }
 
     fun gcd(other: BigInteger) : BigInteger {
-        return naiveGcd(other)
+        return BigInteger(arithmetic.gcd(this.magnitude, other.magnitude), Sign.POSITIVE)
     }
 
     private fun naiveGcd(other : BigInteger) : BigInteger {

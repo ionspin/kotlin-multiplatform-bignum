@@ -607,7 +607,18 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
     override fun gcd(first: UIntArray, second: UIntArray): UIntArray {
-        TODO("not implemented yet")
+        return naiveGcd(first, second)
+    }
+
+    private fun naiveGcd(first : UIntArray, second : UIntArray) : UIntArray {
+        var u = first
+        var v = second
+        while (v != ZERO) {
+            val tmpU = u
+            u = v
+            v = tmpU % v
+        }
+        return u
     }
 
     override fun parseForBase(number: String, base: Int): UIntArray {

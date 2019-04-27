@@ -829,7 +829,18 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun gcd(first: ULongArray, second: ULongArray): ULongArray {
-        TODO("not implemented yet")
+        return naiveGcd(first, second)
+    }
+
+    private fun naiveGcd(first : ULongArray, second : ULongArray) : ULongArray {
+        var u = first
+        var v = second
+        while (v != ZERO) {
+            val tmpU = u
+            u = v
+            v = tmpU % v
+        }
+        return u
     }
 
 
