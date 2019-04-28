@@ -26,6 +26,7 @@ import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.div
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.divrem
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.minus
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.plus
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.rem
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.shl
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.shr
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.times
@@ -747,7 +748,18 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     }
 
     override fun gcd(first: List<ULong>, second: List<ULong>): List<ULong> {
-        TODO("not implemented yet")
+        return naiveGcd(first, second)
+    }
+
+    private fun naiveGcd(first: List<ULong>, second: List<ULong>): List<ULong> {
+        var u = first
+        var v = second
+        while (v != ZERO) {
+            val tmpU = u
+            u = v
+            v = tmpU % v
+        }
+        return u
     }
 
     override fun parseForBase(number: String, base: Int): List<ULong> {
