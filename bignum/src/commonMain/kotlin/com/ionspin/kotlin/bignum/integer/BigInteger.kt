@@ -20,11 +20,9 @@ package com.ionspin.kotlin.bignum.integer
 import com.ionspin.kotlin.bignum.BigNumber
 import com.ionspin.kotlin.bignum.BitwiseCapable
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
-import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
+import com.ionspin.kotlin.bignum.NarrowingOperations
 import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 import kotlin.math.ceil
-import kotlin.math.floor
 import kotlin.math.log10
 
 
@@ -62,6 +60,7 @@ enum class Sign {
 @ExperimentalUnsignedTypes
 class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : BigNumber<BigInteger>,
     CommonBigNumberOperations<BigInteger>,
+    NarrowingOperations<BigInteger>,
     BitwiseCapable<BigInteger>, Comparable<Any> {
 
 
@@ -524,6 +523,10 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
             is Int -> compare(fromInt(other))
             is Short -> compare(fromShort(other))
             is Byte -> compare(fromByte(other))
+            is ULong -> compare(fromULong(other))
+            is UInt -> compare(fromUInt(other))
+            is UShort -> compare(fromUShort(other))
+            is UByte -> compare(fromUByte(other))
             else -> throw RuntimeException("Invalid comparison type for BigInteger: ${other::class.simpleName}")
         }
 
@@ -536,6 +539,10 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
             is Int -> compare(fromInt(other))
             is Short -> compare(fromShort(other))
             is Byte -> compare(fromByte(other))
+            is ULong -> compare(fromULong(other))
+            is UInt -> compare(fromUInt(other))
+            is UShort -> compare(fromUShort(other))
+            is UByte -> compare(fromUByte(other))
             else -> -1
         }
         return comparison == 0
@@ -588,9 +595,59 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         return creator.fromBigInteger(this)
     }
 
-//    fun modularInverse(modulus : BigInteger) : BigInteger {
-//
-//    }
+    override fun intValue(exactRequired: Boolean): Int {
+        if (exactRequired && this > Int.MAX_VALUE.toUInt()) {
+            throw ArithmeticException("Cannot convert to int and provide exact value")
+        }
+        return magnitude[0].toInt()
+    }
 
+    override fun longValue(exactRequired: Boolean): Long {
+        if (exactRequired && (this > Long.MAX_VALUE.toUInt())) {
+            throw ArithmeticException("Cannot convert to long and provide exact value")
+        }
+        return magnitude[0].toLong()
+    }
 
+    override fun byteValue(exactRequired: Boolean): Byte {
+        if (exactRequired && this > Byte.MAX_VALUE.toUInt()) {
+            throw ArithmeticException("Cannot convert to byte and provide exact value")
+        }
+        return magnitude[0].toByte()
+    }
+
+    override fun shortValue(exactRequired: Boolean): Short {
+        if (exactRequired && this > Short.MAX_VALUE.toUInt()) {
+            throw ArithmeticException("Cannot convert to short and provide exact value")
+        }
+        return magnitude[0].toShort()
+    }
+
+    override fun uintValue(exactRequired: Boolean): UInt {
+        if (exactRequired && this > UInt.MAX_VALUE.toUInt()) {
+            throw ArithmeticException("Cannot convert to unsigned int and provide exact value")
+        }
+        return magnitude[0].toUInt()
+    }
+
+    override fun ulongValue(exactRequired: Boolean): ULong {
+        if (exactRequired && (this > ULong.MAX_VALUE.toUInt())) {
+            throw ArithmeticException("Cannot convert to unsigned long and provide exact value")
+        }
+        return magnitude[0]
+    }
+
+    override fun ubyteValue(exactRequired: Boolean): UByte {
+        if (exactRequired && this > UByte.MAX_VALUE.toUInt()) {
+            throw ArithmeticException("Cannot convert to unsigned byte and provide exact value")
+        }
+        return magnitude[0].toUByte()
+    }
+
+    override fun ushortValue(exactRequired: Boolean): UShort {
+        if (exactRequired && this > UShort.MAX_VALUE.toUInt()) {
+            throw ArithmeticException("Cannot convert to unsigned short and provide exact value")
+        }
+        return magnitude[0].toUShort()
+    }
 }
