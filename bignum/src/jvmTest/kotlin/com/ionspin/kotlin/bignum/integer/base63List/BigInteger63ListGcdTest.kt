@@ -32,7 +32,7 @@ import kotlin.test.assertTrue
  * on 27-Apr-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger63GcdTest {
+class BigInteger63ListGcdTest {
 
     @Test
     fun testGcd() {
@@ -42,11 +42,11 @@ class BigInteger63GcdTest {
         for (i in 1..1000) {
 
             val length = random.nextInt(2, 100)
-            val a = ULongArray(length) {
+            val a = List<ULong>(length) {
                 random.nextULong() shr 1
             }
             val divisorLength = random.nextInt(1, length)
-            val b = ULongArray(divisorLength) {
+            val b = List<ULong>(divisorLength) {
                 random.nextULong() shr 1
             }
             val job = GlobalScope.launch {
@@ -64,8 +64,8 @@ class BigInteger63GcdTest {
         }
     }
 
-    fun testGcdSingle(first : ULongArray, second : ULongArray) {
-        val a = BigInteger63Arithmetic.gcd(first, second)
+    fun testGcdSingle(first : List<ULong>, second : List<ULong>) {
+        val a = BigInteger63LinkedListArithmetic.gcd(first, second)
         val aJavaBigInt = first.toJavaBigInteger().gcd(second.toJavaBigInteger())
         assertTrue {
             a.toJavaBigInteger().compareTo(aJavaBigInt) == 0

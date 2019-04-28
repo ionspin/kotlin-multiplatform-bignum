@@ -825,14 +825,54 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun sqrt(operand: ULongArray): Pair<ULongArray, ULongArray> {
-        TODO("not implemented yet")
+        return reqursiveSqrt(operand)
+    }
+
+    private fun reqursiveSqrt(operand: ULongArray): Pair<ULongArray, ULongArray> {
+        val n = operand.size
+        val l = floor((n - 1).toDouble() / 4).toInt()
+        if (l == 0) {
+            return basecaseSqrt(operand)
+        }
+        val step = n / 4
+        val stepRemainder = n % 4
+        val baseLPowerShift = 63 * l
+        val a1 = operand.copyOfRange(n - ((3 * step) + stepRemainder), n - ((2 * step) + stepRemainder))
+        val a0 = operand.copyOfRange(0, n - ((3 * step) + stepRemainder))
+        val a3a2 = operand.copyOfRange(n - ((2 * step) + stepRemainder), n)
+
+        val (sPrim, rPrim) = reqursiveSqrt(a3a2)
+        val (q, u) = ((rPrim shl baseLPowerShift) + a1) divrem (sPrim shl 1)
+        var s = (sPrim shl baseLPowerShift) + q
+        var r = (u shl baseLPowerShift) + a0 - (q * q)
+        return Pair(s, r)
+    }
+
+
+    internal fun basecaseSqrt(operand: ULongArray) : Pair<ULongArray, ULongArray> {
+        val sqrt = sqrtInt(operand)
+        val remainder = operand - (sqrt * sqrt)
+        return Pair(sqrt, remainder)
+
+    }
+
+    internal fun sqrtInt(operand: ULongArray) : ULongArray {
+        var u = operand
+        var s = ZERO
+        var tmp = ZERO
+        do {
+            s = u
+            tmp = s + (operand / s)
+            u = tmp shr 1
+        } while (u < s)
+        return s
     }
 
     override fun gcd(first: ULongArray, second: ULongArray): ULongArray {
         return naiveGcd(first, second)
     }
 
-    private fun naiveGcd(first : ULongArray, second : ULongArray) : ULongArray {
+    private fun naiveGcd(first: ULongArray, second: ULongArray): ULongArray {
         var u = first
         var v = second
         while (v != ZERO) {

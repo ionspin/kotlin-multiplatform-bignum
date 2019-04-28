@@ -20,6 +20,15 @@ package com.ionspin.kotlin.bignum.integer.base32
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.compareTo
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.div
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.divrem
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.minus
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.plus
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.shl
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.shr
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.times
 import com.ionspin.kotlin.bignum.integer.util.toDigit
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
@@ -603,8 +612,51 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
     override fun sqrt(operand: UIntArray): Pair<UIntArray, UIntArray> {
-        TODO("not implemented yet")
+        return reqursiveSqrt(operand)
     }
+
+    private fun reqursiveSqrt(operand: UIntArray): Pair<UIntArray, UIntArray> {
+        val n = operand.size
+        val l = floor((n - 1).toDouble() / 4).toInt()
+        if (l == 0) {
+            return basecaseSqrt(operand)
+        }
+        val step = n / 4
+        val stepRemainder = n % 4
+        val baseLPowerShift = 63 * l
+        val a1 = operand.copyOfRange(n - ((3 * step) + stepRemainder), n - ((2 * step) + stepRemainder))
+        val a0 = operand.copyOfRange(0, n - ((3 * step) + stepRemainder))
+        val a3a2 = operand.copyOfRange(n - ((2 * step) + stepRemainder), n)
+
+        val (sPrim, rPrim) = reqursiveSqrt(a3a2)
+        val (q, u) = ((rPrim shl baseLPowerShift) + a1) divrem (sPrim shl 1)
+        var s = (sPrim shl baseLPowerShift) + q
+        var r = (u shl baseLPowerShift) + a0 - (q * q)
+        return Pair(s, r)
+    }
+
+
+    internal fun basecaseSqrt(operand: UIntArray) : Pair<UIntArray, UIntArray> {
+        val sqrt = sqrtInt(operand)
+        val remainder = operand - (sqrt * sqrt)
+        return Pair(sqrt, remainder)
+
+    }
+
+    internal fun sqrtInt(operand: UIntArray) : UIntArray {
+        var u = operand
+        var s = ZERO
+        var tmp = ZERO
+        do {
+            s = u
+            tmp = s + (operand / s)
+            u = tmp shr 1
+        } while (u < s)
+        return s
+    }
+
+
+
 
     override fun gcd(first: UIntArray, second: UIntArray): UIntArray {
         return naiveGcd(first, second)

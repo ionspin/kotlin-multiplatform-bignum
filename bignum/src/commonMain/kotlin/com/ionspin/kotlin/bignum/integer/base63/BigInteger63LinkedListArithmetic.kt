@@ -23,6 +23,7 @@ import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.compareTo
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.div
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.divrem
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.minus
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.plus
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.shl
@@ -702,7 +703,47 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     }
 
     override fun sqrt(operand: List<ULong>): Pair<List<ULong>, List<ULong>> {
-        TODO("not implemented yet")
+        return reqursiveSqrt(operand)
+    }
+
+    private fun reqursiveSqrt(operand: List<ULong>): Pair<List<ULong>, List<ULong>> {
+        val n = operand.size
+        val l = floor((n - 1).toDouble() / 4).toInt()
+        if (l == 0) {
+            return basecaseSqrt(operand)
+        }
+        val step = n / 4
+        val stepRemainder = n % 4
+        val baseLPowerShift = 63 * l
+        val a1 = operand.subList(n - ((3 * step) + stepRemainder), n - ((2 * step) + stepRemainder))
+        val a0 = operand.subList(0, n - ((3 * step) + stepRemainder))
+        val a3a2 = operand.subList(n - ((2 * step) + stepRemainder), n)
+
+        val (sPrim, rPrim) = reqursiveSqrt(a3a2)
+        val (q, u) = ((rPrim shl baseLPowerShift) + a1) divrem (sPrim shl 1)
+        var s = (sPrim shl baseLPowerShift) + q
+        var r = (u shl baseLPowerShift) + a0 - (q * q)
+        return Pair(s, r)
+    }
+
+
+    internal fun basecaseSqrt(operand: List<ULong>) : Pair<List<ULong>, List<ULong>> {
+        val sqrt = sqrtInt(operand)
+        val remainder = operand - (sqrt * sqrt)
+        return Pair(sqrt, remainder)
+
+    }
+
+    internal fun sqrtInt(operand: List<ULong>) : List<ULong> {
+        var u = operand
+        var s = ZERO
+        var tmp = ZERO
+        do {
+            s = u
+            tmp = s + (operand / s)
+            u = tmp shr 1
+        } while (u < s)
+        return s
     }
 
     override fun gcd(first: List<ULong>, second: List<ULong>): List<ULong> {
