@@ -15,8 +15,9 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer.base63
+package com.ionspin.kotlin.bignum.integer.base63List
 
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63LinkedListArithmetic
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -46,7 +47,7 @@ class BigInteger63ListJavaStringConversionTests {
 
     fun testParsingSingleTest(uIntArrayString: String, base: Int) {
         assertTrue {
-            val parsed = BigInteger63Arithmetic.parseForBase(uIntArrayString, base)
+            val parsed = BigInteger63LinkedListArithmetic.parseForBase(uIntArrayString, base)
             val javaBigIntParsed = BigInteger(uIntArrayString, base)
 
             parsed.toJavaBigInteger() == javaBigIntParsed
@@ -63,7 +64,7 @@ class BigInteger63ListJavaStringConversionTests {
         for (i in 1..Int.MAX_VALUE step 7001) {
             jobList.add(
                 GlobalScope.launch {
-                    toStringSingleTest(ulongArrayOf(random.nextULong()), 10)
+                    toStringSingleTest(listOf(random.nextULong()), 10)
                 }
             )
         }
@@ -82,7 +83,7 @@ class BigInteger63ListJavaStringConversionTests {
             jobList.add(
                 GlobalScope.launch {
                     toStringSingleTest(
-                        ulongArrayOf(random.nextULong(), random.nextULong()),
+                        listOf(random.nextULong(), random.nextULong()),
                         random.nextInt(2, 36)
                     ) //36 is the max java bigint supports
                 }
@@ -97,13 +98,13 @@ class BigInteger63ListJavaStringConversionTests {
 
     @Test
     fun `Test toString with specific values`() {
-        toStringSingleTest(ulongArrayOf(1234U), 10)
+        toStringSingleTest(listOf(1234U), 10)
     }
 
-    fun toStringSingleTest(uLongArray: ULongArray, base: Int) {
+    fun toStringSingleTest(operand : List<ULong>, base: Int) {
         assertTrue {
-            val result = BigInteger63Arithmetic.toString(uLongArray, base)
-            val javaBigIntResult = uLongArray.toJavaBigInteger().toString(base)
+            val result = BigInteger63LinkedListArithmetic.toString(operand, base)
+            val javaBigIntResult = operand.toJavaBigInteger().toString(base)
 
             result == javaBigIntResult
         }

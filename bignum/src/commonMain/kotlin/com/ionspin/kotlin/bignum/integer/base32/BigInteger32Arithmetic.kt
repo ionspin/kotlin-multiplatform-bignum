@@ -20,19 +20,11 @@ package com.ionspin.kotlin.bignum.integer.base32
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.compareTo
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.div
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.divrem
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.minus
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.plus
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.shl
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.shr
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.times
 import com.ionspin.kotlin.bignum.integer.util.toDigit
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
 import kotlin.math.floor
+import kotlin.math.min
 
 /**
  * Created by Ugljesa Jovanovic
@@ -497,6 +489,45 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return Pair(removeLeadingZeroes(quotient), denormRemainder)
     }
 
+    fun basicDivide2(
+        unnormalizedDividend: UIntArray,
+        unnormalizedDivisor: UIntArray
+    ): Pair<UIntArray, UIntArray> {
+        var (a,b, shift) = normalize(unnormalizedDividend, unnormalizedDivisor)
+        val m = a.size - b.size
+        val bmb = b shl (m * wordSizeInBits)
+        var q = UIntArray(m + 1) { 0U }
+        if (a > bmb) {
+            q[m] = 1U
+            a = a - bmb
+        }
+        var qjhat = ZERO
+        var qjhatULong = 0UL
+        var bjb = ZERO
+        var delta = ZERO
+        for (j in m - 1 downTo 0) {
+            qjhatULong = toULongExact(a.copyOfRange(b.size - 1, b.size + 1)) / b[b.size - 1]
+            q[j] = min(qjhatULong, baseMask).toUInt()
+            bjb = b shl (j * wordSizeInBits)
+            val qjBjb = (b * q[j]) shl (j * wordSizeInBits)
+            if (qjBjb > a) {
+                delta = qjBjb - a
+                while (delta > qjBjb) {
+                    q[j] = q[j] - 1U
+                    delta = delta - bjb
+                }
+                // quotient is now such that q[j] * b*B^j won't be larger than divisor
+                a = a - (b * q[j]) shl (j * wordSizeInBits)
+            } else {
+                a = a - qjBjb
+            }
+
+        }
+        val denormRemainder =
+            denormalize(a, shift)
+        return Pair(removeLeadingZeroes(q), denormRemainder)
+    }
+
     fun d1ReciprocalRecursiveWordVersion(a: UIntArray): Pair<UIntArray, UIntArray> {
         val n = a.size - 1
         if (n <= 2) {
@@ -623,13 +654,13 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
         val step = n / 4
         val stepRemainder = n % 4
-        val baseLPowerShift = 63 * l
+        val baseLPowerShift = 32 * l
         val a1 = operand.copyOfRange(n - ((3 * step) + stepRemainder), n - ((2 * step) + stepRemainder))
         val a0 = operand.copyOfRange(0, n - ((3 * step) + stepRemainder))
         val a3a2 = operand.copyOfRange(n - ((2 * step) + stepRemainder), n)
 
         val (sPrim, rPrim) = reqursiveSqrt(a3a2)
-        val (q, u) = ((rPrim shl baseLPowerShift) + a1) divrem (sPrim shl 1)
+        val (q, u) = basicDivide2(((rPrim shl baseLPowerShift) + a1), (sPrim shl 1))
         var s = (sPrim shl baseLPowerShift) + q
         var r = (u shl baseLPowerShift) + a0 - (q * q)
         return Pair(s, r)
@@ -645,11 +676,11 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     internal fun sqrtInt(operand: UIntArray) : UIntArray {
         var u = operand
-        var s = ZERO
-        var tmp = ZERO
+        var s: UIntArray
+        var tmp: UIntArray
         do {
             s = u
-            tmp = s + (operand / s)
+            tmp = s + (basicDivide2(operand,s).first)
             u = tmp shr 1
         } while (u < s)
         return s
@@ -826,23 +857,23 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
     internal operator fun UIntArray.div(other: UInt): UIntArray {
-        return basicDivide(this, uintArrayOf(other)).first
+        return divide(this, uintArrayOf(other)).first
     }
 
     internal operator fun UIntArray.rem(other: UInt): UIntArray {
-        return basicDivide(this, uintArrayOf(other)).second
+        return divide(this, uintArrayOf(other)).second
     }
 
     internal operator fun UIntArray.div(other: UIntArray): UIntArray {
-        return basicDivide(this, other).first
+        return divide(this, other).first
     }
 
     internal operator fun UIntArray.rem(other: UIntArray): UIntArray {
-        return basicDivide(this, other).second
+        return divide(this, other).second
     }
 
     internal infix fun UIntArray.divrem(other: UIntArray): Pair<UIntArray, UIntArray> {
-        return basicDivide(this, other)
+        return divide(this, other)
     }
 
     internal operator fun UIntArray.compareTo(other: UIntArray): Int {
@@ -875,4 +906,15 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     override fun fromShort(short: Short): UIntArray = uintArrayOf(short.toInt().absoluteValue.toUInt())
 
     override fun fromByte(byte: Byte): UIntArray = uintArrayOf(byte.toInt().absoluteValue.toUInt())
+
+    fun toULongExact(operand : UIntArray) : ULong {
+        if (operand.size > 2) {
+            throw ArithmeticException("Exact conversion not possible, operand size ${operand.size}")
+        }
+        var result : ULong = 0UL
+        for (i in operand.size - 1 downTo 0) {
+            result += (operand[i].toULong() shl (i * wordSizeInBits))
+        }
+        return result
+    }
 }

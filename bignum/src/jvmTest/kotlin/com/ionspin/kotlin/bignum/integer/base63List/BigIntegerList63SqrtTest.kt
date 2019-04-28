@@ -15,8 +15,9 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer.base63
+package com.ionspin.kotlin.bignum.integer.base63List
 
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63LinkedListArithmetic
 import org.junit.Test
 import kotlin.random.Random
 import kotlin.random.nextULong
@@ -36,41 +37,41 @@ class BigIntegerList63SqrtTest {
         assertTrue {
             val seed = 1
             val random = Random(seed)
-            val operand = ULongArray(9) { random.nextULong() shr 1 }
-            val a = BigInteger63Arithmetic.sqrt(operand)
-            println("Operand: ${BigInteger63Arithmetic.toString(operand, 10)}")
-            println("Sqrt: ${BigInteger63Arithmetic.toString(a.first, 10)}")
-            println("Remainder: ${BigInteger63Arithmetic.toString(a.second, 10)}")
-            val resultSqrt = BigInteger63Arithmetic.parseForBase(
+            val operand = List<ULong>(9) { random.nextULong() shr 1 }
+            val a = BigInteger63LinkedListArithmetic.sqrt(operand)
+            println("Operand: ${BigInteger63LinkedListArithmetic.toString(operand, 10)}")
+            println("Sqrt: ${BigInteger63LinkedListArithmetic.toString(a.first, 10)}")
+            println("Remainder: ${BigInteger63LinkedListArithmetic.toString(a.second, 10)}")
+            val resultSqrt = BigInteger63LinkedListArithmetic.parseForBase(
                 "7397044194494028975732055495441088126843300784390793504636322150624655374658058636588",
                 10
             )
-            val resultRem = BigInteger63Arithmetic.substract(
+            val resultRem = BigInteger63LinkedListArithmetic.substract(
                 operand,
-                BigInteger63Arithmetic.multiply(resultSqrt, resultSqrt)
+                BigInteger63LinkedListArithmetic.multiply(resultSqrt, resultSqrt)
             )
 
-            resultSqrt.contentEquals(a.first)
+            resultSqrt.equals(a.first)
         }
 
         assertTrue {
             val seed = 1
             val random = Random(seed)
-            val operand = BigInteger63Arithmetic.parseForBase("123456789", 10)
-            val a = BigInteger63Arithmetic.sqrt(operand)
-            println("Operand: ${BigInteger63Arithmetic.toString(operand, 10)}")
-            println("Sqrt: ${BigInteger63Arithmetic.toString(a.first, 10)}")
-            println("Remainder: ${BigInteger63Arithmetic.toString(a.second, 10)}")
-            val resultSqrt = BigInteger63Arithmetic.parseForBase(
+            val operand = BigInteger63LinkedListArithmetic.parseForBase("123456789", 10)
+            val a = BigInteger63LinkedListArithmetic.sqrt(operand)
+            println("Operand: ${BigInteger63LinkedListArithmetic.toString(operand, 10)}")
+            println("Sqrt: ${BigInteger63LinkedListArithmetic.toString(a.first, 10)}")
+            println("Remainder: ${BigInteger63LinkedListArithmetic.toString(a.second, 10)}")
+            val resultSqrt = BigInteger63LinkedListArithmetic.parseForBase(
                 "11111",
                 10
             )
-            val resultRem = BigInteger63Arithmetic.substract(
+            val resultRem = BigInteger63LinkedListArithmetic.substract(
                 operand,
-                BigInteger63Arithmetic.multiply(resultSqrt, resultSqrt)
+                BigInteger63LinkedListArithmetic.multiply(resultSqrt, resultSqrt)
             )
 
-            resultSqrt.contentEquals(a.first)
+            resultSqrt.equals(a.first)
         }
     }
 
@@ -79,8 +80,8 @@ class BigIntegerList63SqrtTest {
     fun testSpecificSqrtInt() {
         val seed = 1
         val random = Random(seed)
-        val a = ULongArray(1) { 144U }
-        val sqrt = BigInteger63Arithmetic.sqrtInt(a)
+        val a = List<ULong>(1) { 144U }
+        val sqrt = BigInteger63LinkedListArithmetic.sqrtInt(a)
         assertTrue { sqrt[0] == 12UL }
     }
 

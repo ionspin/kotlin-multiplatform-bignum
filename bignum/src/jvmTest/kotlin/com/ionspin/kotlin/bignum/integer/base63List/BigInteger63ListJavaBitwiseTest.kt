@@ -15,8 +15,9 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer.base63
+package com.ionspin.kotlin.bignum.integer.base63List
 
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63LinkedListArithmetic
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -44,10 +45,10 @@ class BigInteger63ListJavaBitwiseTest {
         for (i in 1..Int.MAX_VALUE step 3001) {
             jobList.add(
                 GlobalScope.launch {
-                    var a = ulongArrayOf(random.nextULong() shr 1, random.nextULong() shr 1)
-                    a = BigInteger63Arithmetic.multiply(a, a)
+                    var a = listOf(random.nextULong() shr 1, random.nextULong() shr 1)
+                    a = BigInteger63LinkedListArithmetic.multiply(a, a)
 
-                    shiftLeftSingleTest(random.nextInt(BigInteger63Arithmetic.bitLength(a)), a)
+                    shiftLeftSingleTest(random.nextInt(BigInteger63LinkedListArithmetic.bitLength(a)), a)
                 }
             )
         }
@@ -58,23 +59,23 @@ class BigInteger63ListJavaBitwiseTest {
 
     @Test
     fun `Test specific combinations for left shift`() {
-        shiftLeftSingleTest(32, ulongArrayOf(1U))
-        shiftLeftSingleTest(32, ulongArrayOf(2U))
-        shiftLeftSingleTest(32, ulongArrayOf(0UL - 1UL))
-        shiftLeftSingleTest(35, ulongArrayOf(0UL - 1UL))
-        shiftLeftSingleTest(35, ulongArrayOf(0UL - 1UL, 0UL, 1UL))
-        shiftLeftSingleTest(64, ulongArrayOf(0UL - 1UL))
-        shiftLeftSingleTest(75, ulongArrayOf(0UL - 1UL))
-        shiftLeftSingleTest(5, ulongArrayOf(0UL - 1UL))
-        shiftLeftSingleTest(237, ulongArrayOf(0UL - 1UL))
-        shiftLeftSingleTest(215, ulongArrayOf(1U))
+        shiftLeftSingleTest(32, listOf(1U))
+        shiftLeftSingleTest(32, listOf(2U))
+        shiftLeftSingleTest(32, listOf(0UL - 1UL))
+        shiftLeftSingleTest(35, listOf(0UL - 1UL))
+        shiftLeftSingleTest(35, listOf(0UL - 1UL, 0UL, 1UL))
+        shiftLeftSingleTest(64, listOf(0UL - 1UL))
+        shiftLeftSingleTest(75, listOf(0UL - 1UL))
+        shiftLeftSingleTest(5, listOf(0UL - 1UL))
+        shiftLeftSingleTest(237, listOf(0UL - 1UL))
+        shiftLeftSingleTest(215, listOf(1U))
 
     }
 
-    fun shiftLeftSingleTest(places: Int, ulongs: ULongArray) {
-        assertTrue("Failed for $places and elements ulongArrayOf(${ulongs.joinToString(separator = ", ") { it.toString() + "UL" }})") {
+    fun shiftLeftSingleTest(places: Int, ulongs: List<ULong>) {
+        assertTrue("Failed for $places and elements listOf(${ulongs.joinToString(separator = ", ") { it.toString() + "UL" }})") {
             val a = ulongs
-            val result = BigInteger63Arithmetic.shiftLeft(a, places)
+            val result = BigInteger63LinkedListArithmetic.shiftLeft(a, places)
             val convertedResult = result.toJavaBigInteger()
             val bigIntResult = a.toJavaBigInteger() shl places
             convertedResult == bigIntResult
@@ -90,10 +91,10 @@ class BigInteger63ListJavaBitwiseTest {
         for (i in 1..Int.MAX_VALUE step 3001) {
             jobList.add(
                 GlobalScope.launch {
-                    var a = ulongArrayOf(random.nextULong() shr 1, random.nextULong() shr 1)
-                    a = BigInteger63Arithmetic.multiply(a, a)
+                    var a = listOf(random.nextULong() shr 1, random.nextULong() shr 1)
+                    a = BigInteger63LinkedListArithmetic.multiply(a, a)
 
-                    shiftRightSingleTest(random.nextInt(BigInteger63Arithmetic.bitLength(a)), a)
+                    shiftRightSingleTest(random.nextInt(BigInteger63LinkedListArithmetic.bitLength(a)), a)
                 }
             )
         }
@@ -104,29 +105,29 @@ class BigInteger63ListJavaBitwiseTest {
 
     @Test
     fun `Test specific combinations for right shift`() {
-        shiftRightSingleTest(32, ulongArrayOf(1UL))
-        shiftRightSingleTest(32, ulongArrayOf(2UL))
-        shiftRightSingleTest(32, ulongArrayOf(0UL - 1UL))
-        shiftRightSingleTest(35, ulongArrayOf(0UL - 1UL))
-        shiftRightSingleTest(64, ulongArrayOf(0UL - 1UL))
-        shiftRightSingleTest(5, ulongArrayOf(0UL - 1UL))
-        shiftRightSingleTest(237, ulongArrayOf(0UL - 1UL))
+        shiftRightSingleTest(32, listOf(1UL))
+        shiftRightSingleTest(32, listOf(2UL))
+        shiftRightSingleTest(32, listOf(0UL - 1UL))
+        shiftRightSingleTest(35, listOf(0UL - 1UL))
+        shiftRightSingleTest(64, listOf(0UL - 1UL))
+        shiftRightSingleTest(5, listOf(0UL - 1UL))
+        shiftRightSingleTest(237, listOf(0UL - 1UL))
         shiftRightSingleTest(
             126,
-            ulongArrayOf(5724129373318154496UL, 4479429175062385556UL, 7319678748417918140UL, 201305160793401908UL)
+            listOf(5724129373318154496UL, 4479429175062385556UL, 7319678748417918140UL, 201305160793401908UL)
         )
         shiftRightSingleTest(
             122,
-            ulongArrayOf(5724129373318154496UL, 4479429175062385556UL, 7319678748417918140UL, 201305160793401908UL)
+            listOf(5724129373318154496UL, 4479429175062385556UL, 7319678748417918140UL, 201305160793401908UL)
         )
-        shiftRightSingleTest(90, BigInteger63Arithmetic.parseForBase("100000000000000000000000000000000", 10))
+        shiftRightSingleTest(90, BigInteger63LinkedListArithmetic.parseForBase("100000000000000000000000000000000", 10))
     }
 
-    fun shiftRightSingleTest(places: Int, ulongs: ULongArray) {
-        assertTrue("Failed for $places and elements ulongArrayOf(${ulongs.joinToString(separator = ", ") { it.toString() + "UL" }})") {
+    fun shiftRightSingleTest(places: Int, ulongs: List<ULong>) {
+        assertTrue("Failed for $places and elements listOf(${ulongs.joinToString(separator = ", ") { it.toString() + "UL" }})") {
             val a = ulongs
             val aBigInt = a.toJavaBigInteger()
-            val result = BigInteger63Arithmetic.shiftRight(a, places)
+            val result = BigInteger63LinkedListArithmetic.shiftRight(a, places)
             val convertedResult = result.toJavaBigInteger()
             val bigIntResult = aBigInt shr places
             convertedResult == bigIntResult
@@ -135,8 +136,8 @@ class BigInteger63ListJavaBitwiseTest {
 
     @Test
     fun `Test specific xor`() {
-        val operand = BigInteger63Arithmetic.parseForBase("11110000", 2)
-        val mask = BigInteger63Arithmetic.parseForBase("00111100", 2)
+        val operand = BigInteger63LinkedListArithmetic.parseForBase("11110000", 2)
+        val mask = BigInteger63LinkedListArithmetic.parseForBase("00111100", 2)
         singleXorTest(operand, mask)
 
 
@@ -150,10 +151,10 @@ class BigInteger63ListJavaBitwiseTest {
         for (i in 1..Int.MAX_VALUE step 3001) {
             jobList.add(
                 GlobalScope.launch {
-                    var a = ulongArrayOf(random.nextULong() shr 1, random.nextULong() shr 1)
-                    a = BigInteger63Arithmetic.multiply(a, a)
+                    var a = listOf(random.nextULong() shr 1, random.nextULong() shr 1)
+                    a = BigInteger63LinkedListArithmetic.multiply(a, a)
 
-                    shiftRightSingleTest(random.nextInt(BigInteger63Arithmetic.bitLength(a)), a)
+                    shiftRightSingleTest(random.nextInt(BigInteger63LinkedListArithmetic.bitLength(a)), a)
                 }
             )
 
@@ -164,8 +165,8 @@ class BigInteger63ListJavaBitwiseTest {
     }
 
 
-    fun singleXorTest(operand: ULongArray, mask: ULongArray) {
-        val result = BigInteger63Arithmetic.xor(operand, mask)
+    fun singleXorTest(operand: List<ULong>, mask: List<ULong>) {
+        val result = BigInteger63LinkedListArithmetic.xor(operand, mask)
         val bigIntResult = operand.toJavaBigInteger().xor(mask.toJavaBigInteger())
 
         assertTrue { result.toJavaBigInteger() == bigIntResult }
@@ -174,15 +175,15 @@ class BigInteger63ListJavaBitwiseTest {
 
     @Test
     fun `Test specific or`() {
-        val operand = BigInteger63Arithmetic.parseForBase("FFFFFFFFFF000000000000", 16)
-        val mask = BigInteger63Arithmetic.parseForBase("00000000FFFF0000000000", 16)
+        val operand = BigInteger63LinkedListArithmetic.parseForBase("FFFFFFFFFF000000000000", 16)
+        val mask = BigInteger63LinkedListArithmetic.parseForBase("00000000FFFF0000000000", 16)
         singleOrTest(operand, mask)
 
 
     }
 
-    fun singleOrTest(operand: ULongArray, mask: ULongArray) {
-        val result = BigInteger63Arithmetic.or(operand, mask)
+    fun singleOrTest(operand: List<ULong>, mask: List<ULong>) {
+        val result = BigInteger63LinkedListArithmetic.or(operand, mask)
         val bigIntResult = operand.toJavaBigInteger().or(mask.toJavaBigInteger())
 
         assertTrue { result.toJavaBigInteger() == bigIntResult }
@@ -191,15 +192,15 @@ class BigInteger63ListJavaBitwiseTest {
 
     @Test
     fun `Test specific and`() {
-        val operand = BigInteger63Arithmetic.parseForBase("FFFFFFFFFF000000000000", 16)
-        val mask = BigInteger63Arithmetic.parseForBase("00000000FFFF0000000000", 16)
+        val operand = BigInteger63LinkedListArithmetic.parseForBase("FFFFFFFFFF000000000000", 16)
+        val mask = BigInteger63LinkedListArithmetic.parseForBase("00000000FFFF0000000000", 16)
         singleAndTest(operand, mask)
 
 
     }
 
-    fun singleAndTest(operand: ULongArray, mask: ULongArray) {
-        val result = BigInteger63Arithmetic.and(operand, mask)
+    fun singleAndTest(operand: List<ULong>, mask: List<ULong>) {
+        val result = BigInteger63LinkedListArithmetic.and(operand, mask)
         val bigIntResult = operand.toJavaBigInteger().and(mask.toJavaBigInteger())
 
         assertTrue { result.toJavaBigInteger() == bigIntResult }
@@ -208,14 +209,14 @@ class BigInteger63ListJavaBitwiseTest {
     @Ignore
     @Test
     fun `Test specific inv`() {
-        val operand = BigInteger63Arithmetic.parseForBase("1100", 2)
+        val operand = BigInteger63LinkedListArithmetic.parseForBase("1100", 2)
         singleInvTest(operand)
 
     }
 
     //Hmmm this is not behaving as I would expect it to on java side
-    fun singleInvTest(operand: ULongArray) {
-        val result = BigInteger63Arithmetic.not(operand)
+    fun singleInvTest(operand: List<ULong>) {
+        val result = BigInteger63LinkedListArithmetic.not(operand)
         val bigIntResult = operand.toJavaBigInteger()
             .xor(1.toBigInteger().shr(operand.toJavaBigInteger().bitLength()) - 1.toBigInteger())
 

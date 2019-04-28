@@ -21,6 +21,10 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
+import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic.compareTo
+import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic.minus
+import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic.shl
+import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic.times
 import com.ionspin.kotlin.bignum.integer.util.toDigit
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
@@ -40,6 +44,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     val wordSizeInBits = 63
 
     val baseMask: ULong = 0x7FFFFFFFFFFFFFFFUL
+    val baseMaskArray: ULongArray = ulongArrayOf(0x7FFFFFFFFFFFFFFFUL)
 
     val lowMask = 0x00000000FFFFFFFFUL
     val highMask = 0x7FFFFFFF00000000UL
@@ -571,6 +576,48 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return Pair(removeLeadingZeroes(quotient), denormRemainder)
     }
 
+    fun basicDivide2(
+        unnormalizedDividend: ULongArray,
+        unnormalizedDivisor: ULongArray
+    ): Pair<ULongArray, ULongArray> {
+        var (a,b, shift) = normalize(unnormalizedDividend, unnormalizedDivisor)
+        val m = a.size - b.size
+        val bmb = b shl (m * wordSizeInBits)
+        var q = ULongArray(m + 1) { 0U }
+        if (a > bmb) {
+            q[m] = 1U
+            a = a - bmb
+        }
+        var qjhat = ZERO
+        var qjhatULong = ZERO
+        var bjb = ZERO
+        var delta = ZERO
+        for (j in m - 1 downTo 0) {
+            qjhatULong = BigInteger32Arithmetic.divide(
+                (a.copyOfRange(b.size - 1, b.size + 1)).to32Bit(),
+                ulongArrayOf(b[b.size - 1]).to32Bit()
+            ).first.from32Bit()
+            q[j] = min(qjhatULong, baseMaskArray)[0]
+            bjb = b shl (j * BigInteger32Arithmetic.wordSizeInBits)
+            val qjBjb = (b * q[j]) shl (j * wordSizeInBits)
+            if (qjBjb > a) {
+                delta = qjBjb - a
+                while (delta > qjBjb) {
+                    q[j] = q[j] - 1U
+                    delta = delta - bjb
+                }
+                // quotient is now such that q[j] * b*B^j won't be larger than divisor
+                a = a - (b * q[j]) shl (j * BigInteger32Arithmetic.wordSizeInBits)
+            } else {
+                a = a - qjBjb
+            }
+
+        }
+        val denormRemainder =
+            denormalize(a, shift)
+        return Pair(removeLeadingZeroes(q), denormRemainder)
+    }
+
     override fun reciprocal(operand: ULongArray): Pair<ULongArray, ULongArray> {
         return d1ReciprocalRecursiveWordVersion(operand)
     }
@@ -881,6 +928,22 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             v = tmpU % v
         }
         return u
+    }
+
+    fun min(first : ULongArray, second : ULongArray) : ULongArray {
+        return if (first < second) {
+            first
+        } else {
+            second
+        }
+    }
+
+    fun max(first : ULongArray, second : ULongArray) : ULongArray {
+        return if (first > second) {
+            first
+        } else {
+            second
+        }
     }
 
 

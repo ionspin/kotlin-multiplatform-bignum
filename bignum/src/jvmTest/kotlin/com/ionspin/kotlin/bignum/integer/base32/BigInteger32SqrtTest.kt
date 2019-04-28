@@ -17,6 +17,7 @@
 
 package com.ionspin.kotlin.bignum.integer.base32
 
+import org.junit.Ignore
 import org.junit.Test
 import kotlin.random.Random
 import kotlin.random.nextULong
@@ -30,7 +31,7 @@ import kotlin.test.assertTrue
 @ExperimentalUnsignedTypes
 class BigInteger32SqrtTest {
 
-
+    @Ignore("Need to improve basic divide algo before using it in sqrt")
     @Test
     fun testSpecificSqrt() {
         assertTrue {

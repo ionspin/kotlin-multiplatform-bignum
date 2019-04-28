@@ -15,7 +15,7 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer.base63
+package com.ionspin.kotlin.bignum.integer.base63List
 
 import java.math.BigInteger
 

@@ -48,7 +48,7 @@ class BigInteger32JavaDivisionTest {
         assertTrue {
             val a = uintArrayOf(40U)
             val b = uintArrayOf(20U)
-            val c = BigInteger32Arithmetic.basicDivide(a, b)
+            val c = BigInteger32Arithmetic.divide(a, b)
 
             val quotientBigInt = c.first.toJavaBigInteger()
             val remainderBigInt = c.second.toJavaBigInteger()
@@ -64,7 +64,7 @@ class BigInteger32JavaDivisionTest {
         assertTrue {
             val a = uintArrayOf(20U, 20U)
             val b = uintArrayOf(10U, 10U)
-            val c = BigInteger32Arithmetic.basicDivide(a, b)
+            val c = BigInteger32Arithmetic.divide(a, b)
 
             val quotientBigInt = c.first.toJavaBigInteger()
             val remainderBigInt = c.second.toJavaBigInteger()
