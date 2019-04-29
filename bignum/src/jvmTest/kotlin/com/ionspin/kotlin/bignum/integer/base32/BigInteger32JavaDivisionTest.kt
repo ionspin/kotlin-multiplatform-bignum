@@ -19,19 +19,15 @@
 
 package com.ionspin.kotlin.bignum.integer.base32
 
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
-import com.ionspin.kotlin.bignum.integer.base63.toJavaBigInteger
 import kotlinx.coroutines.*
 import org.junit.Ignore
 import org.junit.Test
 import java.lang.ArithmeticException
 import java.math.BigDecimal
-import java.math.BigInteger
 import java.math.MathContext
 import java.math.RoundingMode
 import kotlin.random.Random
 import kotlin.random.nextUInt
-import kotlin.random.nextULong
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
@@ -41,14 +37,14 @@ import kotlin.test.assertTrue
  * on 09-Mar-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger32JavaDivisionTest {
+class BigInteger32JavaDivisionTest  {
 
     @Test
     fun testDivision() {
         assertTrue {
             val a = uintArrayOf(40U)
             val b = uintArrayOf(20U)
-            val c = BigInteger32Arithmetic.basicDivide(a, b)
+            val c = BigInteger32Arithmetic.divide(a, b)
 
             val quotientBigInt = c.first.toJavaBigInteger()
             val remainderBigInt = c.second.toJavaBigInteger()
@@ -64,7 +60,7 @@ class BigInteger32JavaDivisionTest {
         assertTrue {
             val a = uintArrayOf(20U, 20U)
             val b = uintArrayOf(10U, 10U)
-            val c = BigInteger32Arithmetic.basicDivide(a, b)
+            val c = BigInteger32Arithmetic.divide(a, b)
 
             val quotientBigInt = c.first.toJavaBigInteger()
             val remainderBigInt = c.second.toJavaBigInteger()

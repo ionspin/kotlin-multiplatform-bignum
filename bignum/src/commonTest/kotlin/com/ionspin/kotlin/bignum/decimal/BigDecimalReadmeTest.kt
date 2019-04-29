@@ -61,7 +61,7 @@ class BigDecimalReadmeTest {
         }
 
         assertTrue {
-            val bigDecimal = BigDecimal.fromIntAsSignificand(10 )
+            val bigDecimal = BigDecimal.fromIntAsSignificand(10)
             println("BigDecimal: $bigDecimal")
             bigDecimal.toString() == "1.0"
         }
@@ -85,11 +85,10 @@ class BigDecimalReadmeTest {
         }
 
         assertTrue {
-            val bigDecimal = BigDecimal.fromInt(10 )
+            val bigDecimal = BigDecimal.fromInt(10)
             println("BigDecimal: $bigDecimal")
             bigDecimal.toString() == "1.0E+1"
         }
-
 
 
     }
@@ -153,11 +152,11 @@ class BigDecimalReadmeTest {
 
             println("Sum without exponent: ${product.toStringExpanded()}")
             println("Sum:      ${product}")
-            val expectedResult =  BigDecimal.fromBigIntegerWithExponent(
+            val expectedResult = BigDecimal.fromBigIntegerWithExponent(
                 BigInteger.parseString("7100000000000000000000125", 10), (15).toBigInteger()
             )
             println("Expected: ${product}")
-             product == expectedResult
+            product == expectedResult
         }
     }
 
@@ -188,9 +187,8 @@ class BigDecimalReadmeTest {
 
             println("Product without exponent: ${product.toStringExpanded()}")
             println("Product: ${product}")
-            val expectedResult = BigDecimal.fromLongWithExponent(8875, (-8).toBigInteger())
-            true
-//             product == expectedResult
+            val expectedResult = BigDecimal.fromLongWithExponent(8875, (8).toBigInteger())
+            product == expectedResult
         }
 
         assertTrue {
@@ -202,8 +200,7 @@ class BigDecimalReadmeTest {
             println("Product without exponent: ${product.toStringExpanded()}")
             println("Product: ${product}")
             val expectedResult = BigDecimal.fromLongWithExponent(8875, (-9).toBigInteger())
-            true
-//            product == expectedResult
+            product == expectedResult
         }
 
 
@@ -214,7 +211,7 @@ class BigDecimalReadmeTest {
         assertFailsWith(ArithmeticException::class) {
             val a = 1.toBigDecimal()
             val b = 3.toBigDecimal()
-            val result = a.divide(b)
+            a.divide(b)
         }
 
         assertTrue {

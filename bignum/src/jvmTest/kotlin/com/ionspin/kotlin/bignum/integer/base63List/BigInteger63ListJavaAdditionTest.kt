@@ -15,8 +15,9 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer.base63
+package com.ionspin.kotlin.bignum.integer.base63List
 
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63LinkedListArithmetic
 import org.junit.Test
 import kotlin.test.assertTrue
 
@@ -25,23 +26,16 @@ import kotlin.test.assertTrue
  * ugljesa.jovanovic@ionspin.com
  * on 17-Mar-2019
  */
-/*
-0 = 9223372036854775800
-1 = 9223372036854775807
-2 = 9223372036854775807
-3 = 67108863
 
-+ 8
- */
 
 @ExperimentalUnsignedTypes
-class BigInteger63JavaAdditionTest  {
+class BigInteger63ListJavaAdditionTest () {
 
     @Test
     fun `Test specific values for addition`() {
-        val first = ulongArrayOf(9223372036854775800UL, 9223372036854775807UL, 9223372036854775807UL, 67108863UL)
-        val second = ulongArrayOf(8UL)
-        val result = BigInteger63Arithmetic.add(first, second)
+        val first = listOf(9223372036854775800UL, 9223372036854775807UL, 9223372036854775807UL, 67108863UL)
+        val second = listOf(8UL)
+        val result = BigInteger63LinkedListArithmetic.add(first, second)
 
         val bigIntResult = first.toJavaBigInteger() + second.toJavaBigInteger()
         assertTrue { result.toJavaBigInteger() == bigIntResult }

@@ -19,9 +19,6 @@ package com.ionspin.kotlin.bignum.integer.base63
 
 import kotlinx.coroutines.*
 import org.junit.Test
-import java.lang.Exception
-import java.lang.RuntimeException
-import java.math.BigInteger
 import kotlin.random.Random
 import kotlin.random.nextULong
 import kotlin.test.Ignore
@@ -33,7 +30,7 @@ import kotlin.test.assertTrue
  * on 09-Mar-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger63JavaDivisionTest {
+class BigInteger63JavaDivisionTest  {
 
     @Test
     fun testDivision() {

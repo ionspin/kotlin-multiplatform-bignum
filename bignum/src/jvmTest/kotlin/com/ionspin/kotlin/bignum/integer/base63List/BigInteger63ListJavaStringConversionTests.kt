@@ -15,8 +15,9 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer.base32
+package com.ionspin.kotlin.bignum.integer.base63List
 
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63LinkedListArithmetic
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -24,7 +25,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import java.math.BigInteger
 import kotlin.random.Random
-import kotlin.random.nextUInt
+import kotlin.random.nextULong
 import kotlin.test.assertTrue
 
 /**
@@ -33,17 +34,20 @@ import kotlin.test.assertTrue
  * on 16-Mar-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger32JavaStringConversionTests  {
+class BigInteger63ListJavaStringConversionTests () {
 
 
     @Test
     fun `Test parsing with sepcific values`() {
-        testParsingSingleTest("1234", 10)
+//        testParsingSingleTest("1234", 10)
+//        testParsingSingleTest("922337203685477580799999999999990776627963145224192", 10)
+        testParsingSingleTest("52656145834278593348959013841835216159447547700274555627155488768", 10)
+        testParsingSingleTest("f", 16)
     }
 
-    fun testParsingSingleTest(uIntArrayString: String, base : Int) {
+    fun testParsingSingleTest(uIntArrayString: String, base: Int) {
         assertTrue {
-            val parsed = BigInteger32Arithmetic.parseForBase(uIntArrayString, base)
+            val parsed = BigInteger63LinkedListArithmetic.parseForBase(uIntArrayString, base)
             val javaBigIntParsed = BigInteger(uIntArrayString, base)
 
             parsed.toJavaBigInteger() == javaBigIntParsed
@@ -56,10 +60,11 @@ class BigInteger32JavaStringConversionTests  {
         val seed = 1
         val random = Random(seed)
         val jobList: MutableList<Job> = mutableListOf()
-        for (i in 1..Int.MAX_VALUE step 5001) {
+
+        for (i in 1..Int.MAX_VALUE step 7001) {
             jobList.add(
                 GlobalScope.launch {
-                    toStringSingleTest(uintArrayOf(random.nextUInt()), 10)
+                    toStringSingleTest(listOf(random.nextULong()), 10)
                 }
             )
         }
@@ -74,16 +79,17 @@ class BigInteger32JavaStringConversionTests  {
         val seed = 1
         val random = Random(seed)
         val jobList: MutableList<Job> = mutableListOf()
-        for (i in 1..Int.MAX_VALUE step 5001) {
+        for (i in 1..Int.MAX_VALUE step 7001) {
             jobList.add(
                 GlobalScope.launch {
                     toStringSingleTest(
-                        uintArrayOf(random.nextUInt(), random.nextUInt()),
+                        listOf(random.nextULong(), random.nextULong()),
                         random.nextInt(2, 36)
                     ) //36 is the max java bigint supports
                 }
             )
         }
+
         runBlocking {
             jobList.forEach { it.join() }
         }
@@ -92,16 +98,17 @@ class BigInteger32JavaStringConversionTests  {
 
     @Test
     fun `Test toString with specific values`() {
-        toStringSingleTest(uintArrayOf(1234U), 10)
+        toStringSingleTest(listOf(1234U), 10)
     }
 
-    fun toStringSingleTest(uIntArray: UIntArray, base : Int) {
+    fun toStringSingleTest(operand : List<ULong>, base: Int) {
         assertTrue {
-            val result = BigInteger32Arithmetic.toString(uIntArray, base)
-            val javaBigIntResult = uIntArray.toJavaBigInteger().toString(base)
+            val result = BigInteger63LinkedListArithmetic.toString(operand, base)
+            val javaBigIntResult = operand.toJavaBigInteger().toString(base)
 
             result == javaBigIntResult
         }
     }
+
 
 }

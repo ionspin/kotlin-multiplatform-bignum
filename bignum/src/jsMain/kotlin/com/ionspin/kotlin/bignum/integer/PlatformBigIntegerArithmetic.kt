@@ -87,6 +87,14 @@ actual object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>
         TODO("not implemented yet")
     }
 
+    override fun sqrt(operand: IntArray): Pair<IntArray, IntArray> {
+        TODO("not implemented yet")
+    }
+
+    override fun gcd(first: IntArray, second: IntArray): IntArray {
+        TODO("not implemented yet")
+    }
+
     override fun parseForBase(number: String, base: Int) : IntArray {
         TODO("not implemented yet")
     }

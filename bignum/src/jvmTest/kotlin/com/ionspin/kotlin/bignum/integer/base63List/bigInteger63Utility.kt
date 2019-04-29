@@ -15,42 +15,19 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer.base63
+package com.ionspin.kotlin.bignum.integer.base63List
 
-import org.junit.Test
-import kotlin.test.assertTrue
+import java.math.BigInteger
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 17-Mar-2019
+ * on 09-Mar-2019
  */
-/*
-0 = 9223372036854775800
-1 = 9223372036854775807
-2 = 9223372036854775807
-3 = 67108863
-
-+ 8
- */
-
-@ExperimentalUnsignedTypes
-class BigInteger63JavaAdditionTest  {
-
-    @Test
-    fun `Test specific values for addition`() {
-        val first = ulongArrayOf(9223372036854775800UL, 9223372036854775807UL, 9223372036854775807UL, 67108863UL)
-        val second = ulongArrayOf(8UL)
-        val result = BigInteger63Arithmetic.add(first, second)
-
-        val bigIntResult = first.toJavaBigInteger() + second.toJavaBigInteger()
-        assertTrue { result.toJavaBigInteger() == bigIntResult }
+@UseExperimental(ExperimentalUnsignedTypes::class)
+fun List<ULong>.toJavaBigInteger(): BigInteger {
+    return this.foldIndexed(BigInteger.valueOf(0)) { index, acc, digit ->
+        acc.or(BigInteger(digit.toString(), 10).shiftLeft((index) * 63))
 
     }
-
-
-
-
-
-    
 }

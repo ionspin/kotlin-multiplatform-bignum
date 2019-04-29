@@ -21,6 +21,10 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
+import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic.compareTo
+import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic.minus
+import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic.shl
+import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic.times
 import com.ionspin.kotlin.bignum.integer.util.toDigit
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
@@ -40,6 +44,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     val wordSizeInBits = 63
 
     val baseMask: ULong = 0x7FFFFFFFFFFFFFFFUL
+    val baseMaskArray: ULongArray = ulongArrayOf(0x7FFFFFFFFFFFFFFFUL)
 
     val lowMask = 0x00000000FFFFFFFFUL
     val highMask = 0x7FFFFFFF00000000UL
@@ -571,6 +576,48 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return Pair(removeLeadingZeroes(quotient), denormRemainder)
     }
 
+    fun basicDivide2(
+        unnormalizedDividend: ULongArray,
+        unnormalizedDivisor: ULongArray
+    ): Pair<ULongArray, ULongArray> {
+        var (a,b, shift) = normalize(unnormalizedDividend, unnormalizedDivisor)
+        val m = a.size - b.size
+        val bmb = b shl (m * wordSizeInBits)
+        var q = ULongArray(m + 1) { 0U }
+        if (a > bmb) {
+            q[m] = 1U
+            a = a - bmb
+        }
+        var qjhat = ZERO
+        var qjhatULong = ZERO
+        var bjb = ZERO
+        var delta = ZERO
+        for (j in m - 1 downTo 0) {
+            qjhatULong = BigInteger32Arithmetic.divide(
+                (a.copyOfRange(b.size - 1, b.size + 1)).to32Bit(),
+                ulongArrayOf(b[b.size - 1]).to32Bit()
+            ).first.from32Bit()
+            q[j] = min(qjhatULong, baseMaskArray)[0]
+            bjb = b shl (j * BigInteger32Arithmetic.wordSizeInBits)
+            val qjBjb = (b * q[j]) shl (j * wordSizeInBits)
+            if (qjBjb > a) {
+                delta = qjBjb - a
+                while (delta > qjBjb) {
+                    q[j] = q[j] - 1U
+                    delta = delta - bjb
+                }
+                // quotient is now such that q[j] * b*B^j won't be larger than divisor
+                a = a - (b * q[j]) shl (j * BigInteger32Arithmetic.wordSizeInBits)
+            } else {
+                a = a - qjBjb
+            }
+
+        }
+        val denormRemainder =
+            denormalize(a, shift)
+        return Pair(removeLeadingZeroes(q), denormRemainder)
+    }
+
     override fun reciprocal(operand: ULongArray): Pair<ULongArray, ULongArray> {
         return d1ReciprocalRecursiveWordVersion(operand)
     }
@@ -686,7 +733,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return Pair(x, r)
     }
 
-    fun convertTo64BitRepresentation(operand: ULongArray): ULongArray {
+    internal fun convertTo64BitRepresentation(operand: ULongArray): ULongArray {
         if (operand == ZERO) return ZERO
         val length = bitLength(operand)
         val requiredLength = if (length % 64 == 0) {
@@ -714,7 +761,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
     }
 
-    fun convertTo32BitRepresentation(operand: ULongArray): UIntArray {
+    internal fun convertTo32BitRepresentation(operand: ULongArray): UIntArray {
         val power64Representation = convertTo64BitRepresentation(operand)
         val result = UIntArray(power64Representation.size * 2)
         for (i in 0 until power64Representation.size) {
@@ -725,7 +772,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return BigInteger32Arithmetic.removeLeadingZeroes(result)
     }
 
-    fun convertFrom32BitRepresentation(operand: UIntArray): ULongArray {
+    internal fun convertFrom32BitRepresentation(operand: UIntArray): ULongArray {
         if (operand.size == 0) {
             return ZERO
         }
@@ -822,6 +869,81 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         val result = product.copyOfRange(2 * shift + precisionExtension, product.size)
         val remainder = first - (result * second)
         return Pair(result, remainder)
+    }
+
+    override fun sqrt(operand: ULongArray): Pair<ULongArray, ULongArray> {
+        return reqursiveSqrt(operand)
+    }
+
+    private fun reqursiveSqrt(operand: ULongArray): Pair<ULongArray, ULongArray> {
+        val n = operand.size
+        val l = floor((n - 1).toDouble() / 4).toInt()
+        if (l == 0) {
+            return basecaseSqrt(operand)
+        }
+        val step = n / 4
+        val stepRemainder = n % 4
+        val baseLPowerShift = 63 * l
+        val a1 = operand.copyOfRange(n - ((3 * step) + stepRemainder), n - ((2 * step) + stepRemainder))
+        val a0 = operand.copyOfRange(0, n - ((3 * step) + stepRemainder))
+        val a3a2 = operand.copyOfRange(n - ((2 * step) + stepRemainder), n)
+
+        val (sPrim, rPrim) = reqursiveSqrt(a3a2)
+        val (q, u) = ((rPrim shl baseLPowerShift) + a1) divrem (sPrim shl 1)
+        var s = (sPrim shl baseLPowerShift) + q
+        var r = (u shl baseLPowerShift) + a0 - (q * q)
+        return Pair(s, r)
+    }
+
+
+    internal fun basecaseSqrt(operand: ULongArray) : Pair<ULongArray, ULongArray> {
+        val sqrt = sqrtInt(operand)
+        val remainder = operand - (sqrt * sqrt)
+        return Pair(sqrt, remainder)
+
+    }
+
+    internal fun sqrtInt(operand: ULongArray) : ULongArray {
+        var u = operand
+        var s = ZERO
+        var tmp = ZERO
+        do {
+            s = u
+            tmp = s + (operand / s)
+            u = tmp shr 1
+        } while (u < s)
+        return s
+    }
+
+    override fun gcd(first: ULongArray, second: ULongArray): ULongArray {
+        return naiveGcd(first, second)
+    }
+
+    private fun naiveGcd(first: ULongArray, second: ULongArray): ULongArray {
+        var u = first
+        var v = second
+        while (v != ZERO) {
+            val tmpU = u
+            u = v
+            v = tmpU % v
+        }
+        return u
+    }
+
+    fun min(first : ULongArray, second : ULongArray) : ULongArray {
+        return if (first < second) {
+            first
+        } else {
+            second
+        }
+    }
+
+    fun max(first : ULongArray, second : ULongArray) : ULongArray {
+        return if (first > second) {
+            first
+        } else {
+            second
+        }
     }
 
 

@@ -19,6 +19,7 @@ package com.ionspin.kotlin.bignum.integer.arithmetic
 
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.toBigInteger
+import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse

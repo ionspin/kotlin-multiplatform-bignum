@@ -21,9 +21,19 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.compareTo
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.div
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.divrem
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.minus
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.plus
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.rem
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.shl
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.shr
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.times
 import com.ionspin.kotlin.bignum.integer.util.toDigit
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
+import kotlin.math.floor
 
 /**
  * Just to experiment and see if using immutable lists is better optimized than using arrays.
@@ -646,7 +656,110 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     }
 
     override fun reciprocal(operand: List<ULong>): Pair<List<ULong>, List<ULong>> {
-        TODO("not implemented yet")
+        return d1ReciprocalRecursiveWordVersion(operand)
+    }
+
+
+
+    fun d1ReciprocalRecursiveWordVersion(a: List<ULong>): Pair<List<ULong>, List<ULong>> {
+        val n = a.size - 1
+        if (n <= 2) {
+            val corrected = if (n == 0) {
+                1
+            } else {
+                n
+            }
+            val rhoPowered = ONE shl (corrected * 2 * BigInteger63Arithmetic.wordSizeInBits)
+            val x = rhoPowered / a
+            val r = rhoPowered - (x * a)
+            return Pair(x, r)
+        }
+        val l = floor((n - 1).toDouble() / 2).toInt()
+        val h = n - l
+        val ah = a.subList(a.size - h - 1, a.size)
+        val al = a.subList(0, l)
+        var (xh, rh) = d1ReciprocalRecursiveWordVersion(ah)
+        val s = al * xh
+//        val rhoL = (ONE shl l)
+        val rhRhoL = rh shl (l * BigInteger63Arithmetic.wordSizeInBits)
+        val t = if (rhRhoL >= s) {
+            rhRhoL - s
+        } else {
+            xh = xh - BigInteger63Arithmetic.ONE
+            (rhRhoL + a) - s
+        }
+        val tm = t shr (h * BigInteger63Arithmetic.wordSizeInBits)
+        val d = (xh * tm) shr (h * BigInteger63Arithmetic.wordSizeInBits)
+        var x = (xh shl (l * BigInteger63Arithmetic.wordSizeInBits)) + d
+        var r = (t shl (l * BigInteger63Arithmetic.wordSizeInBits)) - a * d
+        if (r >= a) {
+            x = x + BigInteger63Arithmetic.ONE
+            r = r - a
+            if (r >= a) {
+                x = x + BigInteger63Arithmetic.ONE
+                r = r - a
+            }
+        }
+        return Pair(x, r)
+    }
+
+    override fun sqrt(operand: List<ULong>): Pair<List<ULong>, List<ULong>> {
+        return reqursiveSqrt(operand)
+    }
+
+    private fun reqursiveSqrt(operand: List<ULong>): Pair<List<ULong>, List<ULong>> {
+        val n = operand.size
+        val l = floor((n - 1).toDouble() / 4).toInt()
+        if (l == 0) {
+            return basecaseSqrt(operand)
+        }
+        val step = n / 4
+        val stepRemainder = n % 4
+        val baseLPowerShift = 63 * l
+        val a1 = operand.subList(n - ((3 * step) + stepRemainder), n - ((2 * step) + stepRemainder))
+        val a0 = operand.subList(0, n - ((3 * step) + stepRemainder))
+        val a3a2 = operand.subList(n - ((2 * step) + stepRemainder), n)
+
+        val (sPrim, rPrim) = reqursiveSqrt(a3a2)
+        val (q, u) = ((rPrim shl baseLPowerShift) + a1) divrem (sPrim shl 1)
+        var s = (sPrim shl baseLPowerShift) + q
+        var r = (u shl baseLPowerShift) + a0 - (q * q)
+        return Pair(s, r)
+    }
+
+
+    internal fun basecaseSqrt(operand: List<ULong>) : Pair<List<ULong>, List<ULong>> {
+        val sqrt = sqrtInt(operand)
+        val remainder = operand - (sqrt * sqrt)
+        return Pair(sqrt, remainder)
+
+    }
+
+    internal fun sqrtInt(operand: List<ULong>) : List<ULong> {
+        var u = operand
+        var s = ZERO
+        var tmp = ZERO
+        do {
+            s = u
+            tmp = s + (operand / s)
+            u = tmp shr 1
+        } while (u < s)
+        return s
+    }
+
+    override fun gcd(first: List<ULong>, second: List<ULong>): List<ULong> {
+        return naiveGcd(first, second)
+    }
+
+    private fun naiveGcd(first: List<ULong>, second: List<ULong>): List<ULong> {
+        var u = first
+        var v = second
+        while (v != ZERO) {
+            val tmpU = u
+            u = v
+            v = tmpU % v
+        }
+        return u
     }
 
     override fun parseForBase(number: String, base: Int): List<ULong> {

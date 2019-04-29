@@ -32,7 +32,7 @@ import kotlin.test.assertTrue
  * on 09-Mar-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger32JavaBitwiseTest {
+class BigInteger32JavaBitwiseTest  {
 
     @Test
     fun `Test shift left`() {
@@ -41,7 +41,7 @@ class BigInteger32JavaBitwiseTest {
 
 
         val jobList: MutableList<Job> = mutableListOf()
-        for (i in 1 .. 30_000 step 5000 ) {
+        for (i in 1..30_000 step 5000) {
             val a = UIntArray(i) { random.nextUInt() }
             val b = random.nextInt(i)
             jobList.add(
@@ -57,8 +57,8 @@ class BigInteger32JavaBitwiseTest {
 
     }
 
-    fun shiftLeftSingleTest(places : Int, number : UIntArray) {
-        assertTrue ("Failed for $places and elements ${number.contentToString()}") {
+    fun shiftLeftSingleTest(places: Int, number: UIntArray) {
+        assertTrue("Failed for $places and elements ${number.contentToString()}") {
             val a = number
             val result = BigInteger32Arithmetic.shiftLeft(a, places)
             val convertedResult = result.toJavaBigInteger()
@@ -68,13 +68,12 @@ class BigInteger32JavaBitwiseTest {
     }
 
 
-
     @Test
     fun `Test shift right`() {
         val seed = 1
         val random = Random(seed)
         val jobList: MutableList<Job> = mutableListOf()
-        for (i in 1 .. 30_000 step 5000 ) {
+        for (i in 1..30_000 step 5000) {
             val a = UIntArray(i) { random.nextUInt() }
             val b = random.nextInt(i)
             jobList.add(
@@ -92,17 +91,19 @@ class BigInteger32JavaBitwiseTest {
 
     @Test
     fun `Test shift right with specific values`() {
-        val a = intArrayOf(752029288,
-        -964625924,
-        479674580,
-        -1697013934,
-        -1956440078,
-        -1550357085).toUIntArray()
+        val a = intArrayOf(
+            752029288,
+            -964625924,
+            479674580,
+            -1697013934,
+            -1956440078,
+            -1550357085
+        ).toUIntArray()
         shiftRightSingleTest(128, number = a)
     }
 
-    fun shiftRightSingleTest(places : Int, number : UIntArray) {
-        assertTrue ("Failed for $places and elements ${number.contentToString()}") {
+    fun shiftRightSingleTest(places: Int, number: UIntArray) {
+        assertTrue("Failed for $places and elements ${number.contentToString()}") {
             val result = BigInteger32Arithmetic.shiftRight(number, places)
             val convertedResult = result.toJavaBigInteger()
             val bigIntResult = number.toJavaBigInteger() shr places

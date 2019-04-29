@@ -98,6 +98,10 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
      */
     fun pow(base : BackingCollectionType, exponent : Long) : BackingCollectionType
 
+    fun sqrt(operand : BackingCollectionType) : Pair<BackingCollectionType, BackingCollectionType>
+
+    fun gcd(first: BackingCollectionType, second: BackingCollectionType) : BackingCollectionType
+
     /**
      * Parse a string in a specific base into a big integer
      */
