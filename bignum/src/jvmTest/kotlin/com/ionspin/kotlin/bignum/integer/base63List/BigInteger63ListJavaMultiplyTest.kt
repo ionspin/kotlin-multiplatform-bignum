@@ -32,7 +32,7 @@ import kotlin.test.assertTrue
  * on 09-Mar-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger63ListJavaMultiplyTest {
+class BigInteger63ListJavaMultiplyTest () {
     @Test
     fun `Test for sentimental value`() {
         assertTrue {

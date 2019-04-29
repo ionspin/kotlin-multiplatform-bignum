@@ -20,7 +20,6 @@ package com.ionspin.kotlin.bignum.modular
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.base63.toJavaBigInteger
-import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -36,7 +35,7 @@ import kotlin.test.assertTrue
  * on 22-Apr-2019
  */
 @ExperimentalUnsignedTypes
-class ModularBigIntegerDivisionTest {
+class ModularBigIntegerDivisionTest  {
     @Test
     fun testRandomModularDivision() {
         val seed = 1

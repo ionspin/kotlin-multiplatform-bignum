@@ -23,6 +23,7 @@ import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.NarrowingOperations
 import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.math.log10
 
 

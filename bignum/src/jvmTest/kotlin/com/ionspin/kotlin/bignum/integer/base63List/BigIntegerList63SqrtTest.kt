@@ -29,7 +29,7 @@ import kotlin.test.assertTrue
  * on 27-Apr-2019
  */
 @ExperimentalUnsignedTypes
-class BigIntegerList63SqrtTest {
+class BigIntegerList63SqrtTest () {
 
 
     @Test

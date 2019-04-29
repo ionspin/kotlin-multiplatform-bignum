@@ -35,7 +35,7 @@ import kotlin.test.assertTrue
  * on 22-Apr-2019
  */
 @ExperimentalUnsignedTypes
-class ModularBigIntegerMultiplication {
+class ModularBigIntegerMultiplication  {
 
     @Test
     fun testRandomModularMultiplication() {

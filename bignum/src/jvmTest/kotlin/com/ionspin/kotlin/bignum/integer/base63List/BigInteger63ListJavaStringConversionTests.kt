@@ -34,7 +34,7 @@ import kotlin.test.assertTrue
  * on 16-Mar-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger63ListJavaStringConversionTests {
+class BigInteger63ListJavaStringConversionTests () {
 
 
     @Test

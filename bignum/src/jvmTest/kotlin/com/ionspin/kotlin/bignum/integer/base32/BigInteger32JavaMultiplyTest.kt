@@ -33,7 +33,7 @@ import kotlin.test.assertTrue
  */
 @ExperimentalCoroutinesApi
 @ExperimentalUnsignedTypes
-class BigInteger32JavaMultiplyTest {
+class BigInteger32JavaMultiplyTest  {
 
     @Test
     fun `Test for sentimental value`() {
@@ -142,7 +142,7 @@ class BigInteger32JavaMultiplyTest {
                 startTime = lastTime
             }
 
-            val result = elements.foldIndexed(UIntArray(1) { 1U }) { index, acc, uInt ->
+            val result = elements.foldIndexed(UIntArray(1) { 1U }) { _, acc, uInt ->
                 BigInteger32Arithmetic.multiply(acc, uInt)
             }
             if (time) {
@@ -151,7 +151,7 @@ class BigInteger32JavaMultiplyTest {
                 startTime = lastTime
             }
             val convertedResult = result.toJavaBigInteger()
-            val bigIntResult = elements.foldIndexed(BigInteger.ONE) { index, acc, uInt ->
+            val bigIntResult = elements.foldIndexed(BigInteger.ONE) { _, acc, uInt ->
                 acc * BigInteger(uInt.toString(), 10)
             }
             if (time) {

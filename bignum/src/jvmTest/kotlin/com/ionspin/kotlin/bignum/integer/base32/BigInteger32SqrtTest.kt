@@ -20,7 +20,6 @@ package com.ionspin.kotlin.bignum.integer.base32
 import org.junit.Ignore
 import org.junit.Test
 import kotlin.random.Random
-import kotlin.random.nextULong
 import kotlin.test.assertTrue
 
 /**
@@ -29,14 +28,12 @@ import kotlin.test.assertTrue
  * on 27-Apr-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger32SqrtTest {
+class BigInteger32SqrtTest  {
 
     @Ignore("Need to improve basic divide algo before using it in sqrt")
     @Test
     fun testSpecificSqrt() {
         assertTrue {
-            val seed = 1
-            val random = Random(seed)
             val operand = BigInteger32Arithmetic.parseForBase(
                 "547162628152978179694572006333394526730648083587307585845689465425919940113687046992147981" +
                         "70196777058540761287227012319014433594622337082294496524616700872104031016223448",
@@ -54,12 +51,10 @@ class BigInteger32SqrtTest {
                 BigInteger32Arithmetic.multiply(resultSqrt, resultSqrt)
             )
 
-            resultSqrt.contentEquals(a.first)
+            resultSqrt.contentEquals(a.first) && resultRem.contentEquals(a.second)
         }
 
         assertTrue {
-            val seed = 1
-            val random = Random(seed)
             val operand = BigInteger32Arithmetic.parseForBase("123456789", 10)
             val a = BigInteger32Arithmetic.sqrt(operand)
             println("Operand: ${BigInteger32Arithmetic.toString(operand, 10)}")

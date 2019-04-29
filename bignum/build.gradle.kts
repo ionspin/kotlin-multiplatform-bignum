@@ -18,6 +18,7 @@
 @file:Suppress("UnstableApiUsage")
 
 import com.moowork.gradle.node.task.NodeTask
+import org.gradle.api.tasks.testing.logging.TestLogging
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
 plugins {
@@ -256,6 +257,12 @@ tasks {
             println ("Common !")
             path = "/home/ionspin/Projects/Future/KotlinBigInteger/bignum/src/commonMain"
             platforms = listOf("Common")
+        }
+    }
+
+    val jvmTest by getting(Test::class) {
+        testLogging {
+            events("PASSED", "FAILED", "SKIPPED")
         }
     }
 

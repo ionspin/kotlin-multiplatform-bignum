@@ -32,14 +32,14 @@ import kotlin.test.assertTrue
  * on 27-Apr-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger63GcdTest {
+class BigInteger63GcdTest  {
 
     @Test
     fun testGcd() {
         val seed = 1
         val random = Random(seed)
         val jobList: MutableList<Job> = mutableListOf()
-        for (i in 1..1000) {
+        for (i in 1..100) {
 
             val length = random.nextInt(2, 100)
             val a = ULongArray(length) {

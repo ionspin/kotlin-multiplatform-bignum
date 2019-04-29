@@ -29,7 +29,7 @@ import kotlin.test.assertTrue
 
 
 @ExperimentalUnsignedTypes
-class BigInteger63ListJavaAdditionTest {
+class BigInteger63ListJavaAdditionTest () {
 
     @Test
     fun `Test specific values for addition`() {

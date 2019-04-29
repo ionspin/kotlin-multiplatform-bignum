@@ -22,7 +22,6 @@ import kotlinx.coroutines.*
 import org.junit.Test
 import kotlin.random.Random
 import kotlin.random.nextULong
-import kotlin.test.Ignore
 import kotlin.test.assertTrue
 
 /**
@@ -31,7 +30,7 @@ import kotlin.test.assertTrue
  * on 09-Mar-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger63ListJavaDivisionTest {
+class BigInteger63ListJavaDivisionTest () {
 
     @Test
     fun testDivision() {
