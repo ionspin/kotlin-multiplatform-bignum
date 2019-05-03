@@ -53,6 +53,8 @@ enum class Sign {
     }
 }
 
+
+
 /**
  * Arbitrary precision integer arithmetic.
  *
@@ -77,6 +79,8 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     override fun getInstance(): BigInteger {
         return this
     }
+
+
 
     @ExperimentalUnsignedTypes
     companion object : BigNumber.Creator<BigInteger>, BigNumber.Util<BigInteger> {
@@ -650,5 +654,29 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
             throw ArithmeticException("Cannot convert to unsigned short and provide exact value")
         }
         return magnitude[0].toUShort()
+    }
+
+    operator fun rangeTo(other : BigInteger) = BigIntegerRange(this, other)
+
+    class BigIntegerRange(override val start : BigInteger, override val endInclusive : BigInteger) : ClosedRange<BigInteger>, Iterable<BigInteger> {
+
+        override fun iterator(): Iterator<BigInteger> {
+            return BigIntegerIterator(start, endInclusive)
+        }
+
+    }
+
+    class BigIntegerIterator(start : BigInteger, private val endInclusive : BigInteger) : Iterator<BigInteger> {
+
+        private var current = start
+
+        override fun hasNext(): Boolean {
+            return current <= endInclusive
+        }
+
+        override fun next(): BigInteger {
+            return current++
+        }
+
     }
 }
