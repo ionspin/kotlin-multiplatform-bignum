@@ -342,4 +342,25 @@ BigIntegerTest {
 
     }
 
+    @Test
+    fun testClosedRange() {
+        assertTrue {
+            val range = 0.toBigInteger() .. 10.toBigInteger()
+            val sum = range.fold(BigInteger.ZERO) { acc, bigint ->
+                acc + bigint
+            }
+            sum == ((range.endInclusive - range.start + 1) * ((range.start + range.endInclusive)) / 2)
+
+        }
+
+        assertTrue {
+            val range = Long.MAX_VALUE.toBigInteger() .. (Long.MAX_VALUE.toBigInteger() + 1000.toBigInteger())
+            val sum = range.fold(BigInteger.ZERO) { acc, bigint ->
+                acc + bigint
+            }
+            sum == ((range.endInclusive - range.start + 1) * ((range.start + range.endInclusive)) / 2)
+
+        }
+    }
+
 }
