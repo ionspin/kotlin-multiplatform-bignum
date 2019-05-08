@@ -422,16 +422,26 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     }
 
     override fun pow(exponent: Long): BigInteger {
-        val sign = if (sign == Sign.NEGATIVE) {
-            if (exponent % 2 == 0L) {
-                Sign.POSITIVE
-            } else {
-                Sign.NEGATIVE
-            }
-        } else {
-            Sign.POSITIVE
+        if (exponent < 0) {
+            throw ArithmeticException("Negative exponent not supported with BigInteger")
         }
-        return BigInteger(arithmetic.pow(magnitude, exponent), sign)
+        return when (this) {
+            ZERO -> ZERO
+            ONE -> ONE
+            else -> {
+                val sign = if (sign == Sign.NEGATIVE) {
+                    if (exponent % 2 == 0L) {
+                        Sign.POSITIVE
+                    } else {
+                        Sign.NEGATIVE
+                    }
+                } else {
+                    Sign.POSITIVE
+                }
+                BigInteger(arithmetic.pow(magnitude, exponent), sign)
+            }
+        }
+
     }
 
     override fun pow(exponent: Int): BigInteger {
