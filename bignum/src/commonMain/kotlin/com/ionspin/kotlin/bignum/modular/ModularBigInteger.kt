@@ -107,7 +107,6 @@ class ModularBigInteger @ExperimentalUnsignedTypes constructor(
                         Sign.NEGATIVE -> result + modulo
                         Sign.ZERO -> BigInteger.ZERO
                     }
-                    return result
                 }
 
 
@@ -199,7 +198,7 @@ class ModularBigInteger @ExperimentalUnsignedTypes constructor(
         return this
     }
 
-    override fun pow(exponent: ModularBigInteger): ModularBigInteger {
+    fun pow(exponent: ModularBigInteger): ModularBigInteger {
         return ModularBigInteger(residue.pow(exponent.residue) % modulus, modulus, creator)
     }
 

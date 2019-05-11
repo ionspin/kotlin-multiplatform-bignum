@@ -21,11 +21,13 @@ import com.ionspin.kotlin.bignum.BigNumber
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigInteger.Companion.TEN
+import com.ionspin.kotlin.bignum.integer.BigInteger.Companion.TWO
 import com.ionspin.kotlin.bignum.integer.BigInteger.Companion.ZERO
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlin.math.absoluteValue
 import kotlin.math.max
+import kotlin.math.sqrt
 
 /**
  * Implementation of floating-point arbitrary precision arithmetic.
@@ -55,6 +57,7 @@ class BigDecimal private constructor(
     companion object : BigNumber.Creator<BigDecimal> {
         val ZERO = BigDecimal(BigInteger.ZERO)
         val ONE = BigDecimal(BigInteger.ONE)
+        val TWO = BigDecimal(BigInteger.TWO)
 
 
         private fun roundOrDont(significand: BigInteger, exponent: BigInteger, decimalMode: DecimalMode): BigDecimal {
@@ -219,23 +222,22 @@ class BigDecimal private constructor(
             }
             val significandDigits = significand.numberOfDecimalDigits()
             val desiredPrecision = decimalMode.decimalPrecision
-            val newSignificand = when {
+            return when {
                 desiredPrecision > significandDigits -> {
                     val extendedSignificand = significand * TEN.pow(desiredPrecision - significandDigits)
-                    return BigDecimal(extendedSignificand, exponent, decimalMode)
+                    BigDecimal(extendedSignificand, exponent, decimalMode)
                 }
                 desiredPrecision < significandDigits -> {
                     val divRem = significand divrem TEN.pow(significandDigits - desiredPrecision)
-                    roundDiscarded(divRem.quotient, divRem.remainder, decimalMode)
+                    val newSignificand = roundDiscarded(divRem.quotient, divRem.remainder, decimalMode)
+                    BigDecimal(newSignificand, exponent, decimalMode)
 
                 }
                 else -> {
-                    return BigDecimal(significand, exponent, decimalMode)
+                        BigDecimal(significand, exponent, decimalMode)
                 }
             }
-//            val newExponent = exponent - exponent.signum() // I can't remember why I did this, it seems wrong now
 
-            return BigDecimal(newSignificand, exponent, decimalMode)
 
 
         }
@@ -975,10 +977,10 @@ class BigDecimal private constructor(
      * #RoundingMode.FLOOR will be used
      */
     override fun divideAndRemainder(other: BigDecimal): Pair<BigDecimal, BigDecimal> {
-        val resolvedRoundingMode = this.decimalMode ?: DecimalMode(0, RoundingMode.FLOOR)
+        val resolvedRoundingMode = this.decimalMode ?: DecimalMode(exponent.longValue(true) + 1, RoundingMode.FLOOR)
         val quotient = divide(other, resolvedRoundingMode)
-        val quotientRounded = round(quotient, DecimalMode(0, decimalMode?.roundingMode ?: RoundingMode.FLOOR))
-        val remainder = this - (quotientRounded * other)
+        val quotientInfinitePrecision = quotient.copy(decimalMode = DecimalMode.DEFAULT)
+        val remainder = this - (quotientInfinitePrecision * other)
         return Pair(quotient, remainder)
     }
 
@@ -986,50 +988,81 @@ class BigDecimal private constructor(
         return significand.isZero()
     }
 
-    override fun pow(exponent: BigDecimal): BigDecimal {
-        if (exponent.signum() < 0) {
-            throw RuntimeException("BigDecimal exponentiation with negative numbers is not supported. Exponent: ${exponent}")
-        }
-        //TODO Naive implementation
-        var result = ONE
-        for (i in 1.toBigInteger() .. exponent.toBigInteger()) {
-
-        }
-        return result
-
+    fun copy(significand: BigInteger = this.significand, exponent: BigInteger = this.exponent, decimalMode: DecimalMode? = this.decimalMode) : BigDecimal {
+        return BigDecimal(significand, exponent, decimalMode)
     }
+    //TODO in 0.3.0
+//    override fun pow(exponent: BigDecimal): BigDecimal {
+//        if (exponent.signum() < 0) {
+//            throw RuntimeException("BigDecimal exponentiation with negative numbers is not supported. Exponent: ${exponent}")
+//        }
+//        //TODO Naive implementation
+//        var result = ONE
+//        for (i in 1.toBigInteger() .. exponent.toBigInteger()) {
+//            result = result * this
+//        }
+//        val remainder = exponent.subtract(exponent.floor(), DecimalMode.DEFAULT)
+//        return result
+//
+//    }
 
     override fun pow(exponent: Int): BigDecimal {
-        var result = ONE
-        return when {
-            exponent > 0 -> {
-                for (i in 1 .. exponent) {
-                    result = result * result
-                }
-                result
-            }
-            exponent <0 -> {
-                for (i in 1 .. exponent.absoluteValue) {
-                    result = result / result
-                }
-                result
-            }
-            else -> {
-                ONE
-            }
-        }
+        return pow(exponent.toLong())
 
     }
+    //TODO in 0.3.0
+//    /**
+//     * Natural logarithm of this BigDecimal
+//     */
+//    fun log() {
+//
+//    }
 
+//    /**
+//     * Arithmetic-geometric mean
+//     */
+//    fun agm(other : BigDecimal, decimalMode: DecimalMode? = null) : BigDecimal {
+//        var a = this
+//        var g = other
+//        var nextA : BigDecimal
+//        val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
+//        if (resolvedDecimalMode.decimalPrecision == 0L) {
+//            throw ArithmeticException("Agm not available with infinite precision")
+//        }
+//        while (true) {
+//            nextA = (a + g) / TWO
+//            if ((a - g).abs().precision <= resolvedDecimalMode.decimalPrecision) {
+//                return nextA
+//            } else {
+//                g = (a * g).sqrt()
+//                a = nextA
+//            }
+//
+//        }
+//    }
+//
+//    fun sqrt() : BigDecimal {
+//        val root = significand.sqrt()
+//        val exponent =
+//    }
+    /**
+     * Return the this truncated by using floor rounding
+     */
     fun floor() : BigDecimal {
         return round(DecimalMode(exponent.longValue(true) + 1, RoundingMode.FLOOR))
     }
 
+    /**
+     * Return the this truncated by using ceil rounding
+     */
     fun ceil() : BigDecimal {
         return round(DecimalMode(exponent.longValue(true) + 1, RoundingMode.CEILING))
     }
 
-    fun toBigInteger(roundingMode: RoundingMode = RoundingMode.FLOOR) : BigInteger {
+    /**
+     * Convert to big integer by truncating
+     */
+    fun toBigInteger() : BigInteger {
         if (exponent.sign == Sign.NEGATIVE) {
                 return BigInteger.ZERO
         }
@@ -1156,7 +1189,24 @@ class BigDecimal private constructor(
      * Exponentiate this BigDecimal by some exponent
      */
     override fun pow(exponent: Long): BigDecimal {
-        return BigDecimal(significand, this.exponent * exponent)
+        var result = ONE
+        return when {
+            exponent > 0 -> {
+                for (i in 1 .. exponent) {
+                    result = result * result
+                }
+                result
+            }
+            exponent < 0 -> {
+                for (i in 1 .. exponent.absoluteValue) {
+                    result = result / result
+                }
+                result
+            }
+            else -> {
+                ONE
+            }
+        }
     }
 
     /**

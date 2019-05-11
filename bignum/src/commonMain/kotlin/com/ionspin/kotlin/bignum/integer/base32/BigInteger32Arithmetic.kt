@@ -43,6 +43,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     override val ZERO = UIntArray(0)
     override val ONE = UIntArray(1) { 1U }
+    override val TWO = UIntArray(1) { 2U }
     override val TEN = UIntArray(1) { 10U }
 
 

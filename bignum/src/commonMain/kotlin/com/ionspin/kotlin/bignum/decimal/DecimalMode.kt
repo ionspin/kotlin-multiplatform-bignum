@@ -71,7 +71,17 @@ enum class RoundingMode {
 //    ROUND_HALF_TO_ODD
 }
 
+/**
+ * Decimal precision signifies how many digits will significand have. If decimal precision is 0 and RoundingMode is NONE
+ * infinite precision is used
+ */
 data class DecimalMode(val decimalPrecision : Long = 0, val roundingMode : RoundingMode = RoundingMode.NONE) {
+
+    init {
+        if (decimalPrecision == 0L && roundingMode != RoundingMode.NONE) {
+            throw ArithmeticException("Rounding mode with 0 digits precision.")
+        }
+    }
     companion object {
         /**
          * Default decimal mode, infinite precision, no rounding

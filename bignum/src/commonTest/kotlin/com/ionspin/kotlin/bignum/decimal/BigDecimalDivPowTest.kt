@@ -38,4 +38,13 @@ class BigDecimalDivPowTest {
         }
     }
 
+//    @Test //TODO in 0.3.0
+//    fun testDecimalExponentiation() {
+//        val exponent = 2.123.toBigDecimal()
+//        val a = 2.toBigDecimal()
+//        val result = a.pow(exponent)
+//    }
+
+
+
 }
