@@ -70,7 +70,8 @@ class BigDecimal private constructor(
 
         /**
          * Use this rounding when part of number needs to be discarded because
-         * the precision is narrowing or extended because precision is increasing
+         * the precision is narrowing or extended because precision is increasing. Discarded parameter
+         * influences the least significant digit of the result
          */
         @Suppress("UNUSED_EXPRESSION")
         private fun roundDiscarded(

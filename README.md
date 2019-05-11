@@ -21,7 +21,7 @@ Testing to verify that the library works properly is mostly done against Java Bi
 
 ## Should I use this in production?
 
-No. Even though the tests pass, and it seems to be working fine, the library is not mature enough to be used for anything even remotely critical. Also Kotlin Multiplatform is still experimental, so there's that.
+The library is still under heavy development, and relies on experimental kotlin features, like unsigned integer. 
 
 ## Integration
 
@@ -198,17 +198,19 @@ println("Or result: ${orResult.toString(16)}")
 Or result: ffffffffffff0000000000
 ```
 
-#### Inverted "precise"
+#### Binary Not
 
 Unlike Java BigInteger which does two's complement inversion, this method does bitwise inversion, 
 
-i.e.: If the number was "1100" binary, invPrecise returns "0011" => "11" => 4 in base 10 
+i.e.:
 
-In the same case Java BigInteger would return "1011" => -13 two's complement base 10
+    If the number was "1100" binary, invPrecise returns "0011" => "11" => 4 in base 10
+    In the same case Java BigInteger would return "1011" => -13 two's complement base 10
+    
 ```kotlin
 val operand = BigInteger.parseString("11110000", 2)
-val invResult = operand.invPrecise()
-println("Inv result: ${invResult.toString(2)}")
+val result = operand.not()
+println("Not operation result: ${result.toString(2)}")
 ----- Output -----
 Inv result: 1111
 ```
