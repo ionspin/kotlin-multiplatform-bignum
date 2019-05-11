@@ -27,7 +27,7 @@ The library is still under heavy development, and relies on experimental kotlin 
 
 #### Gradle
 ```kotlin
-implementation("com.ionspin.kotlin:bignum:0.0.8")
+implementation("com.ionspin.kotlin:bignum:0.0.9")
 ```
 
 #### Snapshot builds
@@ -37,7 +37,7 @@ repositories {
         url = uri("https://oss.sonatype.org/content/repositories/snapshots")
     }
 }
-implementation("com.ionspin.kotlin:bignum:0.0.9-SNAPSHOT")
+implementation("com.ionspin.kotlin:bignum:0.1.0-SNAPSHOT")
 
 ```
 
