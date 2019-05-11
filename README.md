@@ -204,7 +204,7 @@ Unlike Java BigInteger which does two's complement inversion, this method does b
 
 i.e.:
 
-    If the number was "1100" binary, invPrecise returns "0011" => "11" => 4 in base 10
+    If the number was "1100" binary, not() returns "0011" => "11" => 4 in base 10
     In the same case Java BigInteger would return "1011" => -13 two's complement base 10
     
 ```kotlin
