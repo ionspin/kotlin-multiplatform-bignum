@@ -398,15 +398,17 @@ class BigDecimalJvmTest {
 //        val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseStringWithMode("686869704857289531", 10), 51.toBigInteger())
 //        val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseStringWithMode("-2573868278004278171", 10), 86.toBigInteger())
 //        val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseStringWithMode("7343078399229486119", 10), 16.toBigInteger())
-        val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("-7823836971981477152", 10), 167.toBigInteger())
-        val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("-1241920988109618346", 10), 118.toBigInteger())
+//        val first = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("-7823836971981477152", 10), 167.toBigInteger())
+//        val second = BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("-1241920988109618346", 10), 118.toBigInteger())
+        val first = 4.123.toBigDecimal()
+        val second = 2.0.toBigDecimal()
 
         val javaBigFirst = first.toJavaBigDecimal()
 
         val javaBigSecond = second.toJavaBigDecimal()
 
-        val result = first.divide(second, DecimalMode(401, RoundingMode.AWAY_FROM_ZERO))
-        val javaBigResult = javaBigFirst.divide(javaBigSecond, MathContext(401, java.math.RoundingMode.UP))
+        val result = first.divide(second, DecimalMode(1, RoundingMode.FLOOR))
+        val javaBigResult = javaBigFirst.divide(javaBigSecond, MathContext(1, java.math.RoundingMode.FLOOR))
         assertTrue {
             result.toJavaBigDecimal().compareTo(javaBigResult) == 0
         }

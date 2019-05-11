@@ -88,6 +88,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
 
         val ZERO = BigInteger(arithmetic.ZERO, Sign.ZERO)
         val ONE = BigInteger(arithmetic.ONE, Sign.POSITIVE)
+        val TWO = BigInteger(arithmetic.ONE, Sign.POSITIVE)
         val TEN = BigInteger(arithmetic.TEN, Sign.POSITIVE)
 
         val LOG_10_OF_2 = log10(2.0)
@@ -338,6 +339,17 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
 
     }
 
+    fun sqrt() : BigInteger {
+        return BigInteger(arithmetic.sqrt(magnitude).first, this.sign)
+    }
+
+    fun sqrtAndRemainder() : SqareRootAndRemainder {
+        return SqareRootAndRemainder(
+            BigInteger(arithmetic.sqrt(magnitude).first, this.sign),
+            BigInteger(arithmetic.sqrt(magnitude).second, this.sign)
+        )
+    }
+
     fun gcd(other: BigInteger) : BigInteger {
         return BigInteger(arithmetic.gcd(this.magnitude, other.magnitude), Sign.POSITIVE)
     }
@@ -406,7 +418,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         return BigInteger(wordArray = this.magnitude.copyOf(), sign = Sign.POSITIVE)
     }
 
-    override fun pow(exponent: BigInteger): BigInteger {
+    fun pow(exponent: BigInteger): BigInteger {
         if (exponent <= Long.MAX_VALUE) {
             return pow(exponent.magnitude[0].toLong())
         }
@@ -422,16 +434,26 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     }
 
     override fun pow(exponent: Long): BigInteger {
-        val sign = if (sign == Sign.NEGATIVE) {
-            if (exponent % 2 == 0L) {
-                Sign.POSITIVE
-            } else {
-                Sign.NEGATIVE
-            }
-        } else {
-            Sign.POSITIVE
+        if (exponent < 0) {
+            throw ArithmeticException("Negative exponent not supported with BigInteger")
         }
-        return BigInteger(arithmetic.pow(magnitude, exponent), sign)
+        return when (this) {
+            ZERO -> ZERO
+            ONE -> ONE
+            else -> {
+                val sign = if (sign == Sign.NEGATIVE) {
+                    if (exponent % 2 == 0L) {
+                        Sign.POSITIVE
+                    } else {
+                        Sign.NEGATIVE
+                    }
+                } else {
+                    Sign.POSITIVE
+                }
+                BigInteger(arithmetic.pow(magnitude, exponent), sign)
+            }
+        }
+
     }
 
     override fun pow(exponent: Int): BigInteger {

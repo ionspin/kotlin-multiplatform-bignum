@@ -45,7 +45,7 @@ repositories {
 
 }
 group = "com.ionspin.kotlin"
-version = "0.0.9-SNAPSHOT"
+version = "0.0.9"
 
 kotlin {
     jvm()

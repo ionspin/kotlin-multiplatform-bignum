@@ -28,6 +28,7 @@ package com.ionspin.kotlin.bignum.integer
 interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
     val ZERO : BackingCollectionType
     val ONE : BackingCollectionType
+    val TWO : BackingCollectionType
     val TEN : BackingCollectionType
 
     val basePowerOfTwo: Int

@@ -87,16 +87,16 @@ interface BigNumber<BigType> where BigType : BigNumber<BigType> {
      * ```
      */
     fun abs(): BigType
-
-    /**
-     * Return result of exponentiation of this number by supplied exponent
-     * i.e.
-     * ```  val a = 10.toBigInteger()
-     *      b = a.exp(2.toBigInteger())
-     *      b == 100.toBigInteger()
-     * ```
-     */
-    fun pow(exponent: BigType) : BigType
+    //TODO Implement in 0.3.0 when BigDecimal has log, pow, sqrt and the rest of the company
+//    /**
+//     * Return result of exponentiation of this number by supplied exponent
+//     * i.e.
+//     * ```  val a = 10.toBigInteger()
+//     *      b = a.exp(2.toBigInteger())
+//     *      b == 100.toBigInteger()
+//     * ```
+//     */
+//    fun pow(exponent: BigType) : BigType
     /**
      * Return result of exponentiation of this number by supplied long exponent
      * i.e.
