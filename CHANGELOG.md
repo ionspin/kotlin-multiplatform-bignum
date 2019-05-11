@@ -1,7 +1,7 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
 
-##### 0.0.9-SNAPSHOT - 22.4.2019 Adding modular integer support, changing api
+##### 0.0.9 - 11.5.2019 Adding modular integer support, changing api
 - Added modular integers - ModularBigInteger
 - Added modInverse method to BigInteger
 - Extracted interfaces that model big numbers better (BigNumber<BigType> interface and accompanying interfaces)
