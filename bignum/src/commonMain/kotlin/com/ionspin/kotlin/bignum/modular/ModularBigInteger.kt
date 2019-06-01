@@ -334,7 +334,11 @@ class ModularBigInteger @ExperimentalUnsignedTypes constructor(
         return residue.magnitude[0].toUShort()
     }
 
+    override fun floatValue(exactRequired: Boolean): Float {
+        return residue.floatValue()
+    }
 
-
-
+    override fun doubleValue(exactRequired: Boolean): Double {
+        return residue.doubleValue()
+    }
 }

@@ -21,6 +21,7 @@ import com.ionspin.kotlin.bignum.BigNumber
 import com.ionspin.kotlin.bignum.BitwiseCapable
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.NarrowingOperations
+import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -94,6 +95,15 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         val LOG_10_OF_2 = log10(2.0)
 
         override fun parseString(string: String, base: Int): BigInteger {
+            val decimal = string.contains('.')
+            if (decimal) {
+                val bigDecimal = BigDecimal.parseString(string)
+                val isActuallyDecimal = (bigDecimal - bigDecimal.floor()) > 0
+                if (isActuallyDecimal) {
+                    throw NumberFormatException("Supplied string is decimal, which cannot be converted to BigInteger without precision loss.")
+                }
+                return bigDecimal.toBigInteger()
+            }
             val signed = (string[0] == '-' || string[0] == '+')
             return if (signed) {
                 if (string.length == 1) {
@@ -676,6 +686,20 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
             throw ArithmeticException("Cannot convert to unsigned short and provide exact value")
         }
         return magnitude[0].toUShort()
+    }
+
+    override fun floatValue(exactRequired: Boolean): Float {
+        if (exactRequired && this > Float.MAX_VALUE) {
+            throw ArithmeticException("Cannot convert to float and provide exact value")
+        }
+        return this.toString().toFloat()
+    }
+
+    override fun doubleValue(exactRequired: Boolean): Double {
+        if (exactRequired && this > Double.MAX_VALUE) {
+            throw ArithmeticException("Cannot convert to float and provide exact value")
+        }
+        return this.toString().toDouble()
     }
 
     operator fun rangeTo(other : BigInteger) = BigIntegerRange(this, other)

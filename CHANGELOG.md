@@ -1,8 +1,8 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
 
-##### 0.1.0-SNAPSHOT - 11.5.2019
-- Currently same as 0.9.0
+##### 0.1.0-SNAPSHOT - 1.6.2019
+- Added toFloat and toDouble to BigInteger and ModularBigInteger classes
 
 ##### 0.0.9 - 11.5.2019 Adding modular integer support, changing api
 - Added modular integers - ModularBigInteger

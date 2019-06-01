@@ -22,6 +22,7 @@ import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.WordArray
 import kotlin.math.absoluteValue
 import kotlin.test.Test
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 /**
@@ -107,4 +108,60 @@ class ConversionTest {
         assertTrue { one == BigInteger.ONE }
         assertTrue { negativeOne == -BigInteger.ONE }
     }
+
+
+    @Test
+    fun testToFloat() {
+        val stringTestCases = listOf(
+            "-1", "0", "1",
+            Long.MAX_VALUE.toString(), Long.MIN_VALUE.toString(),
+            Long.MAX_VALUE.toString() + "123", Long.MIN_VALUE.toString() + "123",
+            Float.MAX_VALUE.toString(),
+            Float.MAX_VALUE.toString() + "1" // This "1" affects the exponent, so conversion should become infinity
+            )
+
+        stringTestCases.forEach {
+            assertTrue {
+                val bigInt = BigInteger.parseString(it)
+                val float = it.toFloat()
+                bigInt.floatValue() == float
+            }
+        }
+    }
+
+    @Test
+    fun testToDouble() {
+        val stringTestCases = listOf(
+            "-1", "0", "1",
+            Long.MAX_VALUE.toString(), Long.MIN_VALUE.toString(),
+            Long.MAX_VALUE.toString() + "123", Long.MIN_VALUE.toString() + "123",
+            Double.MAX_VALUE.toString() + "1" // This "1" affects the exponent, so conversion should become infinity
+        )
+
+        stringTestCases.forEach {
+            assertTrue {
+                val bigInt = BigInteger.parseString(it)
+                val double = it.toDouble()
+                bigInt.doubleValue() == double
+            }
+        }
+    }
+
+    @Test
+    fun testDoubleValueExactFailure() {
+        val stringTestCases = listOf(
+            Double.MAX_VALUE.toString() + "1" // This "1" affects the exponent
+        )
+
+        stringTestCases.forEach {
+            assertFailsWith<NumberFormatException> {
+                val bigInt = BigInteger.parseString(it)
+                val double = it.toDouble()
+                bigInt.doubleValue(true) == double
+
+            }
+        }
+    }
+
+
 }

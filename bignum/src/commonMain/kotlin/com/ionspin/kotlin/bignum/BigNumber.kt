@@ -147,6 +147,8 @@ internal interface NarrowingOperations<BigType> where BigType : BigNumber<BigTyp
     fun ulongValue(exactRequired : Boolean = false) : ULong
     fun ubyteValue(exactRequired : Boolean = false) : UByte
     fun ushortValue(exactRequired : Boolean = false) : UShort
+    fun floatValue(exactRequired : Boolean = false) : Float
+    fun doubleValue(exactRequired: Boolean = false) : Double
 }
 
 @ExperimentalUnsignedTypes
