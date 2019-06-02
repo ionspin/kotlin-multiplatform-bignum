@@ -15,21 +15,16 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer.util
+package com.ionspin.kotlin.bignum.integer
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 18-Mar-2019
+ * on 02-Jun-2019
  */
-fun Char.toDigit() : Int {
-    return when (this) {
-        in '0' .. '9' -> (this - 48).toInt()
-        in 'a' .. 'z' -> this - 'a' + 10
-        in 'A' .. 'Z' -> this - 'A' + 10
-        in '\uFF21' .. '\uFF3A' -> this - '\uFF21' - 10
-        in '\uFF41' .. '\uFF5A' -> this - '\uFF41' - 10
-        '.' -> throw NumberFormatException("Invalid digit for radix $this (Possibly a decimal value, which is not supported by BigInteger parser")
-        else -> throw NumberFormatException("Invalid digit for radix $this")
+actual object ComparisonWorkaround {
+
+    actual fun isSpecialHandlingForFloatNeeded(number: Number): Boolean {
+        return true
     }
 }

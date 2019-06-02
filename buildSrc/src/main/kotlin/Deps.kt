@@ -57,6 +57,7 @@ object Deps {
         val stdLib = "stdlib-jdk8"
         val test = "test"
         val testJUnit = "test-junit"
+        val reflection = "reflect"
         val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinCoroutines}"
         val coroutinesjdk8 = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${Versions.kotlinCoroutines}"
         val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Versions.kotlinSerialization}"

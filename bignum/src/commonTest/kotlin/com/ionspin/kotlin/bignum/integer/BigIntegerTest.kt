@@ -363,4 +363,48 @@ BigIntegerTest {
         }
     }
 
+    @Test
+    fun doubleComparisonTest() {
+        assertTrue {
+            val a = 1.1
+            val b = BigInteger.fromInt(1)
+            b.compareTo(a) == -1
+        }
+
+        assertTrue {
+            val a = 0.9
+            val b = BigInteger.fromInt(1)
+            b.compareTo(a) == 1
+        }
+
+        assertTrue {
+            val a = 1.0
+            val b = BigInteger.fromInt(1)
+            b.compareTo(a) == 0
+        }
+
+    }
+
+    @Test
+    fun floatComparisonTest() {
+        assertTrue {
+            val a = 1.1f
+            val b = BigInteger.fromInt(1)
+            b.compareTo(a) == -1
+        }
+
+        assertTrue {
+            val a = 0.9f
+            val b = BigInteger.fromInt(1)
+            b.compareTo(a) == 1
+        }
+
+        assertTrue {
+            val a = 1.0f
+            val b = BigInteger.fromInt(1)
+            b.compareTo(a) == 0
+        }
+
+    }
+
 }

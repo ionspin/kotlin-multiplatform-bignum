@@ -41,6 +41,8 @@ interface BigNumber<BigType> where BigType : BigNumber<BigType> {
         fun fromShort(short: Short): BigType
         fun fromByte(byte: Byte): BigType
         fun fromBigInteger(bigInteger: BigInteger) : BigType
+        fun tryFromFloat(float : Float, exactRequired : Boolean = false) : BigType
+        fun tryFromDouble(double : Double, exactRequired : Boolean = false) : BigType
     }
     
     interface Util<BigType> {
@@ -147,6 +149,8 @@ internal interface NarrowingOperations<BigType> where BigType : BigNumber<BigTyp
     fun ulongValue(exactRequired : Boolean = false) : ULong
     fun ubyteValue(exactRequired : Boolean = false) : UByte
     fun ushortValue(exactRequired : Boolean = false) : UShort
+    fun floatValue(exactRequired : Boolean = false) : Float
+    fun doubleValue(exactRequired: Boolean = false) : Double
 }
 
 @ExperimentalUnsignedTypes

@@ -100,6 +100,14 @@ class ModularBigInteger @ExperimentalUnsignedTypes constructor(
                     return ModularBigInteger(BigInteger.fromByte(byte).prep(), modulo, this)
                 }
 
+                override fun tryFromFloat(float: Float, exactRequired: Boolean): ModularBigInteger {
+                    return ModularBigInteger(BigInteger.tryFromFloat(float, exactRequired).prep(), modulo, this)
+                }
+
+                override fun tryFromDouble(double: Double, exactRequired: Boolean): ModularBigInteger {
+                    return ModularBigInteger(BigInteger.tryFromDouble(double, exactRequired).prep(), modulo, this)
+                }
+
                 private fun BigInteger.prep() : BigInteger {
                     val result = this % modulo
                     return when (result.sign) {
@@ -334,7 +342,11 @@ class ModularBigInteger @ExperimentalUnsignedTypes constructor(
         return residue.magnitude[0].toUShort()
     }
 
+    override fun floatValue(exactRequired: Boolean): Float {
+        return residue.floatValue()
+    }
 
-
-
+    override fun doubleValue(exactRequired: Boolean): Double {
+        return residue.doubleValue()
+    }
 }

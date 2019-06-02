@@ -21,6 +21,7 @@ import com.ionspin.kotlin.bignum.BigNumber
 import com.ionspin.kotlin.bignum.BitwiseCapable
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.NarrowingOperations
+import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -94,6 +95,15 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         val LOG_10_OF_2 = log10(2.0)
 
         override fun parseString(string: String, base: Int): BigInteger {
+            val decimal = string.contains('.')
+            if (decimal) {
+                val bigDecimal = BigDecimal.parseString(string)
+                val isActuallyDecimal = (bigDecimal - bigDecimal.floor()) > 0
+                if (isActuallyDecimal) {
+                    throw NumberFormatException("Supplied string is decimal, which cannot be converted to BigInteger without precision loss.")
+                }
+                return bigDecimal.toBigInteger()
+            }
             val signed = (string[0] == '-' || string[0] == '+')
             return if (signed) {
                 if (string.length == 1) {
@@ -172,6 +182,30 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         override fun fromInt(int: Int) = BigInteger(int)
         override fun fromShort(short: Short) = BigInteger(short)
         override fun fromByte(byte: Byte) = BigInteger(byte)
+
+        override fun tryFromFloat(float: Float, exactRequired: Boolean): BigInteger {
+            val floatDecimalPart = float - floor(float)
+            val bigDecimal = BigDecimal.fromFloat(floor(float), null)
+
+            if (exactRequired) {
+                if (floatDecimalPart > 0) {
+                    throw ArithmeticException("Cant create BigInteger without precision loss, and exact  value was required")
+                }
+            }
+            return bigDecimal.toBigInteger()
+        }
+
+        override fun tryFromDouble(double: Double, exactRequired: Boolean): BigInteger {
+            val doubleDecimalPart = double - floor(double)
+            val bigDecimal = BigDecimal.fromDouble(floor(double), null)
+
+            if (exactRequired) {
+                if (doubleDecimalPart > 0) {
+                    throw ArithmeticException("Cant create BigInteger without precision loss, and exact  value was required")
+                }
+            }
+            return bigDecimal.toBigInteger()
+        }
 
         override fun max(first: BigInteger, second: BigInteger): BigInteger {
             return if (first > second) {
@@ -544,6 +578,11 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     }
 
     override fun compareTo(other: Any): Int {
+        if (other is Number) {
+            if (ComparisonWorkaround.isSpecialHandlingForFloatNeeded(other)) {
+                return javascriptNumberComparison(other)
+            }
+        }
         return when (other) {
             is BigInteger -> compare(other)
             is Long -> compare(fromLong(other))
@@ -554,9 +593,56 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
             is UInt -> compare(fromUInt(other))
             is UShort -> compare(fromUShort(other))
             is UByte -> compare(fromUByte(other))
+            is Float -> compareFloatAndBigInt(other) { compare(it) }
+            is Double -> compareDoubleAndBigInt(other) {compare(it) }
             else -> throw RuntimeException("Invalid comparison type for BigInteger: ${other::class.simpleName}")
         }
 
+    }
+
+    /**
+     * Javascrpt doesn't have different types for float, integer, long, it's all just "number", so we need
+     * to check if it's a decimal or integer number before comparing.
+     */
+    private fun javascriptNumberComparison(number : Number) : Int {
+        val float = number.toFloat()
+        return when  {
+            float % 1 == 0f -> compare(fromLong(number.toLong()))
+            else -> compareFloatAndBigInt(number.toFloat()) { compare(it) }
+
+        }
+    }
+
+    fun compareFloatAndBigInt(float : Float, comparisonBlock : (BigInteger) -> Int) : Int {
+        val withoutDecimalPart = floor(float)
+        val hasDecimalPart = (float % 1 != 0f)
+        return if (hasDecimalPart) {
+            val comparisonResult = comparisonBlock.invoke(tryFromFloat(withoutDecimalPart + 1))
+            if (comparisonResult == 0) {
+                // They were equal with float incremented by one (because of decimal part) so the BigInt was larger
+                1
+            } else {
+                comparisonResult
+            }
+        } else {
+            comparisonBlock.invoke(tryFromFloat(withoutDecimalPart))
+        }
+    }
+
+    fun compareDoubleAndBigInt(double : Double, comparisonBlock : (BigInteger) -> Int) : Int {
+        val withoutDecimalPart = floor(double)
+        val hasDecimalPart = (double % 1 != 0.0)
+        return if (hasDecimalPart) {
+            val comparisonResult = comparisonBlock.invoke(tryFromDouble(withoutDecimalPart + 1))
+            if (comparisonResult == 0) {
+                // They were equal with double incremented by one (because of decimal part) so the BigInt was larger
+                1
+            } else {
+                comparisonResult
+            }
+        } else {
+            comparisonBlock.invoke(tryFromDouble(withoutDecimalPart))
+        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -676,6 +762,20 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
             throw ArithmeticException("Cannot convert to unsigned short and provide exact value")
         }
         return magnitude[0].toUShort()
+    }
+
+    override fun floatValue(exactRequired: Boolean): Float {
+        if (exactRequired && this > Float.MAX_VALUE) {
+            throw ArithmeticException("Cannot convert to float and provide exact value")
+        }
+        return this.toString().toFloat()
+    }
+
+    override fun doubleValue(exactRequired: Boolean): Double {
+        if (exactRequired && this > Double.MAX_VALUE) {
+            throw ArithmeticException("Cannot convert to float and provide exact value")
+        }
+        return this.toString().toDouble()
     }
 
     operator fun rangeTo(other : BigInteger) = BigIntegerRange(this, other)
