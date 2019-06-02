@@ -17,7 +17,6 @@
 
 package com.ionspin.kotlin.bignum.decimal
 
-import java.math.MathContext
 import kotlin.test.Test
 import kotlin.test.assertTrue
 

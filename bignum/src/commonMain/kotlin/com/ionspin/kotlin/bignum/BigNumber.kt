@@ -41,6 +41,8 @@ interface BigNumber<BigType> where BigType : BigNumber<BigType> {
         fun fromShort(short: Short): BigType
         fun fromByte(byte: Byte): BigType
         fun fromBigInteger(bigInteger: BigInteger) : BigType
+        fun tryFromFloat(float : Float, exactRequired : Boolean = false) : BigType
+        fun tryFromDouble(double : Double, exactRequired : Boolean = false) : BigType
     }
     
     interface Util<BigType> {

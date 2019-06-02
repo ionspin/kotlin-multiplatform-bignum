@@ -115,9 +115,7 @@ class ConversionTest {
         val stringTestCases = listOf(
             "-1", "0", "1",
             Long.MAX_VALUE.toString(), Long.MIN_VALUE.toString(),
-            Long.MAX_VALUE.toString() + "123", Long.MIN_VALUE.toString() + "123",
-            Float.MAX_VALUE.toString(),
-            Float.MAX_VALUE.toString() + "1" // This "1" affects the exponent, so conversion should become infinity
+            Long.MAX_VALUE.toString() + "123", Long.MIN_VALUE.toString() + "123"
             )
 
         stringTestCases.forEach {
@@ -134,8 +132,7 @@ class ConversionTest {
         val stringTestCases = listOf(
             "-1", "0", "1",
             Long.MAX_VALUE.toString(), Long.MIN_VALUE.toString(),
-            Long.MAX_VALUE.toString() + "123", Long.MIN_VALUE.toString() + "123",
-            Double.MAX_VALUE.toString() + "1" // This "1" affects the exponent, so conversion should become infinity
+            Long.MAX_VALUE.toString() + "123", Long.MIN_VALUE.toString() + "123"
         )
 
         stringTestCases.forEach {
@@ -154,12 +151,48 @@ class ConversionTest {
         )
 
         stringTestCases.forEach {
-            assertFailsWith<NumberFormatException> {
+            assertFailsWith<ArithmeticException> {
                 val bigInt = BigInteger.parseString(it)
-                val double = it.toDouble()
-                bigInt.doubleValue(true) == double
-
+                bigInt.doubleValue(true)
             }
+        }
+    }
+
+    @Test
+    fun testBigIntegerFloatCreation() {
+        val floatTestValueArray = arrayOf(
+            1f, 0f, -1f,
+            123E5f
+        )
+        floatTestValueArray.forEach {
+            assertTrue {
+                val bigInt = BigInteger.tryFromFloat(it)
+                bigInt.floatValue() == it
+            }
+        }
+
+        assertTrue {
+            val bigInt = BigInteger.tryFromFloat(Float.MIN_VALUE)
+            bigInt.floatValue() == 0f
+        }
+    }
+
+    @Test
+    fun testBigIntegerDoubleCreation() {
+        val doubleTestValueArray = arrayOf(
+            1.0, 0.0, -1.0,
+            1.23E5
+        )
+        doubleTestValueArray.forEach {
+            assertTrue {
+                val bigInt = BigInteger.tryFromDouble(it)
+                bigInt.doubleValue() == it
+            }
+        }
+
+        assertTrue {
+            val bigInt = BigInteger.tryFromDouble(Double.MIN_VALUE)
+            bigInt.doubleValue() == 0.0
         }
     }
 

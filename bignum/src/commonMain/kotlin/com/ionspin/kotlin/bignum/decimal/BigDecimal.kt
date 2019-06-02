@@ -412,7 +412,12 @@ class BigDecimal private constructor(
          * @return BigDecimal representing input
          */
         fun fromFloat(float: Float, decimalMode: DecimalMode? = null): BigDecimal {
-            return parseStringWithMode(float.toString().dropLastWhile { it == '0' }, decimalMode)
+            val floatString = float.toString()
+            return if (floatString.contains('.')) {
+                parseStringWithMode(floatString.dropLastWhile { it == '0' }, decimalMode)
+            } else {
+                parseStringWithMode(floatString, decimalMode)
+            }
         }
 
         /**
@@ -424,7 +429,12 @@ class BigDecimal private constructor(
          * @return BigDecimal representing input
          */
         fun fromDouble(double: Double, decimalMode: DecimalMode? = null): BigDecimal {
-            return parseStringWithMode(double.toString().dropLastWhile { it == '0' }, decimalMode)
+            val doubleString = double.toString()
+            return if (doubleString.contains('.')) {
+                parseStringWithMode(doubleString.dropLastWhile { it == '0' }, decimalMode)
+            } else {
+                parseStringWithMode(doubleString, decimalMode)
+            }
         }
 
         /**
@@ -612,6 +622,14 @@ class BigDecimal private constructor(
          */
         override fun fromByte(byte: Byte): BigDecimal {
             return fromByte(byte, null)
+        }
+
+        override fun tryFromFloat(float: Float, exactRequired: Boolean): BigDecimal {
+            return fromFloat(float, null)
+        }
+
+        override fun tryFromDouble(double: Double, exactRequired: Boolean): BigDecimal {
+            return fromDouble(double, null)
         }
 
         override fun parseString(string: String, base: Int): BigDecimal {

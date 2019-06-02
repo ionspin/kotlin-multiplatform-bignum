@@ -183,6 +183,30 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         override fun fromShort(short: Short) = BigInteger(short)
         override fun fromByte(byte: Byte) = BigInteger(byte)
 
+        override fun tryFromFloat(float: Float, exactRequired: Boolean): BigInteger {
+            val floatDecimalPart = float - floor(float)
+            val bigDecimal = BigDecimal.fromFloat(floor(float), null)
+
+            if (exactRequired) {
+                if (floatDecimalPart > 0) {
+                    throw ArithmeticException("Cant create BigInteger without precision loss, and exact  value was required")
+                }
+            }
+            return bigDecimal.toBigInteger()
+        }
+
+        override fun tryFromDouble(double: Double, exactRequired: Boolean): BigInteger {
+            val doubleDecimalPart = double - floor(double)
+            val bigDecimal = BigDecimal.fromDouble(floor(double), null)
+
+            if (exactRequired) {
+                if (doubleDecimalPart > 0) {
+                    throw ArithmeticException("Cant create BigInteger without precision loss, and exact  value was required")
+                }
+            }
+            return bigDecimal.toBigInteger()
+        }
+
         override fun max(first: BigInteger, second: BigInteger): BigInteger {
             return if (first > second) {
                 first
@@ -554,6 +578,11 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     }
 
     override fun compareTo(other: Any): Int {
+        if (other is Number) {
+            if (ComparisonWorkaround.isSpecialHandlingForFloatNeeded(other)) {
+                return javascriptNumberComparison(other)
+            }
+        }
         return when (other) {
             is BigInteger -> compare(other)
             is Long -> compare(fromLong(other))
@@ -564,9 +593,56 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
             is UInt -> compare(fromUInt(other))
             is UShort -> compare(fromUShort(other))
             is UByte -> compare(fromUByte(other))
+            is Float -> compareFloatAndBigInt(other) { compare(it) }
+            is Double -> compareDoubleAndBigInt(other) {compare(it) }
             else -> throw RuntimeException("Invalid comparison type for BigInteger: ${other::class.simpleName}")
         }
 
+    }
+
+    /**
+     * Javascrpt doesn't have different types for float, integer, long, it's all just "number", so we need
+     * to check if it's a decimal or integer number before comparing.
+     */
+    private fun javascriptNumberComparison(number : Number) : Int {
+        val float = number.toFloat()
+        return when  {
+            float % 1 == 0f -> compare(fromLong(number.toLong()))
+            else -> compareFloatAndBigInt(number.toFloat()) { compare(it) }
+
+        }
+    }
+
+    fun compareFloatAndBigInt(float : Float, comparisonBlock : (BigInteger) -> Int) : Int {
+        val withoutDecimalPart = floor(float)
+        val hasDecimalPart = (float % 1 != 0f)
+        return if (hasDecimalPart) {
+            val comparisonResult = comparisonBlock.invoke(tryFromFloat(withoutDecimalPart + 1))
+            if (comparisonResult == 0) {
+                // They were equal with float incremented by one (because of decimal part) so the BigInt was larger
+                1
+            } else {
+                comparisonResult
+            }
+        } else {
+            comparisonBlock.invoke(tryFromFloat(withoutDecimalPart))
+        }
+    }
+
+    fun compareDoubleAndBigInt(double : Double, comparisonBlock : (BigInteger) -> Int) : Int {
+        val withoutDecimalPart = floor(double)
+        val hasDecimalPart = (double % 1 != 0.0)
+        return if (hasDecimalPart) {
+            val comparisonResult = comparisonBlock.invoke(tryFromDouble(withoutDecimalPart + 1))
+            if (comparisonResult == 0) {
+                // They were equal with double incremented by one (because of decimal part) so the BigInt was larger
+                1
+            } else {
+                comparisonResult
+            }
+        } else {
+            comparisonBlock.invoke(tryFromDouble(withoutDecimalPart))
+        }
     }
 
     override fun equals(other: Any?): Boolean {
