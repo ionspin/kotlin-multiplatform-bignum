@@ -59,6 +59,8 @@ class BigDecimal private constructor(
         val ONE = BigDecimal(BigInteger.ONE)
         val TWO = BigDecimal(BigInteger.TWO)
 
+        var useToStringExpanded : Boolean = false
+
 
         private fun roundOrDont(significand: BigInteger, exponent: BigInteger, decimalMode: DecimalMode): BigDecimal {
             return if (decimalMode.decimalPrecision != 0L && decimalMode.roundingMode != RoundingMode.NONE) {
@@ -1357,6 +1359,9 @@ class BigDecimal private constructor(
      * i.e. 1.23E+9
      */
     override fun toString(): String {
+        if (BigDecimal.useToStringExpanded) {
+            return toStringExpanded()
+        }
         val significandString = significand.toString(10)
         val modifier = if (significand < 0) {
             2
