@@ -89,7 +89,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
 
         val ZERO = BigInteger(arithmetic.ZERO, Sign.ZERO)
         val ONE = BigInteger(arithmetic.ONE, Sign.POSITIVE)
-        val TWO = BigInteger(arithmetic.ONE, Sign.POSITIVE)
+        val TWO = BigInteger(arithmetic.TWO, Sign.POSITIVE)
         val TEN = BigInteger(arithmetic.TEN, Sign.POSITIVE)
 
         val LOG_10_OF_2 = log10(2.0)

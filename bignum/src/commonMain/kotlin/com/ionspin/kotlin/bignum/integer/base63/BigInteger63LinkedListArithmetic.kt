@@ -45,7 +45,7 @@ import kotlin.math.floor
 internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULong>, ULong> {
     override val ZERO: List<ULong> = listOf(0u)
     override val ONE: List<ULong> = listOf(1u)
-    override val TWO: List<ULong> = listOf(1u)
+    override val TWO: List<ULong> = listOf(2u)
     override val TEN: List<ULong> = listOf(10UL)
     override val basePowerOfTwo: Int = 63
 
