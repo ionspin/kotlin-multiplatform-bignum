@@ -20,7 +20,9 @@ package com.ionspin.kotlin.bignum.integer.base32
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
+import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.util.toDigit
+import kotlin.experimental.and
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -917,5 +919,41 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             result += (operand[i].toULong() shl (i * wordSizeInBits))
         }
         return result
+    }
+
+    override fun toTwosComplementBigEndianByteArray(operand: UIntArray): Array<Byte> {
+        val inverted = operand.map { it.inv() }.toUIntArray()
+        val converted = inverted + 1U
+        val bitLenght = bitLength(operand)
+        return converted.flatMap {
+            listOf(
+                ((it shr 24) and 0xFFU).toByte(),
+                ((it shr 16) and 0xFFU).toByte(),
+                ((it shr 8) and 0xFFU).toByte(),
+                ((it) and 0xFFU).toByte()
+            )
+        }.takeLast(bitLenght / 8 + 1).toTypedArray()
+    }
+
+    override fun fromTwosComplementBigEndianByteArray(byteArray: Array<Byte>): Pair<UIntArray, Sign> {
+        val sign = (byteArray[0].toInt() ushr 7) and 0b00000001
+        val chunked = byteArray.toList().chunked(4)
+        val collected = chunked.flatMap {chunk ->
+            val result = chunk.foldIndexed(0U) { index, acc, byte ->
+                acc + (byte.toUInt() shl ((chunk.size - 1) * 8 - index * 8))
+            }
+            uintArrayOf(result)
+        }.toUIntArray()
+        val substracted = collected - 1U
+        val inverted = substracted.map { it.inv() }.toUIntArray()
+        if (collected.contentEquals(ZERO)) {
+            return Pair(ZERO, Sign.ZERO)
+        }
+        val resolvedSign = when (sign) {
+            0 -> Sign.POSITIVE
+            1 -> Sign.NEGATIVE
+            else -> throw RuntimeException("Invalid sign value when converting from byte array")
+        }
+        return Pair(inverted, resolvedSign)
     }
 }

@@ -132,6 +132,35 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
     fun bitAt(operand : BackingCollectionType, position : Long) : Boolean
     fun setBitAt(operand : BackingCollectionType, position : Long, bit : Boolean) : BackingCollectionType
 
+    fun toTwosComplementBigEndianByteArray(operand : BackingCollectionType) : Array<Byte>
+    fun fromTwosComplementBigEndianByteArray(byteArray: Array<Byte>) : Pair<BackingCollectionType, Sign>
 
+
+}
+
+/**
+ * Created by Ugljesa Jovanovic
+ * ugljesa.jovanovic@ionspin.com
+ * on 10-Mar-2019
+ */
+
+enum class Sign {
+    POSITIVE, NEGATIVE, ZERO;
+
+    operator fun not(): Sign {
+        return when (this) {
+            POSITIVE -> NEGATIVE
+            NEGATIVE -> POSITIVE
+            ZERO -> ZERO
+        }
+    }
+
+    fun toInt(): Int {
+        return when (this) {
+            POSITIVE -> 1
+            NEGATIVE -> -1
+            ZERO -> 0
+        }
+    }
 }
 

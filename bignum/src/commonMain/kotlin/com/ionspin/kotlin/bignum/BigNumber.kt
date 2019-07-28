@@ -258,3 +258,14 @@ interface BitwiseCapable<BigType> {
     fun not(): BigType
 
 }
+
+interface ByteArraySerializable {
+
+    fun toByteArray() : Array<Byte>
+
+}
+
+@ExperimentalUnsignedTypes
+interface ByteArrayDeserializable<BigType : BigNumber<BigType>> {
+    fun fromByteArray(byteArray : Array<Byte>) : BigType
+}

@@ -20,6 +20,7 @@ package com.ionspin.kotlin.bignum.integer.base63
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
+import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic.compareTo
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic.minus
@@ -1157,6 +1158,14 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     override fun fromShort(short: Short): ULongArray = ulongArrayOf(short.toInt().absoluteValue.toULong())
 
     override fun fromByte(byte: Byte): ULongArray = ulongArrayOf(byte.toInt().absoluteValue.toULong())
+
+    override fun toTwosComplementBigEndianByteArray(operand: ULongArray): Array<Byte> {
+        TODO("not implemented yet")
+    }
+
+    override fun fromTwosComplementBigEndianByteArray(byteArray: Array<Byte>): Pair<ULongArray, Sign> {
+        TODO("not implemented yet")
+    }
 
     // ------------- Useful constants --------------
     val powersOf10 = arrayOf(
