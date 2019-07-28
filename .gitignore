@@ -11,3 +11,4 @@ build/
 gradle.properties
 /buildSrc/out
 /bignum/node_modules
+/bignum/package.json
