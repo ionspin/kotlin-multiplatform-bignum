@@ -20,14 +20,10 @@ package com.ionspin.kotlin.bignum.decimal
 import com.ionspin.kotlin.bignum.BigNumber
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.integer.BigInteger
-import com.ionspin.kotlin.bignum.integer.BigInteger.Companion.TEN
-import com.ionspin.kotlin.bignum.integer.BigInteger.Companion.TWO
-import com.ionspin.kotlin.bignum.integer.BigInteger.Companion.ZERO
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlin.math.absoluteValue
 import kotlin.math.max
-import kotlin.math.sqrt
 
 /**
  * Implementation of floating-point arbitrary precision arithmetic.
@@ -55,9 +51,10 @@ class BigDecimal private constructor(
     val precision = significand.numberOfDecimalDigits()
 
     companion object : BigNumber.Creator<BigDecimal> {
-        val ZERO = BigDecimal(BigInteger.ZERO)
-        val ONE = BigDecimal(BigInteger.ONE)
-        val TWO = BigDecimal(BigInteger.TWO)
+        override val ZERO = BigDecimal(BigInteger.ZERO)
+        override val ONE = BigDecimal(BigInteger.ONE)
+        override val TWO = BigDecimal(BigInteger.TWO)
+        override val TEN = BigDecimal(BigInteger.TEN)
 
         var useToStringExpanded : Boolean = false
 
@@ -84,7 +81,7 @@ class BigDecimal private constructor(
 
             val toDiscard = significand.numberOfDecimalDigits() - decimalMode.decimalPrecision
             var result = if (toDiscard > 0) {
-                (significand divrem TEN.pow(toDiscard)).quotient
+                (significand divrem BigInteger.TEN.pow(toDiscard)).quotient
             } else {
                 significand
             }
@@ -97,7 +94,8 @@ class BigDecimal private constructor(
                 if (discarded == BigInteger.ZERO) {
                     BigInteger.ZERO
                 } else {
-                    (discarded / (discarded.numberOfDecimalDigits())).abs() + (significand divrem TEN.pow(toDiscard)).remainder * TEN.pow(
+                    (discarded / (discarded.numberOfDecimalDigits())).abs() +
+                            (significand divrem BigInteger.TEN.pow(toDiscard)).remainder * BigInteger.TEN.pow(
                         toDiscard
                     )
                 }
@@ -227,11 +225,11 @@ class BigDecimal private constructor(
             val desiredPrecision = decimalMode.decimalPrecision
             return when {
                 desiredPrecision > significandDigits -> {
-                    val extendedSignificand = significand * TEN.pow(desiredPrecision - significandDigits)
+                    val extendedSignificand = significand * BigInteger.TEN.pow(desiredPrecision - significandDigits)
                     BigDecimal(extendedSignificand, exponent, decimalMode)
                 }
                 desiredPrecision < significandDigits -> {
-                    val divRem = significand divrem TEN.pow(significandDigits - desiredPrecision)
+                    val divRem = significand divrem BigInteger.TEN.pow(significandDigits - desiredPrecision)
                     val newSignificand = roundDiscarded(divRem.quotient, divRem.remainder, decimalMode)
                     BigDecimal(newSignificand, exponent, decimalMode)
 
