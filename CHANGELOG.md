@@ -1,11 +1,13 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
 
-##### 0.1.0-SNAPSHOT - 2.6.2019
+##### 0.1.0-SNAPSHOT - 28.7.2019
 - Added toFloat and toDouble to BigInteger and ModularBigInteger classes
 - Added BigInteger creation from Float and Double by using `tryFromFloat` and `tryFromDouble`, with optional exact 
 parameter to preserve precision.
 - Added BigInteger comparison with Float and Double
+- Added BigDecimal configuration option to switch to expanded representation instead of scientific when calling `toString()`
+- Improved ModularBigInteger exponentiation algorithm, based on Bruce Schneier Applied Cryptography pesudocode
 
 ##### 0.0.9 - 11.5.2019 Adding modular integer support, changing api
 - Added modular integers - ModularBigInteger

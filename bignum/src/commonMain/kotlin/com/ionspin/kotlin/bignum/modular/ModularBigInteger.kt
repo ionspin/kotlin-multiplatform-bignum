@@ -22,7 +22,6 @@ import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.ModularQuotientAndRemainder
 import com.ionspin.kotlin.bignum.NarrowingOperations
 import com.ionspin.kotlin.bignum.integer.BigInteger
-import com.ionspin.kotlin.bignum.integer.BigInteger.Companion.ONE
 import com.ionspin.kotlin.bignum.integer.Sign
 
 /**
@@ -60,6 +59,12 @@ class ModularBigInteger @ExperimentalUnsignedTypes constructor(
 
         fun creatorForModulo(modulo: BigInteger) : BigNumber.Creator<ModularBigInteger> {
             return object : BigNumber.Creator<ModularBigInteger> {
+                override val ZERO = ModularBigInteger(BigInteger.ZERO, modulo, this)
+                override val ONE = ModularBigInteger(BigInteger.ONE, modulo, this)
+                override val TWO = ModularBigInteger(BigInteger.TWO, modulo, this)
+                override val TEN = ModularBigInteger(BigInteger.TEN, modulo, this)
+
+
                 override fun fromBigInteger(bigInteger: BigInteger): ModularBigInteger {
                     return ModularBigInteger(bigInteger.prep(), modulo, this)
                 }
@@ -207,11 +212,26 @@ class ModularBigInteger @ExperimentalUnsignedTypes constructor(
     }
 
     fun pow(exponent: ModularBigInteger): ModularBigInteger {
-        return ModularBigInteger(residue.pow(exponent.residue) % modulus, modulus, creator)
+        return pow(exponent.residue)
     }
 
     fun pow(exponent: BigInteger): ModularBigInteger {
-        return ModularBigInteger(residue.pow(exponent) % modulus, modulus, creator)
+        var e = exponent
+        return if (this.modulus == BigInteger.ONE) {
+            creator.ZERO
+        } else {
+            var residue = BigInteger.ONE
+            var base = this.residue
+            while (e > 0) {
+                if (e % 2 == BigInteger.ONE) {
+                    residue = (residue * base) % modulus
+                }
+                e = e shr 1
+                base = base.pow(2) % modulus
+            }
+            ModularBigInteger(residue, modulus, creator)
+        }
+
     }
 
     override fun pow(exponent: Long): ModularBigInteger {
@@ -281,7 +301,7 @@ class ModularBigInteger @ExperimentalUnsignedTypes constructor(
     }
 
     private fun checkIfDivisible(other : ModularBigInteger) {
-        if (other.residue.gcd(modulus) != ONE) {
+        if (other.residue.gcd(modulus) != BigInteger.ONE) {
             throw ArithmeticException("BigInteger is not invertible. This and modulus are not relatively prime (coprime)")
         }
     }

@@ -87,10 +87,10 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     companion object : BigNumber.Creator<BigInteger>, BigNumber.Util<BigInteger> {
         private val arithmetic: BigIntegerArithmetic<WordArray, Word> = chosenArithmetic
 
-        val ZERO = BigInteger(arithmetic.ZERO, Sign.ZERO)
-        val ONE = BigInteger(arithmetic.ONE, Sign.POSITIVE)
-        val TWO = BigInteger(arithmetic.TWO, Sign.POSITIVE)
-        val TEN = BigInteger(arithmetic.TEN, Sign.POSITIVE)
+        override val ZERO = BigInteger(arithmetic.ZERO, Sign.ZERO)
+        override val ONE = BigInteger(arithmetic.ONE, Sign.POSITIVE)
+        override val TWO = BigInteger(arithmetic.TWO, Sign.POSITIVE)
+        override val TEN = BigInteger(arithmetic.TEN, Sign.POSITIVE)
 
         val LOG_10_OF_2 = log10(2.0)
 
@@ -536,7 +536,11 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     }
 
     override infix fun shr(places: Int): BigInteger {
-        return BigInteger(arithmetic.shiftRight(this.magnitude, places), sign)
+        val result = BigInteger(arithmetic.shiftRight(this.magnitude, places), sign)
+        if (result.magnitude == arithmetic.ZERO) {
+            return ZERO
+        }
+        return result
     }
 
     override operator fun unaryMinus(): BigInteger = negate()

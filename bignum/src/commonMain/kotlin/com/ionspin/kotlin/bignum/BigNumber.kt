@@ -31,6 +31,10 @@ interface BigNumber<BigType> where BigType : BigNumber<BigType> {
 
     @ExperimentalUnsignedTypes
     interface Creator<BigType> {
+        val ZERO : BigType
+        val ONE : BigType
+        val TWO : BigType
+        val TEN : BigType
         fun parseString(string: String, base: Int = 10): BigType
         fun fromULong(uLong: ULong): BigType
         fun fromUInt(uInt: UInt): BigType
