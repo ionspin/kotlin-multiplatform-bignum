@@ -894,7 +894,9 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
 
-    override fun fromULong(uLong: ULong): UIntArray = uintArrayOf(uLong.toUInt())
+    override fun fromULong(uLong: ULong): UIntArray = uintArrayOf(
+        ((uLong and 0xFFFFFFFF00000000U) shr 32).toUInt(),
+        uLong.toUInt())
 
     override fun fromUInt(uInt: UInt): UIntArray = uintArrayOf(uInt)
 
@@ -902,7 +904,9 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     override fun fromUByte(uByte: UByte): UIntArray = uintArrayOf(uByte.toUInt())
 
-    override fun fromLong(long: Long): UIntArray = uintArrayOf(long.absoluteValue.toUInt())
+    override fun fromLong(long: Long): UIntArray = uintArrayOf(
+        ((long.toULong() and 0xFFFFFFFF00000000U) shr 32).toUInt(),
+        long.absoluteValue.toUInt())
 
     override fun fromInt(int: Int): UIntArray = uintArrayOf(int.absoluteValue.toUInt())
 
@@ -921,39 +925,83 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return result
     }
 
-    override fun toTwosComplementBigEndianByteArray(operand: UIntArray): Array<Byte> {
-        val inverted = operand.map { it.inv() }.toUIntArray()
-        val converted = inverted + 1U
-        val bitLenght = bitLength(operand)
-        return converted.flatMap {
-            listOf(
-                ((it shr 24) and 0xFFU).toByte(),
-                ((it shr 16) and 0xFFU).toByte(),
-                ((it shr 8) and 0xFFU).toByte(),
-                ((it) and 0xFFU).toByte()
-            )
-        }.takeLast(bitLenght / 8 + 1).toTypedArray()
+    override fun toTwosComplementBigEndianByteArray(operand: UIntArray, sign : Sign): Array<Byte> {
+        return when (sign) {
+            Sign.ZERO -> { emptyList() }
+            Sign.POSITIVE -> {
+                operand.flatMap {
+                    listOf(
+                        ((it shr 24) and 0xFFU).toByte(),
+                        ((it shr 16) and 0xFFU).toByte(),
+                        ((it shr 8) and 0xFFU).toByte(),
+                        ((it) and 0xFFU).toByte()
+                    )
+                }.takeLast(operand.size * 4 + 1)
+            }
+            Sign.NEGATIVE -> {
+                val inverted = operand.map { it.inv() }.toUIntArray()
+                val converted = inverted + 1U
+                converted.flatMap {
+                    listOf(
+                        ((it shr 24) and 0xFFU).toByte(),
+                        ((it shr 16) and 0xFFU).toByte(),
+                        ((it shr 8) and 0xFFU).toByte(),
+                        ((it) and 0xFFU).toByte()
+                    )
+                }.takeLast(operand.size * 4 + 2)
+            }
+        }.chunked(4).reversed().flatten().toTypedArray()
+
     }
 
     override fun fromTwosComplementBigEndianByteArray(byteArray: Array<Byte>): Pair<UIntArray, Sign> {
         val sign = (byteArray[0].toInt() ushr 7) and 0b00000001
-        val chunked = byteArray.toList().chunked(4)
-        val collected = chunked.flatMap {chunk ->
-            val result = chunk.foldIndexed(0U) { index, acc, byte ->
-                acc + (byte.toUInt() shl ((chunk.size - 1) * 8 - index * 8))
-            }
-            uintArrayOf(result)
-        }.toUIntArray()
-        val substracted = collected - 1U
-        val inverted = substracted.map { it.inv() }.toUIntArray()
-        if (collected.contentEquals(ZERO)) {
-            return Pair(ZERO, Sign.ZERO)
-        }
+        val chunked = byteArray.toList().reversed().chunked(4)
+
         val resolvedSign = when (sign) {
             0 -> Sign.POSITIVE
             1 -> Sign.NEGATIVE
             else -> throw RuntimeException("Invalid sign value when converting from byte array")
         }
-        return Pair(inverted, resolvedSign)
+        return when (resolvedSign) {
+            Sign.POSITIVE -> {
+                val collected = chunked.flatMap {chunk ->
+                    val result = chunk.reversed().foldIndexed(0U) { index, acc, byte ->
+                        acc + ((byte.toUInt() and 0xFFU) shl ((chunk.size - 1) * 8 - index * 8))
+                    }
+                    val discard = 4 - chunk.size
+                    val discarded = (result shl (8 * discard)) shr (8 * discard)
+                    uintArrayOf(discarded)
+                }.reversed().toUIntArray()
+                if (collected.contentEquals(ZERO)) {
+                    return Pair(ZERO, Sign.ZERO)
+                }
+                Pair(collected, resolvedSign)
+            }
+            Sign.NEGATIVE -> {
+                val collected = chunked.flatMap {chunk ->
+                    val result = chunk.reversed().foldIndexed(0U) { index, acc, byte ->
+                        acc + (byte.toUInt() shl ((chunk.size - 1) * 8 - index * 8))
+                    }
+                    uintArrayOf(result)
+                }.reversed().toUIntArray()
+                val substracted = collected - 1U
+                val inverted = substracted.map { it.inv() }.toUIntArray()
+                if (collected.contentEquals(ZERO)) {
+                    return Pair(ZERO, Sign.ZERO)
+                }
+                Pair(inverted, resolvedSign)
+            }
+            Sign.ZERO -> throw RuntimeException("Bug in fromTwosComplementBigEndianByteArray, sign shouldn't ever be zero at this point.")
+        }
+
+    }
+
+    private fun List<Byte>.dropLeadingZeroes() : List<Byte> {
+        return this.dropWhile { it == 0.toByte() }
+    }
+
+    private fun Array<Byte>.dropLeadingZeroes() : Array<Byte> {
+        return this.dropWhile { it == 0.toByte() }.toTypedArray()
     }
 }

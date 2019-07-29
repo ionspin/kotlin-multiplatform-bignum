@@ -132,7 +132,7 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
     fun bitAt(operand : BackingCollectionType, position : Long) : Boolean
     fun setBitAt(operand : BackingCollectionType, position : Long, bit : Boolean) : BackingCollectionType
 
-    fun toTwosComplementBigEndianByteArray(operand : BackingCollectionType) : Array<Byte>
+    fun toTwosComplementBigEndianByteArray(operand : BackingCollectionType, sign : Sign) : Array<Byte>
     fun fromTwosComplementBigEndianByteArray(byteArray: Array<Byte>) : Pair<BackingCollectionType, Sign>
 
 
