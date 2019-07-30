@@ -202,7 +202,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         }
 
         override fun fromByteArray(byteArray: Array<Byte>): BigInteger {
-            val result = arithmetic.fromTwosComplementBigEndianByteArray(byteArray)
+            val result = arithmetic.fromByteArray(byteArray)
             return BigInteger(result.first, result.second)
         }
     }
@@ -765,7 +765,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     }
 
     override fun toByteArray(): Array<Byte> {
-        return arithmetic.toTwosComplementBigEndianByteArray(magnitude)
+        return arithmetic.toByteArray(magnitude, sign)
     }
 
     operator fun rangeTo(other: BigInteger) = BigIntegerRange(this, other)

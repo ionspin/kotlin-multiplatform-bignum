@@ -22,7 +22,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.junit.Ignore
 import org.junit.Test
 import java.math.BigInteger
 import kotlin.random.Random
@@ -44,7 +43,7 @@ class ByteArrayToAndFromTest {
             val bigInt32Array = BigInteger32Arithmetic.fromInt(170)
             val javaBigInt = bigInt32Array.toJavaBigInteger()
             val javaBigIntByteArray = javaBigInt.toByteArray()
-            val intArray = BigInteger32Arithmetic.toTwosComplementBigEndianByteArray(bigInt32Array, Sign.POSITIVE)
+            val intArray = BigInteger32Arithmetic.toByteArray(bigInt32Array, Sign.POSITIVE)
             javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray())
         }
 
@@ -52,7 +51,7 @@ class ByteArrayToAndFromTest {
             val bigInt32Array = BigInteger32Arithmetic.fromInt(170)
             val javaBigInt = bigInt32Array.toJavaBigInteger().negate()
             val javaBigIntByteArray = javaBigInt.toByteArray()
-            val intArray = BigInteger32Arithmetic.toTwosComplementBigEndianByteArray(bigInt32Array, Sign.NEGATIVE)
+            val intArray = BigInteger32Arithmetic.toByteArray(bigInt32Array, Sign.NEGATIVE)
             javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray())
         }
 
@@ -64,7 +63,7 @@ class ByteArrayToAndFromTest {
             val bigInt32Array = uIntArray
             val javaBigInt = uIntArray.toJavaBigInteger()
             val javaBigIntByteArray = javaBigInt.toByteArray()
-            val intArray = BigInteger32Arithmetic.toTwosComplementBigEndianByteArray(bigInt32Array, Sign.POSITIVE)
+            val intArray = BigInteger32Arithmetic.toByteArray(bigInt32Array, Sign.POSITIVE)
             javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray())
         }
 
@@ -76,7 +75,7 @@ class ByteArrayToAndFromTest {
             val bigInt32Array = uIntArray
             val javaBigInt = uIntArray.toJavaBigInteger().negate()
             val javaBigIntByteArray = javaBigInt.toByteArray()
-            val intArray = BigInteger32Arithmetic.toTwosComplementBigEndianByteArray(bigInt32Array, Sign.NEGATIVE)
+            val intArray = BigInteger32Arithmetic.toByteArray(bigInt32Array, Sign.NEGATIVE)
             javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray())
         }
 
@@ -85,7 +84,7 @@ class ByteArrayToAndFromTest {
 //            val bigInt32Array = BigInteger32Arithmetic.fromLong(value)
 //            val javaBigInt = bigInt32Array.toJavaBigInteger()
 //            val javaBigIntByteArray = javaBigInt.toByteArray()
-//            val intArray = BigInteger32Arithmetic.toTwosComplementBigEndianByteArray(bigInt32Array, Sign.POSITIVE)
+//            val intArray = BigInteger32Arithmetic.toByteArray(bigInt32Array, Sign.POSITIVE)
 //            javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray())
 //        }
     }
@@ -97,7 +96,7 @@ class ByteArrayToAndFromTest {
             val javaBigInt = BigInteger.valueOf(170)
             val javaBigIntByteArray = javaBigInt.toByteArray()
             val reconstructedBigInt32ArrayAndSign =
-                BigInteger32Arithmetic.fromTwosComplementBigEndianByteArray(javaBigIntByteArray.toTypedArray())
+                BigInteger32Arithmetic.fromByteArray(javaBigIntByteArray.toTypedArray())
 
             BigInteger32Arithmetic.compare(
                 bigInt32Array,
@@ -110,7 +109,7 @@ class ByteArrayToAndFromTest {
             val javaBigInt = BigInteger.valueOf(-170)
             val javaBigIntByteArray = javaBigInt.toByteArray()
             val reconstructedBigInt32ArrayAndSign =
-                BigInteger32Arithmetic.fromTwosComplementBigEndianByteArray(javaBigIntByteArray.toTypedArray())
+                BigInteger32Arithmetic.fromByteArray(javaBigIntByteArray.toTypedArray())
 
             BigInteger32Arithmetic.compare(
                 bigInt32Array,
@@ -125,7 +124,7 @@ class ByteArrayToAndFromTest {
             val javaBigInt = BigInteger.valueOf(value)
             val javaBigIntByteArray = javaBigInt.toByteArray()
             val reconstructedBigInt32ArrayAndSign =
-                BigInteger32Arithmetic.fromTwosComplementBigEndianByteArray(javaBigIntByteArray.toTypedArray())
+                BigInteger32Arithmetic.fromByteArray(javaBigIntByteArray.toTypedArray())
 
             BigInteger32Arithmetic.compare(
                 bigInt32Array,
@@ -221,7 +220,7 @@ class ByteArrayToAndFromTest {
         val javaBigInt = bigInt32Array.toJavaBigInteger()
         val javaBigIntByteArray = javaBigInt.toByteArray()
         val reconstructedBigInt32ArrayAndSign =
-            BigInteger32Arithmetic.fromTwosComplementBigEndianByteArray(javaBigIntByteArray.toTypedArray())
+            BigInteger32Arithmetic.fromByteArray(javaBigIntByteArray.toTypedArray())
         assertTrue("Failed on FROM byte array: \n val number = uintArrayOf(${bigInt32Array.joinToString(separator = ", ") { "${it}U" }})\n") {
             BigInteger32Arithmetic.compare(
                 bigInt32Array,
@@ -237,7 +236,7 @@ class ByteArrayToAndFromTest {
             bigInt32Array.toJavaBigInteger()
         }
         val javaBigIntByteArray = javaBigInt.toByteArray()
-        val intArray = BigInteger32Arithmetic.toTwosComplementBigEndianByteArray(bigInt32Array, sign)
+        val intArray = BigInteger32Arithmetic.toByteArray(bigInt32Array, sign)
         assertTrue("Failed on TO byte array: \n val number = uintArrayOf(${bigInt32Array.joinToString(separator = ", ") { "${it}U" }})\n") {
             javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray()) ||
                     (byteArrayOf(0xFF.toByte()) + javaBigIntByteArray.dropLeadingZeroes()).contentEquals(intArray.dropLeadingZeroes().toByteArray())

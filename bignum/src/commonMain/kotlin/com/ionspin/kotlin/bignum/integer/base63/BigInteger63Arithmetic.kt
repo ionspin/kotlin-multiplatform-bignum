@@ -1159,11 +1159,11 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
     override fun fromByte(byte: Byte): ULongArray = ulongArrayOf(byte.toInt().absoluteValue.toULong())
 
-    override fun toTwosComplementBigEndianByteArray(operand: ULongArray, sign : Sign): Array<Byte> {
+    override fun toByteArray(operand: ULongArray, sign : Sign): Array<Byte> {
         TODO("not implemented yet")
     }
 
-    override fun fromTwosComplementBigEndianByteArray(byteArray: Array<Byte>): Pair<ULongArray, Sign> {
+    override fun fromByteArray(byteArray: Array<Byte>): Pair<ULongArray, Sign> {
         TODO("not implemented yet")
     }
 

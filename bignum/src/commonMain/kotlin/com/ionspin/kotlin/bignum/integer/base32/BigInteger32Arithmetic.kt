@@ -928,7 +928,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return result
     }
 
-    override fun toTwosComplementBigEndianByteArray(operand: UIntArray, sign : Sign): Array<Byte> {
+    override fun toByteArray(operand: UIntArray, sign : Sign): Array<Byte> {
         if (operand.isEmpty()) {
             return emptyArray()
         }
@@ -973,7 +973,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     }
 
-    override fun fromTwosComplementBigEndianByteArray(byteArray: Array<Byte>): Pair<UIntArray, Sign> {
+    override fun fromByteArray(byteArray: Array<Byte>): Pair<UIntArray, Sign> {
         val sign = (byteArray[0].toInt() ushr 7) and 0b00000001
         val chunked = byteArray.toList().reversed().chunked(4)
 
@@ -1011,7 +1011,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
                 }
                 Pair(inverted, resolvedSign)
             }
-            Sign.ZERO -> throw RuntimeException("Bug in fromTwosComplementBigEndianByteArray, sign shouldn't ever be zero at this point.")
+            Sign.ZERO -> throw RuntimeException("Bug in fromByteArray, sign shouldn't ever be zero at this point.")
         }
 
     }

@@ -155,11 +155,11 @@ actual object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>
         TODO("not implemented yet")
     }
 
-    override fun toTwosComplementBigEndianByteArray(operand: IntArray, sign : Sign): Array<Byte> {
+    override fun toByteArray(operand: IntArray, sign : Sign): Array<Byte> {
         TODO("not implemented yet")
     }
 
-    override fun fromTwosComplementBigEndianByteArray(byteArray: Array<Byte>): Pair<IntArray, Sign> {
+    override fun fromByteArray(byteArray: Array<Byte>): Pair<IntArray, Sign> {
         TODO("not implemented yet")
     }
 

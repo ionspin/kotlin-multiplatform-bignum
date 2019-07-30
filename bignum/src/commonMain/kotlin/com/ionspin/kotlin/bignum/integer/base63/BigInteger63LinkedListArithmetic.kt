@@ -996,11 +996,11 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
 
     override fun fromByte(byte: Byte): List<ULong> = listOf(byte.toInt().absoluteValue.toULong())
 
-    override fun toTwosComplementBigEndianByteArray(operand: List<ULong>): Array<Byte> {
+    override fun toByteArray(operand: List<ULong>, sign : Sign): Array<Byte> {
         TODO("not implemented yet")
     }
 
-    override fun fromTwosComplementBigEndianByteArray(byteArray: Array<Byte>): Pair<List<ULong>, Sign> {
+    override fun fromByteArray(byteArray: Array<Byte>): Pair<List<ULong>, Sign> {
         TODO("not implemented yet")
     }
 
