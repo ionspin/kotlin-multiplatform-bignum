@@ -87,6 +87,9 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
     override fun bitLength(value: UIntArray): Int {
+        if (value.isEmpty()) {
+            return 0
+        }
         val mostSignificant = value[value.size - 1]
         return bitLength(mostSignificant) + (value.size - 1) * basePowerOfTwo
 
@@ -926,6 +929,10 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
     override fun toTwosComplementBigEndianByteArray(operand: UIntArray, sign : Sign): Array<Byte> {
+        if (operand.isEmpty()) {
+            return emptyArray()
+        }
+        val bitLength = bitLength(operand)
         return when (sign) {
             Sign.ZERO -> { emptyList() }
             Sign.POSITIVE -> {
@@ -936,21 +943,33 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
                         ((it shr 8) and 0xFFU).toByte(),
                         ((it) and 0xFFU).toByte()
                     )
-                }.takeLast(operand.size * 4 + 1)
+                }.takeLast(operand.size * 4 + 1).chunked(4).reversed().flatten()
             }
             Sign.NEGATIVE -> {
                 val inverted = operand.map { it.inv() }.toUIntArray()
                 val converted = inverted + 1U
-                converted.flatMap {
+                val collected = converted.flatMap {
                     listOf(
                         ((it shr 24) and 0xFFU).toByte(),
                         ((it shr 16) and 0xFFU).toByte(),
                         ((it shr 8) and 0xFFU).toByte(),
                         ((it) and 0xFFU).toByte()
                     )
-                }.takeLast(operand.size * 4 + 2)
+                }.takeLast(operand.size * 4 + 2).chunked(4).reversed().flatten()
+                val corrected = if (bitLength % 8 == 0) {
+                    listOf(0xFF.toByte()) + collected
+                } else {
+                    collected
+                }
+                val signExtensionCount = corrected.takeWhile { it == 0xFF.toByte() }.size
+                val perfected = if (signExtensionCount > 1) {
+                    corrected.subList(signExtensionCount - 1, corrected.size)
+                } else {
+                    corrected
+                }
+                perfected
             }
-        }.chunked(4).reversed().flatten().toTypedArray()
+        }.toTypedArray()
 
     }
 

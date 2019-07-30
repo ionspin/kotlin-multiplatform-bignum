@@ -40,33 +40,33 @@ class ByteArrayToAndFromTest {
     @Test
     fun testToByteArray() {
 
-//        assertTrue {
-//            val bigInt32Array = BigInteger32Arithmetic.fromInt(170)
-//            val javaBigInt = bigInt32Array.toJavaBigInteger()
-//            val javaBigIntByteArray = javaBigInt.toByteArray()
-//            val intArray = BigInteger32Arithmetic.toTwosComplementBigEndianByteArray(bigInt32Array, Sign.POSITIVE)
-//            javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray())
-//        }
-//
-//        assertTrue {
-//            val bigInt32Array = BigInteger32Arithmetic.fromInt(170)
-//            val javaBigInt = bigInt32Array.toJavaBigInteger().negate()
-//            val javaBigIntByteArray = javaBigInt.toByteArray()
-//            val intArray = BigInteger32Arithmetic.toTwosComplementBigEndianByteArray(bigInt32Array, Sign.NEGATIVE)
-//            javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray())
-//        }
-//
-//        assertTrue {
-//
-//            val value = 300L * Int.MAX_VALUE
-//            val uIntArray = uintArrayOf(((value.toULong() and 0xFFFFFFFF000000U) shr 32).toUInt(), value.toUInt())
-//
-//            val bigInt32Array = uIntArray
-//            val javaBigInt = uIntArray.toJavaBigInteger()
-//            val javaBigIntByteArray = javaBigInt.toByteArray()
-//            val intArray = BigInteger32Arithmetic.toTwosComplementBigEndianByteArray(bigInt32Array, Sign.POSITIVE)
-//            javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray())
-//        }
+        assertTrue {
+            val bigInt32Array = BigInteger32Arithmetic.fromInt(170)
+            val javaBigInt = bigInt32Array.toJavaBigInteger()
+            val javaBigIntByteArray = javaBigInt.toByteArray()
+            val intArray = BigInteger32Arithmetic.toTwosComplementBigEndianByteArray(bigInt32Array, Sign.POSITIVE)
+            javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray())
+        }
+
+        assertTrue {
+            val bigInt32Array = BigInteger32Arithmetic.fromInt(170)
+            val javaBigInt = bigInt32Array.toJavaBigInteger().negate()
+            val javaBigIntByteArray = javaBigInt.toByteArray()
+            val intArray = BigInteger32Arithmetic.toTwosComplementBigEndianByteArray(bigInt32Array, Sign.NEGATIVE)
+            javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray())
+        }
+
+        assertTrue {
+
+            val value = 300L * Int.MAX_VALUE
+            val uIntArray = uintArrayOf(((value.toULong() and 0xFFFFFFFF000000U) shr 32).toUInt(), value.toUInt())
+
+            val bigInt32Array = uIntArray
+            val javaBigInt = uIntArray.toJavaBigInteger()
+            val javaBigIntByteArray = javaBigInt.toByteArray()
+            val intArray = BigInteger32Arithmetic.toTwosComplementBigEndianByteArray(bigInt32Array, Sign.POSITIVE)
+            javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray())
+        }
 
         assertTrue {
 
@@ -160,14 +160,14 @@ class ByteArrayToAndFromTest {
     }
 
     @Test
-    fun testManyToByteArrays() {
+    fun testManyPositiveToByteArrays() {
         val seed = 1
         val random = Random(seed)
 
         val jobList: MutableList<Job> = mutableListOf()
-        for (i in 0..10 step 1) {
+        for (i in 0..10000 step 1) {
             val job = GlobalScope.launch {
-                val numberOfInts = random.nextInt(30)
+                val numberOfInts = random.nextInt(300)
                 val number = UIntArray(numberOfInts) {
                     random.nextUInt()
                 }
@@ -183,24 +183,16 @@ class ByteArrayToAndFromTest {
 
     }
 
+
+
     @Test
     fun testSpecificNumberToByteArray() {
-//        val number = uintArrayOf(
-//            1382576883U,
-//            3185699695U,
-//            3990229257U,
-//            4214840377U,
-//            1857151281U,
-//            1056377018U,
-//            1097481378U,
-//            2989689242U,
-//            528133458U,
-//            1391926091U
-//        )
-
-//        val number = uintArrayOf(2930752909U, 3044181453U, 1124066533U, 2886581808U, 2479124008U, 3117501314U, 2069314562U, 401303829U, 4288217503U, 12263513U)
-//        val number = uintArrayOf(2630282294U, 2899384615U, 3633113176U, 3674073437U, 374712733U, 1659606875U, 3071045912U, 2736282094U, 1967228540U, 199075U)
-        val number = uintArrayOf(3449361588U, 4112487817U, 2750141713U, 2852596688U, 2463654725U, 2478179934U, 792688237U, 3966048162U, 4129755547U)
+        val number = uintArrayOf(
+            3713029474U, 3627127149U, 1401971595U, 4235008121U, 3172413113U, 1983025212U, 3513944539U, 3585820969U,
+            2458755354U, 394648975U, 625371470U, 1575471769U, 2100649587U, 3070076606U, 1984303761U, 2440113265U,
+            2722398484U, 2418874620U, 2718310639U, 2153548368U, 2234909028U, 365768924U, 643745162U, 2807075107U,
+            3001771099U, 2244833404U, 3132319387U, 757625671U, 4280429524U, 1119345431U, 99934901U, 3029420709U,
+            3395394702U, 3445416033U, 3896809567U, 2914897175U, 3176210056U, 3359687212U, 240379348U, 1426389U)
 
         testSingleToByteArray(number, Sign.NEGATIVE)
     }
@@ -239,11 +231,16 @@ class ByteArrayToAndFromTest {
     }
 
     fun testSingleToByteArray(bigInt32Array: UIntArray, sign: Sign) {
-        val javaBigInt = bigInt32Array.toJavaBigInteger()
+        val javaBigInt = if (sign == Sign.NEGATIVE) {
+            bigInt32Array.toJavaBigInteger().negate()
+        } else {
+            bigInt32Array.toJavaBigInteger()
+        }
         val javaBigIntByteArray = javaBigInt.toByteArray()
         val intArray = BigInteger32Arithmetic.toTwosComplementBigEndianByteArray(bigInt32Array, sign)
         assertTrue("Failed on TO byte array: \n val number = uintArrayOf(${bigInt32Array.joinToString(separator = ", ") { "${it}U" }})\n") {
-            javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray())
+            javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray()) ||
+                    (byteArrayOf(0xFF.toByte()) + javaBigIntByteArray.dropLeadingZeroes()).contentEquals(intArray.dropLeadingZeroes().toByteArray())
         }
     }
 
