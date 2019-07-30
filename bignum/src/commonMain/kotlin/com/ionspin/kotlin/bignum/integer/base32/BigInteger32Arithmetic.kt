@@ -995,7 +995,8 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
                 if (collected.contentEquals(ZERO)) {
                     return Pair(ZERO, Sign.ZERO)
                 }
-                Pair(collected, resolvedSign)
+                val corrected = collected.dropWhile { it == 0U }.reversed().toUIntArray()
+                Pair(corrected, resolvedSign)
             }
             Sign.NEGATIVE -> {
                 val collected = chunked.flatMap {chunk ->
@@ -1009,6 +1010,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
                 if (collected.contentEquals(ZERO)) {
                     return Pair(ZERO, Sign.ZERO)
                 }
+                inverted.reverse()
                 Pair(inverted, resolvedSign)
             }
             Sign.ZERO -> throw RuntimeException("Bug in fromByteArray, sign shouldn't ever be zero at this point.")

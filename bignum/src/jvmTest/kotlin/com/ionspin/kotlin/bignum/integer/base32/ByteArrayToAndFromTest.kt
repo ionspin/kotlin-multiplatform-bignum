@@ -79,14 +79,14 @@ class ByteArrayToAndFromTest {
             javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray())
         }
 
-//        assertTrue {
-//            val value = Long.MAX_VALUE
-//            val bigInt32Array = BigInteger32Arithmetic.fromLong(value)
-//            val javaBigInt = bigInt32Array.toJavaBigInteger()
-//            val javaBigIntByteArray = javaBigInt.toByteArray()
-//            val intArray = BigInteger32Arithmetic.toByteArray(bigInt32Array, Sign.POSITIVE)
-//            javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray())
-//        }
+        assertTrue {
+            val value = Long.MAX_VALUE
+            val bigInt32Array = BigInteger32Arithmetic.fromLong(value)
+            val javaBigInt = bigInt32Array.toJavaBigInteger()
+            val javaBigIntByteArray = javaBigInt.toByteArray()
+            val intArray = BigInteger32Arithmetic.toByteArray(bigInt32Array, Sign.POSITIVE)
+            javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray())
+        }
     }
 
     @Test
@@ -121,7 +121,7 @@ class ByteArrayToAndFromTest {
         assertTrue {
             val value = 300L * Int.MAX_VALUE
             val bigInt32Array = BigInteger32Arithmetic.fromLong(value)
-            val javaBigInt = BigInteger.valueOf(value)
+            val javaBigInt = bigInt32Array.toJavaBigInteger()
             val javaBigIntByteArray = javaBigInt.toByteArray()
             val reconstructedBigInt32ArrayAndSign =
                 BigInteger32Arithmetic.fromByteArray(javaBigIntByteArray.toTypedArray())
@@ -142,9 +142,9 @@ class ByteArrayToAndFromTest {
         val random = Random(seed)
 
         val jobList: MutableList<Job> = mutableListOf()
-        for (i in 0..10 step 1) {
+        for (i in 0..10000 step 1) {
             val job = GlobalScope.launch {
-                val number = UIntArray(10) {
+                val number = UIntArray(300) {
                     random.nextUInt()
                 }
                 testSingleFromByteArray(number)
@@ -183,35 +183,47 @@ class ByteArrayToAndFromTest {
     }
 
 
-
     @Test
     fun testSpecificNumberToByteArray() {
+//        val number = uintArrayOf(
+//            3713029474U, 3627127149U, 1401971595U, 4235008121U, 3172413113U, 1983025212U, 3513944539U, 3585820969U,
+//            2458755354U, 394648975U, 625371470U, 1575471769U, 2100649587U, 3070076606U, 1984303761U, 2440113265U,
+//            2722398484U, 2418874620U, 2718310639U, 2153548368U, 2234909028U, 365768924U, 643745162U, 2807075107U,
+//            3001771099U, 2244833404U, 3132319387U, 757625671U, 4280429524U, 1119345431U, 99934901U, 3029420709U,
+//            3395394702U, 3445416033U, 3896809567U, 2914897175U, 3176210056U, 3359687212U, 240379348U, 1426389U)
         val number = uintArrayOf(
-            3713029474U, 3627127149U, 1401971595U, 4235008121U, 3172413113U, 1983025212U, 3513944539U, 3585820969U,
-            2458755354U, 394648975U, 625371470U, 1575471769U, 2100649587U, 3070076606U, 1984303761U, 2440113265U,
-            2722398484U, 2418874620U, 2718310639U, 2153548368U, 2234909028U, 365768924U, 643745162U, 2807075107U,
-            3001771099U, 2244833404U, 3132319387U, 757625671U, 4280429524U, 1119345431U, 99934901U, 3029420709U,
-            3395394702U, 3445416033U, 3896809567U, 2914897175U, 3176210056U, 3359687212U, 240379348U, 1426389U)
+            2696295277U,
+            672340963U,
+            3539997803U,
+            4121786825U,
+            642721024U,
+            2138920079U,
+            3748217460U,
+            2167624736U,
+            1825374906U,
+            2423449999U
+        )
 
         testSingleToByteArray(number, Sign.NEGATIVE)
     }
 
     @Test
     fun testSpecificNumberFromByteArray() {
-        val number = uintArrayOf(
-            1382576883U,
-            3185699695U,
-            3990229257U,
-            4214840377U,
-            1857151281U,
-            1056377018U,
-            1097481378U,
-            2989689242U,
-            528133458U,
-            1391926091U
-        )
+//        val number = uintArrayOf(
+//            1382576883U,
+//            3185699695U,
+//            3990229257U,
+//            4214840377U,
+//            1857151281U,
+//            1056377018U,
+//            1097481378U,
+//            2989689242U,
+//            528133458U,
+//            1391926091U
+//        )
 
 //        val number = uintArrayOf(1477527302U, 1433375211U, 2299565196U, 157764436U, 1462860600U, 2909983771U, 4279152970U, 2795549498U, 2237905360U, 1446205346U)
+        val number = uintArrayOf(506240625U, 2361259230U, 631867953U, 304652636U, 3096086296U, 3786664971U, 3328419072U, 2592013419U, 4032177177U, 2421456398U)
 
         testSingleFromByteArray(number)
     }
@@ -221,11 +233,18 @@ class ByteArrayToAndFromTest {
         val javaBigIntByteArray = javaBigInt.toByteArray()
         val reconstructedBigInt32ArrayAndSign =
             BigInteger32Arithmetic.fromByteArray(javaBigIntByteArray.toTypedArray())
+        val signInt = (javaBigIntByteArray[0].toInt() ushr 7) and 0b00000001
+        val sign = when (signInt) {
+            0 -> Sign.POSITIVE
+            1 -> Sign.NEGATIVE
+            else -> throw RuntimeException("Invalid sign")
+
+        }
         assertTrue("Failed on FROM byte array: \n val number = uintArrayOf(${bigInt32Array.joinToString(separator = ", ") { "${it}U" }})\n") {
             BigInteger32Arithmetic.compare(
                 bigInt32Array,
                 reconstructedBigInt32ArrayAndSign.first
-            ) == 0 && reconstructedBigInt32ArrayAndSign.second == Sign.NEGATIVE
+            ) == 0 && reconstructedBigInt32ArrayAndSign.second == sign
         }
     }
 
