@@ -20,6 +20,7 @@ package com.ionspin.kotlin.bignum.integer.base63
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
+import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.compareTo
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.div
@@ -994,6 +995,15 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     override fun fromShort(short: Short): List<ULong> = listOf(short.toInt().absoluteValue.toULong())
 
     override fun fromByte(byte: Byte): List<ULong> = listOf(byte.toInt().absoluteValue.toULong())
+
+    override fun toByteArray(operand: List<ULong>, sign : Sign): Array<Byte> {
+        return BigInteger32Arithmetic.toByteArray(convertTo32BitRepresentation(operand), sign)
+    }
+
+    override fun fromByteArray(byteArray: Array<Byte>): Pair<List<ULong>, Sign> {
+        val result = BigInteger32Arithmetic.fromByteArray(byteArray)
+        return Pair(convertFrom32BitRepresentation(result.first), result.second)
+    }
 
     // ------------- Useful constants --------------
     val powersOf10 = arrayOf(

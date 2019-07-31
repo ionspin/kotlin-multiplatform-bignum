@@ -157,5 +157,13 @@ actual object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>
         TODO("not implemented yet")
     }
 
+    override fun toByteArray(operand: IntArray, sign : Sign): Array<Byte> {
+        TODO("not implemented yet")
+    }
+
+    override fun fromByteArray(byteArray: Array<Byte>): Pair<IntArray, Sign> {
+        TODO("not implemented yet")
+    }
+
 
 }

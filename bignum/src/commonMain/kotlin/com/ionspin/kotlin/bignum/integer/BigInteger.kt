@@ -17,8 +17,7 @@
 
 package com.ionspin.kotlin.bignum.integer
 
-import com.ionspin.kotlin.bignum.BigNumber
-import com.ionspin.kotlin.bignum.BitwiseCapable
+import com.ionspin.kotlin.bignum.*
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.NarrowingOperations
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
@@ -28,31 +27,6 @@ import kotlin.math.floor
 import kotlin.math.log10
 
 
-/**
- * Created by Ugljesa Jovanovic
- * ugljesa.jovanovic@ionspin.com
- * on 10-Mar-2019
- */
-
-enum class Sign {
-    POSITIVE, NEGATIVE, ZERO;
-
-    operator fun not(): Sign {
-        return when (this) {
-            POSITIVE -> NEGATIVE
-            NEGATIVE -> POSITIVE
-            ZERO -> ZERO
-        }
-    }
-
-    fun toInt(): Int {
-        return when (this) {
-            POSITIVE -> 1
-            NEGATIVE -> -1
-            ZERO -> 0
-        }
-    }
-}
 
 
 
@@ -65,7 +39,8 @@ enum class Sign {
 class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : BigNumber<BigInteger>,
     CommonBigNumberOperations<BigInteger>,
     NarrowingOperations<BigInteger>,
-    BitwiseCapable<BigInteger>, Comparable<Any> {
+    BitwiseCapable<BigInteger>, Comparable<Any>,
+    ByteArraySerializable {
 
 
     constructor(long: Long) : this(arithmetic.fromLong(long), determinSignFromNumber(long))
@@ -82,9 +57,8 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     }
 
 
-
     @ExperimentalUnsignedTypes
-    companion object : BigNumber.Creator<BigInteger>, BigNumber.Util<BigInteger> {
+    companion object : BigNumber.Creator<BigInteger>, BigNumber.Util<BigInteger>, ByteArrayDeserializable<BigInteger> {
         private val arithmetic: BigIntegerArithmetic<WordArray, Word> = chosenArithmetic
 
         override val ZERO = BigInteger(arithmetic.ZERO, Sign.ZERO)
@@ -172,8 +146,12 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
             }
 
         }
+
         //BigIntegers are immutable so this is pointless, but the rest of creator implementations use this.
-        override fun fromBigInteger(bigInteger: BigInteger): BigInteger { return bigInteger }
+        override fun fromBigInteger(bigInteger: BigInteger): BigInteger {
+            return bigInteger
+        }
+
         override fun fromULong(uLong: ULong) = BigInteger(arithmetic.fromULong(uLong), Sign.POSITIVE)
         override fun fromUInt(uInt: UInt) = BigInteger(arithmetic.fromUInt(uInt), Sign.POSITIVE)
         override fun fromUShort(uShort: UShort) = BigInteger(arithmetic.fromUShort(uShort), Sign.POSITIVE)
@@ -221,6 +199,11 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
             } else {
                 second
             }
+        }
+
+        override fun fromByteArray(byteArray: Array<Byte>): BigInteger {
+            val result = arithmetic.fromByteArray(byteArray)
+            return BigInteger(result.first, result.second)
         }
     }
 
@@ -373,22 +356,22 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
 
     }
 
-    fun sqrt() : BigInteger {
+    fun sqrt(): BigInteger {
         return BigInteger(arithmetic.sqrt(magnitude).first, this.sign)
     }
 
-    fun sqrtAndRemainder() : SqareRootAndRemainder {
+    fun sqrtAndRemainder(): SqareRootAndRemainder {
         return SqareRootAndRemainder(
             BigInteger(arithmetic.sqrt(magnitude).first, this.sign),
             BigInteger(arithmetic.sqrt(magnitude).second, this.sign)
         )
     }
 
-    fun gcd(other: BigInteger) : BigInteger {
+    fun gcd(other: BigInteger): BigInteger {
         return BigInteger(arithmetic.gcd(this.magnitude, other.magnitude), Sign.POSITIVE)
     }
 
-    private fun naiveGcd(other : BigInteger) : BigInteger {
+    private fun naiveGcd(other: BigInteger): BigInteger {
         var u = this
         var v = other
         while (v != ZERO) {
@@ -399,7 +382,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         return u
     }
 
-    fun modInverse(modulo: BigInteger) : BigInteger {
+    fun modInverse(modulo: BigInteger): BigInteger {
         if (gcd(modulo) != ONE) {
             throw ArithmeticException("BigInteger is not invertible. This and modulus are not relatively prime (coprime)")
         }
@@ -408,12 +391,12 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         var b = this
         var c = modulo
         while (c != ZERO) {
-            val (q,r) = b divrem c
+            val (q, r) = b divrem c
             b = c
             c = r
             val tmpU = u
             u = w
-            w = tmpU - q*w
+            w = tmpU - q * w
         }
         return u
     }
@@ -421,7 +404,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     /**
      * Returns an always positive remainder of division operation
      */
-    infix fun mod(modulo : BigInteger) : BigInteger {
+    infix fun mod(modulo: BigInteger): BigInteger {
         val result = this % modulo
         return if (result < 0) {
             result + modulo
@@ -429,7 +412,6 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
             result
         }
     }
-
 
 
     fun compare(other: BigInteger): Int {
@@ -598,7 +580,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
             is UShort -> compare(fromUShort(other))
             is UByte -> compare(fromUByte(other))
             is Float -> compareFloatAndBigInt(other) { compare(it) }
-            is Double -> compareDoubleAndBigInt(other) {compare(it) }
+            is Double -> compareDoubleAndBigInt(other) { compare(it) }
             else -> throw RuntimeException("Invalid comparison type for BigInteger: ${other::class.simpleName}")
         }
 
@@ -608,16 +590,16 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
      * Javascrpt doesn't have different types for float, integer, long, it's all just "number", so we need
      * to check if it's a decimal or integer number before comparing.
      */
-    private fun javascriptNumberComparison(number : Number) : Int {
+    private fun javascriptNumberComparison(number: Number): Int {
         val float = number.toFloat()
-        return when  {
+        return when {
             float % 1 == 0f -> compare(fromLong(number.toLong()))
             else -> compareFloatAndBigInt(number.toFloat()) { compare(it) }
 
         }
     }
 
-    fun compareFloatAndBigInt(float : Float, comparisonBlock : (BigInteger) -> Int) : Int {
+    fun compareFloatAndBigInt(float: Float, comparisonBlock: (BigInteger) -> Int): Int {
         val withoutDecimalPart = floor(float)
         val hasDecimalPart = (float % 1 != 0f)
         return if (hasDecimalPart) {
@@ -633,7 +615,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         }
     }
 
-    fun compareDoubleAndBigInt(double : Double, comparisonBlock : (BigInteger) -> Int) : Int {
+    fun compareDoubleAndBigInt(double: Double, comparisonBlock: (BigInteger) -> Int): Int {
         val withoutDecimalPart = floor(double)
         val hasDecimalPart = (double % 1 != 0.0)
         return if (hasDecimalPart) {
@@ -707,7 +689,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         return stringBuilder.toString()
     }
 
-    fun toModularBigInteger(modulo : BigInteger) : ModularBigInteger {
+    fun toModularBigInteger(modulo: BigInteger): ModularBigInteger {
         val creator = ModularBigInteger.creatorForModulo(modulo)
         return creator.fromBigInteger(this)
     }
@@ -782,9 +764,14 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         return this.toString().toDouble()
     }
 
-    operator fun rangeTo(other : BigInteger) = BigIntegerRange(this, other)
+    override fun toByteArray(): Array<Byte> {
+        return arithmetic.toByteArray(magnitude, sign)
+    }
 
-    class BigIntegerRange(override val start : BigInteger, override val endInclusive : BigInteger) : ClosedRange<BigInteger>, Iterable<BigInteger> {
+    operator fun rangeTo(other: BigInteger) = BigIntegerRange(this, other)
+
+    class BigIntegerRange(override val start: BigInteger, override val endInclusive: BigInteger) :
+        ClosedRange<BigInteger>, Iterable<BigInteger> {
 
         override fun iterator(): Iterator<BigInteger> {
             return BigIntegerIterator(start, endInclusive)
@@ -792,7 +779,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
 
     }
 
-    class BigIntegerIterator(start : BigInteger, private val endInclusive : BigInteger) : Iterator<BigInteger> {
+    class BigIntegerIterator(start: BigInteger, private val endInclusive: BigInteger) : Iterator<BigInteger> {
 
         private var current = start
 
