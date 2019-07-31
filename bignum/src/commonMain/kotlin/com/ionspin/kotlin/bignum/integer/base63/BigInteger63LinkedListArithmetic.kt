@@ -997,11 +997,12 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     override fun fromByte(byte: Byte): List<ULong> = listOf(byte.toInt().absoluteValue.toULong())
 
     override fun toByteArray(operand: List<ULong>, sign : Sign): Array<Byte> {
-        TODO("not implemented yet")
+        return BigInteger32Arithmetic.toByteArray(convertTo32BitRepresentation(operand), sign)
     }
 
     override fun fromByteArray(byteArray: Array<Byte>): Pair<List<ULong>, Sign> {
-        TODO("not implemented yet")
+        val result = BigInteger32Arithmetic.fromByteArray(byteArray)
+        return Pair(convertFrom32BitRepresentation(result.first), result.second)
     }
 
     // ------------- Useful constants --------------

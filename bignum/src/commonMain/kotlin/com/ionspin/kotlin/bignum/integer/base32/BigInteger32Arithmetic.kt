@@ -936,7 +936,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return when (sign) {
             Sign.ZERO -> { emptyList() }
             Sign.POSITIVE -> {
-                operand.flatMap {
+                val collected = operand.flatMap {
                     listOf(
                         ((it shr 24) and 0xFFU).toByte(),
                         ((it shr 16) and 0xFFU).toByte(),
@@ -944,6 +944,12 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
                         ((it) and 0xFFU).toByte()
                     )
                 }.takeLast(operand.size * 4 + 1).chunked(4).reversed().flatten()
+                val corrected = if (bitLength % 8 == 0) {
+                    listOf(0x00.toByte()) + collected
+                } else {
+                    collected
+                }
+                corrected
             }
             Sign.NEGATIVE -> {
                 val inverted = operand.map { it.inv() }.toUIntArray()
@@ -955,7 +961,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
                         ((it shr 8) and 0xFFU).toByte(),
                         ((it) and 0xFFU).toByte()
                     )
-                }.takeLast(operand.size * 4 + 2).chunked(4).reversed().flatten()
+                }.takeLast(operand.size * 4 + 1).chunked(4).reversed().flatten()
                 val corrected = if (bitLength % 8 == 0) {
                     listOf(0xFF.toByte()) + collected
                 } else {
@@ -991,12 +997,12 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
                     val discard = 4 - chunk.size
                     val discarded = (result shl (8 * discard)) shr (8 * discard)
                     uintArrayOf(discarded)
-                }.reversed().toUIntArray()
+                }.toUIntArray()
                 if (collected.contentEquals(ZERO)) {
                     return Pair(ZERO, Sign.ZERO)
                 }
-                val corrected = collected.dropWhile { it == 0U }.reversed().toUIntArray()
-                Pair(corrected, resolvedSign)
+                val corrected = collected.dropLastWhile { it == 0U }.toUIntArray()
+                Pair(removeLeadingZeroes(corrected), resolvedSign)
             }
             Sign.NEGATIVE -> {
                 val collected = chunked.flatMap {chunk ->
@@ -1004,14 +1010,14 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
                         acc + (byte.toUInt() shl ((chunk.size - 1) * 8 - index * 8))
                     }
                     uintArrayOf(result)
-                }.reversed().toUIntArray()
+                }.toUIntArray()
                 val substracted = collected - 1U
                 val inverted = substracted.map { it.inv() }.toUIntArray()
                 if (collected.contentEquals(ZERO)) {
                     return Pair(ZERO, Sign.ZERO)
                 }
-                inverted.reverse()
-                Pair(inverted, resolvedSign)
+
+                Pair(removeLeadingZeroes(inverted), resolvedSign)
             }
             Sign.ZERO -> throw RuntimeException("Bug in fromByteArray, sign shouldn't ever be zero at this point.")
         }

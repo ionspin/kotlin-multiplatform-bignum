@@ -1136,7 +1136,9 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return convertFrom32BitRepresentation(this)
     }
 
-    override fun fromULong(uLong: ULong): ULongArray = ulongArrayOf(uLong)
+    override fun fromULong(uLong: ULong): ULongArray {
+        return fromLong(uLong.toLong())
+    }
 
     override fun fromUInt(uInt: UInt): ULongArray = ulongArrayOf(uInt.toULong())
 
@@ -1160,11 +1162,12 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     override fun fromByte(byte: Byte): ULongArray = ulongArrayOf(byte.toInt().absoluteValue.toULong())
 
     override fun toByteArray(operand: ULongArray, sign : Sign): Array<Byte> {
-        TODO("not implemented yet")
+        return BigInteger32Arithmetic.toByteArray(convertTo32BitRepresentation(operand), sign)
     }
 
     override fun fromByteArray(byteArray: Array<Byte>): Pair<ULongArray, Sign> {
-        TODO("not implemented yet")
+        val result = BigInteger32Arithmetic.fromByteArray(byteArray)
+        return Pair(convertFrom32BitRepresentation(result.first), result.second)
     }
 
     // ------------- Useful constants --------------
