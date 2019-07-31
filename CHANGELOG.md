@@ -1,7 +1,8 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
 
-##### 0.1.0-SNAPSHOT - 28.7.2019
+##### 0.1.0-SNAPSHOT - 31.7.2019
+- Added toByteArray and fromByteArray
 - Added toFloat and toDouble to BigInteger and ModularBigInteger classes
 - Added BigInteger creation from Float and Double by using `tryFromFloat` and `tryFromDouble`, with optional exact 
 parameter to preserve precision.

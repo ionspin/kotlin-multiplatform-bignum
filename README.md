@@ -309,6 +309,18 @@ bigDecimal.toStringExpanded() == "123.456"
 BigDecimal: 123.456
 ```
 
+## toByteArray and fromByteArray
+
+Converts the BigInteger to and from two's complement big endian array of bytes
+```kotlin
+val bigIntOriginal = BigInteger.fromULong(ULong.MAX_VALUE)
+val byteArray = bigIntOriginal.toByteArray()
+val reconstructed = BigInteger.fromByteArray(byteArray)
+println("${bigIntOriginal == reconstructed}")
+----- Output -----
+true
+```
+
 ### Arithmetic operations
 
 Standard arithmetic operations that are present:
