@@ -72,6 +72,41 @@ class ModularBigIntegerMultiplication  {
         }
     }
 
+    @Test
+    fun testRandomNegativeModularMultiplication() {
+        val seed = 1
+        var random = Random(seed)
+        val jobList: MutableList<Job> = mutableListOf()
+        for (i in 1..1000) {
+            val a = ULongArray(random.nextInt(1, 500)) {
+                random.nextULong() shr 1
+            }
+            val b = ULongArray(random.nextInt(1, 500)) {
+                random.nextULong() shr 1
+            }
+
+            val modulo = ULongArray(random.nextInt(1, 500)) {
+                random.nextULong() shr 1
+            }
+            val creator = ModularBigInteger.creatorForModulo(BigInteger(modulo, Sign.POSITIVE))
+
+            val job = GlobalScope.launch {
+                try {
+                    val aMod = creator.fromBigInteger(BigInteger(a, Sign.POSITIVE))
+                    val bMod = creator.fromBigInteger(BigInteger(b, Sign.NEGATIVE))
+                    singleMultiplicationTest(aMod, bMod)
+                } catch (exception: Exception) {
+                    exception.printStackTrace()
+                }
+            }
+            jobList.add(job)
+
+        }
+        runBlocking {
+            jobList.forEach { it.join() }
+        }
+    }
+
     fun singleMultiplicationTest(a : ModularBigInteger, b : ModularBigInteger) {
         assertTrue {
             val result = a * b
