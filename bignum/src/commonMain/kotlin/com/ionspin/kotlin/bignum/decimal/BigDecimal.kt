@@ -1315,7 +1315,7 @@ class BigDecimal private constructor(
      * Compare to other BigDecimal
      */
     fun compare(other: BigDecimal): Int {
-        if (exponent == other.exponent) {
+        if (exponent == other.exponent && precision == other.precision) {
             return significand.compare(other.significand)
         }
         val (preparedFirst, preparedSecond) = bringSignificandToSameExponent(this, other)
