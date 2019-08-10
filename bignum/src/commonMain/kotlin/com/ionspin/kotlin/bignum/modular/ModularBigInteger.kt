@@ -33,13 +33,19 @@ import com.ionspin.kotlin.bignum.integer.Sign
  */
 
 @ExperimentalUnsignedTypes
-class ModularBigInteger @ExperimentalUnsignedTypes constructor(
-    val residue : BigInteger,
+class ModularBigInteger @ExperimentalUnsignedTypes private constructor(
+    signedResidue : BigInteger,
     val modulus : BigInteger,
     private val creator: BigNumber.Creator<ModularBigInteger>) : BigNumber<ModularBigInteger>,
         CommonBigNumberOperations<ModularBigInteger>,
         NarrowingOperations<ModularBigInteger>
 {
+
+    val residue = when (signedResidue.sign) {
+        Sign.POSITIVE -> signedResidue
+        Sign.NEGATIVE -> signedResidue + modulus
+        Sign.ZERO -> BigInteger.ZERO
+    }
 
     init {
         if (modulus.sign == Sign.NEGATIVE) {
@@ -55,7 +61,6 @@ class ModularBigInteger @ExperimentalUnsignedTypes constructor(
         fun creatorForModulo(modulo: Int) : BigNumber.Creator<ModularBigInteger> = creatorForModulo(BigInteger.fromInt(modulo))
         fun creatorForModulo(modulo: Short) : BigNumber.Creator<ModularBigInteger> = creatorForModulo(BigInteger.fromShort(modulo))
         fun creatorForModulo(modulo: Byte) : BigNumber.Creator<ModularBigInteger> = creatorForModulo(BigInteger.fromByte(modulo))
-
 
         fun creatorForModulo(modulo: BigInteger) : BigNumber.Creator<ModularBigInteger> {
             return object : BigNumber.Creator<ModularBigInteger> {
