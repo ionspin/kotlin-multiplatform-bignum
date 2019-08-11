@@ -38,12 +38,40 @@ class BigDecimalDivPowTest {
         }
     }
 
-//    @Test //TODO in 0.3.0
-//    fun testDecimalExponentiation() {
-//        val exponent = 2.123.toBigDecimal()
-//        val a = 2.toBigDecimal()
-//        val result = a.pow(exponent)
-//    }
+    @Test
+    fun testDecimalExponentiation() {
+        assertTrue {
+            val a = 2.toBigDecimal()
+            val result = a.pow(2)
+            result.compareTo(4) == 0
+        }
+
+        assertTrue {
+            val a = 2.toBigDecimal()
+            val result = a.pow(10)
+            result.compareTo(1024) == 0
+        }
+
+        assertTrue {
+            val a = 0.5.toBigDecimal()
+            val result = a.pow(2)
+            result.compareTo(0.25) == 0
+        }
+
+        assertTrue {
+            val a = 4.toBigDecimal(decimalMode = DecimalMode(decimalPrecision = 10, roundingMode = RoundingMode.FLOOR))
+            val result = a.pow(-1)
+            result.compareTo(0.25) == 0
+        }
+
+        assertTrue {
+            val a = 4.toBigDecimal(decimalMode = DecimalMode(decimalPrecision = 10, roundingMode = RoundingMode.FLOOR))
+            val result = a.pow(-2)
+            result.compareTo(1f/16) == 0
+        }
+
+
+    }
 
 
 
