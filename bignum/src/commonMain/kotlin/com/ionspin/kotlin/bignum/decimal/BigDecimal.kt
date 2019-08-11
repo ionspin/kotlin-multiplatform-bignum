@@ -20,6 +20,7 @@ package com.ionspin.kotlin.bignum.decimal
 import com.ionspin.kotlin.bignum.BigNumber
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.integer.BigInteger
+import com.ionspin.kotlin.bignum.integer.ComparisonWorkaround
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlin.math.absoluteValue
@@ -1208,17 +1209,17 @@ class BigDecimal private constructor(
      * Exponentiate this BigDecimal by some exponent
      */
     override fun pow(exponent: Long): BigDecimal {
-        var result = ONE
+        var result = this
         return when {
             exponent > 0 -> {
-                for (i in 1 .. exponent) {
-                    result = result * result
+                for (i in 0 until exponent - 1) {
+                    result = result * this
                 }
                 result
             }
             exponent < 0 -> {
-                for (i in 1 .. exponent.absoluteValue) {
-                    result = result / result
+                for (i in 0 .. exponent.absoluteValue) {
+                    result = result / this
                 }
                 result
             }
@@ -1323,24 +1324,46 @@ class BigDecimal private constructor(
     }
 
     override fun compareTo(other: Any): Int {
+        if (other is Number) {
+            if (ComparisonWorkaround.isSpecialHandlingForFloatNeeded(other)) {
+                return javascriptNumberComparison(other)
+            }
+        }
         return when (other) {
             is BigDecimal -> compare(other)
-            is Long -> compare(BigDecimal.fromLongAsSignificand(other))
-            is Int -> compare(BigDecimal.fromIntAsSignificand(other))
-            is Short -> compare(BigDecimal.fromShortAsSignificand(other))
-            is Byte -> compare(BigDecimal.fromByteAsSignificand(other))
+            is Long -> compare(BigDecimal.fromLong(other))
+            is Int -> compare(BigDecimal.fromInt(other))
+            is Short -> compare(BigDecimal.fromShort(other))
+            is Byte -> compare(BigDecimal.fromByte(other))
+            is Double -> compare(BigDecimal.fromDouble(other))
+            is Float -> compare(BigDecimal.fromFloat(other))
             else -> throw RuntimeException("Invalid comparison type for BigDecimal: ${other::class.simpleName}")
         }
 
     }
 
+    /**
+     * Javascrpt doesn't have different types for float, integer, long, it's all just "number", so we need
+     * to check if it's a decimal or integer number before comparing.
+     */
+    private fun javascriptNumberComparison(number: Number): Int {
+        val float = number.toFloat()
+        return when {
+            float % 1 == 0f -> compare(BigDecimal.fromLong(number.toLong()))
+            else -> compare(number.toFloat().toBigDecimal())
+
+        }
+    }
+
     override fun equals(other: Any?): Boolean {
         val comparison = when (other) {
             is BigDecimal -> compare(other)
-            is Long -> compare(BigDecimal.fromLongAsSignificand(other))
-            is Int -> compare(BigDecimal.fromIntAsSignificand(other))
-            is Short -> compare(BigDecimal.fromShortAsSignificand(other))
-            is Byte -> compare(BigDecimal.fromByteAsSignificand(other))
+            is Long -> compare(BigDecimal.fromLong(other))
+            is Int -> compare(BigDecimal.fromInt(other))
+            is Short -> compare(BigDecimal.fromShort(other))
+            is Byte -> compare(BigDecimal.fromByte(other))
+            is Double -> compare(BigDecimal.fromDouble(other))
+            is Float -> compare(BigDecimal.fromFloat(other))
             else -> -1
         }
         return comparison == 0
