@@ -22,7 +22,7 @@ import com.ionspin.kotlin.bignum.BigNumber
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 10-Mar-2019
+ * on 12-Aug-2019
  */
 
 
