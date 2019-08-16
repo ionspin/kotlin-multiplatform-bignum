@@ -1,5 +1,10 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
+##### 0.1.1-SNAPSHOT - 12.8.2019
+- Fixed several issues related to big decimal comparison, modular integer sign, etc.
+- Added more BigDecimal extension functions
+- Added ModularBigInteger extension functions
+
 
 ##### 0.1.0 - 31.7.2019
 - Added toByteArray and fromByteArray
