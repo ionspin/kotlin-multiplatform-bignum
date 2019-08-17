@@ -37,7 +37,7 @@ repositories {
         url = uri("https://oss.sonatype.org/content/repositories/snapshots")
     }
 }
-implementation("com.ionspin.kotlin:bignum:0.1.0-SNAPSHOT")
+implementation("com.ionspin.kotlin:bignum:0.1.1-SNAPSHOT")
 
 ```
 

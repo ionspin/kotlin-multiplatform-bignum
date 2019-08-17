@@ -49,12 +49,15 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     override val TWO: List<ULong> = listOf(2u)
     override val TEN: List<ULong> = listOf(10UL)
     override val basePowerOfTwo: Int = 63
+    val wordSizeInBits = 63
 
     val baseMask: ULong = 0x7FFFFFFFFFFFFFFFUL
 
     val lowMask = 0x00000000FFFFFFFFUL
     val highMask = 0x7FFFFFFF00000000UL
     val overflowMask = 0x8000000000000000UL
+
+    const val karatsubaThreshold = 45
 
 
     override fun numberOfLeadingZeroes(value: ULong): Int {
@@ -343,11 +346,41 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     }
 
     override fun multiply(first: List<ULong>, second: List<ULong>): List<ULong> {
+        if (first == ZERO || second == ZERO) {
+            return ZERO
+        }
+
+        if (first.size >= karatsubaThreshold || second.size == karatsubaThreshold) {
+            return karatsubaMultiply(first, second)
+        }
+
         var resultArray = listOf<ULong>()
         second.forEachIndexed { index: Int, element: ULong ->
             resultArray = resultArray + (multiply(first, element) shl (index * basePowerOfTwo))
         }
         return removeLeadingZeroes(resultArray)
+
+    }
+
+    fun karatsubaMultiply(first : List<ULong>, second : List<ULong>) : List<ULong> {
+
+
+        val halfLength = (kotlin.math.max(first.size, second.size) + 1) / 2
+
+
+        val mask = (ONE shl (halfLength * wordSizeInBits)) - 1UL
+        val firstLower = and(first, mask)
+        val firstHigher = first shr halfLength * wordSizeInBits
+        val secondLower = and(second, mask)
+        val secondHigher = second shr halfLength * wordSizeInBits
+
+        //
+        val higherProduct = firstHigher * secondHigher
+        val lowerProduct = firstLower * secondLower
+        val middleProduct = (firstHigher + firstLower) * (secondHigher + secondLower)
+        val result = (higherProduct shl (126 * halfLength)) + ((middleProduct - higherProduct - lowerProduct) shl (wordSizeInBits * halfLength)) + lowerProduct
+
+        return result
 
     }
 
