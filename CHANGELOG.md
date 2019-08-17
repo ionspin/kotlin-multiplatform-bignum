@@ -4,6 +4,7 @@
 - Fixed several issues related to big decimal comparison, modular integer sign, etc.
 - Added more BigDecimal extension functions
 - Added ModularBigInteger extension functions
+- Added Karatsuba multiplication
 
 
 ##### 0.1.0 - 31.7.2019

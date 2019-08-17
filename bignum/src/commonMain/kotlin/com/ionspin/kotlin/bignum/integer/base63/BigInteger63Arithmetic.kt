@@ -35,6 +35,8 @@ import kotlin.math.floor
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
  * on 10-Mar-2019
+ *
+ * Byte order is big endian
  */
 @ExperimentalUnsignedTypes
 internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
@@ -51,6 +53,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     val lowMask = 0x00000000FFFFFFFFUL
     val highMask = 0x7FFFFFFF00000000UL
     val overflowMask = 0x8000000000000000UL
+
+    const val karatsubaThreshold = 90
 
 
     override fun numberOfLeadingZeroes(value: ULong): Int {
@@ -144,24 +148,26 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
                 }
             }
         }
-        return ULongArray(operand.size + wordsNeeded) {
-            when (it) {
-                in 0 until shiftWords -> 0U
-                shiftWords -> {
-                    (operand[it - shiftWords] shl shiftBits) and baseMask
-                }
-                in (shiftWords + 1) until (originalSize + shiftWords) -> {
-                    ((operand[it - shiftWords] shl shiftBits) and baseMask) or (operand[it - shiftWords - 1] shr (basePowerOfTwo - shiftBits))
-                }
-                originalSize + wordsNeeded - 1 -> {
-                    (operand[it - wordsNeeded] shr (basePowerOfTwo - shiftBits))
-                }
-                else -> {
-                    throw RuntimeException("Invalid case $it")
-                }
+        return removeLeadingZeroes(
+            ULongArray(operand.size + wordsNeeded) {
+                when (it) {
+                    in 0 until shiftWords -> 0U
+                    shiftWords -> {
+                        (operand[it - shiftWords] shl shiftBits) and baseMask
+                    }
+                    in (shiftWords + 1) until (originalSize + shiftWords) -> {
+                        ((operand[it - shiftWords] shl shiftBits) and baseMask) or (operand[it - shiftWords - 1] shr (basePowerOfTwo - shiftBits))
+                    }
+                    originalSize + wordsNeeded - 1 -> {
+                        (operand[it - wordsNeeded] shr (basePowerOfTwo - shiftBits))
+                    }
+                    else -> {
+                        throw RuntimeException("Invalid case $it")
+                    }
 
+                }
             }
-        }
+        )
     }
 
     override fun shiftRight(operand: ULongArray, places: Int): ULongArray {
@@ -361,6 +367,14 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun multiply(first: ULongArray, second: ULongArray): ULongArray {
+        if (first == ZERO || second == ZERO) {
+            return ZERO
+        }
+
+        if (first.size >= karatsubaThreshold || second.size == karatsubaThreshold) {
+            return karatsubaMultiply(first, second)
+        }
+
         var resultArray = ulongArrayOf()
         second.forEachIndexed { index: Int, element: ULong ->
             resultArray = resultArray + (multiply(first, element) shl (index * basePowerOfTwo))
@@ -368,6 +382,35 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return removeLeadingZeroes(resultArray)
 
     }
+
+    fun combaMultiply(first: ULongArray, second: ULongArray) {
+
+    }
+
+    fun karatsubaMultiply(first: ULongArray, second: ULongArray): ULongArray {
+
+
+        val halfLength = (kotlin.math.max(first.size, second.size) + 1) / 2
+
+
+        val mask = (ONE shl (halfLength * wordSizeInBits)) - 1UL
+        val firstLower = and(first, mask)
+        val firstHigher = first shr halfLength * wordSizeInBits
+        val secondLower = and(second, mask)
+        val secondHigher = second shr halfLength * wordSizeInBits
+
+        //
+        val higherProduct = firstHigher * secondHigher
+        val lowerProduct = firstLower * secondLower
+        val middleProduct = (firstHigher + firstLower) * (secondHigher + secondLower)
+        val result =
+            (higherProduct shl (2 * wordSizeInBits * halfLength)) + ((middleProduct - higherProduct - lowerProduct) shl (wordSizeInBits * halfLength)) + lowerProduct
+
+        return result
+
+    }
+
+    fun fftMultiply() {}
 
     fun multiply(first: ULongArray, second: ULong): ULongArray {
 
@@ -416,9 +459,12 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     /*
-    Useful when we want to do a ULong * ULong -> ULongArray, currently not used anywhere, and untested
+    Useful when we want to do a ULong * ULong -> ULongArray
      */
     fun multiply(first: ULong, second: ULong): ULongArray {
+        if (first == 0UL || second == 0UL) {
+            return ulongArrayOf(0UL)
+        }
         //Split the operands
         val firstLow = first and lowMask
         val firstHigh = first shr 32
@@ -582,7 +628,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         unnormalizedDividend: ULongArray,
         unnormalizedDivisor: ULongArray
     ): Pair<ULongArray, ULongArray> {
-        var (a,b, shift) = normalize(unnormalizedDividend, unnormalizedDivisor)
+        var (a, b, shift) = normalize(unnormalizedDividend, unnormalizedDivisor)
         val m = a.size - b.size
         val bmb = b shl (m * wordSizeInBits)
         var q = ULongArray(m + 1) { 0U }
@@ -898,14 +944,14 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
 
-    internal fun basecaseSqrt(operand: ULongArray) : Pair<ULongArray, ULongArray> {
+    internal fun basecaseSqrt(operand: ULongArray): Pair<ULongArray, ULongArray> {
         val sqrt = sqrtInt(operand)
         val remainder = operand - (sqrt * sqrt)
         return Pair(sqrt, remainder)
 
     }
 
-    internal fun sqrtInt(operand: ULongArray) : ULongArray {
+    internal fun sqrtInt(operand: ULongArray): ULongArray {
         var u = operand
         var s = ZERO
         var tmp = ZERO
@@ -932,7 +978,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return u
     }
 
-    fun min(first : ULongArray, second : ULongArray) : ULongArray {
+    fun min(first: ULongArray, second: ULongArray): ULongArray {
         return if (first < second) {
             first
         } else {
@@ -940,7 +986,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         }
     }
 
-    fun max(first : ULongArray, second : ULongArray) : ULongArray {
+    fun max(first: ULongArray, second: ULongArray): ULongArray {
         return if (first > second) {
             first
         } else {
@@ -1161,7 +1207,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
     override fun fromByte(byte: Byte): ULongArray = ulongArrayOf(byte.toInt().absoluteValue.toULong())
 
-    override fun toByteArray(operand: ULongArray, sign : Sign): Array<Byte> {
+    override fun toByteArray(operand: ULongArray, sign: Sign): Array<Byte> {
         return BigInteger32Arithmetic.toByteArray(convertTo32BitRepresentation(operand), sign)
     }
 

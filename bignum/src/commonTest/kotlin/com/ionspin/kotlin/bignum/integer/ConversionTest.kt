@@ -152,6 +152,7 @@ class ConversionTest {
 
         stringTestCases.forEach {
             assertFailsWith<ArithmeticException> {
+                println("Double value to parse: $it")
                 val bigInt = BigInteger.parseString(it)
                 bigInt.doubleValue(true)
             }

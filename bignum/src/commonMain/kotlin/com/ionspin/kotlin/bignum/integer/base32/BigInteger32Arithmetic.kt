@@ -48,6 +48,8 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     override val TWO = UIntArray(1) { 2U }
     override val TEN = UIntArray(1) { 10U }
 
+    const val karatsubaThreshold = 3
+
 
     /**
      * Hackers delight 5-11
@@ -188,7 +190,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
                 }
             }
         }
-        return result
+        return removeLeadingZeroes(result)
 
     }
 
@@ -370,15 +372,46 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return removeLeadingZeroes(result)
     }
 
-    @Suppress("ConstantConditionIf")
-    override fun multiply(first: UIntArray, second: UIntArray): UIntArray {
+    fun karatsubaMultiply(first: UIntArray, second: UIntArray): UIntArray {
 
-        return second.foldIndexed(ZERO) { index, acc, element ->
-            acc + (multiply(
-                first,
-                element
-            ) shl (index * basePowerOfTwo))
+
+        val halfLength = (kotlin.math.max(first.size, second.size) + 1) / 2
+
+
+        val mask = (ONE shl (halfLength * wordSizeInBits)) - 1U
+        val firstLower = and(first, mask)
+        val firstHigher = first shr halfLength * wordSizeInBits
+        val secondLower = and(second, mask)
+        val secondHigher = second shr halfLength * wordSizeInBits
+
+        //
+        val higherProduct = firstHigher * secondHigher
+        val lowerProduct = firstLower * secondLower
+        val middleProduct = (firstHigher + firstLower) * (secondHigher + secondLower)
+        val result =
+            (higherProduct shl (2 * wordSizeInBits * halfLength)) + ((middleProduct - higherProduct - lowerProduct) shl (wordSizeInBits * halfLength)) + lowerProduct
+
+        return result
+
+    }
+
+    override fun multiply(first: UIntArray, second: UIntArray): UIntArray {
+        if (first == ZERO || second == ZERO) {
+            return ZERO
         }
+        //Need to debug 32 bit variant, seems to fail on lower product
+//        if (first.size >= karatsubaThreshold || second.size == karatsubaThreshold) {
+//            return karatsubaMultiply(first, second)
+//        }
+
+        return removeLeadingZeroes(
+            second.foldIndexed(ZERO) { index, acc, element ->
+                acc + (multiply(
+                    first,
+                    element
+                ) shl (index * basePowerOfTwo))
+            }
+        )
     }
 
     override fun pow(base: UIntArray, exponent: Long): UIntArray {
@@ -396,8 +429,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     override fun divide(first: UIntArray, second: UIntArray): Pair<UIntArray, UIntArray> {
         return basicDivide(first, second)
     }
-
-
 
 
     /*
@@ -499,7 +530,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         unnormalizedDividend: UIntArray,
         unnormalizedDivisor: UIntArray
     ): Pair<UIntArray, UIntArray> {
-        var (a,b, shift) = normalize(unnormalizedDividend, unnormalizedDivisor)
+        var (a, b, shift) = normalize(unnormalizedDividend, unnormalizedDivisor)
         val m = a.size - b.size
         val bmb = b shl (m * wordSizeInBits)
         var q = UIntArray(m + 1) { 0U }
@@ -607,7 +638,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
 
-
     override fun reciprocal(operand: UIntArray): Pair<UIntArray, UIntArray> {
         return d1ReciprocalRecursiveWordVersion(operand)
     }
@@ -642,7 +672,9 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
 
         var numberOfWords = product.size - (secondReciprocal.size * 2) + reciprocalExtension * 2
-        if (numberOfWords == 0) { numberOfWords = 1 }
+        if (numberOfWords == 0) {
+            numberOfWords = 1
+        }
         val result = product.copyOfRange(product.size - numberOfWords, product.size)
         val remainder = first - (result * second)
         return Pair(result, remainder)
@@ -673,33 +705,31 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
 
-    internal fun basecaseSqrt(operand: UIntArray) : Pair<UIntArray, UIntArray> {
+    internal fun basecaseSqrt(operand: UIntArray): Pair<UIntArray, UIntArray> {
         val sqrt = sqrtInt(operand)
         val remainder = operand - (sqrt * sqrt)
         return Pair(sqrt, remainder)
 
     }
 
-    internal fun sqrtInt(operand: UIntArray) : UIntArray {
+    internal fun sqrtInt(operand: UIntArray): UIntArray {
         var u = operand
         var s: UIntArray
         var tmp: UIntArray
         do {
             s = u
-            tmp = s + (basicDivide2(operand,s).first)
+            tmp = s + (basicDivide2(operand, s).first)
             u = tmp shr 1
         } while (u < s)
         return s
     }
 
 
-
-
     override fun gcd(first: UIntArray, second: UIntArray): UIntArray {
         return naiveGcd(first, second)
     }
 
-    private fun naiveGcd(first : UIntArray, second : UIntArray) : UIntArray {
+    private fun naiveGcd(first: UIntArray, second: UIntArray): UIntArray {
         var u = first
         var v = second
         while (v != ZERO) {
@@ -756,39 +786,47 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
     override fun and(operand: UIntArray, mask: UIntArray): UIntArray {
-        return UIntArray(operand.size) {
-            if (it < mask.size) {
-                operand[it] and mask[it]
-            } else {
-                0U
+        return removeLeadingZeroes(
+            UIntArray(operand.size) {
+                if (it < mask.size) {
+                    operand[it] and mask[it]
+                } else {
+                    0U
+                }
             }
-        }
+        )
     }
 
     override fun or(operand: UIntArray, mask: UIntArray): UIntArray {
-        return UIntArray(operand.size) {
-            if (it < mask.size) {
-                operand[it] or mask[it]
-            } else {
-                operand[it]
+        return removeLeadingZeroes(
+            UIntArray(operand.size) {
+                if (it < mask.size) {
+                    operand[it] or mask[it]
+                } else {
+                    operand[it]
+                }
             }
-        }
+        )
     }
 
     override fun xor(operand: UIntArray, mask: UIntArray): UIntArray {
-        return UIntArray(operand.size) {
-            if (it < mask.size) {
-                operand[it] xor mask[it]
-            } else {
-                operand[it] xor 0U
+        return removeLeadingZeroes(
+            UIntArray(operand.size) {
+                if (it < mask.size) {
+                    operand[it] xor mask[it]
+                } else {
+                    operand[it] xor 0U
+                }
             }
-        }
+        )
     }
 
     override fun not(operand: UIntArray): UIntArray {
-        return UIntArray(operand.size) {
-            operand[it].inv()
-        }
+        return removeLeadingZeroes(
+            UIntArray(operand.size) {
+                operand[it].inv()
+            }
+        )
     }
 
     internal infix fun UIntArray.shl(places: Int): UIntArray {
@@ -899,7 +937,8 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     override fun fromULong(uLong: ULong): UIntArray = uintArrayOf(
         ((uLong and 0xFFFFFFFF00000000U) shr 32).toUInt(),
-        uLong.toUInt())
+        uLong.toUInt()
+    )
 
     override fun fromUInt(uInt: UInt): UIntArray = uintArrayOf(uInt)
 
@@ -909,7 +948,8 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     override fun fromLong(long: Long): UIntArray = uintArrayOf(
         ((long.toULong() and 0xFFFFFFFF00000000U) shr 32).toUInt(),
-        long.absoluteValue.toUInt())
+        long.absoluteValue.toUInt()
+    )
 
     override fun fromInt(int: Int): UIntArray = uintArrayOf(int.absoluteValue.toUInt())
 
@@ -917,24 +957,26 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     override fun fromByte(byte: Byte): UIntArray = uintArrayOf(byte.toInt().absoluteValue.toUInt())
 
-    fun toULongExact(operand : UIntArray) : ULong {
+    fun toULongExact(operand: UIntArray): ULong {
         if (operand.size > 2) {
             throw ArithmeticException("Exact conversion not possible, operand size ${operand.size}")
         }
-        var result : ULong = 0UL
+        var result: ULong = 0UL
         for (i in operand.size - 1 downTo 0) {
             result += (operand[i].toULong() shl (i * wordSizeInBits))
         }
         return result
     }
 
-    override fun toByteArray(operand: UIntArray, sign : Sign): Array<Byte> {
+    override fun toByteArray(operand: UIntArray, sign: Sign): Array<Byte> {
         if (operand.isEmpty()) {
             return emptyArray()
         }
         val bitLength = bitLength(operand)
         return when (sign) {
-            Sign.ZERO -> { emptyList() }
+            Sign.ZERO -> {
+                emptyList()
+            }
             Sign.POSITIVE -> {
                 val collected = operand.flatMap {
                     listOf(
@@ -990,7 +1032,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
         return when (resolvedSign) {
             Sign.POSITIVE -> {
-                val collected = chunked.flatMap {chunk ->
+                val collected = chunked.flatMap { chunk ->
                     val result = chunk.reversed().foldIndexed(0U) { index, acc, byte ->
                         acc + ((byte.toUInt() and 0xFFU) shl ((chunk.size - 1) * 8 - index * 8))
                     }
@@ -1005,7 +1047,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
                 Pair(removeLeadingZeroes(corrected), resolvedSign)
             }
             Sign.NEGATIVE -> {
-                val collected = chunked.flatMap {chunk ->
+                val collected = chunked.flatMap { chunk ->
                     val result = chunk.reversed().foldIndexed(0U) { index, acc, byte ->
                         acc + (byte.toUInt() shl ((chunk.size - 1) * 8 - index * 8))
                     }
@@ -1024,11 +1066,11 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     }
 
-    private fun List<Byte>.dropLeadingZeroes() : List<Byte> {
+    private fun List<Byte>.dropLeadingZeroes(): List<Byte> {
         return this.dropWhile { it == 0.toByte() }
     }
 
-    private fun Array<Byte>.dropLeadingZeroes() : Array<Byte> {
+    private fun Array<Byte>.dropLeadingZeroes(): Array<Byte> {
         return this.dropWhile { it == 0.toByte() }.toTypedArray()
     }
 }

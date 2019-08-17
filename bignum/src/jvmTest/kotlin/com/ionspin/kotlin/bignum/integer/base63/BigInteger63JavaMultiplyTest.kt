@@ -17,6 +17,12 @@
 
 package com.ionspin.kotlin.bignum.integer.base63
 
+import com.ionspin.kotlin.bignum.integer.chosenArithmetic
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import org.junit.Ignore
 import org.junit.Test
 import java.math.BigInteger
 import java.time.Duration
@@ -31,7 +37,7 @@ import kotlin.test.assertTrue
  * on 09-Mar-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger63JavaMultiplyTest  {
+class BigInteger63JavaMultiplyTest {
     @Test
     fun `Test for sentimental value`() {
         assertTrue {
@@ -121,13 +127,18 @@ class BigInteger63JavaMultiplyTest  {
 
     @Test
     fun preciseMultiplyTest() {
-        multiplySingleTest(ulongArrayOf(3751237528UL, 9223372035661198284UL, 7440555637UL, 0UL, 2UL, 0UL, 2UL), ulongArrayOf(1UL, 1UL))
+        multiplySingleTest(
+            ulongArrayOf(3751237528UL, 9223372035661198284UL, 7440555637UL, 0UL, 2UL, 0UL, 2UL),
+            ulongArrayOf(1UL, 1UL)
+        )
 //        multiplySingleTest(1193170172382743678UL, 17005332033106823254UL, 15532449225048523230UL) Invalid sample, 64 bit number!
     }
 
-    fun multiplySingleTest(first : ULongArray, second : ULongArray) {
-        assertTrue("Failed on ulongArrayOf(${first.joinToString(separator = ", ") { it.toString() + "UL" }})," +
-                " ulongArrayOf(${second.joinToString(separator = ", ") { it.toString() + "UL" }})") {
+    fun multiplySingleTest(first: ULongArray, second: ULongArray) {
+        assertTrue(
+            "Failed on ulongArrayOf(${first.joinToString(separator = ", ") { it.toString() + "UL" }})," +
+                    " ulongArrayOf(${second.joinToString(separator = ", ") { it.toString() + "UL" }})"
+        ) {
 
             val result = BigInteger63Arithmetic.multiply(first, second)
 
@@ -169,6 +180,76 @@ class BigInteger63JavaMultiplyTest  {
             }
 
             bigIntResult == convertedResult
+        }
+    }
+
+    @Test
+    fun mutiplyTwoWordsTest() {
+        val seed = 1
+        val random = Random(seed)
+        val jobList: MutableList<Job> = mutableListOf()
+        val ulongLimit = ULong.MAX_VALUE shr 1
+        for (i in 1..Int.MAX_VALUE step 3001) {
+            val first = random.nextULong(ulongLimit)
+            val second = random.nextULong(ulongLimit)
+            jobList.add(
+                GlobalScope.launch {
+                    twoWordsSingleMultiplication(first, second)
+                }
+            )
+        }
+        runBlocking {
+            jobList.forEach { it.join() }
+        }
+    }
+
+    @Test
+    fun mutiplyTwoWordsSignificantValuesTest() {
+        val ulongLimit = ULong.MAX_VALUE shr 1
+        val significantValue = arrayOf(
+            0U, 1U, 2U, 3U, ulongLimit, ulongLimit - 1U, ulongLimit - 2U, ulongLimit
+        )
+        significantValue.forEach { first ->
+            significantValue.forEach { second ->
+                twoWordsSingleMultiplication(first, second)
+
+            }
+        }
+    }
+
+    fun twoWordsSingleMultiplication(first: ULong, second: ULong) {
+        val bigIntResult = BigInteger63Arithmetic.multiply(first, second)
+        val javaBigIntResult = first.toJavaBigInteger() * second.toJavaBigInteger()
+        assertTrue {
+            bigIntResult.toJavaBigInteger() == javaBigIntResult
+        }
+    }
+
+    @Test
+    fun testKaratsuba() {
+        val seed = 1
+        val random = Random(seed)
+        val numberOfElements = 1500
+        println("Number of elements $numberOfElements")
+
+        val first = ULongArray(numberOfElements) {
+            random.nextULong() shr 1
+        }
+
+        val second = ULongArray(numberOfElements) {
+            random.nextULong() shr 1
+        }
+        karatsubaSingleTest(first, second)
+    }
+
+    fun karatsubaSingleTest(first : ULongArray, second: ULongArray) {
+        val bigIntResult = BigInteger63Arithmetic.karatsubaMultiply(first, second)
+        val javaBigIntResult = first.toJavaBigInteger() * second.toJavaBigInteger()
+        println("------------- ${first.toJavaBigInteger()} * ${second.toJavaBigInteger()}")
+        println("JavaBigInt: $javaBigIntResult")
+        println("BigInt: ${bigIntResult.toJavaBigInteger()}")
+        assertTrue {
+            bigIntResult.toJavaBigInteger() == javaBigIntResult
         }
     }
 }
