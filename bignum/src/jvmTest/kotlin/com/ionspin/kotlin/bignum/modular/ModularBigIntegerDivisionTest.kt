@@ -35,7 +35,7 @@ import kotlin.test.assertTrue
  * on 22-Apr-2019
  */
 @ExperimentalUnsignedTypes
-class ModularBigIntegerDivisionTest  {
+class ModularBigIntegerDivisionTest {
     @Test
     fun testRandomModularDivision() {
         val seed = 1
@@ -65,7 +65,6 @@ class ModularBigIntegerDivisionTest  {
                 }
             }
             jobList.add(job)
-
         }
         runBlocking {
             jobList.forEach { it.join() }
@@ -80,13 +79,15 @@ class ModularBigIntegerDivisionTest  {
         singleDivisionTest(a, b)
     }
 
-    fun singleDivisionTest(a : ModularBigInteger, b : ModularBigInteger) {
+    fun singleDivisionTest(a: ModularBigInteger, b: ModularBigInteger) {
         assertTrue {
             val result = a divrem b
-            val javaResultQuotient = (a.residue.toJavaBigInteger() / b.residue.toJavaBigInteger()).mod(a.modulus.toJavaBigInteger())
-            val javaResultRemainder = (a.residue.toJavaBigInteger() % b.residue.toJavaBigInteger()).mod(a.modulus.toJavaBigInteger())
+            val javaResultQuotient =
+                (a.residue.toJavaBigInteger() / b.residue.toJavaBigInteger()).mod(a.modulus.toJavaBigInteger())
+            val javaResultRemainder =
+                (a.residue.toJavaBigInteger() % b.residue.toJavaBigInteger()).mod(a.modulus.toJavaBigInteger())
             result.quotient.residue.toJavaBigInteger() == javaResultQuotient &&
-                    result.remainder.residue.toJavaBigInteger() == javaResultRemainder
+                result.remainder.residue.toJavaBigInteger() == javaResultRemainder
         }
     }
 }

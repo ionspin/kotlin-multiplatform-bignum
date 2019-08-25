@@ -17,7 +17,6 @@
 
 package com.ionspin.kotlin.bignum.integer.arithmetic
 
-import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
 import kotlin.test.Ignore
 import kotlin.test.Test
@@ -37,6 +36,5 @@ class BigInteger32BitWiseTest {
         val a = ulongArrayOf(64U)
         val count = BigInteger63Arithmetic.trailingZeroBits(a)
         assertTrue { count == 7 }
-
     }
 }

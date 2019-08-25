@@ -28,16 +28,15 @@ import java.math.BigInteger
 fun ULongArray.toJavaBigInteger(): BigInteger {
     return this.foldIndexed(BigInteger.valueOf(0)) { index, acc, digit ->
         acc.or(BigInteger(digit.toString(), 10).shiftLeft((index) * 63))
-
     }
 }
 
 @UseExperimental(ExperimentalUnsignedTypes::class)
-fun com.ionspin.kotlin.bignum.integer.BigInteger.toJavaBigInteger() : BigInteger {
+fun com.ionspin.kotlin.bignum.integer.BigInteger.toJavaBigInteger(): BigInteger {
     return (this.magnitude.toJavaBigInteger() * this.sign.toInt().toBigInteger())
 }
 
 @ExperimentalUnsignedTypes
-fun ULong.toJavaBigInteger() : BigInteger {
+fun ULong.toJavaBigInteger(): BigInteger {
     return BigInteger(this.toString(10), 10)
 }

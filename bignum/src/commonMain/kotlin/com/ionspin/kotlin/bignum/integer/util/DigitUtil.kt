@@ -22,13 +22,13 @@ package com.ionspin.kotlin.bignum.integer.util
  * ugljesa.jovanovic@ionspin.com
  * on 18-Mar-2019
  */
-fun Char.toDigit() : Int {
+fun Char.toDigit(): Int {
     return when (this) {
-        in '0' .. '9' -> (this - 48).toInt()
-        in 'a' .. 'z' -> this - 'a' + 10
-        in 'A' .. 'Z' -> this - 'A' + 10
-        in '\uFF21' .. '\uFF3A' -> this - '\uFF21' - 10
-        in '\uFF41' .. '\uFF5A' -> this - '\uFF41' - 10
+        in '0'..'9' -> (this - 48).toInt()
+        in 'a'..'z' -> this - 'a' + 10
+        in 'A'..'Z' -> this - 'A' + 10
+        in '\uFF21'..'\uFF3A' -> this - '\uFF21' - 10
+        in '\uFF41'..'\uFF5A' -> this - '\uFF41' - 10
         '.' -> throw NumberFormatException("Invalid digit for radix $this (Possibly a decimal value, which is not supported by BigInteger parser")
         else -> throw NumberFormatException("Invalid digit for radix $this")
     }

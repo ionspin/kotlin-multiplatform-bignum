@@ -16,4 +16,3 @@
  */
 
 package com.ionspin.kotlin.bignum.integer.util
-

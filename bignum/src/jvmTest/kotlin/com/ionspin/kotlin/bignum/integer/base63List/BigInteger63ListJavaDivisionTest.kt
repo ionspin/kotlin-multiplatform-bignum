@@ -18,7 +18,10 @@
 package com.ionspin.kotlin.bignum.integer.base63List
 
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63LinkedListArithmetic
-import kotlinx.coroutines.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.random.Random
 import kotlin.random.nextULong
@@ -30,7 +33,7 @@ import kotlin.test.assertTrue
  * on 09-Mar-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger63ListJavaDivisionTest () {
+class BigInteger63ListJavaDivisionTest() {
 
     @Test
     fun testDivision() {
@@ -45,9 +48,7 @@ class BigInteger63ListJavaDivisionTest () {
             val bigIntQuotient = a.toJavaBigInteger() / b.toJavaBigInteger()
             val bigIntRemainder = a.toJavaBigInteger() % b.toJavaBigInteger()
 
-
             quotientBigInt == bigIntQuotient && remainderBigInt == bigIntRemainder
-
         }
 
         assertTrue {
@@ -63,7 +64,6 @@ class BigInteger63ListJavaDivisionTest () {
 
             val bla = 1L
             bla.toBigInteger()
-
 
             quotientBigInt == bigIntQuotient && remainderBigInt == bigIntRemainder
         }
@@ -81,9 +81,7 @@ class BigInteger63ListJavaDivisionTest () {
             } else {
                 divisionSingleTest(listOf(b), listOf(a))
             }
-
         }
-
     }
 
     @Test
@@ -104,13 +102,10 @@ class BigInteger63ListJavaDivisionTest () {
                     }
                 }
             )
-
-
         }
         runBlocking {
             jobList.forEach { it.join() }
         }
-
     }
 
     @Test
@@ -139,17 +134,14 @@ class BigInteger63ListJavaDivisionTest () {
                     } catch (e: Throwable) {
                         println(
                             "Failed on listOf(${a.joinToString(separator = ",") { it.toString() + "U" }}), " +
-                                    "listOf(${b.joinToString(separator = ",") { it.toString() + "U" }})"
+                                "listOf(${b.joinToString(separator = ",") { it.toString() + "U" }})"
                         )
                         e.printStackTrace()
                     }
                 }
             )
-
         }
-
     }
-
 
     @Test
     fun preciseDebugTest() {
@@ -162,13 +154,12 @@ class BigInteger63ListJavaDivisionTest () {
             ), listOf(189041424779232614U, 1430782222387740366U)
         )
 //        divisionSingleTest(listOf(3449361588UL,1278830002UL,3123489057UL,3720277819UL, 1UL, 1UL, 1UL, 1UL), listOf(1UL, 1UL))
-
     }
 
     fun divisionSingleTest(dividend: List<ULong>, divisor: List<ULong>) {
         assertTrue(
             "Failed on listOf(${dividend.joinToString(separator = ",") { it.toString() + "U" }}), " +
-                    "listOf(${divisor.joinToString(separator = ",") { it.toString() + "U" }})"
+                "listOf(${divisor.joinToString(separator = ",") { it.toString() + "U" }})"
         ) {
             val a = dividend
             val b = divisor
@@ -186,8 +177,6 @@ class BigInteger63ListJavaDivisionTest () {
                 e.printStackTrace()
                 false
             }
-
-
         }
     }
 
@@ -218,9 +207,9 @@ class BigInteger63ListJavaDivisionTest () {
 
 //    @Test
 //    fun testReciprocalPrecise() {
-////        val a = listOf(1288756325682545368UL, 8091178732961339830UL, 8060639783838683711UL, 8865155242765229713UL)
-////        val a = listOf(1044716880932840986UL, 4262802357929821493UL, 8033697874689306672UL, 1362612340666419151UL)
-////        val a = listOf(12997UL)
+// //        val a = listOf(1288756325682545368UL, 8091178732961339830UL, 8060639783838683711UL, 8865155242765229713UL)
+// //        val a = listOf(1044716880932840986UL, 4262802357929821493UL, 8033697874689306672UL, 1362612340666419151UL)
+// //        val a = listOf(12997UL)
 //        val a = listOf(6486747088144942085UL, 1710444079094491755UL)
 //        reciprocalSingleTest(a)
 //    }
@@ -256,7 +245,6 @@ class BigInteger63ListJavaDivisionTest () {
 //
 //        }
 //    }
-
 
 //    @Test
 //    fun `Test four words divided by two words using reciprocal division`() {
@@ -315,17 +303,16 @@ class BigInteger63ListJavaDivisionTest () {
 //
 //    }
 
-
 //    @Test
 //    fun testReciprocalDivision() {
-////        val a = listOf(0UL, 0UL, 0UL, 0UL, 4UL)
-////        val b = listOf(0UL, 0UL, 0UL, 2UL)
-////        val a = listOf(0UL, 0UL, 0UL, 4UL, 0UL, 4UL)
-////        val b = listOf(0UL, 0UL, 2UL, 0UL, 2UL)
-////        val a = listOf(0UL, 0UL, 0UL, 4UL, 0UL, 4UL)
-////        val b = listOf(2UL, 1UL, 2UL)
-////        val a = listOf(35526194523336114UL, 5792101143026746304UL, 5736945918018393883UL, 8794898263700565859UL)
-////        val b = listOf(6486747088144942085UL, 1710444079094491755UL)
+// //        val a = listOf(0UL, 0UL, 0UL, 0UL, 4UL)
+// //        val b = listOf(0UL, 0UL, 0UL, 2UL)
+// //        val a = listOf(0UL, 0UL, 0UL, 4UL, 0UL, 4UL)
+// //        val b = listOf(0UL, 0UL, 2UL, 0UL, 2UL)
+// //        val a = listOf(0UL, 0UL, 0UL, 4UL, 0UL, 4UL)
+// //        val b = listOf(2UL, 1UL, 2UL)
+// //        val a = listOf(35526194523336114UL, 5792101143026746304UL, 5736945918018393883UL, 8794898263700565859UL)
+// //        val b = listOf(6486747088144942085UL, 1710444079094491755UL)
 //        val seed = 1
 //        val random = Random(1916)
 //        val a = List<ULong>(1374) {
@@ -350,11 +337,10 @@ class BigInteger63ListJavaDivisionTest () {
 //            result.first.equals(normalResult.first) && result.second.equals(normalResult.second)
 //        }
 //    }
-
 }
 
-//@ExperimentalUnsignedTypes
-//class ListDivisionBenchmark {
+// @ExperimentalUnsignedTypes
+// class ListDivisionBenchmark {
 //
 //    data class BenchmarkSample(
 //        val dividend: List<ULong>,
@@ -461,5 +447,4 @@ class BigInteger63ListJavaDivisionTest () {
 //        }
 //    }
 //
-//}
-
+// }

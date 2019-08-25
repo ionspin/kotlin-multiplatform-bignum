@@ -29,7 +29,6 @@ import kotlin.test.assertTrue
 @ExperimentalUnsignedTypes
 class BigDecimalFloorCeilTest {
 
-
     @Test
     fun testConversionToBigInteger() {
         assertTrue {

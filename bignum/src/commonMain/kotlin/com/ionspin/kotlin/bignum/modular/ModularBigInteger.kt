@@ -34,12 +34,12 @@ import com.ionspin.kotlin.bignum.integer.Sign
 
 @ExperimentalUnsignedTypes
 class ModularBigInteger @ExperimentalUnsignedTypes private constructor(
-    signedResidue : BigInteger,
-    val modulus : BigInteger,
-    private val creator: BigNumber.Creator<ModularBigInteger>) : BigNumber<ModularBigInteger>,
-        CommonBigNumberOperations<ModularBigInteger>,
-        NarrowingOperations<ModularBigInteger>
-{
+    signedResidue: BigInteger,
+    val modulus: BigInteger,
+    private val creator: BigNumber.Creator<ModularBigInteger>
+) : BigNumber<ModularBigInteger>,
+    CommonBigNumberOperations<ModularBigInteger>,
+    NarrowingOperations<ModularBigInteger> {
 
     val residue = when (signedResidue.sign) {
         Sign.POSITIVE -> signedResidue
@@ -52,23 +52,38 @@ class ModularBigInteger @ExperimentalUnsignedTypes private constructor(
             throw ArithmeticException("Modulus must be a positive number")
         }
     }
-    companion object {
-        fun creatorForModulo(modulo: ULong) : BigNumber.Creator<ModularBigInteger> = creatorForModulo(BigInteger.fromULong(modulo))
-        fun creatorForModulo(modulo: UInt) : BigNumber.Creator<ModularBigInteger> = creatorForModulo(BigInteger.fromUInt(modulo))
-        fun creatorForModulo(modulo: UShort) : BigNumber.Creator<ModularBigInteger> = creatorForModulo(BigInteger.fromUShort(modulo))
-        fun creatorForModulo(modulo: UByte) : BigNumber.Creator<ModularBigInteger> = creatorForModulo(BigInteger.fromUByte(modulo))
-        fun creatorForModulo(modulo: Long) : BigNumber.Creator<ModularBigInteger> = creatorForModulo(BigInteger.fromLong(modulo))
-        fun creatorForModulo(modulo: Int) : BigNumber.Creator<ModularBigInteger> = creatorForModulo(BigInteger.fromInt(modulo))
-        fun creatorForModulo(modulo: Short) : BigNumber.Creator<ModularBigInteger> = creatorForModulo(BigInteger.fromShort(modulo))
-        fun creatorForModulo(modulo: Byte) : BigNumber.Creator<ModularBigInteger> = creatorForModulo(BigInteger.fromByte(modulo))
 
-        fun creatorForModulo(modulo: BigInteger) : BigNumber.Creator<ModularBigInteger> {
+    companion object {
+        fun creatorForModulo(modulo: ULong): BigNumber.Creator<ModularBigInteger> =
+            creatorForModulo(BigInteger.fromULong(modulo))
+
+        fun creatorForModulo(modulo: UInt): BigNumber.Creator<ModularBigInteger> =
+            creatorForModulo(BigInteger.fromUInt(modulo))
+
+        fun creatorForModulo(modulo: UShort): BigNumber.Creator<ModularBigInteger> =
+            creatorForModulo(BigInteger.fromUShort(modulo))
+
+        fun creatorForModulo(modulo: UByte): BigNumber.Creator<ModularBigInteger> =
+            creatorForModulo(BigInteger.fromUByte(modulo))
+
+        fun creatorForModulo(modulo: Long): BigNumber.Creator<ModularBigInteger> =
+            creatorForModulo(BigInteger.fromLong(modulo))
+
+        fun creatorForModulo(modulo: Int): BigNumber.Creator<ModularBigInteger> =
+            creatorForModulo(BigInteger.fromInt(modulo))
+
+        fun creatorForModulo(modulo: Short): BigNumber.Creator<ModularBigInteger> =
+            creatorForModulo(BigInteger.fromShort(modulo))
+
+        fun creatorForModulo(modulo: Byte): BigNumber.Creator<ModularBigInteger> =
+            creatorForModulo(BigInteger.fromByte(modulo))
+
+        fun creatorForModulo(modulo: BigInteger): BigNumber.Creator<ModularBigInteger> {
             return object : BigNumber.Creator<ModularBigInteger> {
                 override val ZERO = ModularBigInteger(BigInteger.ZERO, modulo, this)
                 override val ONE = ModularBigInteger(BigInteger.ONE, modulo, this)
                 override val TWO = ModularBigInteger(BigInteger.TWO, modulo, this)
                 override val TEN = ModularBigInteger(BigInteger.TEN, modulo, this)
-
 
                 override fun fromBigInteger(bigInteger: BigInteger): ModularBigInteger {
                     return ModularBigInteger(bigInteger.prep(), modulo, this)
@@ -118,7 +133,7 @@ class ModularBigInteger @ExperimentalUnsignedTypes private constructor(
                     return ModularBigInteger(BigInteger.tryFromDouble(double, exactRequired).prep(), modulo, this)
                 }
 
-                private fun BigInteger.prep() : BigInteger {
+                private fun BigInteger.prep(): BigInteger {
                     val result = this % modulo
                     return when (result.sign) {
                         Sign.POSITIVE -> result
@@ -126,11 +141,10 @@ class ModularBigInteger @ExperimentalUnsignedTypes private constructor(
                         Sign.ZERO -> BigInteger.ZERO
                     }
                 }
-
-
             }
         }
     }
+
     override fun getCreator(): BigNumber.Creator<ModularBigInteger> {
         return creator
     }
@@ -139,7 +153,7 @@ class ModularBigInteger @ExperimentalUnsignedTypes private constructor(
         return this
     }
 
-    private fun assertSameModulo(other : ModularBigInteger) {
+    private fun assertSameModulo(other: ModularBigInteger) {
         if (this.modulus != other.modulus) {
             throw RuntimeException("Different moduli! This $modulus\n Other ${other.modulus}")
         }
@@ -165,7 +179,6 @@ class ModularBigInteger @ExperimentalUnsignedTypes private constructor(
         val modInverse = other.residue.modInverse(modulus)
         val result = (modInverse * residue) % modulus
         return ModularBigInteger(result, modulus, creator)
-
     }
 
     override fun remainder(other: ModularBigInteger): ModularBigInteger {
@@ -185,7 +198,7 @@ class ModularBigInteger @ExperimentalUnsignedTypes private constructor(
         return Pair(ModularBigInteger(quotient, modulus, creator), ModularBigInteger(remainder, modulus, creator))
     }
 
-    fun inverse() : ModularBigInteger {
+    fun inverse(): ModularBigInteger {
         val inverse = residue.modInverse(modulus)
         return ModularBigInteger(inverse, modulus, creator)
     }
@@ -199,17 +212,15 @@ class ModularBigInteger @ExperimentalUnsignedTypes private constructor(
         return residue.isZero()
     }
 
-
     override fun negate(): ModularBigInteger {
         return this
-        //Code below doesn't make sense as negated number if original was positive, would be the same number we started
-        //from. Also a ModularBigInteger is never negative
+        // Code below doesn't make sense as negated number if original was positive, would be the same number we started
+        // from. Also a ModularBigInteger is never negative
 //        return when (residue.sign) {
 //            Sign.ZERO -> this
 //            Sign.POSITIVE -> ModularBigInteger(residue - modulus, modulus, creator)
 //            Sign.NEGATIVE -> ModularBigInteger(residue + modulus, modulus, creator)
 //        }
-
     }
 
     override fun abs(): ModularBigInteger {
@@ -236,7 +247,6 @@ class ModularBigInteger @ExperimentalUnsignedTypes private constructor(
             }
             ModularBigInteger(residue, modulus, creator)
         }
-
     }
 
     override fun pow(exponent: Long): ModularBigInteger {
@@ -281,7 +291,6 @@ class ModularBigInteger @ExperimentalUnsignedTypes private constructor(
         } else {
             compareTo(other) == 0
         }
-
     }
 
     override fun toString(): String {
@@ -292,7 +301,7 @@ class ModularBigInteger @ExperimentalUnsignedTypes private constructor(
         return residue.toString(base)
     }
 
-    fun toStringWithModulo(base : Int = 10) : String {
+    fun toStringWithModulo(base: Int = 10): String {
         return residue.toString(base) + " mod " + modulus.toString(base)
     }
 
@@ -301,11 +310,11 @@ class ModularBigInteger @ExperimentalUnsignedTypes private constructor(
         return ModularQuotientAndRemainder(result.first, result.second)
     }
 
-    fun toBigInteger() : BigInteger {
+    fun toBigInteger(): BigInteger {
         return residue
     }
 
-    private fun checkIfDivisible(other : ModularBigInteger) {
+    private fun checkIfDivisible(other: ModularBigInteger) {
         if (other.residue.gcd(modulus) != BigInteger.ONE) {
             throw ArithmeticException("BigInteger is not invertible. This and modulus are not relatively prime (coprime)")
         }

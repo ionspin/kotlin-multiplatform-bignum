@@ -64,17 +64,17 @@ class JvmModularBigIntegerExponentiationTest {
                 }
             }
             jobList.add(job)
-
         }
         runBlocking {
             jobList.forEach { it.join() }
         }
     }
 
-    fun singleDivisionTest(a : ModularBigInteger, b : ModularBigInteger) {
+    fun singleDivisionTest(a: ModularBigInteger, b: ModularBigInteger) {
         assertTrue {
             val result = a.pow(b)
-            val javaResult = a.residue.toJavaBigInteger().modPow(b.residue.toJavaBigInteger(), b.modulus.toJavaBigInteger())
+            val javaResult =
+                a.residue.toJavaBigInteger().modPow(b.residue.toJavaBigInteger(), b.modulus.toJavaBigInteger())
             result.toBigInteger().toJavaBigInteger() == javaResult
         }
     }

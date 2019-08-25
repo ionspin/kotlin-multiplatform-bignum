@@ -28,6 +28,5 @@ import java.math.BigInteger
 fun UIntArray.toJavaBigInteger(): BigInteger {
     return this.foldIndexed(BigInteger.valueOf(0)) { index, acc, digit ->
         acc.or(BigInteger(digit.toString(), 10).shiftLeft((index) * 32))
-
     }
 }

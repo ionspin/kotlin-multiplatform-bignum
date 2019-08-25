@@ -16,6 +16,3 @@
  */
 
 package com.ionspin.kotlin.bignum.integer.util
-
-import kotlinx.coroutines.runBlocking
-

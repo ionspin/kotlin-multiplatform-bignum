@@ -17,9 +17,6 @@
 
 package com.ionspin.kotlin.bignum.integer.arithmetic
 
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
-import kotlinx.coroutines.Job
-
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
@@ -28,9 +25,7 @@ import kotlinx.coroutines.Job
 @ExperimentalUnsignedTypes
 class DivisionBenchmark {
 
-
 //    fun divideUsingReciprocal(dividend : ULongArray, divisor : ULongArray, expectedQuotient : ULongArray, expectedRemainder : ULongArray) {
 //        val result = BigInteger63Arithmetic.reciprocalDivision(dividend, divisor)
 //    }
-
 }

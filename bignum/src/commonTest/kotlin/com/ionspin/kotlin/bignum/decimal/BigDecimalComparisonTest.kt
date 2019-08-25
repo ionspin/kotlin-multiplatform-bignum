@@ -30,7 +30,7 @@ class BigDecimalComparisonTest {
     @Test
     fun testDifferentPrecisionComparison() {
         val a = BigDecimal.fromIntWithExponent(200, 0)
-        val b= BigDecimal.fromIntWithExponent(2, 0)
+        val b = BigDecimal.fromIntWithExponent(2, 0)
         assertTrue { a == b }
     }
 }

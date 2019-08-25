@@ -32,13 +32,12 @@ import kotlin.test.assertTrue
  * on 09-Mar-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger32JavaBitwiseTest  {
+class BigInteger32JavaBitwiseTest {
 
     @Test
     fun `Test shift left`() {
         val seed = 1
         val random = Random(seed)
-
 
         val jobList: MutableList<Job> = mutableListOf()
         for (i in 1..30_000 step 5000) {
@@ -53,8 +52,6 @@ class BigInteger32JavaBitwiseTest  {
         runBlocking {
             jobList.forEach { it.join() }
         }
-
-
     }
 
     fun shiftLeftSingleTest(places: Int, number: UIntArray) {
@@ -66,7 +63,6 @@ class BigInteger32JavaBitwiseTest  {
             convertedResult == bigIntResult
         }
     }
-
 
     @Test
     fun `Test shift right`() {
@@ -85,8 +81,6 @@ class BigInteger32JavaBitwiseTest  {
         runBlocking {
             jobList.forEach { it.join() }
         }
-
-
     }
 
     @Test

@@ -41,10 +41,12 @@ class ConversionTest {
         val maxInt = BigInteger.fromInt(Int.MAX_VALUE)
         val minInt = BigInteger.fromInt(Int.MIN_VALUE)
 
-        //This if is meaningless, it wouldn't compile if we switched backing word to uintArray
+        // This if is meaningless, it wouldn't compile if we switched backing word to uintArray
         if (WordArray::class == ULongArray::class) {
-            val maxIntBigInt = BigInteger.fromWordArray(ulongArrayOf(Int.MAX_VALUE.absoluteValue.toULong()), Sign.POSITIVE)
-            val minIntBigInt = BigInteger.fromWordArray(ulongArrayOf(Int.MIN_VALUE.absoluteValue.toULong()), Sign.NEGATIVE)
+            val maxIntBigInt =
+                BigInteger.fromWordArray(ulongArrayOf(Int.MAX_VALUE.absoluteValue.toULong()), Sign.POSITIVE)
+            val minIntBigInt =
+                BigInteger.fromWordArray(ulongArrayOf(Int.MIN_VALUE.absoluteValue.toULong()), Sign.NEGATIVE)
             assertTrue { maxInt == maxIntBigInt }
             assertTrue { minInt == minIntBigInt }
         }
@@ -60,9 +62,10 @@ class ConversionTest {
         val maxLong = BigInteger.fromLong(Long.MAX_VALUE)
         val minLong = BigInteger.fromLong(Long.MIN_VALUE)
 
-        //This if is meaningless, it wouldn't compile if we switched backing word to uintArray
+        // This if is meaningless, it wouldn't compile if we switched backing word to uintArray
         if (WordArray::class == ULongArray::class) {
-            val maxLongBigLong = BigInteger.fromWordArray(ulongArrayOf(Long.MAX_VALUE.absoluteValue.toULong()), Sign.POSITIVE)
+            val maxLongBigLong =
+                BigInteger.fromWordArray(ulongArrayOf(Long.MAX_VALUE.absoluteValue.toULong()), Sign.POSITIVE)
             val minLongBigLong = BigInteger.fromWordArray(ulongArrayOf(0U, 1U), Sign.NEGATIVE)
             assertTrue { maxLong == maxLongBigLong }
             assertTrue { minLong == minLongBigLong }
@@ -79,10 +82,12 @@ class ConversionTest {
         val maxShort = BigInteger.fromShort(Short.MAX_VALUE)
         val minShort = BigInteger.fromShort(Short.MIN_VALUE)
 
-        //This if is meaningless, it wouldn't compile if we switched backing word to uintArray
+        // This if is meaningless, it wouldn't compile if we switched backing word to uintArray
         if (WordArray::class == UShortArray::class) {
-            val maxShortBigShort = BigInteger.fromWordArray(ulongArrayOf(Short.MAX_VALUE.toInt().absoluteValue.toULong()), Sign.POSITIVE)
-            val minShortBigShort = BigInteger.fromWordArray(ulongArrayOf(Short.MIN_VALUE.toInt().absoluteValue.toULong()), Sign.NEGATIVE)
+            val maxShortBigShort =
+                BigInteger.fromWordArray(ulongArrayOf(Short.MAX_VALUE.toInt().absoluteValue.toULong()), Sign.POSITIVE)
+            val minShortBigShort =
+                BigInteger.fromWordArray(ulongArrayOf(Short.MIN_VALUE.toInt().absoluteValue.toULong()), Sign.NEGATIVE)
             assertTrue { maxShort == maxShortBigShort }
             assertTrue { minShort == minShortBigShort }
         }
@@ -98,10 +103,12 @@ class ConversionTest {
         val maxByte = BigInteger.fromByte(Byte.MAX_VALUE)
         val minByte = BigInteger.fromByte(Byte.MIN_VALUE)
 
-        //This if is meaningless, it wouldn't compile if we switched backing word to uintArray
+        // This if is meaningless, it wouldn't compile if we switched backing word to uintArray
         if (WordArray::class == UByteArray::class) {
-            val maxByteBigByte = BigInteger.fromWordArray(ulongArrayOf(Byte.MAX_VALUE.toInt().absoluteValue.toULong()), Sign.POSITIVE)
-            val minByteBigByte = BigInteger.fromWordArray(ulongArrayOf(Byte.MIN_VALUE.toInt().absoluteValue.toULong()), Sign.NEGATIVE)
+            val maxByteBigByte =
+                BigInteger.fromWordArray(ulongArrayOf(Byte.MAX_VALUE.toInt().absoluteValue.toULong()), Sign.POSITIVE)
+            val minByteBigByte =
+                BigInteger.fromWordArray(ulongArrayOf(Byte.MIN_VALUE.toInt().absoluteValue.toULong()), Sign.NEGATIVE)
             assertTrue { maxByte == maxByteBigByte }
             assertTrue { minByte == minByteBigByte }
         }
@@ -110,14 +117,13 @@ class ConversionTest {
         assertTrue { negativeOne == -BigInteger.ONE }
     }
 
-
     @Test
     fun testToFloat() {
         val stringTestCases = listOf(
             "-1", "0", "1",
             Long.MAX_VALUE.toString(), Long.MIN_VALUE.toString(),
             Long.MAX_VALUE.toString() + "123", Long.MIN_VALUE.toString() + "123"
-            )
+        )
 
         stringTestCases.forEach {
             assertTrue {
@@ -144,6 +150,7 @@ class ConversionTest {
             }
         }
     }
+
     @Ignore // Takes too long on Travis, so JS test fail (>2000ms). Karatsuba implementation slowed this down, so needs investigation
     @Test
     fun testDoubleValueExactFailure() {
@@ -198,6 +205,4 @@ class ConversionTest {
             bigInt.doubleValue() == 0.0
         }
     }
-
-
 }

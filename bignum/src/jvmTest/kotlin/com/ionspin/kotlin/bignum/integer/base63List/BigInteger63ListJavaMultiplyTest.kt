@@ -32,7 +32,7 @@ import kotlin.test.assertTrue
  * on 09-Mar-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger63ListJavaMultiplyTest () {
+class BigInteger63ListJavaMultiplyTest() {
     @Test
     fun `Test for sentimental value`() {
         assertTrue {
@@ -45,7 +45,6 @@ class BigInteger63ListJavaMultiplyTest () {
             val bigIntResult = a.toJavaBigInteger() * b.toJavaBigInteger()
 
             resultBigInt == bigIntResult
-
         }
 
         assertTrue {
@@ -60,7 +59,6 @@ class BigInteger63ListJavaMultiplyTest () {
             val bigIntResult = aBigInt * bBigInt
 
             resultBigInt == bigIntResult
-
         }
 
         assertTrue {
@@ -73,10 +71,7 @@ class BigInteger63ListJavaMultiplyTest () {
             val bigIntResult = a.toJavaBigInteger() * b.toJavaBigInteger()
 
             resultBigInt == bigIntResult
-
         }
-
-
     }
 
     @Test
@@ -86,7 +81,6 @@ class BigInteger63ListJavaMultiplyTest () {
         for (i in 1..Int.MAX_VALUE step 5001) {
             multiplySingleTest(listOf(random.nextULong() shr 1, random.nextULong() shr 1, random.nextULong() shr 1))
         }
-
     }
 
     @Test
@@ -122,16 +116,19 @@ class BigInteger63ListJavaMultiplyTest () {
 
     @Test
     fun preciseMultiplyTest() {
-        multiplySingleTest(listOf(3751237528UL, 9223372035661198284UL, 7440555637UL, 0UL, 2UL, 0UL, 2UL), listOf(1UL, 1UL))
+        multiplySingleTest(
+            listOf(3751237528UL, 9223372035661198284UL, 7440555637UL, 0UL, 2UL, 0UL, 2UL),
+            listOf(1UL, 1UL)
+        )
 //        multiplySingleTest(1193170172382743678UL, 17005332033106823254UL, 15532449225048523230UL) Invalid sample, 64 bit number!
     }
 
-    fun multiplySingleTest(first : List<ULong>, second : List<ULong>) {
+    fun multiplySingleTest(first: List<ULong>, second: List<ULong>) {
         assertTrue("Failed on listOf(${first.joinToString(separator = ", ") { it.toString() + "UL" }})," +
-                " listOf(${second.joinToString(separator = ", ") { it.toString() + "UL" }})") {
+            " listOf(${second.joinToString(separator = ", ") { it.toString() + "UL" }})"
+        ) {
 
             val result = BigInteger63LinkedListArithmetic.multiply(first, second)
-
 
             val convertedResult = result.toJavaBigInteger()
             val bigIntResult = first.toJavaBigInteger() * second.toJavaBigInteger()
@@ -139,7 +136,7 @@ class BigInteger63ListJavaMultiplyTest () {
         }
     }
 
-    fun multiplySingleTest(elements : List<ULong>) {
+    fun multiplySingleTest(elements: List<ULong>) {
         val elementsArray = elements
         assertTrue("Failed on (${elementsArray.joinToString(separator = ", ") { it.toString() + "UL" }})") {
             val time = elements.size > 100
@@ -164,7 +161,7 @@ class BigInteger63ListJavaMultiplyTest () {
                 acc * BigInteger(uInt.toString(), 10)
             }
             if (time) {
-                println("Result ${convertedResult}")
+                println("Result $convertedResult")
                 lastTime = LocalDateTime.now()
                 println("Total time ${Duration.between(startTime, lastTime)}")
             }

@@ -26,7 +26,9 @@ import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
  */
 @ExperimentalUnsignedTypes
 typealias WordArray = ULongArray
+
 @ExperimentalUnsignedTypes
 typealias Word = ULong
+
 @ExperimentalUnsignedTypes
-internal val chosenArithmetic : BigIntegerArithmetic<WordArray, Word> = BigInteger63Arithmetic
+internal val chosenArithmetic: BigIntegerArithmetic<WordArray, Word> = BigInteger63Arithmetic

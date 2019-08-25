@@ -35,7 +35,7 @@ import kotlin.test.assertTrue
  * on 09-Mar-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger32JavaSubstractTest  {
+class BigInteger32JavaSubstractTest {
 
     val basePower = 32
 
@@ -53,11 +53,8 @@ class BigInteger32JavaSubstractTest  {
             val cBigInt = aBigInt - bBigInt
 
             resultBigInt == cBigInt
-
-
         }
     }
-
 
     @Test
     fun `Test subtraction with random values`() {
@@ -75,7 +72,6 @@ class BigInteger32JavaSubstractTest  {
         runBlocking {
             jobList.forEach { it.join() }
         }
-
     }
 
     @Test
@@ -129,7 +125,7 @@ class BigInteger32JavaSubstractTest  {
                 }
             val bigIntResult = bigIntFirst - bigIntSecond
             if (time) {
-                println("Result ${convertedResult}")
+                println("Result $convertedResult")
                 println("Total time ${Duration.between(startTime, lastTime)}")
             }
 

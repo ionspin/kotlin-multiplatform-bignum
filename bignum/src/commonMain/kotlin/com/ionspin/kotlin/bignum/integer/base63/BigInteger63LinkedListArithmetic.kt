@@ -22,15 +22,6 @@ import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.compareTo
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.div
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.divrem
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.minus
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.plus
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.rem
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.shl
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.shr
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.times
 import com.ionspin.kotlin.bignum.integer.util.toDigit
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
@@ -58,7 +49,6 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     val overflowMask = 0x8000000000000000UL
 
     const val karatsubaThreshold = 45
-
 
     override fun numberOfLeadingZeroes(value: ULong): Int {
         var x = value
@@ -93,7 +83,6 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         y = x shr 1
         if (y != 0UL) {
             return n - 2
-
         }
 
         return n - x.toInt()
@@ -108,22 +97,21 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         return 63 - numberOfLeadingZeroes(value)
     }
 
-    fun trailingZeroBits(value : ULong) : Int {
+    fun trailingZeroBits(value: ULong): Int {
         return 63 - bitLength(value.inv() and baseMask)
     }
 
-    override fun trailingZeroBits(value : List<ULong>) : Int {
+    override fun trailingZeroBits(value: List<ULong>): Int {
         TODO()
     }
 
     fun removeLeadingZeroes(bigInteger: List<ULong>): List<ULong> {
         val firstEmpty = bigInteger.indexOfLast { it != 0UL } + 1
         if (firstEmpty == -1 || firstEmpty == 0) {
-            //Array is equal to zero, so we return array with zero elements
+            // Array is equal to zero, so we return array with zero elements
             return ZERO
         }
         return bigInteger.subList(0, firstEmpty)
-
     }
 
     override fun shiftLeft(operand: List<ULong>, places: Int): List<ULong> {
@@ -166,7 +154,6 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
                 else -> {
                     throw RuntimeException("Invalid case $it")
                 }
-
             }
         }
     }
@@ -189,12 +176,11 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
             return listOf((operand[operand.size - 1] shr shiftBits))
         }
 
-
         val result = List<ULong>(operand.size - wordsToDiscard) {
             when (it) {
                 in 0 until (operand.size - 1 - wordsToDiscard) -> {
                     ((operand[it + wordsToDiscard] shr shiftBits)) or
-                            ((operand[it + wordsToDiscard + 1] shl (basePowerOfTwo - shiftBits) and baseMask))
+                        ((operand[it + wordsToDiscard + 1] shl (basePowerOfTwo - shiftBits) and baseMask))
                 }
                 operand.size - 1 - wordsToDiscard -> {
                     (operand[it + wordsToDiscard] shr shiftBits)
@@ -341,7 +327,6 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
             return List<ULong>(0) { 0UL }
         }
 
-
         return removeLeadingZeroes(result)
     }
 
@@ -359,14 +344,11 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
             resultArray = resultArray + (multiply(first, element) shl (index * basePowerOfTwo))
         }
         return removeLeadingZeroes(resultArray)
-
     }
 
-    fun karatsubaMultiply(first : List<ULong>, second : List<ULong>) : List<ULong> {
-
+    fun karatsubaMultiply(first: List<ULong>, second: List<ULong>): List<ULong> {
 
         val halfLength = (kotlin.math.max(first.size, second.size) + 1) / 2
-
 
         val mask = (ONE shl (halfLength * wordSizeInBits)) - 1UL
         val firstLower = and(first, mask)
@@ -378,10 +360,10 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         val higherProduct = firstHigher * secondHigher
         val lowerProduct = firstLower * secondLower
         val middleProduct = (firstHigher + firstLower) * (secondHigher + secondLower)
-        val result = (higherProduct shl (126 * halfLength)) + ((middleProduct - higherProduct - lowerProduct) shl (wordSizeInBits * halfLength)) + lowerProduct
+        val result =
+            (higherProduct shl (126 * halfLength)) + ((middleProduct - higherProduct - lowerProduct) shl (wordSizeInBits * halfLength)) + lowerProduct
 
         return result
-
     }
 
     fun multiply(first: List<ULong>, second: ULong): List<ULong> {
@@ -399,13 +381,12 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
             val firstHigh = first[i] shr 32
             i++
 
-            //Calculate low part product
+            // Calculate low part product
             val lowerProduct = (firstLow * secondLow)
             var lowerCarry = lowerProduct shr 63
             var lowResult = carryIntoNextRound + (lowerProduct and baseMask)
             lowerCarry += lowResult shr 63
             lowResult = lowResult and baseMask
-
 
             val middleProduct = firstLow * secondHigh + secondLow * firstHigh
             var middleCarry = lowerCarry
@@ -426,33 +407,28 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
             result[j] = carryIntoNextRound
         }
         return removeLeadingZeroes(result)
-
-
     }
 
     /*
     Useful when we want to do a ULong * ULong -> List<ULong>, currently not used anywhere, and untested
      */
     fun multiply(first: ULong, second: ULong): List<ULong> {
-        //Split the operands
+        // Split the operands
         val firstLow = first and lowMask
         val firstHigh = first shr 32
         val secondLow = second and lowMask
         val secondHigh = second shr 32
 
-
-        //Calculate low part product
+        // Calculate low part product
         val lowerProduct = firstLow * secondLow
         val lowCarry = lowerProduct shr 63
         var lowResult = lowerProduct and baseMask
-
 
         val middleProduct = firstLow * secondHigh + secondLow * firstHigh
         var middleCarry = lowCarry
         middleCarry += (middleProduct shr 31)
         lowResult += (middleProduct shl 32) and baseMask
         middleCarry += (lowResult shr 63)
-
 
         var highResult = middleCarry
         val higherProduct = (firstHigh * secondHigh) shl 1
@@ -483,7 +459,6 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         val dividendNormalized = dividend.shl(normalizationShift)
 
         return Triple(dividendNormalized, divisorNormalized, normalizationShift)
-
     }
 
     fun normalize(operand: List<ULong>): Pair<List<ULong>, Int> {
@@ -533,7 +508,6 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
             return Pair(ONE, unnormalizedDividend - unnormalizedDivisor)
         }
 
-
         var (dividend, divisor, normalizationShift) = normalize(
             unnormalizedDividend,
             unnormalizedDivisor
@@ -541,7 +515,6 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         val dividendSize = dividend.size
         val divisorSize = divisor.size
         val wordPrecision = dividendSize - divisorSize
-
 
         var qjhat: List<ULong>
         var reconstructedQuotient: List<ULong>
@@ -553,7 +526,6 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
             quotient[wordPrecision] = 1U
             dividend = dividend - divisorTimesBaseToPowerOfM
         }
-
 
         for (j in (wordPrecision - 1) downTo 0) {
             val twoDigit = if (divisorSize + j < dividend.size) {
@@ -614,11 +586,9 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
             } else {
                 result[i] = (operand[i + wordStep] shr shiftAmount)
             }
-
         }
 
         return result
-
     }
 
     fun convertTo32BitRepresentation(operand: List<ULong>): UIntArray {
@@ -659,23 +629,20 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
                 in 1 until requiredLength - 1 -> {
                     result[i] =
                         (operand[position - 1].toULong() shr (32 - shiftAmount)) or
-                                (operand[position].toULong() shl shiftAmount) or
-                                ((operand[position + 1].toULong() shl (32 + shiftAmount)) and highMask)
+                            (operand[position].toULong() shl shiftAmount) or
+                            ((operand[position + 1].toULong() shl (32 + shiftAmount)) and highMask)
                 }
                 requiredLength - 1 -> {
                     if (position < operand.size) {
                         result[i] =
                             (operand[position - 1].toULong() shr (32 - shiftAmount)) or
-                                    (operand[position].toULong() shl shiftAmount)
+                                (operand[position].toULong() shl shiftAmount)
                     } else {
                         result[i] =
                             (operand[position - 1].toULong() shr (32 - shiftAmount))
                     }
                 }
-
             }
-
-
         }
 //        if (operand.size % 2 != 0) {
 //            val lastI = requiredLength - 1 + skipWordCount
@@ -693,8 +660,6 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     override fun reciprocal(operand: List<ULong>): Pair<List<ULong>, List<ULong>> {
         return d1ReciprocalRecursiveWordVersion(operand)
     }
-
-
 
     fun d1ReciprocalRecursiveWordVersion(a: List<ULong>): Pair<List<ULong>, List<ULong>> {
         val n = a.size - 1
@@ -762,15 +727,13 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         return Pair(s, r)
     }
 
-
-    internal fun basecaseSqrt(operand: List<ULong>) : Pair<List<ULong>, List<ULong>> {
+    internal fun basecaseSqrt(operand: List<ULong>): Pair<List<ULong>, List<ULong>> {
         val sqrt = sqrtInt(operand)
         val remainder = operand - (sqrt * sqrt)
         return Pair(sqrt, remainder)
-
     }
 
-    internal fun sqrtInt(operand: List<ULong>) : List<ULong> {
+    internal fun sqrtInt(operand: List<ULong>): List<ULong> {
         var u = operand
         var s = ZERO
         var tmp = ZERO
@@ -822,7 +785,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         return stringBuilder.toString().reversed()
     }
 
-    override fun numberOfDecimalDigits(operand : List<ULong>): Long {
+    override fun numberOfDecimalDigits(operand: List<ULong>): Long {
         val bitLenght = bitLength(operand)
         val minDigit = ceil((bitLenght - 1) * BigInteger.LOG_10_OF_2)
 //        val maxDigit = floor(bitLenght * LOG_10_OF_2) + 1
@@ -840,8 +803,6 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
             counter++
         }
         return counter + minDigit.toInt()
-
-
     }
 
     override fun and(operand: List<ULong>, mask: List<ULong>): List<ULong> {
@@ -896,7 +857,6 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
 
     // -------------- Bitwise ---------------- //
 
-
     internal infix fun List<ULong>.shl(places: Int): List<ULong> {
         return shiftLeft(this, places)
     }
@@ -919,7 +879,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         return (word and (1UL shl bitPosition.toInt()) == 1UL)
     }
 
-    override fun setBitAt(operand: List<ULong>, position: Long, bit : Boolean): List<ULong> {
+    override fun setBitAt(operand: List<ULong>, position: Long, bit: Boolean): List<ULong> {
         if (position / 63 > Int.MAX_VALUE) {
             throw RuntimeException("Invalid bit index, too large, cannot access word (Word position > Int.MAX_VALUE")
         }
@@ -944,7 +904,6 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     }
 
     // -------------- Operations ---------------- //
-
 
     internal operator fun List<ULong>.plus(other: List<ULong>): List<ULong> {
         return add(this, other)
@@ -1019,17 +978,15 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
             return listOf(baseMask) + 1U
         }
         return listOf((long.absoluteValue.toULong() and baseMask))
-
     }
 
     override fun fromInt(int: Int): List<ULong> = listOf(int.absoluteValue.toULong())
-
 
     override fun fromShort(short: Short): List<ULong> = listOf(short.toInt().absoluteValue.toULong())
 
     override fun fromByte(byte: Byte): List<ULong> = listOf(byte.toInt().absoluteValue.toULong())
 
-    override fun toByteArray(operand: List<ULong>, sign : Sign): Array<Byte> {
+    override fun toByteArray(operand: List<ULong>, sign: Sign): Array<Byte> {
         return BigInteger32Arithmetic.toByteArray(convertTo32BitRepresentation(operand), sign)
     }
 
@@ -1140,8 +1097,13 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         listOf(0UL, 1573764064083968000UL, 7714811519264610651UL, 7529020590252000440UL, 7504535323749544669UL, 149UL),
         listOf(0UL, 6514268603984904192UL, 3361138897807900047UL, 1503229607681797944UL, 1258376942657240234UL, 1498UL),
         listOf(0UL, 579081781865611264UL, 5941272867514673053UL, 5808924039963203635UL, 3360397389717626533UL, 14981UL),
-        listOf(0UL, 5790817818656112640UL, 4072496454018075682UL, 2749008178503381508UL, 5933857786611937912UL, 149813UL)
+        listOf(
+            0UL,
+            5790817818656112640UL,
+            4072496454018075682UL,
+            2749008178503381508UL,
+            5933857786611937912UL,
+            149813UL
+        )
     )
-
-
 }

@@ -26,10 +26,10 @@ package com.ionspin.kotlin.bignum.integer
  */
 @ExperimentalUnsignedTypes
 interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
-    val ZERO : BackingCollectionType
-    val ONE : BackingCollectionType
-    val TWO : BackingCollectionType
-    val TEN : BackingCollectionType
+    val ZERO: BackingCollectionType
+    val ONE: BackingCollectionType
+    val TWO: BackingCollectionType
+    val TEN: BackingCollectionType
 
     val basePowerOfTwo: Int
     /**
@@ -45,12 +45,13 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
     /**
      * Number of consecutive zeroes count from the right in binary representation
      */
-    fun trailingZeroBits(value: BackingCollectionType) : Int
+    fun trailingZeroBits(value: BackingCollectionType): Int
 
     /**
      * Arithmetic shift left. Shifts the number to the left, by required places of bits, creating new words if necessary
      */
     fun shiftLeft(operand: BackingCollectionType, places: Int): BackingCollectionType
+
     /**
      * Arithmetic shift right. Shifts the number to the right, by required places of bits, removing words that no longer relevant
      */
@@ -85,57 +86,58 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
      * Divide two big integers
      * @return A pair representing quotient (first member of the pair) and remainder (second member of the pair)
      */
-    fun divide(first: BackingCollectionType, second: BackingCollectionType): Pair<BackingCollectionType, BackingCollectionType>
+    fun divide(
+        first: BackingCollectionType,
+        second: BackingCollectionType
+    ): Pair<BackingCollectionType, BackingCollectionType>
 
     /**
      * Returns a integer reciprocal of this number such that 0 <= base ^ word - operand * reciprocal <= operand,
      * and remainder such that 0 < reciprocal < operand
      */
-    fun reciprocal(operand : BackingCollectionType) : Pair<BackingCollectionType, BackingCollectionType>
+    fun reciprocal(operand: BackingCollectionType): Pair<BackingCollectionType, BackingCollectionType>
 
     /**
      * Exponentiation function
      * @return BigInteger result of exponentiation of number by exponent
      */
-    fun pow(base : BackingCollectionType, exponent : Long) : BackingCollectionType
+    fun pow(base: BackingCollectionType, exponent: Long): BackingCollectionType
 
-    fun sqrt(operand : BackingCollectionType) : Pair<BackingCollectionType, BackingCollectionType>
+    fun sqrt(operand: BackingCollectionType): Pair<BackingCollectionType, BackingCollectionType>
 
-    fun gcd(first: BackingCollectionType, second: BackingCollectionType) : BackingCollectionType
+    fun gcd(first: BackingCollectionType, second: BackingCollectionType): BackingCollectionType
 
     /**
      * Parse a string in a specific base into a big integer
      */
-    fun parseForBase(number : String, base : Int) : BackingCollectionType
+    fun parseForBase(number: String, base: Int): BackingCollectionType
 
     /**
      * return a string representation of big integer in a specific number base
      */
-    fun toString(operand: BackingCollectionType, base : Int) : String
+    fun toString(operand: BackingCollectionType, base: Int): String
 
-    fun numberOfDecimalDigits(operand : BackingCollectionType): Long
+    fun numberOfDecimalDigits(operand: BackingCollectionType): Long
 
-    fun fromULong(uLong : ULong) : BackingCollectionType
-    fun fromUInt(uInt : UInt) : BackingCollectionType
-    fun fromUShort(uShort : UShort): BackingCollectionType
-    fun fromUByte(uByte : UByte) : BackingCollectionType
-    fun fromLong(long : Long) : BackingCollectionType
-    fun fromInt(int : Int) : BackingCollectionType
-    fun fromShort(short : Short): BackingCollectionType
-    fun fromByte(byte : Byte) : BackingCollectionType
+    fun fromULong(uLong: ULong): BackingCollectionType
+    fun fromUInt(uInt: UInt): BackingCollectionType
+    fun fromUShort(uShort: UShort): BackingCollectionType
+    fun fromUByte(uByte: UByte): BackingCollectionType
+    fun fromLong(long: Long): BackingCollectionType
+    fun fromInt(int: Int): BackingCollectionType
+    fun fromShort(short: Short): BackingCollectionType
+    fun fromByte(byte: Byte): BackingCollectionType
 
-    fun or(operand: BackingCollectionType, mask: BackingCollectionType) : BackingCollectionType
-    fun xor(operand: BackingCollectionType, mask: BackingCollectionType) : BackingCollectionType
-    fun and(operand: BackingCollectionType, mask: BackingCollectionType) : BackingCollectionType
-    fun not(operand: BackingCollectionType) : BackingCollectionType
+    fun or(operand: BackingCollectionType, mask: BackingCollectionType): BackingCollectionType
+    fun xor(operand: BackingCollectionType, mask: BackingCollectionType): BackingCollectionType
+    fun and(operand: BackingCollectionType, mask: BackingCollectionType): BackingCollectionType
+    fun not(operand: BackingCollectionType): BackingCollectionType
 
-    fun bitAt(operand : BackingCollectionType, position : Long) : Boolean
-    fun setBitAt(operand : BackingCollectionType, position : Long, bit : Boolean) : BackingCollectionType
+    fun bitAt(operand: BackingCollectionType, position: Long): Boolean
+    fun setBitAt(operand: BackingCollectionType, position: Long, bit: Boolean): BackingCollectionType
 
-    fun toByteArray(operand : BackingCollectionType, sign : Sign) : Array<Byte>
-    fun fromByteArray(byteArray: Array<Byte>) : Pair<BackingCollectionType, Sign>
-
-
+    fun toByteArray(operand: BackingCollectionType, sign: Sign): Array<Byte>
+    fun fromByteArray(byteArray: Array<Byte>): Pair<BackingCollectionType, Sign>
 }
 
 /**
@@ -163,4 +165,3 @@ enum class Sign {
         }
     }
 }
-

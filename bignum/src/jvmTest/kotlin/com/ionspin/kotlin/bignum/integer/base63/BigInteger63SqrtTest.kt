@@ -28,8 +28,7 @@ import kotlin.test.assertTrue
  * on 27-Apr-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger63SqrtTest  {
-
+class BigInteger63SqrtTest {
 
     @Test
     fun testSpecificSqrt() {
@@ -74,7 +73,6 @@ class BigInteger63SqrtTest  {
         }
     }
 
-
     @Test
     fun testSpecificSqrtInt() {
         val seed = 1
@@ -83,5 +81,4 @@ class BigInteger63SqrtTest  {
         val sqrt = BigInteger63Arithmetic.sqrtInt(a)
         assertTrue { sqrt[0] == 12UL }
     }
-
 }

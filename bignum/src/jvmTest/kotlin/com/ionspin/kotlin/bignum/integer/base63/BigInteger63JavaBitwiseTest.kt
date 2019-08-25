@@ -33,8 +33,7 @@ import kotlin.test.assertTrue
  * on 10-Mar-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger63JavaBitwiseTest  {
-
+class BigInteger63JavaBitwiseTest {
 
     @Test
     fun `Random shift left test`() {
@@ -68,7 +67,6 @@ class BigInteger63JavaBitwiseTest  {
         shiftLeftSingleTest(5, ulongArrayOf(0UL - 1UL))
         shiftLeftSingleTest(237, ulongArrayOf(0UL - 1UL))
         shiftLeftSingleTest(215, ulongArrayOf(1U))
-
     }
 
     fun shiftLeftSingleTest(places: Int, ulongs: ULongArray) {
@@ -138,8 +136,6 @@ class BigInteger63JavaBitwiseTest  {
         val operand = BigInteger63Arithmetic.parseForBase("11110000", 2)
         val mask = BigInteger63Arithmetic.parseForBase("00111100", 2)
         singleXorTest(operand, mask)
-
-
     }
 
     @Test
@@ -156,13 +152,11 @@ class BigInteger63JavaBitwiseTest  {
                     shiftRightSingleTest(random.nextInt(BigInteger63Arithmetic.bitLength(a)), a)
                 }
             )
-
         }
         runBlocking {
             jobList.forEach { it.join() }
         }
     }
-
 
     fun singleXorTest(operand: ULongArray, mask: ULongArray) {
         val result = BigInteger63Arithmetic.xor(operand, mask)
@@ -171,14 +165,11 @@ class BigInteger63JavaBitwiseTest  {
         assertTrue { result.toJavaBigInteger() == bigIntResult }
     }
 
-
     @Test
     fun `Test specific or`() {
         val operand = BigInteger63Arithmetic.parseForBase("FFFFFFFFFF000000000000", 16)
         val mask = BigInteger63Arithmetic.parseForBase("00000000FFFF0000000000", 16)
         singleOrTest(operand, mask)
-
-
     }
 
     fun singleOrTest(operand: ULongArray, mask: ULongArray) {
@@ -188,14 +179,11 @@ class BigInteger63JavaBitwiseTest  {
         assertTrue { result.toJavaBigInteger() == bigIntResult }
     }
 
-
     @Test
     fun `Test specific and`() {
         val operand = BigInteger63Arithmetic.parseForBase("FFFFFFFFFF000000000000", 16)
         val mask = BigInteger63Arithmetic.parseForBase("00000000FFFF0000000000", 16)
         singleAndTest(operand, mask)
-
-
     }
 
     fun singleAndTest(operand: ULongArray, mask: ULongArray) {
@@ -210,10 +198,9 @@ class BigInteger63JavaBitwiseTest  {
     fun `Test specific inv`() {
         val operand = BigInteger63Arithmetic.parseForBase("1100", 2)
         singleInvTest(operand)
-
     }
 
-    //Hmmm this is not behaving as I would expect it to on java side
+    // Hmmm this is not behaving as I would expect it to on java side
     fun singleInvTest(operand: ULongArray) {
         val result = BigInteger63Arithmetic.not(operand)
         val bigIntResult = operand.toJavaBigInteger()
