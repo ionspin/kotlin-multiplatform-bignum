@@ -29,7 +29,7 @@ import kotlin.test.assertTrue
 @ExperimentalUnsignedTypes
 class ByteArrayConversionTest {
 
-    @Ignore //Travis can't run this test on JS for some reason but they pass on local machine.
+    @Ignore // Travis can't run this test on JS for some reason but they pass on local machine.
     @Test
     fun testToAndFromByteArray() {
         assertTrue {
@@ -53,6 +53,4 @@ class ByteArrayConversionTest {
             bigIntOriginal.equals(reconstructed)
         }
     }
-
-
 }

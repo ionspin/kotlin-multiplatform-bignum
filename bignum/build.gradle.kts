@@ -18,31 +18,30 @@
 @file:Suppress("UnstableApiUsage")
 
 import com.moowork.gradle.node.task.NodeTask
-import org.gradle.api.tasks.testing.logging.TestLogging
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
 plugins {
     kotlin(PluginsDeps.multiplatform)
-    id (PluginsDeps.mavenPublish)
-    id (PluginsDeps.signing)
-    id (PluginsDeps.node) version Versions.nodePlugin
-    id (PluginsDeps.dokka) version Versions.dokkaPlugin
+    id(PluginsDeps.mavenPublish)
+    id(PluginsDeps.signing)
+    id(PluginsDeps.node) version Versions.nodePlugin
+    id(PluginsDeps.dokka) version Versions.dokkaPlugin
+    id(PluginsDeps.spotless) version PluginsDeps.Versions.spotlessVersion
 }
 
 val sonatypeStaging = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
 val sonatypeSnapshots = "https://oss.sonatype.org/content/repositories/snapshots/"
 
-val sonatypePassword : String? by project
+val sonatypePassword: String? by project
 
-val sonatypeUsername : String? by project
+val sonatypeUsername: String? by project
 
-val sonatypePasswordEnv : String? = System.getenv()["SONATYPE_PASSWORD"]
-val sonatypeUsernameEnv : String? = System.getenv()["SONATYPE_USERNAME"]
+val sonatypePasswordEnv: String? = System.getenv()["SONATYPE_PASSWORD"]
+val sonatypeUsernameEnv: String? = System.getenv()["SONATYPE_USERNAME"]
 
 repositories {
     mavenCentral()
     jcenter()
-
 }
 group = "com.ionspin.kotlin"
 version = "0.1.1-SNAPSHOT"
@@ -67,21 +66,18 @@ kotlin {
     linuxX64("linux") {
         binaries {
             staticLib {
-
             }
         }
     }
     iosX64("ios") {
         binaries {
             framework {
-
             }
         }
     }
     iosArm64("ios64Arm") {
         binaries {
             framework {
-
             }
         }
     }
@@ -89,14 +85,12 @@ kotlin {
     iosArm32("ios32Arm") {
         binaries {
             framework {
-
             }
         }
     }
     macosX64() {
         binaries {
             framework {
-
             }
         }
     }
@@ -152,9 +146,8 @@ kotlin {
             }
         }
         val nativeTest by creating {
-
         }
-        
+
         val iosMain by getting {
             dependsOn(nativeMain)
         }
@@ -189,18 +182,14 @@ kotlin {
             dependsOn(nativeTest)
         }
     }
-
-
 }
-
-
 
 task<Copy>("copyPackageJson") {
     dependsOn("compileKotlinJs")
     println("Copying package.json from $projectDir/core/src/jsMain/npm")
-    from ("$projectDir/src/jsMain/npm")
+    from("$projectDir/src/jsMain/npm")
     println("Node modules dir ${node.nodeModulesDir}")
-    into ("${node.nodeModulesDir}")
+    into("${node.nodeModulesDir}")
 }
 
 tasks {
@@ -208,7 +197,9 @@ tasks {
     val compileKotlinJs by getting(AbstractCompile::class)
     val compileTestKotlinJs by getting(Kotlin2JsCompile::class)
     val jsTest by getting
-
+    val build by named("build")
+    build.dependsOn("spotlessCheck")
+    build.dependsOn("spotlessKotlinCheck")
 
     val populateNodeModulesForTests by creating {
         dependsOn(npmInstall, compileKotlinJs, compileTestKotlinJs)
@@ -227,15 +218,16 @@ tasks {
         }
     }
 
-
     val runTestsWithMocha by creating(NodeTask::class) {
         dependsOn(populateNodeModulesForTests)
         setScript(file("$projectDir/node_modules/mocha/bin/mocha"))
-        setArgs(listOf(
-            compileTestKotlinJs.outputFile,
-            "--reporter-options",
-            "topLevelSuite=${project.name}-tests"
-        ))
+        setArgs(
+            listOf(
+                compileTestKotlinJs.outputFile,
+                "--reporter-options",
+                "topLevelSuite=${project.name}-tests"
+            )
+        )
     }
 
     jsTest.dependsOn("copyPackageJson")
@@ -248,13 +240,13 @@ tasks {
     }
 
     dokka {
-        println ("Dokka !")
+        println("Dokka !")
         impliedPlatforms = mutableListOf("Common")
         kotlinTasks {
             listOf()
         }
         sourceRoot {
-            println ("Common !")
+            println("Common !")
             path = "/home/ionspin/Projects/Future/KotlinBigInteger/bignum/src/commonMain"
             platforms = listOf("Common")
         }
@@ -265,13 +257,18 @@ tasks {
             events("PASSED", "FAILED", "SKIPPED")
         }
     }
-
 }
 
-
-
-
-
+spotless {
+    kotlin {
+        ktlint()
+        target("**/*.kt")
+    }
+    kotlinGradle {
+        ktlint()
+        target("**/*.gradle.kts")
+    }
+}
 
 signing {
     isRequired = false
@@ -302,9 +299,7 @@ publishing {
                 url.set("https://github.com/ionspin/kotlin-multiplatform-bignum")
                 connection.set("scm:git:git://git@github.com:ionspin/kotlin-multiplatform-bignum.git")
                 developerConnection.set("scm:git:ssh://git@github.com:ionspin/kotlin-multiplatform-bignum.git")
-
             }
-
         }
     }
     repositories {
@@ -327,5 +322,3 @@ publishing {
         }
     }
 }
-
-

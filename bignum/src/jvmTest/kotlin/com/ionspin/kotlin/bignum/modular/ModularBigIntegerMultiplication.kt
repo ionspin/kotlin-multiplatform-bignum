@@ -35,7 +35,7 @@ import kotlin.test.assertTrue
  * on 22-Apr-2019
  */
 @ExperimentalUnsignedTypes
-class ModularBigIntegerMultiplication  {
+class ModularBigIntegerMultiplication {
 
     @Test
     fun testRandomModularMultiplication() {
@@ -65,7 +65,6 @@ class ModularBigIntegerMultiplication  {
                 }
             }
             jobList.add(job)
-
         }
         runBlocking {
             jobList.forEach { it.join() }
@@ -100,17 +99,17 @@ class ModularBigIntegerMultiplication  {
                 }
             }
             jobList.add(job)
-
         }
         runBlocking {
             jobList.forEach { it.join() }
         }
     }
 
-    fun singleMultiplicationTest(a : ModularBigInteger, b : ModularBigInteger) {
+    fun singleMultiplicationTest(a: ModularBigInteger, b: ModularBigInteger) {
         assertTrue {
             val result = a * b
-            val javaResult = (a.residue.toJavaBigInteger() * b.residue.toJavaBigInteger()).mod(a.modulus.toJavaBigInteger())
+            val javaResult =
+                (a.residue.toJavaBigInteger() * b.residue.toJavaBigInteger()).mod(a.modulus.toJavaBigInteger())
             result.residue.toJavaBigInteger() == javaResult
         }
     }

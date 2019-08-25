@@ -34,8 +34,7 @@ import kotlin.test.assertTrue
  * on 10-Mar-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger63ListJavaBitwiseTest () {
-
+class BigInteger63ListJavaBitwiseTest() {
 
     @Test
     fun `Random shift left test`() {
@@ -69,7 +68,6 @@ class BigInteger63ListJavaBitwiseTest () {
         shiftLeftSingleTest(5, listOf(0UL - 1UL))
         shiftLeftSingleTest(237, listOf(0UL - 1UL))
         shiftLeftSingleTest(215, listOf(1U))
-
     }
 
     fun shiftLeftSingleTest(places: Int, ulongs: List<ULong>) {
@@ -139,8 +137,6 @@ class BigInteger63ListJavaBitwiseTest () {
         val operand = BigInteger63LinkedListArithmetic.parseForBase("11110000", 2)
         val mask = BigInteger63LinkedListArithmetic.parseForBase("00111100", 2)
         singleXorTest(operand, mask)
-
-
     }
 
     @Test
@@ -157,13 +153,11 @@ class BigInteger63ListJavaBitwiseTest () {
                     shiftRightSingleTest(random.nextInt(BigInteger63LinkedListArithmetic.bitLength(a)), a)
                 }
             )
-
         }
         runBlocking {
             jobList.forEach { it.join() }
         }
     }
-
 
     fun singleXorTest(operand: List<ULong>, mask: List<ULong>) {
         val result = BigInteger63LinkedListArithmetic.xor(operand, mask)
@@ -172,14 +166,11 @@ class BigInteger63ListJavaBitwiseTest () {
         assertTrue { result.toJavaBigInteger() == bigIntResult }
     }
 
-
     @Test
     fun `Test specific or`() {
         val operand = BigInteger63LinkedListArithmetic.parseForBase("FFFFFFFFFF000000000000", 16)
         val mask = BigInteger63LinkedListArithmetic.parseForBase("00000000FFFF0000000000", 16)
         singleOrTest(operand, mask)
-
-
     }
 
     fun singleOrTest(operand: List<ULong>, mask: List<ULong>) {
@@ -189,14 +180,11 @@ class BigInteger63ListJavaBitwiseTest () {
         assertTrue { result.toJavaBigInteger() == bigIntResult }
     }
 
-
     @Test
     fun `Test specific and`() {
         val operand = BigInteger63LinkedListArithmetic.parseForBase("FFFFFFFFFF000000000000", 16)
         val mask = BigInteger63LinkedListArithmetic.parseForBase("00000000FFFF0000000000", 16)
         singleAndTest(operand, mask)
-
-
     }
 
     fun singleAndTest(operand: List<ULong>, mask: List<ULong>) {
@@ -211,10 +199,9 @@ class BigInteger63ListJavaBitwiseTest () {
     fun `Test specific inv`() {
         val operand = BigInteger63LinkedListArithmetic.parseForBase("1100", 2)
         singleInvTest(operand)
-
     }
 
-    //Hmmm this is not behaving as I would expect it to on java side
+    // Hmmm this is not behaving as I would expect it to on java side
     fun singleInvTest(operand: List<ULong>) {
         val result = BigInteger63LinkedListArithmetic.not(operand)
         val bigIntResult = operand.toJavaBigInteger()

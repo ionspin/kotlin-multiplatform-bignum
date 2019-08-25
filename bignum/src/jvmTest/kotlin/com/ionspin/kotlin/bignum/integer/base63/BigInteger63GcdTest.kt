@@ -32,7 +32,7 @@ import kotlin.test.assertTrue
  * on 27-Apr-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger63GcdTest  {
+class BigInteger63GcdTest {
 
     @Test
     fun testGcd() {
@@ -57,14 +57,13 @@ class BigInteger63GcdTest  {
                 }
             }
             jobList.add(job)
-
         }
         runBlocking {
             jobList.forEach { it.join() }
         }
     }
 
-    fun testGcdSingle(first : ULongArray, second : ULongArray) {
+    fun testGcdSingle(first: ULongArray, second: ULongArray) {
         val a = BigInteger63Arithmetic.gcd(first, second)
         val aJavaBigInt = first.toJavaBigInteger().gcd(second.toJavaBigInteger())
         assertTrue {

@@ -28,7 +28,6 @@ import kotlin.test.assertTrue
 @ExperimentalUnsignedTypes
 class BigIntegerReadmeTest {
 
-
     @Test
     fun `Test_readme_addition_sample`() {
         val a = BigInteger.fromLong(Long.MAX_VALUE)
@@ -38,7 +37,6 @@ class BigIntegerReadmeTest {
 
         val expectedResult = BigInteger.parseString("9223372039002259454", 10)
         assertTrue { sum == expectedResult }
-
     }
 
     @Test
@@ -128,49 +126,43 @@ class BigIntegerReadmeTest {
     }
 
     @Test
-    fun `Test_readme_xor_sample`(){
+    fun `Test_readme_xor_sample`() {
         val operand = BigInteger.parseString("11110000", 2)
-        val mask =    BigInteger.parseString("00111100", 2)
+        val mask = BigInteger.parseString("00111100", 2)
         val xorResult = operand xor mask
         println("Xor result: ${xorResult.toString(2)}")
 
         val expectedResult = BigInteger.parseString("11001100", 2)
 
         assertTrue { xorResult == expectedResult }
-
-
     }
 
     @Test
-    fun `Test_readme_or_sample`(){
+    fun `Test_readme_or_sample`() {
         val operand = BigInteger.parseString("FFFFFFFFFF000000000000", 16)
-        val mask =    BigInteger.parseString("00000000FFFF0000000000", 16)
+        val mask = BigInteger.parseString("00000000FFFF0000000000", 16)
         val orResult = operand or mask
         println("Or result: ${orResult.toString(16)}")
 
         val expectedResult = BigInteger.parseString("FFFFFFFFFFFF0000000000", 16)
 
         assertTrue { orResult == expectedResult }
-
-
     }
 
     @Test
-    fun `Test_readme_and_sample`(){
+    fun `Test_readme_and_sample`() {
         val operand = BigInteger.parseString("FFFFFFFFFF000000000000", 16)
-        val mask =    BigInteger.parseString("00000000FFFF0000000000", 16)
+        val mask = BigInteger.parseString("00000000FFFF0000000000", 16)
         val andResult = operand and mask
         println("And result: ${andResult.toString(16)}")
 
         val expectedResult = BigInteger.parseString("00000000FF000000000000", 16)
 
         assertTrue { andResult == expectedResult }
-
-
     }
 
     @Test
-    fun `Test_readme_inv_sample`(){
+    fun `Test_readme_inv_sample`() {
         val operand = BigInteger.parseString("11110000", 2)
         val invResult = operand.not()
         println("Inv result: ${invResult.toString(2)}")
@@ -178,15 +170,13 @@ class BigIntegerReadmeTest {
         val expectedResult = BigInteger.parseString("00001111", 2)
 
         assertTrue { invResult == expectedResult }
-
-
     }
 
     @Test
-    fun `Test_readme_negate_sample`(){
+    fun `Test_readme_negate_sample`() {
         val a = (-5).toBigInteger()
         val negated = a.negate()
-        println("Negated: ${negated}")
+        println("Negated: $negated")
 
         val expectedResult = 5.toBigInteger()
 
@@ -194,10 +184,10 @@ class BigIntegerReadmeTest {
     }
 
     @Test
-    fun `Test_readme_abs_sample`(){
+    fun `Test_readme_abs_sample`() {
         val a = (-5).toBigInteger()
         val negated = a.abs()
-        println("Absolute value: ${negated}")
+        println("Absolute value: $negated")
 
         val expectedResult = 5.toBigInteger()
 
@@ -238,5 +228,4 @@ class BigIntegerReadmeTest {
         println("ModularBigInteger: ${modularA.toStringWithModulo()}")
         assertTrue { modularA.compareTo(2.toBigInteger()) == 0 }
     }
-
 }

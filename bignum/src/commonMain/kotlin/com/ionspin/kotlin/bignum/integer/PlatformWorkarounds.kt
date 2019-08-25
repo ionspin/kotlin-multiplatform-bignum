@@ -26,5 +26,5 @@ expect object ComparisonWorkaround {
     /**
      * We need to know if we are running on a platform that doesn't know how to tell decimal and integer apart.
      */
-    fun isSpecialHandlingForFloatNeeded(number : Number) : Boolean
+    fun isSpecialHandlingForFloatNeeded(number: Number): Boolean
 }

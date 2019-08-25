@@ -17,7 +17,11 @@
 
 package com.ionspin.kotlin.bignum.integer.base63
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.random.Random
 import kotlin.random.nextULong
@@ -30,7 +34,7 @@ import kotlin.test.assertTrue
  * on 09-Mar-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger63JavaDivisionTest  {
+class BigInteger63JavaDivisionTest {
 
     @Test
     fun testDivision() {
@@ -45,9 +49,7 @@ class BigInteger63JavaDivisionTest  {
             val bigIntQuotient = a.toJavaBigInteger() / b.toJavaBigInteger()
             val bigIntRemainder = a.toJavaBigInteger() % b.toJavaBigInteger()
 
-
             quotientBigInt == bigIntQuotient && remainderBigInt == bigIntRemainder
-
         }
 
         assertTrue {
@@ -63,7 +65,6 @@ class BigInteger63JavaDivisionTest  {
 
             val bla = 1L
             bla.toBigInteger()
-
 
             quotientBigInt == bigIntQuotient && remainderBigInt == bigIntRemainder
         }
@@ -81,9 +82,7 @@ class BigInteger63JavaDivisionTest  {
             } else {
                 divisionSingleTest(ulongArrayOf(b), ulongArrayOf(a))
             }
-
         }
-
     }
 
     @Test
@@ -104,13 +103,10 @@ class BigInteger63JavaDivisionTest  {
                     }
                 }
             )
-
-
         }
         runBlocking {
             jobList.forEach { it.join() }
         }
-
     }
 
     @Test
@@ -139,17 +135,14 @@ class BigInteger63JavaDivisionTest  {
                     } catch (e: Throwable) {
                         println(
                             "Failed on ulongArrayOf(${a.joinToString(separator = ",") { it.toString() + "U" }}), " +
-                                    "ulongArrayOf(${b.joinToString(separator = ",") { it.toString() + "U" }})"
+                                "ulongArrayOf(${b.joinToString(separator = ",") { it.toString() + "U" }})"
                         )
                         e.printStackTrace()
                     }
                 }
             )
-
         }
-
     }
-
 
     @Test
     fun preciseDebugTest() {
@@ -162,13 +155,12 @@ class BigInteger63JavaDivisionTest  {
             ), ulongArrayOf(189041424779232614U, 1430782222387740366U)
         )
 //        divisionSingleTest(ulongArrayOf(3449361588UL,1278830002UL,3123489057UL,3720277819UL, 1UL, 1UL, 1UL, 1UL), ulongArrayOf(1UL, 1UL))
-
     }
 
     fun divisionSingleTest(dividend: ULongArray, divisor: ULongArray) {
         assertTrue(
             "Failed on ulongArrayOf(${dividend.joinToString(separator = ",") { it.toString() + "U" }}), " +
-                    "ulongArrayOf(${divisor.joinToString(separator = ",") { it.toString() + "U" }})"
+                "ulongArrayOf(${divisor.joinToString(separator = ",") { it.toString() + "U" }})"
         ) {
             val a = dividend
             val b = divisor
@@ -186,8 +178,6 @@ class BigInteger63JavaDivisionTest  {
                 e.printStackTrace()
                 false
             }
-
-
         }
     }
 
@@ -209,7 +199,6 @@ class BigInteger63JavaDivisionTest  {
                 reciprocalSingleTest(a)
             }
             jobList.add(job)
-
         }
         runBlocking {
             jobList.forEach { it.join() }
@@ -252,11 +241,8 @@ class BigInteger63JavaDivisionTest  {
             result.contentEquals(BigInteger63Arithmetic.ZERO) && resultWithRecPlusOne.contentEquals(
                 BigInteger63Arithmetic.ONE
             )
-
-
         }
     }
-
 
     @Test
     fun `Test four words divided by two words using reciprocal division`() {
@@ -276,12 +262,10 @@ class BigInteger63JavaDivisionTest  {
                 reciprocalDivisionSingleTest(a, b)
             }
             jobList.add(job)
-
         }
         runBlocking {
             jobList.forEach { it.join() }
         }
-
     }
 
     @Test
@@ -307,14 +291,11 @@ class BigInteger63JavaDivisionTest  {
                 }
             }
             jobList.add(job)
-
         }
         runBlocking {
             jobList.forEach { it.join() }
         }
-
     }
-
 
     @Test
     fun testReciprocalDivision() {
@@ -335,22 +316,19 @@ class BigInteger63JavaDivisionTest  {
             random.nextULong() shr 1
         }
 
-
-
         reciprocalDivisionSingleTest(a, b)
     }
 
     private fun reciprocalDivisionSingleTest(first: ULongArray, second: ULongArray) {
         assertTrue(
             "Failed on \nval a = ulongArrayOf(${first.joinToString(separator = ", ") { it.toString() + "UL" }})\n" +
-                    "val b = ulongArrayOf(${second.joinToString(separator = ", ") { it.toString() + "UL" }})"
+                "val b = ulongArrayOf(${second.joinToString(separator = ", ") { it.toString() + "UL" }})"
         ) {
             val result = BigInteger63Arithmetic.reciprocalDivision(first, second)
             val normalResult = BigInteger63Arithmetic.divide(first, second)
             result.first.contentEquals(normalResult.first) && result.second.contentEquals(normalResult.second)
         }
     }
-
 }
 
 @ExperimentalUnsignedTypes
@@ -362,6 +340,7 @@ class DivisionBenchmark {
         val expectedQuotient: ULongArray,
         val expectedRemainder: ULongArray
     )
+
     @Suppress("UnusedEquals")
     @Ignore("This should be run only when necessary")
     @Test
@@ -414,8 +393,6 @@ class DivisionBenchmark {
         runBaseCaseOnSampleList(sampleList)
         runReciprocalOnSampleList(sampleList)
         1 == 1
-
-
     }
 
     fun runReciprocalOnSampleList(sampleList: List<BenchmarkSample>) {
@@ -435,7 +412,6 @@ class DivisionBenchmark {
         val baseCaseEndTime = System.currentTimeMillis()
         println("Done basecase divide in ${baseCaseEndTime - baseCaseStartTime}")
     }
-
 
     fun divideUsingReciprocal(
         dividend: ULongArray,
@@ -460,6 +436,4 @@ class DivisionBenchmark {
             result.first.contentEquals(expectedQuotient) && result.second.contentEquals(expectedRemainder)
         }
     }
-
 }
-

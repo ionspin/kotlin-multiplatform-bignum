@@ -25,9 +25,8 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
  * on 10-Mar-2019
  */
 
-
 @ExperimentalUnsignedTypes
-fun Long.toBigDecimal(exponent : BigInteger? = null, decimalMode: DecimalMode? = null): BigDecimal {
+fun Long.toBigDecimal(exponent: BigInteger? = null, decimalMode: DecimalMode? = null): BigDecimal {
     return if (exponent != null) {
         BigDecimal.fromLongWithExponent(this, exponent, decimalMode)
     } else {
@@ -35,9 +34,8 @@ fun Long.toBigDecimal(exponent : BigInteger? = null, decimalMode: DecimalMode? =
     }
 }
 
-
 @ExperimentalUnsignedTypes
-fun Int.toBigDecimal(exponent : BigInteger? = null, decimalMode: DecimalMode? = null): BigDecimal {
+fun Int.toBigDecimal(exponent: BigInteger? = null, decimalMode: DecimalMode? = null): BigDecimal {
     return if (exponent != null) {
         BigDecimal.fromIntWithExponent(this, exponent, decimalMode)
     } else {
@@ -45,9 +43,8 @@ fun Int.toBigDecimal(exponent : BigInteger? = null, decimalMode: DecimalMode? = 
     }
 }
 
-
 @ExperimentalUnsignedTypes
-fun Short.toBigDecimal(exponent : BigInteger? = null, decimalMode: DecimalMode? = null): BigDecimal {
+fun Short.toBigDecimal(exponent: BigInteger? = null, decimalMode: DecimalMode? = null): BigDecimal {
     return if (exponent != null) {
         BigDecimal.fromShortWithExponent(this, exponent, decimalMode)
     } else {
@@ -55,9 +52,8 @@ fun Short.toBigDecimal(exponent : BigInteger? = null, decimalMode: DecimalMode? 
     }
 }
 
-
 @ExperimentalUnsignedTypes
-fun Byte.toBigDecimal(exponent : BigInteger? = null, decimalMode: DecimalMode? = null): BigDecimal {
+fun Byte.toBigDecimal(exponent: BigInteger? = null, decimalMode: DecimalMode? = null): BigDecimal {
     return if (exponent != null) {
         BigDecimal.fromByteWithExponent(this, exponent, decimalMode)
     } else {
@@ -66,17 +62,17 @@ fun Byte.toBigDecimal(exponent : BigInteger? = null, decimalMode: DecimalMode? =
 }
 
 @ExperimentalUnsignedTypes
-fun String.toBigDecimal(exponent : BigInteger? = null, decimalMode: DecimalMode? = null): BigDecimal {
+fun String.toBigDecimal(exponent: BigInteger? = null, decimalMode: DecimalMode? = null): BigDecimal {
     return BigDecimal.parseStringWithMode(this, decimalMode)
-    }
+}
 
 @ExperimentalUnsignedTypes
-fun Float.toBigDecimal(decimalMode: DecimalMode? = null) : BigDecimal {
+fun Float.toBigDecimal(decimalMode: DecimalMode? = null): BigDecimal {
     return BigDecimal.fromFloat(this, decimalMode)
 }
 
 @ExperimentalUnsignedTypes
-fun Double.toBigDecimal(decimalMode: DecimalMode? = null) : BigDecimal {
+fun Double.toBigDecimal(decimalMode: DecimalMode? = null): BigDecimal {
     return BigDecimal.fromDouble(this, decimalMode)
 }
 
@@ -87,164 +83,159 @@ fun Double.toBigDecimal(decimalMode: DecimalMode? = null) : BigDecimal {
 // --------- Addition -----------------
 
 @ExperimentalUnsignedTypes
-operator fun Long.plus(other: BigDecimal) : BigDecimal {
+operator fun Long.plus(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() + other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Int.plus(other: BigDecimal) : BigDecimal {
+operator fun Int.plus(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() + other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Short.plus(other: BigDecimal) : BigDecimal {
+operator fun Short.plus(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() + other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Byte.plus(other: BigDecimal) : BigDecimal {
+operator fun Byte.plus(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() + other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Double.plus(other: BigDecimal) : BigDecimal {
+operator fun Double.plus(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() + other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Float.plus(other: BigDecimal) : BigDecimal {
+operator fun Float.plus(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() + other
 }
 
 // --------- Subtraction -----------------
 
 @ExperimentalUnsignedTypes
-operator fun Long.minus(other: BigDecimal) : BigDecimal {
+operator fun Long.minus(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() - other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Int.minus(other: BigDecimal) : BigDecimal {
+operator fun Int.minus(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() - other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Short.minus(other: BigDecimal) : BigDecimal {
+operator fun Short.minus(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() - other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Byte.minus(other: BigDecimal) : BigDecimal {
+operator fun Byte.minus(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() - other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Double.minus(other: BigDecimal) : BigDecimal {
+operator fun Double.minus(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() - other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Float.minus(other: BigDecimal) : BigDecimal {
+operator fun Float.minus(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() - other
 }
 
 // --------- Multiplication -----------------
 
 @ExperimentalUnsignedTypes
-operator fun Long.times(other: BigDecimal) : BigDecimal {
+operator fun Long.times(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() * other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Int.times(other: BigDecimal) : BigDecimal {
+operator fun Int.times(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() * other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Short.times(other: BigDecimal) : BigDecimal {
+operator fun Short.times(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() * other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Byte.times(other: BigDecimal) : BigDecimal {
+operator fun Byte.times(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() * other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Double.times(other: BigDecimal) : BigDecimal {
+operator fun Double.times(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() * other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Float.times(other: BigDecimal) : BigDecimal {
+operator fun Float.times(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() * other
 }
-
 
 // --------- Division -----------------
 
 @ExperimentalUnsignedTypes
-operator fun Long.div(other: BigDecimal) : BigDecimal {
+operator fun Long.div(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() / other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Int.div(other: BigDecimal) : BigDecimal {
+operator fun Int.div(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() / other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Short.div(other: BigDecimal) : BigDecimal {
+operator fun Short.div(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() / other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Byte.div(other: BigDecimal) : BigDecimal {
+operator fun Byte.div(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() / other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Double.div(other: BigDecimal) : BigDecimal {
+operator fun Double.div(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() / other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Float.div(other: BigDecimal) : BigDecimal {
+operator fun Float.div(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() / other
 }
 
 // --------- Remainder -----------------
 
 @ExperimentalUnsignedTypes
-operator fun Long.rem(other: BigDecimal) : BigDecimal {
+operator fun Long.rem(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() % other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Int.rem(other: BigDecimal) : BigDecimal {
+operator fun Int.rem(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() % other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Short.rem(other: BigDecimal) : BigDecimal {
+operator fun Short.rem(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() % other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Byte.rem(other: BigDecimal) : BigDecimal {
+operator fun Byte.rem(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() % other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Double.rem(other: BigDecimal) : BigDecimal {
+operator fun Double.rem(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() % other
 }
 
 @ExperimentalUnsignedTypes
-operator fun Float.rem(other: BigDecimal) : BigDecimal {
+operator fun Float.rem(other: BigDecimal): BigDecimal {
     return this.toBigDecimal() % other
 }
-
-
-
-

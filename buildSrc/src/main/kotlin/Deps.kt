@@ -21,8 +21,6 @@ object Versions {
     val kotlinSerialization = "0.12.0"
     val nodePlugin = "1.3.0"
     val dokkaPlugin = "0.9.18"
-
-
 }
 
 object Deps {
@@ -61,18 +59,20 @@ object Deps {
     object Native {
         val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-runtime-native:${Versions.kotlinSerialization}"
         val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core-native:${Versions.kotlinCoroutines}"
-
     }
-
 }
 
-
 object PluginsDeps {
+    object Versions {
+        val spotlessVersion = "3.24.2"
+    }
+
     val kotlinSerializationPlugin = "kotlinx-serialization"
     val multiplatform = "multiplatform"
     val node = "com.github.node-gradle.node"
     val mavenPublish = "maven-publish"
     val signing = "signing"
     val dokka = "org.jetbrains.dokka"
+    val spotless = "com.diffplug.gradle.spotless"
 }
 

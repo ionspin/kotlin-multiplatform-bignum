@@ -18,7 +18,11 @@
 package com.ionspin.kotlin.bignum.integer
 
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
-import kotlinx.coroutines.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import java.math.BigInteger
 import kotlin.random.Random
@@ -34,12 +38,17 @@ import kotlin.test.assertTrue
 class ProfilerRunner {
     companion object {
         @Suppress("UNUSED_PARAMETER")
-        fun main(args : List<String>) {
+        fun main(args: List<String>) {
             ProfilerRunner().runReciprocalVsBaseCaseBenchmark()
         }
     }
 
-    data class BenchmarkSample(val dividend : ULongArray, val divisor : ULongArray, val expectedQuotient : ULongArray, val expectedRemainder : ULongArray)
+    data class BenchmarkSample(
+        val dividend: ULongArray,
+        val divisor: ULongArray,
+        val expectedQuotient: ULongArray,
+        val expectedRemainder: ULongArray
+    )
 
     @Test
     fun runReciprocalVsBaseCaseBenchmark() {
@@ -63,11 +72,14 @@ class ProfilerRunner {
                 }
                 val expectedQuotient = dividend.toJavaBigInteger() / divisor.toJavaBigInteger()
                 val expectedRemainder = dividend.toJavaBigInteger() % divisor.toJavaBigInteger()
-                sampleList.add(BenchmarkSample(
-                    dividend,
-                    divisor,
-                    BigInteger63Arithmetic.parseForBase(expectedQuotient.toString(10), 10),
-                    BigInteger63Arithmetic.parseForBase(expectedRemainder.toString(10), 10)))
+                sampleList.add(
+                    BenchmarkSample(
+                        dividend,
+                        divisor,
+                        BigInteger63Arithmetic.parseForBase(expectedQuotient.toString(10), 10),
+                        BigInteger63Arithmetic.parseForBase(expectedRemainder.toString(10), 10)
+                    )
+                )
                 println("Done $i")
             }
             jobList.add(job)
@@ -88,12 +100,9 @@ class ProfilerRunner {
         runBaseCaseOnSampleList(sampleList)
         runReciprocalOnSampleList(sampleList)
         1 == 1
-
-
-
     }
 
-    fun runReciprocalOnSampleList(sampleList : List<BenchmarkSample>) {
+    fun runReciprocalOnSampleList(sampleList: List<BenchmarkSample>) {
         val reciprocalStartTime = System.currentTimeMillis()
         sampleList.forEach {
             divideUsingReciprocal(it.dividend, it.divisor, it.expectedQuotient, it.expectedRemainder)
@@ -111,28 +120,33 @@ class ProfilerRunner {
         println("Done basecase divide in ${baseCaseEndTime - baseCaseStartTime}")
     }
 
-
-
-    fun divideUsingReciprocal(dividend : ULongArray, divisor : ULongArray, expectedQuotient : ULongArray, expectedRemainder : ULongArray) {
+    fun divideUsingReciprocal(
+        dividend: ULongArray,
+        divisor: ULongArray,
+        expectedQuotient: ULongArray,
+        expectedRemainder: ULongArray
+    ) {
         val result = BigInteger63Arithmetic.reciprocalDivision(dividend, divisor)
         assertTrue {
             result.first.contentEquals(expectedQuotient) && result.second.contentEquals(expectedRemainder)
         }
     }
 
-    fun divideUsingBaseDivide(dividend : ULongArray, divisor : ULongArray, expectedQuotient : ULongArray, expectedRemainder : ULongArray) {
+    fun divideUsingBaseDivide(
+        dividend: ULongArray,
+        divisor: ULongArray,
+        expectedQuotient: ULongArray,
+        expectedRemainder: ULongArray
+    ) {
         val result = BigInteger63Arithmetic.divide(dividend, divisor)
         assertTrue {
             result.first.contentEquals(expectedQuotient) && result.second.contentEquals(expectedRemainder)
         }
     }
 
-
     private fun ULongArray.toJavaBigInteger(): BigInteger {
         return this.foldIndexed(BigInteger.valueOf(0)) { index, acc, digit ->
             acc.or(BigInteger(digit.toString(), 10).shiftLeft((index) * 63))
-
         }
     }
-
 }

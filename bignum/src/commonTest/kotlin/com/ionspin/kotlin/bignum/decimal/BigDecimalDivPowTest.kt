@@ -33,7 +33,7 @@ class BigDecimalDivPowTest {
         val dividend = 4.123.toBigDecimal()
         val divisor = 2.toBigDecimal()
         val (quotient, remainder) = dividend divrem divisor
-        assertTrue{
+        assertTrue {
             quotient == 2.toBigDecimal() && remainder == 0.123.toBigDecimal()
         }
     }
@@ -67,12 +67,7 @@ class BigDecimalDivPowTest {
         assertTrue {
             val a = 4.toBigDecimal(decimalMode = DecimalMode(decimalPrecision = 10, roundingMode = RoundingMode.FLOOR))
             val result = a.pow(-2)
-            result.compareTo(1f/16) == 0
+            result.compareTo(1f / 16) == 0
         }
-
-
     }
-
-
-
 }

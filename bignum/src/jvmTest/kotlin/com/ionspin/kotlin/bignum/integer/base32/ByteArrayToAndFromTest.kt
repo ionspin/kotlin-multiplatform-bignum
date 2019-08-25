@@ -117,7 +117,6 @@ class ByteArrayToAndFromTest {
             ) == 0 && reconstructedBigInt32ArrayAndSign.second == Sign.NEGATIVE
         }
 
-
         assertTrue {
             val value = 300L * Int.MAX_VALUE
             val bigInt32Array = BigInteger32Arithmetic.fromLong(value)
@@ -131,10 +130,7 @@ class ByteArrayToAndFromTest {
                 reconstructedBigInt32ArrayAndSign.first
             ) == 0 && reconstructedBigInt32ArrayAndSign.second == Sign.POSITIVE
         }
-
-
     }
-
 
     @Test
     fun testManyFromByteArrays() {
@@ -154,8 +150,6 @@ class ByteArrayToAndFromTest {
         runBlocking {
             jobList.forEach { it.join() }
         }
-
-
     }
 
     @Test
@@ -178,10 +172,7 @@ class ByteArrayToAndFromTest {
         runBlocking {
             jobList.forEach { it.join() }
         }
-
-
     }
-
 
     @Test
     fun testSpecificNumberToByteArray() {
@@ -223,7 +214,18 @@ class ByteArrayToAndFromTest {
 //        )
 
 //        val number = uintArrayOf(1477527302U, 1433375211U, 2299565196U, 157764436U, 1462860600U, 2909983771U, 4279152970U, 2795549498U, 2237905360U, 1446205346U)
-        val number = uintArrayOf(506240625U, 2361259230U, 631867953U, 304652636U, 3096086296U, 3786664971U, 3328419072U, 2592013419U, 4032177177U, 2421456398U)
+        val number = uintArrayOf(
+            506240625U,
+            2361259230U,
+            631867953U,
+            304652636U,
+            3096086296U,
+            3786664971U,
+            3328419072U,
+            2592013419U,
+            4032177177U,
+            2421456398U
+        )
 
         testSingleFromByteArray(number)
     }
@@ -238,7 +240,6 @@ class ByteArrayToAndFromTest {
             0 -> Sign.POSITIVE
             1 -> Sign.NEGATIVE
             else -> throw RuntimeException("Invalid sign")
-
         }
         assertTrue("Failed on FROM byte array: \n val number = uintArrayOf(${bigInt32Array.joinToString(separator = ", ") { "${it}U" }})\n") {
             BigInteger32Arithmetic.compare(
@@ -258,7 +259,7 @@ class ByteArrayToAndFromTest {
         val intArray = BigInteger32Arithmetic.toByteArray(bigInt32Array, sign)
         assertTrue("Failed on TO byte array: \n val number = uintArrayOf(${bigInt32Array.joinToString(separator = ", ") { "${it}U" }})\n") {
             javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray()) ||
-                    (byteArrayOf(0xFF.toByte()) + javaBigIntByteArray.dropLeadingZeroes()).contentEquals(intArray.dropLeadingZeroes().toByteArray())
+                (byteArrayOf(0xFF.toByte()) + javaBigIntByteArray.dropLeadingZeroes()).contentEquals(intArray.dropLeadingZeroes().toByteArray())
         }
     }
 
@@ -269,6 +270,4 @@ class ByteArrayToAndFromTest {
     private fun ByteArray.dropLeadingZeroes(): ByteArray {
         return this.dropWhile { it == 0.toByte() }.toByteArray()
     }
-
-
 }

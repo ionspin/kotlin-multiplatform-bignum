@@ -17,12 +17,10 @@
 
 package com.ionspin.kotlin.bignum.integer.base63
 
-import com.ionspin.kotlin.bignum.integer.chosenArithmetic
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.junit.Ignore
 import org.junit.Test
 import java.math.BigInteger
 import java.time.Duration
@@ -50,7 +48,6 @@ class BigInteger63JavaMultiplyTest {
             val bigIntResult = a.toJavaBigInteger() * b.toJavaBigInteger()
 
             resultBigInt == bigIntResult
-
         }
 
         assertTrue {
@@ -65,7 +62,6 @@ class BigInteger63JavaMultiplyTest {
             val bigIntResult = aBigInt * bBigInt
 
             resultBigInt == bigIntResult
-
         }
 
         assertTrue {
@@ -78,10 +74,7 @@ class BigInteger63JavaMultiplyTest {
             val bigIntResult = a.toJavaBigInteger() * b.toJavaBigInteger()
 
             resultBigInt == bigIntResult
-
         }
-
-
     }
 
     @Test
@@ -91,7 +84,6 @@ class BigInteger63JavaMultiplyTest {
         for (i in 1..Int.MAX_VALUE step 5001) {
             multiplySingleTest(random.nextULong() shr 1, random.nextULong() shr 1, random.nextULong() shr 1)
         }
-
     }
 
     @Test
@@ -137,11 +129,10 @@ class BigInteger63JavaMultiplyTest {
     fun multiplySingleTest(first: ULongArray, second: ULongArray) {
         assertTrue(
             "Failed on ulongArrayOf(${first.joinToString(separator = ", ") { it.toString() + "UL" }})," +
-                    " ulongArrayOf(${second.joinToString(separator = ", ") { it.toString() + "UL" }})"
+                " ulongArrayOf(${second.joinToString(separator = ", ") { it.toString() + "UL" }})"
         ) {
 
             val result = BigInteger63Arithmetic.multiply(first, second)
-
 
             val convertedResult = result.toJavaBigInteger()
             val bigIntResult = first.toJavaBigInteger() * second.toJavaBigInteger()
@@ -174,7 +165,7 @@ class BigInteger63JavaMultiplyTest {
                 acc * BigInteger(uInt.toString(), 10)
             }
             if (time) {
-                println("Result ${convertedResult}")
+                println("Result $convertedResult")
                 lastTime = LocalDateTime.now()
                 println("Total time ${Duration.between(startTime, lastTime)}")
             }
@@ -212,7 +203,6 @@ class BigInteger63JavaMultiplyTest {
         significantValue.forEach { first ->
             significantValue.forEach { second ->
                 twoWordsSingleMultiplication(first, second)
-
             }
         }
     }
@@ -242,7 +232,7 @@ class BigInteger63JavaMultiplyTest {
         karatsubaSingleTest(first, second)
     }
 
-    fun karatsubaSingleTest(first : ULongArray, second: ULongArray) {
+    fun karatsubaSingleTest(first: ULongArray, second: ULongArray) {
         val bigIntResult = BigInteger63Arithmetic.karatsubaMultiply(first, second)
         val javaBigIntResult = first.toJavaBigInteger() * second.toJavaBigInteger()
         println("------------- ${first.toJavaBigInteger()} * ${second.toJavaBigInteger()}")

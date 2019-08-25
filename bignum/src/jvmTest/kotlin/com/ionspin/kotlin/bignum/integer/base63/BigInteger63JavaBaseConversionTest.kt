@@ -32,7 +32,7 @@ import kotlin.test.assertTrue
  * on 10-Mar-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger63JavaBaseConversionTest  {
+class BigInteger63JavaBaseConversionTest {
 
     @Test
     fun test63To64Conversion() {
@@ -42,7 +42,6 @@ class BigInteger63JavaBaseConversionTest  {
             val aBigInt = a.toJavaBigInteger()
             val bBigInt = b.fromBase64toJavaBigInteger()
 
-
             aBigInt == bBigInt
         }
 
@@ -51,7 +50,6 @@ class BigInteger63JavaBaseConversionTest  {
             val b = BigInteger63Arithmetic.convertTo64BitRepresentation(a)
             val aBigInt = a.toJavaBigInteger()
             val bBigInt = b.fromBase64toJavaBigInteger()
-
 
             aBigInt == bBigInt
         }
@@ -64,7 +62,6 @@ class BigInteger63JavaBaseConversionTest  {
             val aBigInt = a.toJavaBigInteger()
             val bBigInt = b.fromBase64toJavaBigInteger()
 
-
             aBigInt == bBigInt
         }
 
@@ -73,7 +70,6 @@ class BigInteger63JavaBaseConversionTest  {
             val b = BigInteger63Arithmetic.convertTo64BitRepresentation(a)
             val aBigInt = a.toJavaBigInteger()
             val bBigInt = b.fromBase64toJavaBigInteger()
-
 
             aBigInt == bBigInt
         }
@@ -87,7 +83,6 @@ class BigInteger63JavaBaseConversionTest  {
             val aBigInt = a.toJavaBigInteger()
             val bBigInt = b.toJavaBigInteger()
 
-
             aBigInt == bBigInt
         }
     }
@@ -100,7 +95,6 @@ class BigInteger63JavaBaseConversionTest  {
             val aBigInt = a.toJavaBigInteger()
             val bBigInt = b.toJavaBigInteger()
 
-
             aBigInt == bBigInt
         }
 
@@ -109,7 +103,6 @@ class BigInteger63JavaBaseConversionTest  {
             val b = BigInteger63Arithmetic.convertFrom32BitRepresentation(a)
             val aBigInt = a.toJavaBigInteger()
             val bBigInt = b.toJavaBigInteger()
-
 
             aBigInt == bBigInt
         }
@@ -122,7 +115,6 @@ class BigInteger63JavaBaseConversionTest  {
             val aBigInt = a.toJavaBigInteger()
             val bBigInt = b.toJavaBigInteger()
 
-
             aBigInt == bBigInt
         }
     }
@@ -130,7 +122,6 @@ class BigInteger63JavaBaseConversionTest  {
     private fun ULongArray.fromBase64toJavaBigInteger(): BigInteger {
         return this.foldIndexed(BigInteger.valueOf(0)) { index, acc, digit ->
             acc.or(BigInteger(digit.toString(), 10).shiftLeft((index) * 64))
-
         }
     }
 }

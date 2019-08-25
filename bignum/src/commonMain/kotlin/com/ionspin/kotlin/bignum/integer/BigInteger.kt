@@ -17,7 +17,10 @@
 
 package com.ionspin.kotlin.bignum.integer
 
-import com.ionspin.kotlin.bignum.*
+import com.ionspin.kotlin.bignum.BigNumber
+import com.ionspin.kotlin.bignum.BitwiseCapable
+import com.ionspin.kotlin.bignum.ByteArrayDeserializable
+import com.ionspin.kotlin.bignum.ByteArraySerializable
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.NarrowingOperations
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
@@ -25,10 +28,6 @@ import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.log10
-
-
-
-
 
 /**
  * Arbitrary precision integer arithmetic.
@@ -42,7 +41,6 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     BitwiseCapable<BigInteger>, Comparable<Any>,
     ByteArraySerializable {
 
-
     constructor(long: Long) : this(arithmetic.fromLong(long), determinSignFromNumber(long))
     constructor(int: Int) : this(arithmetic.fromInt(int), determinSignFromNumber(int))
     constructor(short: Short) : this(arithmetic.fromShort(short), determinSignFromNumber(short))
@@ -55,7 +53,6 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     override fun getInstance(): BigInteger {
         return this
     }
-
 
     @ExperimentalUnsignedTypes
     companion object : BigNumber.Creator<BigInteger>, BigNumber.Util<BigInteger>, ByteArrayDeserializable<BigInteger> {
@@ -101,7 +98,6 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
                 }
                 BigInteger(arithmetic.parseForBase(string, base), Sign.POSITIVE)
             }
-
         }
 
         internal fun fromWordArray(wordArray: WordArray, sign: Sign): BigInteger {
@@ -144,10 +140,9 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
                 }
                 else -> throw RuntimeException("Unsupported type ${T::class.simpleName}")
             }
-
         }
 
-        //BigIntegers are immutable so this is pointless, but the rest of creator implementations use this.
+        // BigIntegers are immutable so this is pointless, but the rest of creator implementations use this.
         override fun fromBigInteger(bigInteger: BigInteger): BigInteger {
             return bigInteger
         }
@@ -234,7 +229,6 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
                 }
             }
         }
-
     }
 
     override fun subtract(other: BigInteger): BigInteger {
@@ -295,8 +289,6 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
             }
             BigInteger(result, sign)
         }
-
-
     }
 
     /**
@@ -346,14 +338,11 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         )
     }
 
-
     /**
      * D1Balanced reciprocal
      */
     private fun d1reciprocalRecursive(): BigInteger {
         return BigInteger(arithmetic.reciprocal(this.magnitude).first, sign)
-
-
     }
 
     fun sqrt(): BigInteger {
@@ -413,7 +402,6 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         }
     }
 
-
     fun compare(other: BigInteger): Int {
         if (isZero() && other.isZero()) return 0
         if (other.isZero() && this.sign == Sign.POSITIVE) return 1
@@ -438,7 +426,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         if (exponent <= Long.MAX_VALUE) {
             return pow(exponent.magnitude[0].toLong())
         }
-        //TODO this is not efficient
+        // TODO this is not efficient
         var counter = exponent
         var result = ONE
         while (counter > 0) {
@@ -469,7 +457,6 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
                 BigInteger(arithmetic.pow(magnitude, exponent), sign)
             }
         }
-
     }
 
     override fun pow(exponent: Int): BigInteger {
@@ -508,10 +495,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
             counter++
         }
         return counter + minDigit.toInt()
-
-
     }
-
 
     override infix fun shl(places: Int): BigInteger {
         return BigInteger(arithmetic.shiftLeft(this.magnitude, places), sign)
@@ -526,7 +510,6 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     }
 
     override operator fun unaryMinus(): BigInteger = negate()
-
 
     operator fun dec(): BigInteger {
         return this - ONE
@@ -583,7 +566,6 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
             is Double -> compareDoubleAndBigInt(other) { compare(it) }
             else -> throw RuntimeException("Invalid comparison type for BigInteger: ${other::class.simpleName}")
         }
-
     }
 
     /**
@@ -595,7 +577,6 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         return when {
             float % 1 == 0f -> compare(fromLong(number.toLong()))
             else -> compareFloatAndBigInt(number.toFloat()) { compare(it) }
-
         }
     }
 
@@ -652,13 +633,13 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     }
 
     override fun toString(): String {
-        //TODO think about limiting the size of string, and offering a stream of characters instead of huge strings
+        // TODO think about limiting the size of string, and offering a stream of characters instead of huge strings
 //        if (stringRepresentation == null) {
 //            stringRepresentation = toString(10)
 //        }
 //        return stringRepresentation!!
 
-        //Linux build complains about mutating a frozen object, let's try without this representation caching
+        // Linux build complains about mutating a frozen object, let's try without this representation caching
         return toString(10)
     }
 
@@ -675,7 +656,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
 
     data class SqareRootAndRemainder(val squareRoot: BigInteger, val remainder: BigInteger)
 
-    //TODO eh
+    // TODO eh
     operator fun times(char: Char): String {
         if (this < 0) {
             throw RuntimeException("Char cannot be multiplied with negative number")
@@ -776,7 +757,6 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         override fun iterator(): Iterator<BigInteger> {
             return BigIntegerIterator(start, endInclusive)
         }
-
     }
 
     class BigIntegerIterator(start: BigInteger, private val endInclusive: BigInteger) : Iterator<BigInteger> {
@@ -790,6 +770,5 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         override fun next(): BigInteger {
             return current++
         }
-
     }
 }

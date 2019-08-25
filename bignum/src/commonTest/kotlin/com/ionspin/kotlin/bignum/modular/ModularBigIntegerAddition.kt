@@ -36,8 +36,7 @@ class ModularBigIntegerAddition {
         testSingleAddition(a, b, expected)
     }
 
-
-    fun testSingleAddition(a : ModularBigInteger, b : ModularBigInteger, expected :ModularBigInteger) {
+    fun testSingleAddition(a: ModularBigInteger, b: ModularBigInteger, expected: ModularBigInteger) {
         assertTrue {
             val c = a + b
             c == expected

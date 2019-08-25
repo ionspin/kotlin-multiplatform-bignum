@@ -60,7 +60,7 @@ enum class RoundingMode {
      * Round towards nearest integer, using towards negative infinity as tie breaker when significant digit being rounded is 5
      */
     ROUND_HALF_FLOOR,
-    //For future releases
+    // For future releases
 //    /**
 //     * Round towards nearest even integer
 //     */
@@ -75,13 +75,14 @@ enum class RoundingMode {
  * Decimal precision signifies how many digits will significand have. If decimal precision is 0 and RoundingMode is NONE
  * infinite precision is used
  */
-data class DecimalMode(val decimalPrecision : Long = 0, val roundingMode : RoundingMode = RoundingMode.NONE) {
+data class DecimalMode(val decimalPrecision: Long = 0, val roundingMode: RoundingMode = RoundingMode.NONE) {
 
     init {
         if (decimalPrecision == 0L && roundingMode != RoundingMode.NONE) {
             throw ArithmeticException("Rounding mode with 0 digits precision.")
         }
     }
+
     companion object {
         /**
          * Default decimal mode, infinite precision, no rounding

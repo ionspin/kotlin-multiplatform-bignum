@@ -28,7 +28,7 @@ import kotlin.test.assertTrue
  * on 27-Apr-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger32SqrtTest  {
+class BigInteger32SqrtTest {
 
     @Ignore("Need to improve basic divide algo before using it in sqrt")
     @Test
@@ -36,8 +36,9 @@ class BigInteger32SqrtTest  {
         assertTrue {
             val operand = BigInteger32Arithmetic.parseForBase(
                 "547162628152978179694572006333394526730648083587307585845689465425919940113687046992147981" +
-                        "70196777058540761287227012319014433594622337082294496524616700872104031016223448",
-                10)
+                    "70196777058540761287227012319014433594622337082294496524616700872104031016223448",
+                10
+            )
             val a = BigInteger32Arithmetic.sqrt(operand)
             println("Operand: ${BigInteger32Arithmetic.toString(operand, 10)}")
             println("Sqrt: ${BigInteger32Arithmetic.toString(a.first, 10)}")
@@ -73,7 +74,6 @@ class BigInteger32SqrtTest  {
         }
     }
 
-
     @Test
     fun testSpecificSqrtInt() {
         val seed = 1
@@ -82,5 +82,4 @@ class BigInteger32SqrtTest  {
         val sqrt = BigInteger32Arithmetic.sqrtInt(a)
         assertTrue { sqrt[0] == 12U }
     }
-
 }

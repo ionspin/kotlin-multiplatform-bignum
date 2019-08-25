@@ -25,8 +25,7 @@ import org.junit.Test
  * on 17-Mar-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger32JavaAdditionTest  {
-
+class BigInteger32JavaAdditionTest {
 
     @Test
     fun `Test specific values`() {

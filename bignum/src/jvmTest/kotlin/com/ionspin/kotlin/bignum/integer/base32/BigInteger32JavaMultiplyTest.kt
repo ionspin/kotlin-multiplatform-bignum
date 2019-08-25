@@ -17,7 +17,11 @@
 
 package com.ionspin.kotlin.bignum.integer.base32
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import java.math.BigInteger
 import java.time.Duration
@@ -33,7 +37,7 @@ import kotlin.test.assertTrue
  */
 @ExperimentalCoroutinesApi
 @ExperimentalUnsignedTypes
-class BigInteger32JavaMultiplyTest  {
+class BigInteger32JavaMultiplyTest {
 
     @Test
     fun `Test for sentimental value`() {
@@ -47,7 +51,6 @@ class BigInteger32JavaMultiplyTest  {
             val bigIntResult = a.toJavaBigInteger() * b.toJavaBigInteger()
 
             resultBigInt == bigIntResult
-
         }
 
         assertTrue {
@@ -62,7 +65,6 @@ class BigInteger32JavaMultiplyTest  {
             val bigIntResult = aBigInt * bBigInt
 
             resultBigInt == bigIntResult
-
         }
 
         assertTrue {
@@ -75,10 +77,7 @@ class BigInteger32JavaMultiplyTest  {
             val bigIntResult = a.toJavaBigInteger() * b.toJavaBigInteger()
 
             resultBigInt == bigIntResult
-
         }
-
-
     }
 
     @Test
@@ -97,11 +96,10 @@ class BigInteger32JavaMultiplyTest  {
         runBlocking {
             jobList.forEach { it.join() }
         }
-
     }
 
     @Test
-    fun `Multiply two large words`()  {
+    fun `Multiply two large words`() {
         val seed = 1
         val random = Random(seed)
         val numberOfElements = 15000
@@ -166,7 +164,7 @@ class BigInteger32JavaMultiplyTest  {
     fun multiplySingleTestArray(first: UIntArray, second: UIntArray) {
         assertTrue(
             "Failed on uintArrayOf(${first.joinToString(separator = ", ")})" +
-                    ", uintArrayOf(${second.joinToString(separator = ", ")})"
+                ", uintArrayOf(${second.joinToString(separator = ", ")})"
         ) {
             val time = true
             lateinit var lastTime: LocalDateTime

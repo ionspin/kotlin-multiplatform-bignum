@@ -27,9 +27,8 @@ import kotlin.test.assertTrue
  * on 17-Mar-2019
  */
 
-
 @ExperimentalUnsignedTypes
-class BigInteger63ListJavaAdditionTest () {
+class BigInteger63ListJavaAdditionTest() {
 
     @Test
     fun `Test specific values for addition`() {
@@ -39,12 +38,5 @@ class BigInteger63ListJavaAdditionTest () {
 
         val bigIntResult = first.toJavaBigInteger() + second.toJavaBigInteger()
         assertTrue { result.toJavaBigInteger() == bigIntResult }
-
     }
-
-
-
-
-
-    
 }

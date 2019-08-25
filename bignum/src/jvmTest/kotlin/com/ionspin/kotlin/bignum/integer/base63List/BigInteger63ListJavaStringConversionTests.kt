@@ -34,8 +34,7 @@ import kotlin.test.assertTrue
  * on 16-Mar-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger63ListJavaStringConversionTests () {
-
+class BigInteger63ListJavaStringConversionTests() {
 
     @Test
     fun `Test parsing with sepcific values`() {
@@ -52,7 +51,6 @@ class BigInteger63ListJavaStringConversionTests () {
 
             parsed.toJavaBigInteger() == javaBigIntParsed
         }
-
     }
 
     @Test
@@ -71,7 +69,6 @@ class BigInteger63ListJavaStringConversionTests () {
         runBlocking {
             jobList.forEach { it.join() }
         }
-
     }
 
     @Test
@@ -85,7 +82,7 @@ class BigInteger63ListJavaStringConversionTests () {
                     toStringSingleTest(
                         listOf(random.nextULong(), random.nextULong()),
                         random.nextInt(2, 36)
-                    ) //36 is the max java bigint supports
+                    ) // 36 is the max java bigint supports
                 }
             )
         }
@@ -93,7 +90,6 @@ class BigInteger63ListJavaStringConversionTests () {
         runBlocking {
             jobList.forEach { it.join() }
         }
-
     }
 
     @Test
@@ -101,7 +97,7 @@ class BigInteger63ListJavaStringConversionTests () {
         toStringSingleTest(listOf(1234U), 10)
     }
 
-    fun toStringSingleTest(operand : List<ULong>, base: Int) {
+    fun toStringSingleTest(operand: List<ULong>, base: Int) {
         assertTrue {
             val result = BigInteger63LinkedListArithmetic.toString(operand, base)
             val javaBigIntResult = operand.toJavaBigInteger().toString(base)
@@ -109,6 +105,4 @@ class BigInteger63ListJavaStringConversionTests () {
             result == javaBigIntResult
         }
     }
-
-
 }

@@ -33,15 +33,14 @@ class ParsingAndToStringTest {
 
     @Test
     fun testParsing() {
-        parsingSingleTest("1234" , 10)
+        parsingSingleTest("1234", 10)
     }
 
-    fun parsingSingleTest(textNumber : String, base : Int) {
+    fun parsingSingleTest(textNumber: String, base: Int) {
         assertTrue {
             val parsed = BigInteger.parseString(textNumber, base)
             val printed = parsed.toString(base)
             print(printed)
-
 
             textNumber == printed
         }
@@ -50,16 +49,16 @@ class ParsingAndToStringTest {
     @Test
     fun toStringTest() {
         val bigInt = ulongArrayOf(
-         2357127997678045786UL,
-         9223372036854775806UL,
-         6618565566930092031UL,
-         3482571707102756671UL,
-         5561215897725336065UL,
-         7121810967379087079UL,
-         2244066548420960617UL,
-         2014538293531722329UL,
-         492133570377UL,
-         0UL
+            2357127997678045786UL,
+            9223372036854775806UL,
+            6618565566930092031UL,
+            3482571707102756671UL,
+            5561215897725336065UL,
+            7121810967379087079UL,
+            2244066548420960617UL,
+            2014538293531722329UL,
+            492133570377UL,
+            0UL
         )
         val parsed = BigInteger.fromWordArray(bigInt, Sign.POSITIVE)
         parsed.toString()

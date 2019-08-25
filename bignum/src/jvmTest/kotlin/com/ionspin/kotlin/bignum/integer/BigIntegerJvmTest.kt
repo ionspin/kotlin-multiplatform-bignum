@@ -19,6 +19,7 @@ package com.ionspin.kotlin.bignum.integer
 
 import com.ionspin.kotlin.bignum.integer.BigInteger.Companion.ZERO
 import com.ionspin.kotlin.bignum.integer.base63.toJavaBigInteger
+import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -26,7 +27,6 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.random.Random
 import kotlin.random.nextULong
-import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 import kotlin.test.assertTrue
 
 /**
@@ -36,7 +36,6 @@ import kotlin.test.assertTrue
  */
 @ExperimentalUnsignedTypes
 class BigIntegerJvmTest {
-
 
     @Test
     fun testModInverse() {
@@ -48,7 +47,7 @@ class BigIntegerJvmTest {
         }
     }
 
-    //TODO need to implement better testcase, need better coprime generation
+    // TODO need to implement better testcase, need better coprime generation
     @Test
     fun testRandomModInverse() {
         val seed = 1
@@ -77,12 +76,10 @@ class BigIntegerJvmTest {
                 }
             }
             jobList.add(job)
-
         }
         runBlocking {
             jobList.forEach { it.join() }
         }
-
     }
 
     fun testSingleModInverse(bigInteger: BigInteger, modulo: BigInteger) {
@@ -119,11 +116,4 @@ class BigIntegerJvmTest {
             aPow.residue.toJavaBigInteger().compareTo(javaBigIntPow) == 0
         }
     }
-
-
-
-
-
-
-
 }

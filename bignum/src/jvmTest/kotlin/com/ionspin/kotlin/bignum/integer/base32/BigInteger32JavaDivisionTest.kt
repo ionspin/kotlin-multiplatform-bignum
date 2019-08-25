@@ -19,10 +19,13 @@
 
 package com.ionspin.kotlin.bignum.integer.base32
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.junit.Ignore
 import org.junit.Test
-import java.lang.ArithmeticException
 import java.math.BigDecimal
 import java.math.MathContext
 import java.math.RoundingMode
@@ -37,7 +40,7 @@ import kotlin.test.assertTrue
  * on 09-Mar-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger32JavaDivisionTest  {
+class BigInteger32JavaDivisionTest {
 
     @Test
     fun testDivision() {
@@ -52,9 +55,7 @@ class BigInteger32JavaDivisionTest  {
             val bigIntQuotient = a.toJavaBigInteger() / b.toJavaBigInteger()
             val bigIntRemainder = a.toJavaBigInteger() % b.toJavaBigInteger()
 
-
             quotientBigInt == bigIntQuotient && remainderBigInt == bigIntRemainder
-
         }
 
         assertTrue {
@@ -67,7 +68,6 @@ class BigInteger32JavaDivisionTest  {
 
             val bigIntQuotient = a.toJavaBigInteger() / b.toJavaBigInteger()
             val bigIntRemainder = a.toJavaBigInteger() % b.toJavaBigInteger()
-
 
             quotientBigInt == bigIntQuotient && remainderBigInt == bigIntRemainder
         }
@@ -95,7 +95,6 @@ class BigInteger32JavaDivisionTest  {
         runBlocking {
             jobList.forEach { it.join() }
         }
-
     }
 
     @Test
@@ -106,7 +105,6 @@ class BigInteger32JavaDivisionTest  {
         assertFailsWith<ArithmeticException> {
             BigInteger32Arithmetic.divide(dividend, divisor)
         }
-
     }
 
     @Test
@@ -118,7 +116,6 @@ class BigInteger32JavaDivisionTest  {
             val b = 1U
             divisionSingleTest(uintArrayOf(a), uintArrayOf(b))
         }
-
     }
 
     @Test
@@ -128,7 +125,6 @@ class BigInteger32JavaDivisionTest  {
 
         val jobList: MutableList<Job> = mutableListOf()
         for (i in 1..Int.MAX_VALUE step 5001) {
-
 
             val a = uintArrayOf(random.nextUInt(), random.nextUInt())
             val b = uintArrayOf(random.nextUInt(), random.nextUInt())
@@ -145,7 +141,6 @@ class BigInteger32JavaDivisionTest  {
         runBlocking {
             jobList.forEach { it.join() }
         }
-
     }
 
     @Test
@@ -161,19 +156,16 @@ class BigInteger32JavaDivisionTest  {
                     divisionSingleTest(a, b)
                 }
             )
-
         }
         runBlocking {
             jobList.forEach { it.join() }
         }
-
     }
 
     @Test
     fun `Test division with a large number of words in divisor`() {
         val seed = 1
         val random = Random(seed)
-
 
         val jobList: MutableList<Job> = mutableListOf()
         for (i in 10..5000 step 19) {
@@ -192,11 +184,9 @@ class BigInteger32JavaDivisionTest  {
         runBlocking {
             jobList.forEach { it.join() }
         }
-
-
     }
 
-    //Can't remember why I created this one
+    // Can't remember why I created this one
     @Test
     fun `Test divison of 12 word dividend by four word divisor`() {
         val seed = 1
@@ -215,18 +205,16 @@ class BigInteger32JavaDivisionTest  {
                     divisionSingleTest(a, b)
                 }
             )
-
         }
         runBlocking {
             jobList.forEach { it.join() }
         }
-
     }
 
     fun divisionSingleTest(dividend: UIntArray, divisor: UIntArray) {
         assertTrue(
             "Failed on uintArrayOf(${dividend.joinToString(separator = ",") { it.toString() + "U" }}), " +
-                    "uintArrayOf(${divisor.joinToString(separator = ",") { it.toString() + "U" }})"
+                "uintArrayOf(${divisor.joinToString(separator = ",") { it.toString() + "U" }})"
         ) {
             val a = dividend
             val b = divisor
@@ -244,10 +232,9 @@ class BigInteger32JavaDivisionTest  {
                 e.printStackTrace()
                 false
             }
-
-
         }
     }
+
     @Test
     fun reciprocalTest() {
         val a = uintArrayOf(100u)
@@ -256,7 +243,7 @@ class BigInteger32JavaDivisionTest  {
         val reconstructed = BigInteger32Arithmetic.shiftRight(
             BigInteger32Arithmetic.multiply(a, reciprocal.first),
             reciprocal.second
-            )
+        )
         println("Reconstructed: ${reconstructed.contentToString()}")
     }
 
@@ -285,12 +272,10 @@ class BigInteger32JavaDivisionTest  {
                 it.join()
             }
         }
-
-
     }
 
-    fun singleReciprocalOneWordTest(word : UInt) {
-        assertTrue ("Failed on $word") {
+    fun singleReciprocalOneWordTest(word: UInt) {
+        assertTrue("Failed on $word") {
             val reciprocal = BigInteger32Arithmetic.reciprocalSingleWord(word)
             val resultJavaBigDecimal = reciprocal.first.toJavaBigInteger().toBigDecimal()
             val wordJavaBigDecimal = uintArrayOf(word).toJavaBigInteger().toBigDecimal()
@@ -298,9 +283,9 @@ class BigInteger32JavaDivisionTest  {
             val result = multiplication / 2.toBigInteger().pow(reciprocal.second).toBigDecimal()
             val rounded = result.round(MathContext(2, RoundingMode.HALF_EVEN))
             rounded.compareTo(BigDecimal.valueOf(1.0)) == 0
-
         }
     }
+
     @Test
     fun testRandomReciprocalDivisionWithOneWord() {
         val seed = 1
@@ -321,6 +306,7 @@ class BigInteger32JavaDivisionTest  {
             }
         }
     }
+
     @Test
     fun singleReciprocalDivisionTestOneWord() {
         val dividend = uintArrayOf(3504818262U, 3616430151U, 2530148830U)
@@ -328,7 +314,7 @@ class BigInteger32JavaDivisionTest  {
         testSingleReciprocalDivisonWithOneWord(dividend, divisor)
     }
 
-    fun testSingleReciprocalDivisonWithOneWord(dividend: UIntArray, divisor : UInt) {
+    fun testSingleReciprocalDivisonWithOneWord(dividend: UIntArray, divisor: UInt) {
 
         val arrayDivisor = uintArrayOf(divisor)
         val javaDividend = dividend.toJavaBigInteger()
@@ -338,26 +324,48 @@ class BigInteger32JavaDivisionTest  {
         val (resultQuotient, resultRemainder) = BigInteger32Arithmetic.reciprocalDivision(dividend, arrayDivisor)
         val javaResultQuotient = resultQuotient.toJavaBigInteger()
         val javaResultRemainder = resultRemainder.toJavaBigInteger()
-        assertTrue ("Failed on \nval dividend = uintArrayOf(${dividend.joinToString(separator = ", ") { "${it}U"}})" +
-                "\nval divisor = ${divisor}U\n"){
+        assertTrue(
+            "Failed on \nval dividend = uintArrayOf(${dividend.joinToString(separator = ", ") { "${it}U" }})" +
+                "\nval divisor = ${divisor}U\n"
+        ) {
             javaResultQuotient.compareTo(expectedQuotient) == 0 &&
-                    javaResultRemainder.compareTo(expectedRemainder) == 0
+                javaResultRemainder.compareTo(expectedRemainder) == 0
         }
-
     }
 
     @Test
     fun singleReciprocalDivisionTest() {
 //        val dividend = uintArrayOf(3504818262U, 3616430151U, 2530148830U)
 //        val divisor = (3959362403U)
-        val dividend = uintArrayOf(3449361588U, 1756843090U, 1453467775U, 4067428664U, 3191437204U, 2658797275U, 4118577093U, 1510408169U, 1655916993U, 393078469U)
-        val divisor = uintArrayOf(2509423399U, 2721619526U, 1561595252U, 3307230229U, 3373635748U, 761261538U, 3754926477U, 2390345401U, 616031684U)
+        val dividend = uintArrayOf(
+            3449361588U,
+            1756843090U,
+            1453467775U,
+            4067428664U,
+            3191437204U,
+            2658797275U,
+            4118577093U,
+            1510408169U,
+            1655916993U,
+            393078469U
+        )
+        val divisor = uintArrayOf(
+            2509423399U,
+            2721619526U,
+            1561595252U,
+            3307230229U,
+            3373635748U,
+            761261538U,
+            3754926477U,
+            2390345401U,
+            616031684U
+        )
 //        val dividend = uintArrayOf(2412223697U, 4003211491U, 2443024406U, 2156654946U, 3316815183U, 3124443256U, 48471415U, 3368762895U, 1329509906U, 2006838763U)
 //        val divisor = uintArrayOf(3868219553U, 1852467980U, 291647052U, 1400631124U, 969215731U, 750739415U, 7935153U, 2131261330U, 553254777U)
         testSingleReciprocalDivison(dividend, divisor)
     }
 
-    fun testSingleReciprocalDivison(dividend: UIntArray, divisor : UIntArray) {
+    fun testSingleReciprocalDivison(dividend: UIntArray, divisor: UIntArray) {
 
         val javaDividend = dividend.toJavaBigInteger()
         val javaDivisor = divisor.toJavaBigInteger()
@@ -366,20 +374,25 @@ class BigInteger32JavaDivisionTest  {
         val (resultQuotient, resultRemainder) = BigInteger32Arithmetic.reciprocalDivision(dividend, divisor)
         val javaResultQuotient = resultQuotient.toJavaBigInteger()
         val javaResultRemainder = resultRemainder.toJavaBigInteger()
-        assertTrue ("Failed on \nval dividend = uintArrayOf(${dividend.joinToString(separator = ", ") { "${it}U"}})" +
-                "\nval divisor = ${divisor}U\n"){
+        assertTrue(
+            "Failed on \nval dividend = uintArrayOf(${dividend.joinToString(separator = ", ") { "${it}U" }})" +
+                "\nval divisor = ${divisor}U\n"
+        ) {
             javaResultQuotient.compareTo(expectedQuotient) == 0 &&
-                    javaResultRemainder.compareTo(expectedRemainder) == 0
+                javaResultRemainder.compareTo(expectedRemainder) == 0
         }
-
     }
-
 }
 
 @ExperimentalUnsignedTypes
 class DivisionBenchmark {
 
-    data class BenchmarkSample32Bit(val dividend : UIntArray, val divisor : UIntArray, val expectedQuotient : UIntArray, val expectedRemainder : UIntArray)
+    data class BenchmarkSample32Bit(
+        val dividend: UIntArray,
+        val divisor: UIntArray,
+        val expectedQuotient: UIntArray,
+        val expectedRemainder: UIntArray
+    )
 
     @Ignore("This should be run only when necessary")
     @Test
@@ -404,11 +417,14 @@ class DivisionBenchmark {
                 }
                 val expectedQuotient = dividend.toJavaBigInteger() / divisor.toJavaBigInteger()
                 val expectedRemainder = dividend.toJavaBigInteger() % divisor.toJavaBigInteger()
-                sampleList.add(BenchmarkSample32Bit(
-                    dividend,
-                    divisor,
-                    BigInteger32Arithmetic.parseForBase(expectedQuotient.toString(10), 10),
-                    BigInteger32Arithmetic.parseForBase(expectedRemainder.toString(10), 10)))
+                sampleList.add(
+                    BenchmarkSample32Bit(
+                        dividend,
+                        divisor,
+                        BigInteger32Arithmetic.parseForBase(expectedQuotient.toString(10), 10),
+                        BigInteger32Arithmetic.parseForBase(expectedRemainder.toString(10), 10)
+                    )
+                )
                 println("Done $i")
             }
             jobList.add(job)
@@ -429,12 +445,9 @@ class DivisionBenchmark {
         runBaseCaseOnSampleList(sampleList)
         runReciprocalOnSampleList(sampleList)
         1 == 1
-
-
-
     }
 
-    fun runReciprocalOnSampleList(sampleList : List<BenchmarkSample32Bit>) {
+    fun runReciprocalOnSampleList(sampleList: List<BenchmarkSample32Bit>) {
         val reciprocalStartTime = System.currentTimeMillis()
         sampleList.forEach {
             divideUsingReciprocal(it.dividend, it.divisor, it.expectedQuotient, it.expectedRemainder)
@@ -452,22 +465,30 @@ class DivisionBenchmark {
         println("Done basecase divide in ${baseCaseEndTime - baseCaseStartTime}")
     }
 
-
-
-    fun divideUsingReciprocal(dividend : UIntArray, divisor : UIntArray, expectedQuotient : UIntArray, expectedRemainder : UIntArray) {
+    fun divideUsingReciprocal(
+        dividend: UIntArray,
+        divisor: UIntArray,
+        expectedQuotient: UIntArray,
+        expectedRemainder: UIntArray
+    ) {
         val result = BigInteger32Arithmetic.reciprocalDivision(dividend, divisor)
-        assertTrue ("Failed on: \n val dividend = uintArrayOf(${dividend.joinToString(separator =", ") { "${it}U"}})\n" +
-                "val divisor = uintArrayOf(${divisor.joinToString(separator =", ") { "${it}U"}})"){
+        assertTrue("Failed on: \n val dividend = uintArrayOf(${dividend.joinToString(separator = ", ") { "${it}U" }})\n" +
+            "val divisor = uintArrayOf(${divisor.joinToString(separator = ", ") { "${it}U" }})"
+        ) {
 
             result.first.contentEquals(expectedQuotient) && result.second.contentEquals(expectedRemainder)
         }
     }
 
-    fun divideUsingBaseDivide(dividend : UIntArray, divisor : UIntArray, expectedQuotient : UIntArray, expectedRemainder : UIntArray) {
+    fun divideUsingBaseDivide(
+        dividend: UIntArray,
+        divisor: UIntArray,
+        expectedQuotient: UIntArray,
+        expectedRemainder: UIntArray
+    ) {
         val result = BigInteger32Arithmetic.divide(dividend, divisor)
         assertTrue {
             result.first.contentEquals(expectedQuotient) && result.second.contentEquals(expectedRemainder)
         }
     }
-
 }

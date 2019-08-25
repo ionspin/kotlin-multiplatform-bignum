@@ -33,8 +33,7 @@ import kotlin.test.assertTrue
  * on 16-Mar-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger63JavaStringConversionTests  {
-
+class BigInteger63JavaStringConversionTests {
 
     @Test
     fun `Test parsing with sepcific values`() {
@@ -51,7 +50,6 @@ class BigInteger63JavaStringConversionTests  {
 
             parsed.toJavaBigInteger() == javaBigIntParsed
         }
-
     }
 
     @Test
@@ -70,7 +68,6 @@ class BigInteger63JavaStringConversionTests  {
         runBlocking {
             jobList.forEach { it.join() }
         }
-
     }
 
     @Test
@@ -84,7 +81,7 @@ class BigInteger63JavaStringConversionTests  {
                     toStringSingleTest(
                         ulongArrayOf(random.nextULong(), random.nextULong()),
                         random.nextInt(2, 36)
-                    ) //36 is the max java bigint supports
+                    ) // 36 is the max java bigint supports
                 }
             )
         }
@@ -92,7 +89,6 @@ class BigInteger63JavaStringConversionTests  {
         runBlocking {
             jobList.forEach { it.join() }
         }
-
     }
 
     @Test
@@ -108,6 +104,4 @@ class BigInteger63JavaStringConversionTests  {
             result == javaBigIntResult
         }
     }
-
-
 }

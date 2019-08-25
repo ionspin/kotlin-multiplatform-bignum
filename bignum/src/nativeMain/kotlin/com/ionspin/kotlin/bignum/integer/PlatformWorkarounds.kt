@@ -23,7 +23,7 @@ package com.ionspin.kotlin.bignum.integer
  * on 02-Jun-2019
  */
 actual object ComparisonWorkaround {
-    actual fun isSpecialHandlingForFloatNeeded(number : Number) : Boolean {
+    actual fun isSpecialHandlingForFloatNeeded(number: Number): Boolean {
         return false
     }
 }

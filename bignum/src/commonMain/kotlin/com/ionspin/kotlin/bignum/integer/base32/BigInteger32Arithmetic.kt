@@ -22,7 +22,6 @@ import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.util.toDigit
-import kotlin.experimental.and
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -49,7 +48,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     override val TEN = UIntArray(1) { 10U }
 
     const val karatsubaThreshold = 3
-
 
     /**
      * Hackers delight 5-11
@@ -82,7 +80,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         y = x shr 1
         if (y != 0U) {
             return n - 2
-
         }
 
         return n - x.toInt()
@@ -94,7 +91,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
         val mostSignificant = value[value.size - 1]
         return bitLength(mostSignificant) + (value.size - 1) * basePowerOfTwo
-
     }
 
     fun bitLength(value: UInt): Int {
@@ -113,7 +109,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             return ZERO
         }
         return bigInteger.copyOfRange(0, firstEmpty)
-
     }
 
     override fun shiftLeft(operand: UIntArray, places: Int): UIntArray {
@@ -153,10 +148,8 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
                 else -> {
                     throw RuntimeException("Invalid case $it")
                 }
-
             }
         }
-
     }
 
     override fun shiftRight(operand: UIntArray, places: Int): UIntArray {
@@ -191,7 +184,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             }
         }
         return removeLeadingZeroes(result)
-
     }
 
     fun normalize(dividend: UIntArray, divisor: UIntArray): Triple<UIntArray, UIntArray, Int> {
@@ -202,7 +194,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         val dividendNormalized = dividend.shl(normalizationShift)
 
         return Triple(dividendNormalized, divisorNormalized, normalizationShift)
-
     }
 
     fun normalize(operand: UIntArray): Pair<UIntArray, Int> {
@@ -219,7 +210,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return remainder
     }
 
-    //---------------- Primitive operations -----------------------//
+    // ---------------- Primitive operations -----------------------//
 
     override fun compare(first: UIntArray, second: UIntArray): Int {
         if (first.size > second.size) {
@@ -253,8 +244,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         } else {
             return -1
         }
-
-
     }
 
     override fun add(first: UIntArray, second: UIntArray): UIntArray {
@@ -266,7 +255,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         } else {
             Quadruple(second.size, first.size, second, first)
         }
-
 
         val result = UIntArray(maxLength + 1) { 0u }
         var i = 0
@@ -300,7 +288,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             sum = sum shr basePowerOfTwo
             i++
         }
-
     }
 
     override fun substract(first: UIntArray, second: UIntArray): UIntArray {
@@ -341,7 +328,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         if (result.filter { it == 0U }.isEmpty()) {
             return ZERO
         }
-        //Remove zero words
+        // Remove zero words
         val firstEmpty = result.indexOfLast { it != 0U } + 1
 
         return result.copyOfRange(0, firstEmpty)
@@ -374,9 +361,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     fun karatsubaMultiply(first: UIntArray, second: UIntArray): UIntArray {
 
-
         val halfLength = (kotlin.math.max(first.size, second.size) + 1) / 2
-
 
         val mask = (ONE shl (halfLength * wordSizeInBits)) - 1U
         val firstLower = and(first, mask)
@@ -392,14 +377,13 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             (higherProduct shl (2 * wordSizeInBits * halfLength)) + ((middleProduct - higherProduct - lowerProduct) shl (wordSizeInBits * halfLength)) + lowerProduct
 
         return result
-
     }
 
     override fun multiply(first: UIntArray, second: UIntArray): UIntArray {
         if (first == ZERO || second == ZERO) {
             return ZERO
         }
-        //Need to debug 32 bit variant, seems to fail on lower product
+        // Need to debug 32 bit variant, seems to fail on lower product
 //        if (first.size >= karatsubaThreshold || second.size == karatsubaThreshold) {
 //            return karatsubaMultiply(first, second)
 //        }
@@ -429,7 +413,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     override fun divide(first: UIntArray, second: UIntArray): Pair<UIntArray, UIntArray> {
         return basicDivide(first, second)
     }
-
 
     /*
      * Based on Basecase DivRem algorithm from
@@ -465,7 +448,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             return Pair(uintArrayOf(1U), unnormalizedDividend - unnormalizedDivisor)
         }
 
-
         var (dividend, divisor, normalizationShift) = normalize(
             unnormalizedDividend,
             unnormalizedDivisor
@@ -473,7 +455,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         val dividendSize = dividend.size
         val divisorSize = divisor.size
         val wordPrecision = dividendSize - divisorSize
-
 
         var qjhat: ULong
         var reconstructedQuotient: UIntArray
@@ -489,8 +470,8 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         for (j in (wordPrecision - 1) downTo 0) {
             qjhat = if (divisorSize + j < dividend.size) {
                 ((dividend[divisorSize + j].toULong() shl basePowerOfTwo) +
-                        dividend[divisorSize + j - 1]) /
-                        divisor[divisorSize - 1]
+                    dividend[divisorSize + j - 1]) /
+                    divisor[divisorSize - 1]
             } else {
                 if (divisorSize + j == dividend.size) {
                     ((dividend[divisorSize + j - 1]) / divisor[divisorSize - 1]).toULong()
@@ -558,7 +539,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             } else {
                 a = a - qjBjb
             }
-
         }
         val denormRemainder =
             denormalize(a, shift)
@@ -607,13 +587,12 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return Pair(x, r)
     }
 
-
     fun reciprocalSingleWord(operand: UInt): Pair<UIntArray, Int> {
         val bitLength = bitLength(operand)
         val requiredPrecision = bitLength * 4
         if (bitLength * 2 <= 63) {
             val base =
-                1UL shl (requiredPrecision) //We are sure that precision is less or equal to 63, so inside int range
+                1UL shl (requiredPrecision) // We are sure that precision is less or equal to 63, so inside int range
             var result = base / operand
 
             return checkReciprocal(uintArrayOf(operand), Pair(uintArrayOf(result.toUInt()), requiredPrecision))
@@ -637,7 +616,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
     }
 
-
     override fun reciprocal(operand: UIntArray): Pair<UIntArray, UIntArray> {
         return d1ReciprocalRecursiveWordVersion(operand)
     }
@@ -651,7 +629,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
         val secondReciprocal = secondReciprocalWithRemainder.first
         var product = first * secondReciprocal
-        //TODO Proper rounding
+        // TODO Proper rounding
         if (product.compareTo(0U) == 0) {
             return Pair(ZERO, first)
         }
@@ -704,12 +682,10 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return Pair(s, r)
     }
 
-
     internal fun basecaseSqrt(operand: UIntArray): Pair<UIntArray, UIntArray> {
         val sqrt = sqrtInt(operand)
         val remainder = operand - (sqrt * sqrt)
         return Pair(sqrt, remainder)
-
     }
 
     internal fun sqrtInt(operand: UIntArray): UIntArray {
@@ -723,7 +699,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         } while (u < s)
         return s
     }
-
 
     override fun gcd(first: UIntArray, second: UIntArray): UIntArray {
         return naiveGcd(first, second)
@@ -875,7 +850,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
     }
 
-
     internal operator fun UIntArray.plus(other: UIntArray): UIntArray {
         return add(this, other)
     }
@@ -933,7 +907,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             it.toString() + "U"
         }
     }
-
 
     override fun fromULong(uLong: ULong): UIntArray = uintArrayOf(
         ((uLong and 0xFFFFFFFF00000000U) shr 32).toUInt(),
@@ -1018,7 +991,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
                 perfected
             }
         }.toTypedArray()
-
     }
 
     override fun fromByteArray(byteArray: Array<Byte>): Pair<UIntArray, Sign> {
@@ -1063,7 +1035,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             }
             Sign.ZERO -> throw RuntimeException("Bug in fromByteArray, sign shouldn't ever be zero at this point.")
         }
-
     }
 
     private fun List<Byte>.dropLeadingZeroes(): List<Byte> {

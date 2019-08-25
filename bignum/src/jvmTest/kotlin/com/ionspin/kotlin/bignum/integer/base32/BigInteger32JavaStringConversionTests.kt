@@ -33,22 +33,20 @@ import kotlin.test.assertTrue
  * on 16-Mar-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger32JavaStringConversionTests  {
-
+class BigInteger32JavaStringConversionTests {
 
     @Test
     fun `Test parsing with sepcific values`() {
         testParsingSingleTest("1234", 10)
     }
 
-    fun testParsingSingleTest(uIntArrayString: String, base : Int) {
+    fun testParsingSingleTest(uIntArrayString: String, base: Int) {
         assertTrue {
             val parsed = BigInteger32Arithmetic.parseForBase(uIntArrayString, base)
             val javaBigIntParsed = BigInteger(uIntArrayString, base)
 
             parsed.toJavaBigInteger() == javaBigIntParsed
         }
-
     }
 
     @Test
@@ -66,7 +64,6 @@ class BigInteger32JavaStringConversionTests  {
         runBlocking {
             jobList.forEach { it.join() }
         }
-
     }
 
     @Test
@@ -80,14 +77,13 @@ class BigInteger32JavaStringConversionTests  {
                     toStringSingleTest(
                         uintArrayOf(random.nextUInt(), random.nextUInt()),
                         random.nextInt(2, 36)
-                    ) //36 is the max java bigint supports
+                    ) // 36 is the max java bigint supports
                 }
             )
         }
         runBlocking {
             jobList.forEach { it.join() }
         }
-
     }
 
     @Test
@@ -95,7 +91,7 @@ class BigInteger32JavaStringConversionTests  {
         toStringSingleTest(uintArrayOf(1234U), 10)
     }
 
-    fun toStringSingleTest(uIntArray: UIntArray, base : Int) {
+    fun toStringSingleTest(uIntArray: UIntArray, base: Int) {
         assertTrue {
             val result = BigInteger32Arithmetic.toString(uIntArray, base)
             val javaBigIntResult = uIntArray.toJavaBigInteger().toString(base)
@@ -103,5 +99,4 @@ class BigInteger32JavaStringConversionTests  {
             result == javaBigIntResult
         }
     }
-
 }

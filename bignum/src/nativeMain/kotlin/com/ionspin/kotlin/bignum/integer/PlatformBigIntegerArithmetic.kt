@@ -94,8 +94,8 @@ actual object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>
     override fun gcd(first: IntArray, second: IntArray): IntArray {
         TODO("not implemented yet")
     }
-    
-    override fun parseForBase(number: String, base: Int) : IntArray {
+
+    override fun parseForBase(number: String, base: Int): IntArray {
         TODO("not implemented yet")
     }
 
@@ -123,7 +123,8 @@ actual object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>
         TODO("not implemented yet")
     }
 
-    override fun fromLong(long: Long): IntArray = intArrayOf((long and baseMask).toInt(), (long shr basePowerOfTwo).toInt() )
+    override fun fromLong(long: Long): IntArray =
+        intArrayOf((long and baseMask).toInt(), (long shr basePowerOfTwo).toInt())
 
     override fun fromInt(int: Int): IntArray = intArrayOf(int)
 
@@ -155,12 +156,11 @@ actual object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>
         TODO("not implemented yet")
     }
 
-    override fun toByteArray(operand: IntArray, sign : Sign): Array<Byte> {
+    override fun toByteArray(operand: IntArray, sign: Sign): Array<Byte> {
         TODO("not implemented yet")
     }
 
     override fun fromByteArray(byteArray: Array<Byte>): Pair<IntArray, Sign> {
         TODO("not implemented yet")
     }
-
 }

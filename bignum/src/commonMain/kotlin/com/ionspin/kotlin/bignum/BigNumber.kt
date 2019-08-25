@@ -19,7 +19,6 @@ package com.ionspin.kotlin.bignum
 
 import com.ionspin.kotlin.bignum.integer.BigInteger
 
-
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
@@ -31,10 +30,10 @@ interface BigNumber<BigType> where BigType : BigNumber<BigType> {
 
     @ExperimentalUnsignedTypes
     interface Creator<BigType> {
-        val ZERO : BigType
-        val ONE : BigType
-        val TWO : BigType
-        val TEN : BigType
+        val ZERO: BigType
+        val ONE: BigType
+        val TWO: BigType
+        val TEN: BigType
         fun parseString(string: String, base: Int = 10): BigType
         fun fromULong(uLong: ULong): BigType
         fun fromUInt(uInt: UInt): BigType
@@ -44,17 +43,17 @@ interface BigNumber<BigType> where BigType : BigNumber<BigType> {
         fun fromInt(int: Int): BigType
         fun fromShort(short: Short): BigType
         fun fromByte(byte: Byte): BigType
-        fun fromBigInteger(bigInteger: BigInteger) : BigType
-        fun tryFromFloat(float : Float, exactRequired : Boolean = false) : BigType
-        fun tryFromDouble(double : Double, exactRequired : Boolean = false) : BigType
+        fun fromBigInteger(bigInteger: BigInteger): BigType
+        fun tryFromFloat(float: Float, exactRequired: Boolean = false): BigType
+        fun tryFromDouble(double: Double, exactRequired: Boolean = false): BigType
     }
-    
+
     interface Util<BigType> {
         fun max(first: BigType, second: BigType): BigType
         fun min(first: BigType, second: BigType): BigType
     }
 
-    fun getCreator() : Creator<BigType>
+    fun getCreator(): Creator<BigType>
 
     fun add(other: BigType): BigType
     fun subtract(other: BigType): BigType
@@ -93,7 +92,7 @@ interface BigNumber<BigType> where BigType : BigNumber<BigType> {
      * ```
      */
     fun abs(): BigType
-    //TODO Implement in 0.3.0 when BigDecimal has log, pow, sqrt and the rest of the company
+    // TODO Implement in 0.3.0 when BigDecimal has log, pow, sqrt and the rest of the company
 //    /**
 //     * Return result of exponentiation of this number by supplied exponent
 //     * i.e.
@@ -112,6 +111,7 @@ interface BigNumber<BigType> where BigType : BigNumber<BigType> {
      * ```
      */
     fun pow(exponent: Long): BigType
+
     /**
      * Return result of exponentiation of this number by supplied integer exponent
      * i.e.
@@ -121,14 +121,13 @@ interface BigNumber<BigType> where BigType : BigNumber<BigType> {
      * ```
      */
     fun pow(exponent: Int): BigType
+
     fun signum(): Int
 
     /**
      * Return the number of decimal digits representing this number
      */
-    fun numberOfDecimalDigits() : Long
-
-
+    fun numberOfDecimalDigits(): Long
 
     fun compareTo(other: Any): Int
     override fun equals(other: Any?): Boolean
@@ -137,32 +136,27 @@ interface BigNumber<BigType> where BigType : BigNumber<BigType> {
     fun toString(base: Int): String
 
     operator fun unaryMinus(): BigType
-
-
-
-
-
 }
 
 internal interface NarrowingOperations<BigType> where BigType : BigNumber<BigType> {
-    fun intValue(exactRequired : Boolean = false) : Int
-    fun longValue(exactRequired : Boolean = false) : Long
-    fun byteValue(exactRequired : Boolean = false) : Byte
-    fun shortValue(exactRequired : Boolean = false) : Short
-    fun uintValue(exactRequired : Boolean = false) : UInt
-    fun ulongValue(exactRequired : Boolean = false) : ULong
-    fun ubyteValue(exactRequired : Boolean = false) : UByte
-    fun ushortValue(exactRequired : Boolean = false) : UShort
-    fun floatValue(exactRequired : Boolean = false) : Float
-    fun doubleValue(exactRequired: Boolean = false) : Double
+    fun intValue(exactRequired: Boolean = false): Int
+    fun longValue(exactRequired: Boolean = false): Long
+    fun byteValue(exactRequired: Boolean = false): Byte
+    fun shortValue(exactRequired: Boolean = false): Short
+    fun uintValue(exactRequired: Boolean = false): UInt
+    fun ulongValue(exactRequired: Boolean = false): ULong
+    fun ubyteValue(exactRequired: Boolean = false): UByte
+    fun ushortValue(exactRequired: Boolean = false): UShort
+    fun floatValue(exactRequired: Boolean = false): Float
+    fun doubleValue(exactRequired: Boolean = false): Double
 }
 
 @ExperimentalUnsignedTypes
 internal interface CommonBigNumberOperations<BigType> where BigType : BigNumber<BigType> {
 
-    fun getCreator() : BigNumber.Creator<BigType>
+    fun getCreator(): BigNumber.Creator<BigType>
 
-    fun getInstance() : BigType
+    fun getInstance(): BigType
 
     operator fun plus(other: BigType): BigType = getInstance().add(other)
 
@@ -228,10 +222,7 @@ internal interface CommonBigNumberOperations<BigType> where BigType : BigNumber<
      * Remainder of integer division operation. Remainder has same sign as dividend.
      */
     operator fun rem(byte: Byte): BigType = getInstance().remainder(getCreator().fromByte(byte))
-
 }
-
-
 
 interface BitwiseCapable<BigType> {
 
@@ -247,7 +238,7 @@ interface BitwiseCapable<BigType> {
 
     fun bitAt(position: Long): Boolean
 
-    fun setBitAt(position: Long, bit : Boolean) : BigType
+    fun setBitAt(position: Long, bit: Boolean): BigType
 
     /**
      * Inverts only up to chosen [arithmetic] [BigTypeArithmetic.bitLength] bits.
@@ -256,16 +247,14 @@ interface BitwiseCapable<BigType> {
      * I.e.: If the number was "1100" binary, not returns "0011" => "11" => 4 decimal
      */
     fun not(): BigType
-
 }
 
 interface ByteArraySerializable {
 
-    fun toByteArray() : Array<Byte>
-
+    fun toByteArray(): Array<Byte>
 }
 
 @ExperimentalUnsignedTypes
 interface ByteArrayDeserializable<BigType : BigNumber<BigType>> {
-    fun fromByteArray(byteArray : Array<Byte>) : BigType
+    fun fromByteArray(byteArray: Array<Byte>): BigType
 }
