@@ -16,13 +16,9 @@
  */
 
 object Versions {
-    val klock = "1.1.1"
-    val kotlinCoroutines = "1.3.0-M2"
-    val timber = "5.0.0-SNAPSHOT"
-    val oshi = "3.12.0"
-    val kotlin = "1.3.40"
-    val ktor = "1.1.1"
-    val kotlinSerialization = "0.11.1"
+    val kotlinCoroutines = "1.3.0"
+    val kotlin = "1.3.50"
+    val kotlinSerialization = "0.12.0"
     val nodePlugin = "1.3.0"
     val dokkaPlugin = "0.9.18"
 
@@ -37,10 +33,6 @@ object Deps {
         val testAnnotation = "test-annotations-common"
         val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core-common:${Versions.kotlinCoroutines}"
         val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:${Versions.kotlinSerialization}"
-        val ktorClient = "io.ktor:ktor-client:${Versions.ktor}"
-        val ktorClientCore = "io.ktor:ktor-client-core:${Versions.ktor}"
-        val timber = "com.jakewharton.timber:timber-common:${Versions.timber}"
-        val klock = "com.soywiz:klock:${Versions.klock}"
     }
 
     object Js {
@@ -48,9 +40,6 @@ object Deps {
         val test = "test-js"
         val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core-js:${Versions.kotlinCoroutines}"
         val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:${Versions.kotlinSerialization}"
-        val ktorClient = "io.ktor:ktor-client-js:${Versions.ktor}"
-        val ktorClientCore = "io.ktor:ktor-client-core-js:${Versions.ktor}"
-        val timber = "com.jakewharton.timber:timber-js:${Versions.timber}"
     }
 
     object Jvm {
@@ -61,17 +50,10 @@ object Deps {
         val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinCoroutines}"
         val coroutinesjdk8 = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:${Versions.kotlinCoroutines}"
         val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Versions.kotlinSerialization}"
-        val ktorClientJvm = "io.ktor:ktor-client-jvm:${Versions.ktor}"
-        val ktorClientOkHttp = "io.ktor:ktor-client-okhttp:${Versions.ktor}"
-        val ktorClientCore = "io.ktor:ktor-client-core-jvm:${Versions.ktor}"
-        val timber = "com.jakewharton.timber:timber-jdk:${Versions.timber}"
-        val oshi = "com.github.oshi:oshi-core:${Versions.oshi}"
         val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.kotlinCoroutines}"
     }
 
     object iOs {
-        val ktorClient = "io.ktor:ktor-client-ios:${Versions.ktor}"
-        val ktorClientCore = "io.ktor:ktor-client-core-ios:${Versions.ktor}"
         val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-runtime-native:${Versions.kotlinSerialization}"
         val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core-native:${Versions.kotlinCoroutines}"
     }
