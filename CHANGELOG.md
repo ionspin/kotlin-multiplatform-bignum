@@ -1,6 +1,8 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
-##### 0.1.1-SNAPSHOT - 12.8.2019
+##### 0.1.1-SNAPSHOT - 5.9.2019
+- Bumped gradle version to 5.6.1, which means that the published Gradle Metadata will be 1.0, making
+metadata resolution available only on Gradle >= 5.3
 - Fixed several issues related to big decimal comparison, modular integer sign, etc.
 - Added more BigDecimal extension functions
 - Added ModularBigInteger extension functions

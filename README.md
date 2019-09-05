@@ -30,6 +30,17 @@ The library is still under heavy development, and relies on experimental kotlin 
 implementation("com.ionspin.kotlin:bignum:0.1.0")
 ```
 
+#### Gradle Metadata
+BigNum library up to 0.1.0 was published with Gradle Metadata 0.4
+To use it you need to add 
+```
+enableFeaturePreview("GRADLE_METADATA")
+```
+to your `settings.gradle` file
+
+From version 0.1.1 BigNum library will be publishing Gradle Metadata 1.0.0 which will only be usable by Gradle >= 5.3.
+If you are using version 0.1.1 you don't need to modify your settings.gradle
+
 #### Snapshot builds
 ```kotlin
 repositories {
