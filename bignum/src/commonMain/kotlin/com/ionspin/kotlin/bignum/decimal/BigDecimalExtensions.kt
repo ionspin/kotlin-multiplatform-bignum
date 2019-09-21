@@ -30,7 +30,7 @@ fun Long.toBigDecimal(exponent: BigInteger? = null, decimalMode: DecimalMode? = 
     return if (exponent != null) {
         BigDecimal.fromLongWithExponent(this, exponent, decimalMode)
     } else {
-        BigDecimal.fromLongAsSignificand(this, decimalMode)
+        BigDecimal.fromLong(this, decimalMode)
     }
 }
 
@@ -39,7 +39,7 @@ fun Int.toBigDecimal(exponent: BigInteger? = null, decimalMode: DecimalMode? = n
     return if (exponent != null) {
         BigDecimal.fromIntWithExponent(this, exponent, decimalMode)
     } else {
-        BigDecimal.fromIntAsSignificand(this, decimalMode)
+        BigDecimal.fromInt(this, decimalMode)
     }
 }
 
@@ -48,7 +48,7 @@ fun Short.toBigDecimal(exponent: BigInteger? = null, decimalMode: DecimalMode? =
     return if (exponent != null) {
         BigDecimal.fromShortWithExponent(this, exponent, decimalMode)
     } else {
-        BigDecimal.fromShortAsSignificand(this, decimalMode)
+        BigDecimal.fromShort(this, decimalMode)
     }
 }
 
@@ -57,7 +57,7 @@ fun Byte.toBigDecimal(exponent: BigInteger? = null, decimalMode: DecimalMode? = 
     return if (exponent != null) {
         BigDecimal.fromByteWithExponent(this, exponent, decimalMode)
     } else {
-        BigDecimal.fromByteAsSignificand(this, decimalMode)
+        BigDecimal.fromByte(this, decimalMode)
     }
 }
 

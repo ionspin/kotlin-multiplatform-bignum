@@ -998,6 +998,15 @@ class BigDecimal private constructor(
     ): BigDecimal {
         return BigDecimal(significand, exponent, decimalMode)
     }
+
+    /**
+     * Moves the decimal point by creating a new instance with a different exponent. Positive values move
+     * the decimal point to the right, negative values move the decimal point to the left.
+     */
+    fun moveDecimalPoint(places: Int): BigDecimal {
+        return copy(exponent = exponent + places)
+    }
+
     // TODO in 0.3.0
 //    override fun pow(exponent: BigDecimal): BigDecimal {
 //        if (exponent.signum() < 0) {
@@ -1012,10 +1021,13 @@ class BigDecimal private constructor(
 //        return result
 //
 //    }
-
+    /**
+     * Exponentiate this BigDecimal by some exponent
+     */
     override fun pow(exponent: Int): BigDecimal {
         return pow(exponent.toLong())
     }
+
     // TODO in 0.3.0
 //    /**
 //     * Natural logarithm of this BigDecimal
@@ -1235,13 +1247,13 @@ class BigDecimal private constructor(
         return BigDecimal(bigDecimal.significand, newExponent)
     }
 
+    /**
+     * Brings the two big decimals to same exponents, which makes it easier to apply other operations
+     */
     private fun bringSignificandToSameExponent(
         first: BigDecimal,
         second: BigDecimal
     ): Triple<BigInteger, BigInteger, BigInteger> {
-//        if (first.exponent == second.exponent) {
-//            return Triple(first.significand, second.significand, first.exponent)
-//        }
         val firstPrepared = getRidOfRadix(first)
         val secondPrepared = getRidOfRadix(second)
 
