@@ -991,6 +991,9 @@ class BigDecimal private constructor(
         return significand.isZero()
     }
 
+    /**
+     * Creates a copy of this BigDecimal with some different elements (significand/exponent/decimalMode)
+     */
     fun copy(
         significand: BigInteger = this.significand,
         exponent: BigInteger = this.exponent,
