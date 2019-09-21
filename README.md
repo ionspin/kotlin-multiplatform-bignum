@@ -306,7 +306,14 @@ Or for `Double` of `Float`
 ```kotlin
 val bigDecimalFromFloat = 123.456f.toBigDecimal() 
 val bigDecimalFromDouble = 123.456.toBigDecimal()
+```
 
+`Long`, `Int`, `Short`, `Byte` 
+```kotlin
+val bigDecimalFromLong = 10.toLong().toBigDecimal() 
+val bigDecimalFromInt = 10.toInt().toBigDecimal()
+val bigDecimalFromShort = 10.toShort().toBigDecimal() 
+val bigDecimalFromByte = 10.toByte().toBigDecimal()
 ```
 
 ## toString
@@ -347,7 +354,7 @@ Standard arithmetic operations that are present:
 * Signum
 
 
-(Suspiciously missing is square root, both from BigInteger and BigDecimal, should be added soon™)
+(Suspiciously missing is square root, should be added soon™)
 
 Operations are executed with existing significands and then rounded down afterwards. Decimal mode parameter controls the precision and rounding mode
 

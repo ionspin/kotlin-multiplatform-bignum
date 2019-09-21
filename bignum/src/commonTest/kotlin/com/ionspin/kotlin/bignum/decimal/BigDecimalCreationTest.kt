@@ -123,4 +123,43 @@ class BigDecimalCreationTest {
             a == b
         }
     }
+
+    @Test
+    fun testMovePoint() {
+
+        assertTrue {
+            val original = 123.45.toBigDecimal()
+            val moved = original.moveDecimalPoint(0)
+            val expected = 123.45.toBigDecimal()
+            moved == expected
+        }
+
+        assertTrue {
+            val original = 123.45.toBigDecimal()
+            val moved = original.moveDecimalPoint(1)
+
+            moved == 1234.5.toBigDecimal()
+        }
+
+        assertTrue {
+            val original = 123.45.toBigDecimal()
+            val moved = original.moveDecimalPoint(3)
+            val expected = 123450.toBigDecimal()
+            moved == expected
+        }
+
+        assertTrue {
+            val original = 123.45.toBigDecimal()
+            val moved = original.moveDecimalPoint(-3)
+            val expected = 0.12345.toBigDecimal()
+            moved == expected
+        }
+
+        assertTrue {
+            val original = 123.45.toBigDecimal()
+            val moved = original.moveDecimalPoint(-5)
+            val expected = 0.0012345.toBigDecimal()
+            moved == expected
+        }
+    }
 }
