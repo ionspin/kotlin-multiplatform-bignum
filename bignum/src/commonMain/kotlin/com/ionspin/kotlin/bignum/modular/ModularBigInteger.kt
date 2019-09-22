@@ -18,7 +18,10 @@
 package com.ionspin.kotlin.bignum.modular
 
 import com.ionspin.kotlin.bignum.BigNumber
+import com.ionspin.kotlin.bignum.ByteArrayDeserializable
+import com.ionspin.kotlin.bignum.ByteArraySerializable
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
+import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.ModularQuotientAndRemainder
 import com.ionspin.kotlin.bignum.NarrowingOperations
 import com.ionspin.kotlin.bignum.integer.BigInteger
@@ -39,7 +42,8 @@ class ModularBigInteger @ExperimentalUnsignedTypes private constructor(
     private val creator: BigNumber.Creator<ModularBigInteger>
 ) : BigNumber<ModularBigInteger>,
     CommonBigNumberOperations<ModularBigInteger>,
-    NarrowingOperations<ModularBigInteger> {
+    NarrowingOperations<ModularBigInteger>,
+    ByteArraySerializable {
 
     val residue = when (signedResidue.sign) {
         Sign.POSITIVE -> signedResidue
@@ -382,5 +386,13 @@ class ModularBigInteger @ExperimentalUnsignedTypes private constructor(
 
     override fun doubleValue(exactRequired: Boolean): Double {
         return residue.doubleValue()
+    }
+
+    override fun toByteArray(): Array<Byte> {
+        return residue.toByteArray()
+    }
+
+    override fun toUByteArray(endianness: Endianness): Array<UByte> {
+        return residue.toUByteArray(endianness)
     }
 }

@@ -7,6 +7,8 @@ metadata resolution available only on Gradle >= 5.3
 - Added more BigDecimal extension functions
 - Added ModularBigInteger extension functions
 - Added Karatsuba multiplication
+- Added `copy` and `moveDecimalPoint` methods
+- Added `fromUByteArray` and `toUByteArray`
 
 
 ##### 0.1.0 - 31.7.2019
