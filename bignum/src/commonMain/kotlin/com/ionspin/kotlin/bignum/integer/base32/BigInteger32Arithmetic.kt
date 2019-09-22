@@ -17,6 +17,7 @@
 
 package com.ionspin.kotlin.bignum.integer.base32
 
+import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
@@ -1037,11 +1038,71 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
     }
 
+    override fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness): Pair<UIntArray, Sign> {
+        val chunked = when (endianness) {
+            Endianness.BIG -> {
+                uByteArray.toList().reversed().chunked(4)
+            }
+            Endianness.LITTLE -> {
+                uByteArray.toList().chunked(4)
+            }
+        }
+
+        val resolvedSign = Sign.POSITIVE
+
+        val collected = chunked.flatMap { chunk ->
+            val result = chunk.reversed().foldIndexed(0U) { index, acc, byte ->
+                acc + ((byte.toUInt() and 0xFFU) shl ((chunk.size - 1) * 8 - index * 8))
+            }
+            val discard = 4 - chunk.size
+            val discarded = (result shl (8 * discard)) shr (8 * discard)
+            uintArrayOf(discarded)
+        }.toUIntArray()
+        if (collected.contentEquals(ZERO)) {
+            return Pair(ZERO, Sign.ZERO)
+        }
+        val corrected = collected.dropLastWhile { it == 0U }.toUIntArray()
+
+        return Pair(removeLeadingZeroes(corrected), resolvedSign)
+    }
+
+    override fun toUByteArray(operand: UIntArray, endianness: Endianness): Array<UByte> {
+        val corrected = when (endianness) {
+            Endianness.BIG -> {
+                val collected = operand.reversed().flatMap {
+                    listOf(
+                        ((it shr 24) and 0xFFU).toUByte(),
+                        ((it shr 16) and 0xFFU).toUByte(),
+                        ((it shr 8) and 0xFFU).toUByte(),
+                        ((it) and 0xFFU).toUByte()
+                    )
+                }
+                collected
+            }
+            Endianness.LITTLE -> {
+                val collected = operand.flatMap {
+                    listOf(
+                        ((it shr 24) and 0xFFU).toUByte(),
+                        ((it shr 16) and 0xFFU).toUByte(),
+                        ((it shr 8) and 0xFFU).toUByte(),
+                        ((it) and 0xFFU).toUByte()
+                    )
+                }
+                collected
+            }
+        }.toTypedArray()
+        return corrected.dropLeadingZeroes()
+    }
+
     private fun List<Byte>.dropLeadingZeroes(): List<Byte> {
         return this.dropWhile { it == 0.toByte() }
     }
 
     private fun Array<Byte>.dropLeadingZeroes(): Array<Byte> {
         return this.dropWhile { it == 0.toByte() }.toTypedArray()
+    }
+
+    private fun Array<UByte>.dropLeadingZeroes(): Array<UByte> {
+        return this.dropWhile { it == 0.toUByte() }.toTypedArray()
     }
 }

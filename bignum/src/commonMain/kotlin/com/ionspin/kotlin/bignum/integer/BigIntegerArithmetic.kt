@@ -17,6 +17,8 @@
 
 package com.ionspin.kotlin.bignum.integer
 
+import com.ionspin.kotlin.bignum.Endianness
+
 /**
  * Interface defining big integer operations
  *
@@ -138,6 +140,8 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
 
     fun toByteArray(operand: BackingCollectionType, sign: Sign): Array<Byte>
     fun fromByteArray(byteArray: Array<Byte>): Pair<BackingCollectionType, Sign>
+    fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness = Endianness.BIG): Pair<BackingCollectionType, Sign>
+    fun toUByteArray(operand: BackingCollectionType, endianness: Endianness = Endianness.BIG): Array<UByte>
 }
 
 /**
