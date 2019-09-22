@@ -18,7 +18,6 @@
 package com.ionspin.kotlin.bignum.modular
 
 import com.ionspin.kotlin.bignum.BigNumber
-import com.ionspin.kotlin.bignum.ByteArrayDeserializable
 import com.ionspin.kotlin.bignum.ByteArraySerializable
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.Endianness
