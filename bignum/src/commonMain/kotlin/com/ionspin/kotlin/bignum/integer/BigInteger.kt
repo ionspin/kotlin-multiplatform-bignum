@@ -22,6 +22,7 @@ import com.ionspin.kotlin.bignum.BitwiseCapable
 import com.ionspin.kotlin.bignum.ByteArrayDeserializable
 import com.ionspin.kotlin.bignum.ByteArraySerializable
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
+import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.NarrowingOperations
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.modular.ModularBigInteger
@@ -198,6 +199,11 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
 
         override fun fromByteArray(byteArray: Array<Byte>): BigInteger {
             val result = arithmetic.fromByteArray(byteArray)
+            return BigInteger(result.first, result.second)
+        }
+
+        override fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness): BigInteger {
+            val result = arithmetic.fromUByteArray(uByteArray, endianness)
             return BigInteger(result.first, result.second)
         }
     }
@@ -747,6 +753,10 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
 
     override fun toByteArray(): Array<Byte> {
         return arithmetic.toByteArray(magnitude, sign)
+    }
+
+    override fun toUByteArray(endianness: Endianness): Array<UByte> {
+        return arithmetic.toUByteArray(magnitude, endianness)
     }
 
     operator fun rangeTo(other: BigInteger) = BigIntegerRange(this, other)

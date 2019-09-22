@@ -17,6 +17,7 @@
 
 package com.ionspin.kotlin.bignum.integer.base63
 
+import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
@@ -993,6 +994,16 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     override fun fromByteArray(byteArray: Array<Byte>): Pair<List<ULong>, Sign> {
         val result = BigInteger32Arithmetic.fromByteArray(byteArray)
         return Pair(convertFrom32BitRepresentation(result.first), result.second)
+    }
+
+    override fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness): Pair<List<ULong>, Sign> {
+        val result = BigInteger32Arithmetic.fromUByteArray(uByteArray, endianness)
+        return Pair(convertFrom32BitRepresentation(result.first), result.second)
+    }
+
+    override fun toUByteArray(operand: List<ULong>, endianness: Endianness): Array<UByte> {
+        val result = BigInteger32Arithmetic.toUByteArray(convertTo32BitRepresentation(operand), endianness)
+        return result
     }
 
     // ------------- Useful constants --------------

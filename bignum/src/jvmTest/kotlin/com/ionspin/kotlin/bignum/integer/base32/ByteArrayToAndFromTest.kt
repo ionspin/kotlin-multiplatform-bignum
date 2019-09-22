@@ -17,6 +17,7 @@
 
 package com.ionspin.kotlin.bignum.integer.base32
 
+import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.integer.Sign
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -260,6 +261,25 @@ class ByteArrayToAndFromTest {
         assertTrue("Failed on TO byte array: \n val number = uintArrayOf(${bigInt32Array.joinToString(separator = ", ") { "${it}U" }})\n") {
             javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray()) ||
                 (byteArrayOf(0xFF.toByte()) + javaBigIntByteArray.dropLeadingZeroes()).contentEquals(intArray.dropLeadingZeroes().toByteArray())
+        }
+    }
+
+    @Test
+    fun testFromUByteArray() {
+        assertTrue {
+            val uByteArray = "FF01ABCD01FF".chunked(2).map { it.toUByte(16) }.toTypedArray()
+            val bigInt = BigInteger32Arithmetic.fromUByteArray(uByteArray, Endianness.BIG)
+            bigInt.first.toJavaBigInteger() == 0xFF01ABCD01FF.toBigInteger()
+        }
+    }
+
+    @Test
+    fun testToUByteArray() {
+        assertTrue {
+            val uByteArray = "FF01ABCD01FF".chunked(2).map { it.toUByte(16) }.toTypedArray()
+            val bigInt = BigInteger32Arithmetic.fromUByteArray(uByteArray, Endianness.BIG)
+            val reconstructed = BigInteger32Arithmetic.toUByteArray(bigInt.first, Endianness.BIG)
+            uByteArray.contentEquals(reconstructed)
         }
     }
 

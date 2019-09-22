@@ -17,6 +17,8 @@
 
 package com.ionspin.kotlin.bignum.integer
 
+import com.ionspin.kotlin.bignum.Endianness
+
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
@@ -161,6 +163,14 @@ actual object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>
     }
 
     override fun fromByteArray(byteArray: Array<Byte>): Pair<IntArray, Sign> {
+        TODO("not implemented yet")
+    }
+
+    override fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness): Pair<IntArray, Sign> {
+        TODO("not implemented yet")
+    }
+
+    override fun toUByteArray(operand: IntArray, endianness: Endianness): Array<UByte> {
         TODO("not implemented yet")
     }
 }

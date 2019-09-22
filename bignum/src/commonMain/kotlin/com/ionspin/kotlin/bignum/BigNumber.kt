@@ -249,12 +249,15 @@ interface BitwiseCapable<BigType> {
     fun not(): BigType
 }
 
+@ExperimentalUnsignedTypes
 interface ByteArraySerializable {
 
     fun toByteArray(): Array<Byte>
+    fun toUByteArray(endianness: Endianness): Array<UByte>
 }
 
 @ExperimentalUnsignedTypes
 interface ByteArrayDeserializable<BigType : BigNumber<BigType>> {
     fun fromByteArray(byteArray: Array<Byte>): BigType
+    fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness): BigType
 }
