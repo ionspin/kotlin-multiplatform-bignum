@@ -811,24 +811,29 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             skipWordCount = i / 32
             val shiftAmount = i % 32
             val position = (i * 2) - skipWordCount
-            when (i) {
-                0 -> {
-                    result[i] = operand[(i * 2)].toULong() or ((operand[(i * 2) + 1].toULong() shl 32) and highMask)
-                }
-                in 1 until requiredLength - 1 -> {
-                    result[i] =
-                        (operand[position - 1].toULong() shr (32 - shiftAmount)) or
-                            (operand[position].toULong() shl shiftAmount) or
-                            ((operand[position + 1].toULong() shl (32 + shiftAmount)) and highMask)
-                }
-                requiredLength - 1 -> {
-                    if (position < operand.size) {
+            if (requiredLength == 2) {
+                result[0] = operand[0].toULong() or ((operand[1].toULong() shl 32) and highMask)
+                result[i] = (operand[1].toULong() shr 31) or (operand[2].toULong() shl 1) or (operand[3].toULong() shl 33)
+            } else {
+                when (i) {
+                    0 -> {
+                        result[i] = operand[0].toULong() or ((operand[1].toULong() shl 32) and highMask)
+                    }
+                    in 1 until requiredLength - 1 -> {
                         result[i] =
                             (operand[position - 1].toULong() shr (32 - shiftAmount)) or
-                                (operand[position].toULong() shl shiftAmount)
-                    } else {
-                        result[i] =
-                            (operand[position - 1].toULong() shr (32 - shiftAmount))
+                                (operand[position].toULong() shl shiftAmount) or
+                                ((operand[position + 1].toULong() shl (32 + shiftAmount)) and highMask)
+                    }
+                    requiredLength - 1 -> {
+                        if (position < operand.size) {
+                            result[i] =
+                                (operand[position - 1].toULong() shr (32 - shiftAmount)) or
+                                    (operand[position].toULong() shl shiftAmount)
+                        } else {
+                            result[i] =
+                                (operand[position - 1].toULong() shr (32 - shiftAmount))
+                        }
                     }
                 }
             }

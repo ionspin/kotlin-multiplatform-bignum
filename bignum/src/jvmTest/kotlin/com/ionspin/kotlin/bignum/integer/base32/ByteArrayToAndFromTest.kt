@@ -281,6 +281,13 @@ class ByteArrayToAndFromTest {
             val reconstructed = BigInteger32Arithmetic.toUByteArray(bigInt.first, Endianness.BIG)
             uByteArray.contentEquals(reconstructed)
         }
+
+        assertTrue {
+            val uByteArray = "19191919191919191919191919191919".chunked(2).map { it.toUByte(16) }.toTypedArray()
+            val bigInt = BigInteger32Arithmetic.fromUByteArray(uByteArray, Endianness.BIG)
+            val reconstructed = BigInteger32Arithmetic.toUByteArray(bigInt.first, Endianness.BIG)
+            uByteArray.contentEquals(reconstructed)
+        }
     }
 
     private fun Array<Byte>.dropLeadingZeroes(): Array<Byte> {
