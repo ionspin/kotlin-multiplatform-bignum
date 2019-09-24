@@ -17,6 +17,7 @@
 
 package com.ionspin.kotlin.bignum.integer
 
+import com.ionspin.kotlin.bignum.Endianness
 import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -51,6 +52,19 @@ class ByteArrayConversionTest {
             val byteArray = bigIntOriginal.toByteArray()
             val reconstructed = BigInteger.fromByteArray(byteArray)
             bigIntOriginal.equals(reconstructed)
+        }
+    }
+
+    @Test
+    fun fromUByteArray() {
+        assertTrue {
+            val uByteArray = "19191919191919191919191919191919".chunked(2).map { it.toUByte(16) }.toTypedArray()
+            val bigInt = BigInteger.fromUByteArray(
+                uByteArray,
+                Endianness.BIG
+            )
+            val reconstructed = bigInt.toUByteArray()
+            uByteArray.contentEquals(reconstructed)
         }
     }
 }
