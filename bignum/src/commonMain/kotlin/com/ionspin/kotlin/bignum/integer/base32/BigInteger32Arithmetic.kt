@@ -384,7 +384,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         if (first == ZERO || second == ZERO) {
             return ZERO
         }
-        // Need to debug 32 bit variant, seems to fail on lower product
+        //TODO Need to debug 32 bit variant, seems to fail on lower product
 //        if (first.size >= karatsubaThreshold || second.size == karatsubaThreshold) {
 //            return karatsubaMultiply(first, second)
 //        }

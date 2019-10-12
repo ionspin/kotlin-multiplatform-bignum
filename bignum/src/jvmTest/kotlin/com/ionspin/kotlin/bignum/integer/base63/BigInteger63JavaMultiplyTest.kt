@@ -153,7 +153,7 @@ class BigInteger63JavaMultiplyTest {
             }
 
             val result = elements.fold(ULongArray(1) { 1U }) { acc, uLong ->
-                BigInteger63Arithmetic.multiply(acc, uLong)
+                BigInteger63Arithmetic.baseMultiply(acc, uLong)
             }
             if (time) {
                 lastTime = LocalDateTime.now()

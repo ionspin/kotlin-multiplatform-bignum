@@ -24,6 +24,7 @@ import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
 import com.ionspin.kotlin.bignum.integer.util.toDigit
+import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -41,6 +42,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     override val ONE: ULongArray = ulongArrayOf(1u)
     override val TWO: ULongArray = ulongArrayOf(2u)
     override val TEN: ULongArray = ulongArrayOf(10UL)
+
+    val reciprocalOf3In2ToThePowerOf63 = ulongArrayOf(3074457345618258603U)
     override val basePowerOfTwo: Int = 63
     val wordSizeInBits = 63
 
@@ -356,7 +359,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun multiply(first: ULongArray, second: ULongArray): ULongArray {
-        if (first == ZERO || second == ZERO) {
+        if (first == ZERO || second == ZERO) { //TODO check if this comparison is working as expected, we might be using ZERO arrays with a different reference
             return ZERO
         }
 
@@ -366,7 +369,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
         var resultArray = ulongArrayOf()
         second.forEachIndexed { index: Int, element: ULong ->
-            resultArray = resultArray + (multiply(first, element) shl (index * basePowerOfTwo))
+            resultArray = resultArray + (baseMultiply(first, element) shl (index * basePowerOfTwo))
         }
         return removeLeadingZeroes(resultArray)
     }
@@ -394,9 +397,23 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return result
     }
 
-    fun fftMultiply() {}
+    fun toomCookMultiply(first : ULongArray, second : ULongArray) : ULongArray {
+        val firstLength = first.size
+        val secondLength = second.size
 
-    fun multiply(first: ULongArray, second: ULong): ULongArray {
+        val longestLength = kotlin.math.max(first.size, second.size)
+
+
+        val uHigh = first.slice(0 .. (longestLength + 2)/ 3)
+
+        return first
+    }
+
+    fun fftMultiply(first : ULongArray, second : ULongArray) : ULongArray {
+        return first
+    }
+
+    fun baseMultiply(first: ULongArray, second: ULong): ULongArray {
 
         val secondLow = second and lowMask
         val secondHigh = second shr 32
@@ -637,6 +654,22 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         val denormRemainder =
             denormalize(a, shift)
         return Pair(removeLeadingZeroes(q), denormRemainder)
+    }
+
+    /**
+     * When division is known to be exact ( no remainder, we can use this, especially in Toom-Cook)
+     * TODO Need to move modInverse from BigInteger to arithmetic, and then replace here
+     */
+    fun exactDivideBy3(operand: ULongArray) : ULongArray {
+        val base = BigInteger.ONE.shl(operand.size * 63 - 1)
+        val creator = ModularBigInteger.creatorForModulo(base)
+        val reciprocalOf3 = creator.fromInt(3).inverse()
+        val multipliedByInverse = multiply(operand, reciprocalOf3.toBigInteger().magnitude)
+        return multipliedByInverse.shr(63)
+    }
+
+    fun exactDivideBy3Better(operand: ULongArray) : ULongArray {
+        return operand
     }
 
     override fun reciprocal(operand: ULongArray): Pair<ULongArray, ULongArray> {
@@ -935,10 +968,16 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun gcd(first: ULongArray, second: ULongArray): ULongArray {
-        return naiveGcd(first, second)
+        val euclideanGcdResult = euclideanGcd(first, second)
+        val binaryGcdResult = binaryGcd(first, second)
+        return if (first.size > 150 || second.size > 150) {
+            euclideanGcd(first, second)
+        } else {
+            binaryGcd(first, second)
+        }
     }
 
-    private fun naiveGcd(first: ULongArray, second: ULongArray): ULongArray {
+    private fun euclideanGcd(first: ULongArray, second: ULongArray): ULongArray {
         var u = first
         var v = second
         while (v != ZERO) {
@@ -947,6 +986,39 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             v = tmpU % v
         }
         return u
+    }
+
+    private tailrec fun binaryGcd(first: ULongArray, second: ULongArray): ULongArray {
+        if (first.contentEquals(second)) {
+            return first
+        }
+
+        if (first.contentEquals(ZERO)) {
+            return second
+        }
+
+        if (second.contentEquals(ZERO)) {
+            return first
+        }
+
+        if (and(first, ONE).contentEquals(ZERO)) { //first is even
+            if (and(second, ONE).contentEquals(ZERO)) { // second is even
+                return binaryGcd(first shr 1, second shr 1) shl 1
+            } else { //second is odd
+                return binaryGcd(first shr 1, second)
+            }
+        }
+
+        if (and(second, ONE).contentEquals(ZERO)) {
+            return binaryGcd(first, second shr 1)
+        }
+
+        return if (compare(first, second) == 1) {
+            binaryGcd(substract(first, second) shr 1, second)
+        } else {
+            binaryGcd(substract(second, first) shr 1, first)
+        }
+
     }
 
     fun min(first: ULongArray, second: ULongArray): ULongArray {
