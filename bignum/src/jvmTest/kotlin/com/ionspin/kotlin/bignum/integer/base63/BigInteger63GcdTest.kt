@@ -40,7 +40,6 @@ class BigInteger63GcdTest {
         val random = Random(seed)
         val jobList: MutableList<Job> = mutableListOf()
 
-
         for (i in 1..100) {
 
             val length = random.nextInt(2, 100)

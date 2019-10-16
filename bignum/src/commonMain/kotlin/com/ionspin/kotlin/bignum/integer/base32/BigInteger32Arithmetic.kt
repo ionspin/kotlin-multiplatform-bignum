@@ -384,7 +384,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         if (first == ZERO || second == ZERO) {
             return ZERO
         }
-        //TODO Need to debug 32 bit variant, seems to fail on lower product
+        // TODO Need to debug 32 bit variant, seems to fail on lower product
 //        if (first.size >= karatsubaThreshold || second.size == karatsubaThreshold) {
 //            return karatsubaMultiply(first, second)
 //        }
@@ -702,10 +702,14 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
     override fun gcd(first: UIntArray, second: UIntArray): UIntArray {
-        return naiveGcd(first, second)
+        return if (first.size > 150 || second.size > 150) {
+            euclideanGcd(first, second)
+        } else {
+            binaryGcd(first, second)
+        }
     }
 
-    private fun naiveGcd(first: UIntArray, second: UIntArray): UIntArray {
+    private fun euclideanGcd(first: UIntArray, second: UIntArray): UIntArray {
         var u = first
         var v = second
         while (v != ZERO) {
@@ -714,6 +718,38 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             v = tmpU % v
         }
         return u
+    }
+
+    private tailrec fun binaryGcd(first: UIntArray, second: UIntArray): UIntArray {
+        if (first.contentEquals(second)) {
+            return first
+        }
+
+        if (first.contentEquals(ZERO)) {
+            return second
+        }
+
+        if (second.contentEquals(ZERO)) {
+            return first
+        }
+
+        if (and(first, ONE).contentEquals(ZERO)) { // first is even
+            if (and(second, ONE).contentEquals(ZERO)) { // second is even
+                return binaryGcd(first shr 1, second shr 1) shl 1
+            } else { // second is odd
+                return binaryGcd(first shr 1, second)
+            }
+        }
+
+        if (and(second, ONE).contentEquals(ZERO)) {
+            return binaryGcd(first, second shr 1)
+        }
+
+        return if (compare(first, second) == 1) {
+            binaryGcd(substract(first, second) shr 1, second)
+        } else {
+            binaryGcd(substract(second, first) shr 1, first)
+        }
     }
 
     override fun parseForBase(number: String, base: Int): UIntArray {

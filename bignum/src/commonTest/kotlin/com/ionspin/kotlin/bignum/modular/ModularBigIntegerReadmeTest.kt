@@ -47,7 +47,7 @@ class ModularBigIntegerReadmeTest {
         val creator = ModularBigInteger.creatorForModulo(base)
 
         val inverted3 = creator.fromInt(3).inverse()
-        println("Res: ${inverted3.toBigInteger().toString()}")
+        println("Res: ${inverted3.toBigInteger()}")
         assertTrue {
             expected.equals(inverted3.residue)
         }

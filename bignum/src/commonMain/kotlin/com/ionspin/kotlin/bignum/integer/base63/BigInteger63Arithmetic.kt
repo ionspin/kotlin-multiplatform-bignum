@@ -299,7 +299,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         }
     }
 
-    override fun substract(first: ULongArray, second: ULongArray): ULongArray {
+    fun subtract(first: ULongArray, second: ULongArray): ULongArray {
         val firstPrepared = removeLeadingZeroes(first)
         val secondPrepared = removeLeadingZeroes(second)
         val comparison = compare(firstPrepared, secondPrepared)
@@ -359,7 +359,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun multiply(first: ULongArray, second: ULongArray): ULongArray {
-        if (first == ZERO || second == ZERO) { //TODO check if this comparison is working as expected, we might be using ZERO arrays with a different reference
+        if (first == ZERO || second == ZERO) { // TODO check if this comparison is working as expected, we might be using ZERO arrays with a different reference
             return ZERO
         }
 
@@ -397,19 +397,104 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return result
     }
 
-    fun toomCookMultiply(first : ULongArray, second : ULongArray) : ULongArray {
+    fun toomCook3Multiply(first: ULongArray, second: ULongArray): ULongArray {
         val firstLength = first.size
         val secondLength = second.size
 
+        val (firstPrepared, secondPrepared) = when {
+            firstLength > secondLength -> {
+                val prepared = ULongArray(firstLength) {
+                    when  {
+                        it < firstLength - secondLength -> 0U
+                        else -> second[it]
+                    }
+                }
+                Pair(first, prepared)
+            }
+            firstLength < secondLength -> {
+                val prepared = ULongArray(secondLength) {
+                    when {
+                        it < secondLength - firstLength -> 0U
+                        else -> first[it]
+                    }
+                }
+                Pair(prepared, second)
+            }
+            else -> Pair(first, second)
+        }
+
         val longestLength = kotlin.math.max(first.size, second.size)
 
+        val extendedDigit = longestLength / 3
+        val m2 = firstPrepared.slice(0 .. extendedDigit).toULongArray()
+        val m1 = firstPrepared.slice(extendedDigit .. extendedDigit * 2).toULongArray()
+        val m0 = firstPrepared.slice(extendedDigit * 2 .. extendedDigit * 3).toULongArray()
 
-        val uHigh = first.slice(0 .. (longestLength + 2)/ 3)
+        val n2 = secondPrepared.slice(0 .. extendedDigit).toULongArray()
+        val n1 = secondPrepared.slice(extendedDigit .. extendedDigit * 2).toULongArray()
+        val n0 = secondPrepared.slice(extendedDigit * 2 .. extendedDigit * 3).toULongArray()
+
+        val p0 = m0 * m2
+        // p(0)
+        val pe0 = m0
+        // p(1)
+        val pe1 = p0 + m1
+        // p(-1) // :( we don't handle sign at the arithmetic level and this can be negative...
+        val (pem1, isPem1Negative) = subtractWithSign(pe0, m1)
+        // p(-2)
+        val doublePemM2 = (pem1 + m2) * TWO
+        val doubleM2 = m2 * TWO
+        val (pem2, isPem2Negative) = subtractWithSign(doublePemM2, doubleM2)
+        // p(inf)
+        val pinf = m2
+
+        val q0 = n0 * n2
+        // q(0)
+        val qe0 = n0
+        // q(1)
+        val qe1 = q0 + n1
+        // q(-1)
+        val (qem1, isQem1Negative) = subtractWithSign(qe0, n1)
+        // q(-2)
+        val doubleQemN2 = (qem1 + n2) * TWO
+        val doubleN2 = n2 * TWO
+        val (qem2, isQem2Negative) = subtractWithSign(doubleQemN2, doubleN2)
+        // q(inf)
+        val qinf = n2
+
+        val re0 = pe0 * qe0
+        val re1 = pe1 * qe1
+        val rem1 = pem1 * qem1
+        val isRem1Negative = isPem1Negative xor isQem1Negative
+        val rem2 = pem2 * qem2
+        val iRem2Negative = isPem2Negative xor isQem2Negative
+        val rinf = pinf * qinf
+
+
+        //And all of this needs to take care of the siggs... TODO Move toom cook to bigInt level so we don't worry about sign
+        var r0 = re0
+        var r4 = rinf
+        var r3 = exactDivideBy3(rem2 - rem1)
+        var r1 = (re1 - rem1) shr 1
+        var r2 = rem1 - r0
+        r3 = ((r2 - r2) shr 1) + TWO * rinf
+        r2 = r2 + r1 - r4
+        r1 = r1 - r3
+
+
 
         return first
     }
 
-    fun fftMultiply(first : ULongArray, second : ULongArray) : ULongArray {
+    fun subtractWithSign(first: ULongArray, second: ULongArray): Pair<ULongArray, Boolean> {
+        if (compare(first, second) == -1){
+            return Pair(second - first, true)
+        } else {
+            return Pair(first - second, true)
+        }
+    }
+
+    fun fftMultiply(first: ULongArray, second: ULongArray): ULongArray {
         return first
     }
 
@@ -660,7 +745,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
      * When division is known to be exact ( no remainder, we can use this, especially in Toom-Cook)
      * TODO Need to move modInverse from BigInteger to arithmetic, and then replace here
      */
-    fun exactDivideBy3(operand: ULongArray) : ULongArray {
+    fun exactDivideBy3(operand: ULongArray): ULongArray {
         val base = BigInteger.ONE.shl(operand.size * 63 - 1)
         val creator = ModularBigInteger.creatorForModulo(base)
         val reciprocalOf3 = creator.fromInt(3).inverse()
@@ -668,7 +753,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return multipliedByInverse.shr(63)
     }
 
-    fun exactDivideBy3Better(operand: ULongArray) : ULongArray {
+    fun exactDivideBy3Better(operand: ULongArray): ULongArray {
         return operand
     }
 
@@ -968,8 +1053,6 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun gcd(first: ULongArray, second: ULongArray): ULongArray {
-        val euclideanGcdResult = euclideanGcd(first, second)
-        val binaryGcdResult = binaryGcd(first, second)
         return if (first.size > 150 || second.size > 150) {
             euclideanGcd(first, second)
         } else {
@@ -1001,10 +1084,10 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             return first
         }
 
-        if (and(first, ONE).contentEquals(ZERO)) { //first is even
+        if (and(first, ONE).contentEquals(ZERO)) { // first is even
             if (and(second, ONE).contentEquals(ZERO)) { // second is even
                 return binaryGcd(first shr 1, second shr 1) shl 1
-            } else { //second is odd
+            } else { // second is odd
                 return binaryGcd(first shr 1, second)
             }
         }
@@ -1014,11 +1097,10 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         }
 
         return if (compare(first, second) == 1) {
-            binaryGcd(substract(first, second) shr 1, second)
+            binaryGcd(subtract(first, second) shr 1, second)
         } else {
-            binaryGcd(substract(second, first) shr 1, first)
+            binaryGcd(subtract(second, first) shr 1, first)
         }
-
     }
 
     fun min(first: ULongArray, second: ULongArray): ULongArray {
@@ -1167,7 +1249,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     internal operator fun ULongArray.minus(other: ULongArray): ULongArray {
-        return substract(this, other)
+        return subtract(this, other)
     }
 
     internal operator fun ULongArray.times(other: ULongArray): ULongArray {
@@ -1179,7 +1261,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     internal operator fun ULongArray.minus(other: ULong): ULongArray {
-        return substract(this, ulongArrayOf(other))
+        return subtract(this, ulongArrayOf(other))
     }
 
     internal operator fun ULongArray.times(other: ULong): ULongArray {

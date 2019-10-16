@@ -747,10 +747,14 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     }
 
     override fun gcd(first: List<ULong>, second: List<ULong>): List<ULong> {
-        return naiveGcd(first, second)
+        return if (first.size > 150 || second.size > 150) {
+            euclideanGcd(first, second)
+        } else {
+            binaryGcd(first, second)
+        }
     }
 
-    private fun naiveGcd(first: List<ULong>, second: List<ULong>): List<ULong> {
+    private fun euclideanGcd(first: List<ULong>, second: List<ULong>): List<ULong> {
         var u = first
         var v = second
         while (v != ZERO) {
@@ -759,6 +763,38 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
             v = tmpU % v
         }
         return u
+    }
+
+    private tailrec fun binaryGcd(first: List<ULong>, second: List<ULong>): List<ULong> {
+        if (first == second) {
+            return first
+        }
+
+        if (first == ZERO) {
+            return second
+        }
+
+        if (second == ZERO) {
+            return first
+        }
+
+        if (and(first, ONE) == ZERO) { // first is even
+            if (and(second, ONE) == ZERO) { // second is even
+                return binaryGcd(first shr 1, second shr 1) shl 1
+            } else { // second is odd
+                return binaryGcd(first shr 1, second)
+            }
+        }
+
+        if (and(second, ONE) == ZERO) {
+            return binaryGcd(first, second shr 1)
+        }
+
+        return if (compare(first, second) == 1) {
+            binaryGcd(substract(first, second) shr 1, second)
+        } else {
+            binaryGcd(substract(second, first) shr 1, first)
+        }
     }
 
     override fun parseForBase(number: String, base: Int): List<ULong> {
