@@ -15,7 +15,7 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer.arithmetic
+package com.ionspin.kotlin.bignum.integer.arithmetic.bigint63
 
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
 import kotlin.test.Test

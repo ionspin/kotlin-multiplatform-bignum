@@ -45,7 +45,7 @@ class BigIntegerList63SqrtTest() {
                 "7397044194494028975732055495441088126843300784390793504636322150624655374658058636588",
                 10
             )
-            val resultRem = BigInteger63LinkedListArithmetic.substract(
+            val resultRem = BigInteger63LinkedListArithmetic.subtract(
                 operand,
                 BigInteger63LinkedListArithmetic.multiply(resultSqrt, resultSqrt)
             )
@@ -65,7 +65,7 @@ class BigIntegerList63SqrtTest() {
                 "11111",
                 10
             )
-            val resultRem = BigInteger63LinkedListArithmetic.substract(
+            val resultRem = BigInteger63LinkedListArithmetic.subtract(
                 operand,
                 BigInteger63LinkedListArithmetic.multiply(resultSqrt, resultSqrt)
             )

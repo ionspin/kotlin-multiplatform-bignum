@@ -15,27 +15,29 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer
+package com.ionspin.kotlin.bignum.integer.arithmetic.bigint63
 
-import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 09-Mar-2019
+ * on 17-Oct-2019
  */
-@ExperimentalUnsignedTypes
-class BigInteger32ArithmeticsubtractionTest {
 
+@ExperimentalUnsignedTypes
+class BigInteger63MultiplicationDivisonTest {
     @Test
-    fun testAddition() {
+    fun testToomCook3() {
+        val a = ulongArrayOf(1U, 1U, 1U)
+        val b = ulongArrayOf(1U, 2U, 1U)
+        val result = BigInteger63Arithmetic.toomCook3Multiply(a, b)
+        val basecaseMultiply = BigInteger63Arithmetic.basecaseMultiply(a, b)
         assertTrue {
-            val a = uintArrayOf(10U, 20U)
-            val b = uintArrayOf(15U, 5U)
-            val c = BigInteger32Arithmetic.subtract(a, b)
-            c[1] == 14U
+            result.contentEquals(basecaseMultiply)
         }
+
     }
 }

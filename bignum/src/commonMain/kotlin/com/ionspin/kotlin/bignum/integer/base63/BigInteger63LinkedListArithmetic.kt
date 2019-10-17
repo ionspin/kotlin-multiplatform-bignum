@@ -272,7 +272,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         }
     }
 
-    override fun substract(first: List<ULong>, second: List<ULong>): List<ULong> {
+    override fun subtract(first: List<ULong>, second: List<ULong>): List<ULong> {
         val firstPrepared = removeLeadingZeroes(first)
         val secondPrepared = removeLeadingZeroes(second)
         val comparison = compare(firstPrepared, secondPrepared)
@@ -791,9 +791,9 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         }
 
         return if (compare(first, second) == 1) {
-            binaryGcd(substract(first, second) shr 1, second)
+            binaryGcd(subtract(first, second) shr 1, second)
         } else {
-            binaryGcd(substract(second, first) shr 1, first)
+            binaryGcd(subtract(second, first) shr 1, first)
         }
     }
 
@@ -947,7 +947,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     }
 
     internal operator fun List<ULong>.minus(other: List<ULong>): List<ULong> {
-        return substract(this, other)
+        return subtract(this, other)
     }
 
     internal operator fun List<ULong>.times(other: List<ULong>): List<ULong> {
@@ -959,7 +959,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     }
 
     internal operator fun List<ULong>.minus(other: ULong): List<ULong> {
-        return substract(this, listOf(other))
+        return subtract(this, listOf(other))
     }
 
     internal operator fun List<ULong>.times(other: ULong): List<ULong> {

@@ -291,7 +291,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
     }
 
-    override fun substract(first: UIntArray, second: UIntArray): UIntArray {
+    override fun subtract(first: UIntArray, second: UIntArray): UIntArray {
         val firstIsLarger = compare(first, second) == 1
 
         val (largerLength, smallerLength, largerData, smallerData) = if (firstIsLarger) {
@@ -746,9 +746,9 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
 
         return if (compare(first, second) == 1) {
-            binaryGcd(substract(first, second) shr 1, second)
+            binaryGcd(subtract(first, second) shr 1, second)
         } else {
-            binaryGcd(substract(second, first) shr 1, first)
+            binaryGcd(subtract(second, first) shr 1, first)
         }
     }
 
@@ -892,7 +892,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
     internal operator fun UIntArray.minus(other: UIntArray): UIntArray {
-        return substract(this, other)
+        return subtract(this, other)
     }
 
     internal operator fun UIntArray.times(other: UIntArray): UIntArray {
@@ -904,7 +904,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
     internal operator fun UIntArray.minus(other: UInt): UIntArray {
-        return substract(this, uintArrayOf(other))
+        return subtract(this, uintArrayOf(other))
     }
 
     internal operator fun UIntArray.times(other: UInt): UIntArray {
@@ -1062,8 +1062,8 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
                     }
                     uintArrayOf(result)
                 }.toUIntArray()
-                val substracted = collected - 1U
-                val inverted = substracted.map { it.inv() }.toUIntArray()
+                val subtracted = collected - 1U
+                val inverted = subtracted.map { it.inv() }.toUIntArray()
                 if (collected.contentEquals(ZERO)) {
                     return Pair(ZERO, Sign.ZERO)
                 }

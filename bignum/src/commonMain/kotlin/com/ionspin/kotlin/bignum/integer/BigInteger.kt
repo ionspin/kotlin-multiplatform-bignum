@@ -225,10 +225,10 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         } else {
             when {
                 comparison > 0 -> {
-                    BigInteger(arithmetic.substract(this.magnitude, other.magnitude), sign)
+                    BigInteger(arithmetic.subtract(this.magnitude, other.magnitude), sign)
                 }
                 comparison < 0 -> {
-                    BigInteger(arithmetic.substract(other.magnitude, this.magnitude), other.sign)
+                    BigInteger(arithmetic.subtract(other.magnitude, this.magnitude), other.sign)
                 }
                 else -> {
                     ZERO
@@ -248,10 +248,10 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         return if (other.sign == this.sign) {
             when {
                 comparison > 0 -> {
-                    BigInteger(arithmetic.substract(this.magnitude, other.magnitude), sign)
+                    BigInteger(arithmetic.subtract(this.magnitude, other.magnitude), sign)
                 }
                 comparison < 0 -> {
-                    BigInteger(arithmetic.substract(other.magnitude, this.magnitude), !sign)
+                    BigInteger(arithmetic.subtract(other.magnitude, this.magnitude), !sign)
                 }
                 else -> {
                     ZERO
