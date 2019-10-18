@@ -483,7 +483,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         //And all of this needs to take care of the siggs... TODO Move toom cook to bigInt level so we don't worry about sign
         var r0 = re0
         var r4 = rinf
-        var r3 = SignedULongArray(exactDivideBy3(rem2.unsignedValue - rem1.unsignedValue), !(rem1.sign xor rem2.sign))
+        val rem2re1diff = (rem2 - re1)
+        var r3 = SignedULongArray(exactDivideBy3(rem2re1diff.unsignedValue), rem2re1diff.sign)
         var r1 = (re1 - rem1) shr 1
         var r2 = rem1 - r0
         r3 = ((r2 - r3) shr 1) + SIGNED_POSITIVE_TWO * rinf

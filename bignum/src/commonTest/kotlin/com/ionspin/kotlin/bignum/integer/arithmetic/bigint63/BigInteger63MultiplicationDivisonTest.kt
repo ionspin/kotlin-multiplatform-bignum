@@ -31,8 +31,8 @@ import kotlin.test.assertTrue
 class BigInteger63MultiplicationDivisonTest {
     @Test
     fun testToomCook3() {
-        val a = ulongArrayOf(1U, 1U, 1U)
-        val b = ulongArrayOf(1U, 2U, 1U)
+        val a = ulongArrayOf(1U, 2U, 3U)
+        val b = ulongArrayOf(3U, 2U, 1U)
         val result = BigInteger63Arithmetic.toomCook3Multiply(a, b)
         val basecaseMultiply = BigInteger63Arithmetic.basecaseMultiply(a, b)
         assertTrue {
