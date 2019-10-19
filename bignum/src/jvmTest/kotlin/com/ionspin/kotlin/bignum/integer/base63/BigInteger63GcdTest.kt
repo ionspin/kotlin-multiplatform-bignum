@@ -39,6 +39,7 @@ class BigInteger63GcdTest {
         val seed = 1
         val random = Random(seed)
         val jobList: MutableList<Job> = mutableListOf()
+
         for (i in 1..100) {
 
             val length = random.nextInt(2, 100)
@@ -49,12 +50,9 @@ class BigInteger63GcdTest {
             val b = ULongArray(divisorLength) {
                 random.nextULong() shr 1
             }
+
             val job = GlobalScope.launch {
-                try {
-                    testGcdSingle(a, b)
-                } catch (exception: Exception) {
-                    println("Failed on $length $divisorLength")
-                }
+                testGcdSingle(a, b)
             }
             jobList.add(job)
         }
@@ -63,10 +61,17 @@ class BigInteger63GcdTest {
         }
     }
 
+    @Test
+    fun debugBinaryGcd() {
+        val first = ulongArrayOf(4U)
+        val second = ulongArrayOf(6U)
+        testGcdSingle(first, second)
+    }
+
     fun testGcdSingle(first: ULongArray, second: ULongArray) {
         val a = BigInteger63Arithmetic.gcd(first, second)
         val aJavaBigInt = first.toJavaBigInteger().gcd(second.toJavaBigInteger())
-        assertTrue {
+        assertTrue("Failed on ${first.toJavaBigInteger()} ${second.toJavaBigInteger()}") {
             a.toJavaBigInteger().compareTo(aJavaBigInt) == 0
         }
     }

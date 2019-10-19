@@ -17,6 +17,7 @@
 
 package com.ionspin.kotlin.bignum.modular
 
+import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -36,6 +37,19 @@ class ModularBigIntegerReadmeTest {
         println("ModularBigInteger: ${modularBigInteger.toStringWithModulo()}")
         assertTrue {
             modularBigInteger.residue == 50.toBigInteger()
+        }
+    }
+
+    @Test
+    fun calculateInverseOf3In63Base() {
+        val expected = "3074457345618258603".toBigInteger()
+        val base = BigInteger.ONE.shl(62)
+        val creator = ModularBigInteger.creatorForModulo(base)
+
+        val inverted3 = creator.fromInt(3).inverse()
+        println("Res: ${inverted3.toBigInteger()}")
+        assertTrue {
+            expected.equals(inverted3.residue)
         }
     }
 }

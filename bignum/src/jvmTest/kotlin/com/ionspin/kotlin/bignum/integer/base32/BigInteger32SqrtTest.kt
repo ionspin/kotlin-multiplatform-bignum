@@ -47,7 +47,7 @@ class BigInteger32SqrtTest {
                 "7397044194494028975732055495441088126843300784390793504636322150624655374658058636588",
                 10
             )
-            val resultRem = BigInteger32Arithmetic.substract(
+            val resultRem = BigInteger32Arithmetic.subtract(
                 operand,
                 BigInteger32Arithmetic.multiply(resultSqrt, resultSqrt)
             )
@@ -65,7 +65,7 @@ class BigInteger32SqrtTest {
                 "11111",
                 10
             )
-            val resultRem = BigInteger32Arithmetic.substract(
+            val resultRem = BigInteger32Arithmetic.subtract(
                 operand,
                 BigInteger32Arithmetic.multiply(resultSqrt, resultSqrt)
             )

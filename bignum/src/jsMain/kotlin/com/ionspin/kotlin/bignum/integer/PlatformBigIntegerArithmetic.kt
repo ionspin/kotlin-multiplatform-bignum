@@ -70,7 +70,7 @@ actual object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>
         TODO("not implemented yet")
     }
 
-    override fun substract(first: IntArray, second: IntArray): IntArray {
+    override fun subtract(first: IntArray, second: IntArray): IntArray {
         TODO("not implemented yet")
     }
 

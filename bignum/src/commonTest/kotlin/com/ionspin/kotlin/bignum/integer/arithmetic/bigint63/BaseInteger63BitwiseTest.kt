@@ -15,27 +15,26 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer
+package com.ionspin.kotlin.bignum.integer.arithmetic.bigint63
 
-import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 09-Mar-2019
+ * on 17-Oct-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger32ArithmeticsubtractionTest {
-
+class BaseInteger63BitwiseTest {
     @Test
-    fun testAddition() {
+    fun testShiftLeft() {
         assertTrue {
-            val a = uintArrayOf(10U, 20U)
-            val b = uintArrayOf(15U, 5U)
-            val c = BigInteger32Arithmetic.subtract(a, b)
-            c[1] == 14U
+            val a = ulongArrayOf(1U)
+            val expected = ulongArrayOf(0U, 1U)
+            val result = BigInteger63Arithmetic.shiftLeft(a, 63)
+            expected.contentEquals(result)
         }
     }
 }

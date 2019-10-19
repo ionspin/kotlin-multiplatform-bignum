@@ -35,7 +35,7 @@ import kotlin.test.assertTrue
  * on 09-Mar-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger32JavaSubstractTest {
+class BigInteger32JavaSubtractTest {
 
     val basePower = 32
 
@@ -44,7 +44,7 @@ class BigInteger32JavaSubstractTest {
         assertTrue {
             val a = uintArrayOf(10U, 20U)
             val b = uintArrayOf(15U, 5U)
-            val c = BigInteger32Arithmetic.substract(a, b)
+            val c = BigInteger32Arithmetic.subtract(a, b)
 
             val resultBigInt = c.toJavaBigInteger()
 
@@ -65,7 +65,7 @@ class BigInteger32JavaSubstractTest {
         for (i in 1..Int.MAX_VALUE step 5001) {
             jobList.add(
                 GlobalScope.launch {
-                    substractSingleTest(random.nextUInt(), random.nextUInt(), random.nextUInt())
+                    subtractSingleTest(random.nextUInt(), random.nextUInt(), random.nextUInt())
                 }
             )
         }
@@ -84,10 +84,10 @@ class BigInteger32JavaSubstractTest {
         val lotOfElements = UIntArray(numberOfElements) {
             random.nextUInt()
         }
-        substractSingleTest(*lotOfElements)
+        subtractSingleTest(*lotOfElements)
     }
 
-    fun substractSingleTest(vararg elements: UInt) {
+    fun subtractSingleTest(vararg elements: UInt) {
         assertTrue("Failed on ${elements.contentToString()}") {
             val time = false
             lateinit var lastTime: LocalDateTime
@@ -106,7 +106,7 @@ class BigInteger32JavaSubstractTest {
                 .fold(UIntArray(1) { 1U }) { acc, uInt ->
                     BigInteger32Arithmetic.multiply(acc, uInt)
                 }
-            val result = BigInteger32Arithmetic.substract(first, second)
+            val result = BigInteger32Arithmetic.subtract(first, second)
 
             if (time) {
                 lastTime = LocalDateTime.now()

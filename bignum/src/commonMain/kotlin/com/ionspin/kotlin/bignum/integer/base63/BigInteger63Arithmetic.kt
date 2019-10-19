@@ -24,6 +24,7 @@ import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
 import com.ionspin.kotlin.bignum.integer.util.toDigit
+import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -33,7 +34,7 @@ import kotlin.math.floor
  * ugljesa.jovanovic@ionspin.com
  * on 10-Mar-2019
  *
- * Byte order is big endian
+ * Word order is big endian
  */
 @ExperimentalUnsignedTypes
 internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
@@ -41,6 +42,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     override val ONE: ULongArray = ulongArrayOf(1u)
     override val TWO: ULongArray = ulongArrayOf(2u)
     override val TEN: ULongArray = ulongArrayOf(10UL)
+
+    val reciprocalOf3In2ToThePowerOf63 = ulongArrayOf(3074457345618258603U)
     override val basePowerOfTwo: Int = 63
     val wordSizeInBits = 63
 
@@ -51,7 +54,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     val highMask = 0x7FFFFFFF00000000UL
     val overflowMask = 0x8000000000000000UL
 
-    const val karatsubaThreshold = 90
+    const val karatsubaThreshold = 120
+    const val toomCookThreshold = 15_000
 
     override fun numberOfLeadingZeroes(value: ULong): Int {
         var x = value
@@ -107,7 +111,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     override fun trailingZeroBits(value: ULongArray): Int {
         TODO()
     }
-
+    // TODO This is too expensive and should be avoided everywhere
     fun removeLeadingZeroes(bigInteger: ULongArray): ULongArray {
         val firstEmpty = bigInteger.indexOfLast { it != 0UL } + 1
         if (firstEmpty == -1 || firstEmpty == 0) {
@@ -115,6 +119,11 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             return ZERO
         }
         return bigInteger.copyOfRange(0, firstEmpty)
+    }
+
+    fun countLeadingZeroes(bigInteger: ULongArray): Int {
+        val firstEmpty = bigInteger.indexOfLast { it != 0UL } + 1
+        return firstEmpty
     }
 
     override fun shiftLeft(operand: ULongArray, places: Int): ULongArray {
@@ -198,7 +207,10 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return removeLeadingZeroes(result)
     }
 
-    override fun compare(first: ULongArray, second: ULongArray): Int {
+    override fun compare(firstUnprepared: ULongArray, secondUnprepared: ULongArray): Int {
+        val first = removeLeadingZeroes(firstUnprepared)
+        val second = removeLeadingZeroes(secondUnprepared)
+
         if (first.size > second.size) {
             return 1
         }
@@ -296,7 +308,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         }
     }
 
-    override fun substract(first: ULongArray, second: ULongArray): ULongArray {
+    override fun subtract(first: ULongArray, second: ULongArray): ULongArray {
         val firstPrepared = removeLeadingZeroes(first)
         val secondPrepared = removeLeadingZeroes(second)
         val comparison = compare(firstPrepared, secondPrepared)
@@ -356,47 +368,231 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun multiply(first: ULongArray, second: ULongArray): ULongArray {
-        if (first == ZERO || second == ZERO) {
+        if (first.contentEquals(ZERO) || second.contentEquals(ZERO)) {
             return ZERO
         }
 
-        if (first.size >= karatsubaThreshold || second.size == karatsubaThreshold) {
+        if ((first.size >= karatsubaThreshold || second.size >= karatsubaThreshold) &&
+            (first.size <= toomCookThreshold || second.size < toomCookThreshold)
+            ) {
             return karatsubaMultiply(first, second)
         }
 
+        if (first.size >= toomCookThreshold && second.size >= toomCookThreshold) {
+            return toomCook3Multiply(first, second)
+        }
+
+        return basecaseMultiply(first, second)
+    }
+
+    fun basecaseMultiply(first: ULongArray, second: ULongArray): ULongArray {
         var resultArray = ulongArrayOf()
         second.forEachIndexed { index: Int, element: ULong ->
-            resultArray = resultArray + (multiply(first, element) shl (index * basePowerOfTwo))
+            resultArray = resultArray + (baseMultiply(first, element) shl (index * basePowerOfTwo))
         }
         return removeLeadingZeroes(resultArray)
     }
 
     fun combaMultiply(first: ULongArray, second: ULongArray) {
+        // TODO
     }
 
-    fun karatsubaMultiply(first: ULongArray, second: ULongArray): ULongArray {
-
-        val halfLength = (kotlin.math.max(first.size, second.size) + 1) / 2
+    fun karatsubaMultiply(firstUnsigned: ULongArray, secondUnsigned: ULongArray): ULongArray {
+        val first = SignedULongArray(firstUnsigned, true)
+        val second = SignedULongArray(secondUnsigned, true)
+        val halfLength = (kotlin.math.max(first.unsignedValue.size, second.unsignedValue.size) + 1) / 2
 
         val mask = (ONE shl (halfLength * wordSizeInBits)) - 1UL
-        val firstLower = and(first, mask)
+        val firstLower = first and mask
         val firstHigher = first shr halfLength * wordSizeInBits
-        val secondLower = and(second, mask)
+        val secondLower = second and mask
         val secondHigher = second shr halfLength * wordSizeInBits
 
-        //
         val higherProduct = firstHigher * secondHigher
         val lowerProduct = firstLower * secondLower
         val middleProduct = (firstHigher + firstLower) * (secondHigher + secondLower)
         val result =
             (higherProduct shl (2 * wordSizeInBits * halfLength)) + ((middleProduct - higherProduct - lowerProduct) shl (wordSizeInBits * halfLength)) + lowerProduct
 
-        return result
+        return result.unsignedValue
     }
 
-    fun fftMultiply() {}
+    fun prependULongArray(original: ULongArray, numberOfWords: Int, value: ULong): ULongArray {
 
-    fun multiply(first: ULongArray, second: ULong): ULongArray {
+        return ULongArray(original.size + numberOfWords) {
+            when {
+                it < numberOfWords -> value
+                else -> original[it - numberOfWords]
+            }
+        }
+    }
+
+    fun extendULongArray(original: ULongArray, numberOfWords: Int, value: ULong): ULongArray {
+
+        return ULongArray(original.size + numberOfWords) {
+            when {
+                it < original.size -> original[it]
+                else -> value
+            }
+        }
+    }
+
+    @Suppress("DuplicatedCode")
+    fun toomCook3Multiply(firstUnchecked: ULongArray, secondUnchecked: ULongArray): ULongArray {
+        val first = if (firstUnchecked.size % 3 != 0) {
+            firstUnchecked.plus(ULongArray((((firstUnchecked.size + 2) / 3) * 3) - firstUnchecked.size) { 0U }.asIterable())
+        } else {
+            firstUnchecked
+        }.toULongArray()
+
+        val second = if (secondUnchecked.size % 3 != 0) {
+            secondUnchecked.plus(ULongArray((((secondUnchecked.size + 2) / 3) * 3) - secondUnchecked.size) { 0U }.asIterable())
+        } else {
+            secondUnchecked
+        }.toULongArray()
+        val firstLength = first.size
+        val secondLength = second.size
+
+        val (firstPrepared, secondPrepared) = when {
+            firstLength > secondLength -> {
+                val prepared = extendULongArray(second, firstLength - secondLength, 0U)
+                Pair(first, prepared)
+            }
+            firstLength < secondLength -> {
+                val prepared = extendULongArray(first, secondLength - firstLength, 0U)
+                Pair(prepared, second)
+            }
+            else -> Pair(first, second)
+        }
+
+        val longestLength = kotlin.math.max(first.size, second.size)
+
+        val extendedDigit = (longestLength + 2) / 3
+        val m0 = SignedULongArray(firstPrepared.slice(0 until extendedDigit).toULongArray(), true)
+        val m1 = SignedULongArray(firstPrepared.slice(extendedDigit until extendedDigit * 2).toULongArray(), true)
+        val m2 = SignedULongArray(firstPrepared.slice(extendedDigit * 2 until extendedDigit * 3).toULongArray(), true)
+
+        val n0 = SignedULongArray(secondPrepared.slice(0 until extendedDigit).toULongArray(), true)
+        val n1 = SignedULongArray(secondPrepared.slice(extendedDigit until extendedDigit * 2).toULongArray(), true)
+        val n2 = SignedULongArray(secondPrepared.slice(extendedDigit * 2 until extendedDigit * 3).toULongArray(), true)
+
+        val p0 = m0 + m2
+        // p(0)
+        val pe0 = m0
+        // p(1)
+        val pe1 = p0 + m1
+        // p(-1)
+        val pem1 = p0 - m1
+        // p(-2)
+        val doublePemM2 = (pem1 + m2) * SIGNED_POSITIVE_TWO
+        val pem2 = doublePemM2 - m0
+        // p(inf)
+        val pinf = m2
+
+        val q0 = n0 + n2
+        // q(0)
+        val qe0 = n0
+        // q(1)
+        val qe1 = q0 + n1
+        // q(-1)
+        val qem1 = q0 - n1
+        // q(-2)
+        val doubleQemN2 = (qem1 + n2) * SIGNED_POSITIVE_TWO
+        val qem2 = doubleQemN2 - n0
+        // q(inf)
+        val qinf = n2
+
+        val re0 = pe0 * qe0
+        val re1 = pe1 * qe1
+        val rem1 = pem1 * qem1
+        val rem2 = pem2 * qem2
+        val rinf = pinf * qinf
+
+        var r0 = re0
+        var r4 = rinf
+        val rem2re1diff = (rem2 - re1)
+        // var r3 = SignedULongArray(exactDivideBy3(rem2re1diff.unsignedValue), rem2re1diff.sign)
+        var r3 = rem2re1diff / SignedULongArray(ulongArrayOf(3U), true)
+        // println("R3 ${r3.sign} ${r3.unsignedValue}")
+        var r1 = (re1 - rem1) shr 1
+        var r2 = rem1 - r0
+        r3 = ((r2 - r3) shr 1) + SIGNED_POSITIVE_TWO * rinf
+        r2 = r2 + r1 - r4
+        r1 = r1 - r3
+
+        val bShiftAmount = extendedDigit * 63
+        val rb0 = r0
+        val rb1 = (r1 shl (bShiftAmount))
+        val rb2 = (r2 shl (bShiftAmount * 2))
+        val rb3 = (r3 shl (bShiftAmount * 3))
+        val rb4 = (r4 shl (bShiftAmount * 4))
+        val rb = rb0 +
+            rb1 +
+            rb2 +
+            rb3 +
+            rb4
+
+        return rb.unsignedValue
+    }
+
+    // Signed operations TODO evaluate if we really want to do this to support Toom-Cook or just move it out of arithmetic
+
+    data class SignedULongArray(val unsignedValue: ULongArray, val sign: Boolean)
+
+    private fun signedAdd(first: SignedULongArray, second: SignedULongArray) = if (first.sign xor second.sign) {
+        if (first.unsignedValue > second.unsignedValue) {
+            SignedULongArray(first.unsignedValue - second.unsignedValue, first.sign)
+        } else {
+            SignedULongArray(second.unsignedValue - first.unsignedValue, second.sign)
+        }
+    } else {
+        // Same sign
+        SignedULongArray(first.unsignedValue + second.unsignedValue, first.sign)
+    }
+
+    val SIGNED_POSITIVE_TWO = SignedULongArray(TWO, true)
+
+    private fun signedSubtract(first: SignedULongArray, second: SignedULongArray) = signedAdd(first, second.copy(sign = !second.sign))
+
+    private fun signedMultiply(first: SignedULongArray, second: SignedULongArray) = SignedULongArray(first.unsignedValue * second.unsignedValue, !(first.sign xor second.sign))
+
+    private fun signedDivide(first: SignedULongArray, second: SignedULongArray) = SignedULongArray(first.unsignedValue / second.unsignedValue, !(first.sign xor second.sign))
+
+    private fun signedRemainder(first: SignedULongArray, second: SignedULongArray) = SignedULongArray(first.unsignedValue % second.unsignedValue, !(first.sign xor second.sign))
+
+    internal operator fun SignedULongArray.plus(other: SignedULongArray): SignedULongArray {
+        return signedAdd(this, other)
+    }
+
+    internal operator fun SignedULongArray.minus(other: SignedULongArray): SignedULongArray {
+        return signedSubtract(this, other)
+    }
+
+    internal operator fun SignedULongArray.times(other: SignedULongArray): SignedULongArray {
+        return signedMultiply(this, other)
+    }
+
+    internal operator fun SignedULongArray.div(other: SignedULongArray): SignedULongArray {
+        return signedDivide(this, other)
+    }
+
+    internal operator fun SignedULongArray.rem(other: SignedULongArray): SignedULongArray {
+        return signedRemainder(this, other)
+    }
+
+    internal infix fun SignedULongArray.shr(places: Int) = SignedULongArray(unsignedValue shr places, sign)
+
+    internal infix fun SignedULongArray.shl(places: Int) = SignedULongArray(unsignedValue shl places, sign)
+
+    internal infix fun SignedULongArray.and(operand: ULongArray) = SignedULongArray(and(unsignedValue, operand), sign)
+
+    // End of signed operations
+
+    fun fftMultiply(first: ULongArray, second: ULongArray): ULongArray {
+        return first
+    }
+
+    fun baseMultiply(first: ULongArray, second: ULong): ULongArray {
 
         val secondLow = second and lowMask
         val secondHigh = second shr 32
@@ -637,6 +833,23 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         val denormRemainder =
             denormalize(a, shift)
         return Pair(removeLeadingZeroes(q), denormRemainder)
+    }
+
+    /**
+     * When division is known to be exact ( no remainder, we can use this, especially in Toom-Cook)
+     * TODO Need to move modInverse from BigInteger to arithmetic, and then replace here
+     */
+    fun exactDivideBy3(operand: ULongArray): ULongArray {
+        val base = BigInteger.ONE.shl(operand.size * 63)
+        val creator = ModularBigInteger.creatorForModulo(base)
+        val reciprocalOf3 = creator.fromInt(3).inverse()
+        val multipliedByInverse = multiply(operand, reciprocalOf3.toBigInteger().magnitude)
+        return multipliedByInverse.slice(operand.indices).toULongArray()
+    }
+
+    fun exactDivideBy3Better(operand: ULongArray): ULongArray {
+        // TODO
+        return operand
     }
 
     override fun reciprocal(operand: ULongArray): Pair<ULongArray, ULongArray> {
@@ -935,10 +1148,14 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun gcd(first: ULongArray, second: ULongArray): ULongArray {
-        return naiveGcd(first, second)
+        return if (first.size > 150 || second.size > 150) {
+            euclideanGcd(first, second)
+        } else {
+            binaryGcd(first, second)
+        }
     }
 
-    private fun naiveGcd(first: ULongArray, second: ULongArray): ULongArray {
+    private fun euclideanGcd(first: ULongArray, second: ULongArray): ULongArray {
         var u = first
         var v = second
         while (v != ZERO) {
@@ -947,6 +1164,38 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             v = tmpU % v
         }
         return u
+    }
+
+    private tailrec fun binaryGcd(first: ULongArray, second: ULongArray): ULongArray {
+        if (first.contentEquals(second)) {
+            return first
+        }
+
+        if (first.contentEquals(ZERO)) {
+            return second
+        }
+
+        if (second.contentEquals(ZERO)) {
+            return first
+        }
+
+        if (and(first, ONE).contentEquals(ZERO)) { // first is even
+            if (and(second, ONE).contentEquals(ZERO)) { // second is even
+                return binaryGcd(first shr 1, second shr 1) shl 1
+            } else { // second is odd
+                return binaryGcd(first shr 1, second)
+            }
+        }
+
+        if (and(second, ONE).contentEquals(ZERO)) {
+            return binaryGcd(first, second shr 1)
+        }
+
+        return if (compare(first, second) == 1) {
+            binaryGcd(subtract(first, second) shr 1, second)
+        } else {
+            binaryGcd(subtract(second, first) shr 1, first)
+        }
     }
 
     fun min(first: ULongArray, second: ULongArray): ULongArray {
@@ -1095,7 +1344,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     internal operator fun ULongArray.minus(other: ULongArray): ULongArray {
-        return substract(this, other)
+        return subtract(this, other)
     }
 
     internal operator fun ULongArray.times(other: ULongArray): ULongArray {
@@ -1107,7 +1356,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     internal operator fun ULongArray.minus(other: ULong): ULongArray {
-        return substract(this, ulongArrayOf(other))
+        return subtract(this, ulongArrayOf(other))
     }
 
     internal operator fun ULongArray.times(other: ULong): ULongArray {

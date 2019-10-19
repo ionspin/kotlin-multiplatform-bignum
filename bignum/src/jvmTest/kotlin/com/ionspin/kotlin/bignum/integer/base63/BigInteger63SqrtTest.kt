@@ -44,7 +44,7 @@ class BigInteger63SqrtTest {
                 "7397044194494028975732055495441088126843300784390793504636322150624655374658058636588",
                 10
             )
-            val resultRem = BigInteger63Arithmetic.substract(
+            val resultRem = BigInteger63Arithmetic.subtract(
                 operand,
                 BigInteger63Arithmetic.multiply(resultSqrt, resultSqrt)
             )
@@ -64,7 +64,7 @@ class BigInteger63SqrtTest {
                 "11111",
                 10
             )
-            val resultRem = BigInteger63Arithmetic.substract(
+            val resultRem = BigInteger63Arithmetic.subtract(
                 operand,
                 BigInteger63Arithmetic.multiply(resultSqrt, resultSqrt)
             )
