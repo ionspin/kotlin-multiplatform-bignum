@@ -1,6 +1,7 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
-##### 0.1.1-SNAPSHOT - 5.9.2019
+##### 0.1.1-SNAPSHOT - 19.10.2019
+- Implemented Toom-Cook-3 multiplication, although still slow because of inefficient division
 - Bumped gradle version to 5.6.1, which means that the published Gradle Metadata will be 1.0, making
 metadata resolution available only on Gradle >= 5.3
 - Fixed several issues related to big decimal comparison, modular integer sign, etc.
