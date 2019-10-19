@@ -54,8 +54,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     val highMask = 0x7FFFFFFF00000000UL
     val overflowMask = 0x8000000000000000UL
 
-    const val karatsubaThreshold = 90
-    const val toomCookThreshold = 270
+    const val karatsubaThreshold = 120
+    const val toomCookThreshold = 15_000
 
     override fun numberOfLeadingZeroes(value: ULong): Int {
         var x = value
@@ -111,7 +111,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     override fun trailingZeroBits(value: ULongArray): Int {
         TODO()
     }
-
+    // TODO This is too expensive and should be avoided everywhere
     fun removeLeadingZeroes(bigInteger: ULongArray): ULongArray {
         val firstEmpty = bigInteger.indexOfLast { it != 0UL } + 1
         if (firstEmpty == -1 || firstEmpty == 0) {
@@ -119,6 +119,11 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             return ZERO
         }
         return bigInteger.copyOfRange(0, firstEmpty)
+    }
+
+    fun countLeadingZeroes(bigInteger: ULongArray): Int {
+        val firstEmpty = bigInteger.indexOfLast { it != 0UL } + 1
+        return firstEmpty
     }
 
     override fun shiftLeft(operand: ULongArray, places: Int): ULongArray {
@@ -205,6 +210,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     override fun compare(firstUnprepared: ULongArray, secondUnprepared: ULongArray): Int {
         val first = removeLeadingZeroes(firstUnprepared)
         val second = removeLeadingZeroes(secondUnprepared)
+
         if (first.size > second.size) {
             return 1
         }
@@ -362,15 +368,9 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun multiply(first: ULongArray, second: ULongArray): ULongArray {
-        if (first == ZERO || second == ZERO) { // TODO check if this comparison is working as expected, we might be using ZERO arrays with a different reference
+        if (first.contentEquals(ZERO) || second.contentEquals(ZERO)) {
             return ZERO
         }
-
-        // if ((first.size >= karatsubaThreshold || second.size >= karatsubaThreshold)
-        //
-        //     ) {
-        //     return karatsubaMultiply(first, second)
-        // }
 
         if ((first.size >= karatsubaThreshold || second.size >= karatsubaThreshold) &&
             (first.size <= toomCookThreshold || second.size < toomCookThreshold)
@@ -378,7 +378,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             return karatsubaMultiply(first, second)
         }
 
-        if (first.size >= toomCookThreshold && second.size >= toomCookThreshold){
+        if (first.size >= toomCookThreshold && second.size >= toomCookThreshold) {
             return toomCook3Multiply(first, second)
         }
 
@@ -394,7 +394,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     fun combaMultiply(first: ULongArray, second: ULongArray) {
-        //TODO
+        // TODO
     }
 
     fun karatsubaMultiply(firstUnsigned: ULongArray, secondUnsigned: ULongArray): ULongArray {
@@ -408,7 +408,6 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         val secondLower = second and mask
         val secondHigher = second shr halfLength * wordSizeInBits
 
-        //
         val higherProduct = firstHigher * secondHigher
         val lowerProduct = firstLower * secondLower
         val middleProduct = (firstHigher + firstLower) * (secondHigher + secondLower)
@@ -418,12 +417,22 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return result.unsignedValue
     }
 
-    fun prependULongArray(original : ULongArray, numberOfWords: Int, value :ULong) : ULongArray {
+    fun prependULongArray(original: ULongArray, numberOfWords: Int, value: ULong): ULongArray {
 
         return ULongArray(original.size + numberOfWords) {
-            when  {
+            when {
                 it < numberOfWords -> value
                 else -> original[it - numberOfWords]
+            }
+        }
+    }
+
+    fun extendULongArray(original: ULongArray, numberOfWords: Int, value: ULong): ULongArray {
+
+        return ULongArray(original.size + numberOfWords) {
+            when {
+                it < original.size -> original[it]
+                else -> value
             }
         }
     }
@@ -446,11 +455,11 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
         val (firstPrepared, secondPrepared) = when {
             firstLength > secondLength -> {
-                val prepared = prependULongArray(second, firstLength - secondLength, 0U)
+                val prepared = extendULongArray(second, firstLength - secondLength, 0U)
                 Pair(first, prepared)
             }
             firstLength < secondLength -> {
-                val prepared = prependULongArray(first, secondLength - firstLength, 0U)
+                val prepared = extendULongArray(first, secondLength - firstLength, 0U)
                 Pair(prepared, second)
             }
             else -> Pair(first, second)
@@ -504,6 +513,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         val rem2re1diff = (rem2 - re1)
         // var r3 = SignedULongArray(exactDivideBy3(rem2re1diff.unsignedValue), rem2re1diff.sign)
         var r3 = rem2re1diff / SignedULongArray(ulongArrayOf(3U), true)
+        // println("R3 ${r3.sign} ${r3.unsignedValue}")
         var r1 = (re1 - rem1) shr 1
         var r2 = rem1 - r0
         r3 = ((r2 - r3) shr 1) + SIGNED_POSITIVE_TWO * rinf
@@ -516,40 +526,39 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         val rb2 = (r2 shl (bShiftAmount * 2))
         val rb3 = (r3 shl (bShiftAmount * 3))
         val rb4 = (r4 shl (bShiftAmount * 4))
-        val rb =  rb0 +
+        val rb = rb0 +
             rb1 +
             rb2 +
             rb3 +
             rb4
-
 
         return rb.unsignedValue
     }
 
     // Signed operations TODO evaluate if we really want to do this to support Toom-Cook or just move it out of arithmetic
 
-    data class SignedULongArray(val unsignedValue : ULongArray, val sign : Boolean)
+    data class SignedULongArray(val unsignedValue: ULongArray, val sign: Boolean)
 
-    private fun signedAdd(first : SignedULongArray, second : SignedULongArray) = if (first.sign xor second.sign) {
+    private fun signedAdd(first: SignedULongArray, second: SignedULongArray) = if (first.sign xor second.sign) {
         if (first.unsignedValue > second.unsignedValue) {
             SignedULongArray(first.unsignedValue - second.unsignedValue, first.sign)
         } else {
             SignedULongArray(second.unsignedValue - first.unsignedValue, second.sign)
         }
     } else {
-        //Same sign
+        // Same sign
         SignedULongArray(first.unsignedValue + second.unsignedValue, first.sign)
     }
 
     val SIGNED_POSITIVE_TWO = SignedULongArray(TWO, true)
 
-    private fun signedSubtract(first : SignedULongArray, second : SignedULongArray) = signedAdd(first, second.copy(sign = !second.sign))
+    private fun signedSubtract(first: SignedULongArray, second: SignedULongArray) = signedAdd(first, second.copy(sign = !second.sign))
 
-    private fun signedMultiply(first : SignedULongArray, second : SignedULongArray) = SignedULongArray(first.unsignedValue * second.unsignedValue, !(first.sign xor second.sign))
+    private fun signedMultiply(first: SignedULongArray, second: SignedULongArray) = SignedULongArray(first.unsignedValue * second.unsignedValue, !(first.sign xor second.sign))
 
-    private fun signedDivide(first : SignedULongArray, second : SignedULongArray) = SignedULongArray(first.unsignedValue / second.unsignedValue, !(first.sign xor second.sign))
+    private fun signedDivide(first: SignedULongArray, second: SignedULongArray) = SignedULongArray(first.unsignedValue / second.unsignedValue, !(first.sign xor second.sign))
 
-    private fun signedRemainder(first : SignedULongArray, second : SignedULongArray) = SignedULongArray(first.unsignedValue % second.unsignedValue, !(first.sign xor second.sign))
+    private fun signedRemainder(first: SignedULongArray, second: SignedULongArray) = SignedULongArray(first.unsignedValue % second.unsignedValue, !(first.sign xor second.sign))
 
     internal operator fun SignedULongArray.plus(other: SignedULongArray): SignedULongArray {
         return signedAdd(this, other)
@@ -571,11 +580,11 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return signedRemainder(this, other)
     }
 
-    internal infix fun SignedULongArray.shr(places : Int) = SignedULongArray(unsignedValue shr places, sign)
+    internal infix fun SignedULongArray.shr(places: Int) = SignedULongArray(unsignedValue shr places, sign)
 
-    internal infix fun SignedULongArray.shl(places : Int) = SignedULongArray(unsignedValue shl places, sign)
+    internal infix fun SignedULongArray.shl(places: Int) = SignedULongArray(unsignedValue shl places, sign)
 
-    internal infix fun SignedULongArray.and(operand : ULongArray) = SignedULongArray(and(unsignedValue, operand), sign)
+    internal infix fun SignedULongArray.and(operand: ULongArray) = SignedULongArray(and(unsignedValue, operand), sign)
 
     // End of signed operations
 
@@ -835,11 +844,11 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         val creator = ModularBigInteger.creatorForModulo(base)
         val reciprocalOf3 = creator.fromInt(3).inverse()
         val multipliedByInverse = multiply(operand, reciprocalOf3.toBigInteger().magnitude)
-        return multipliedByInverse.slice(0 until operand.size).toULongArray()
+        return multipliedByInverse.slice(operand.indices).toULongArray()
     }
 
     fun exactDivideBy3Better(operand: ULongArray): ULongArray {
-        //TODO
+        // TODO
         return operand
     }
 

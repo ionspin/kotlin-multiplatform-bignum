@@ -36,7 +36,5 @@ class BaseInteger63BitwiseTest {
             val result = BigInteger63Arithmetic.shiftLeft(a, 63)
             expected.contentEquals(result)
         }
-
-
     }
 }

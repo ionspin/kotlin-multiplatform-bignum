@@ -66,8 +66,8 @@ class BigInteger63MultiplicationTest {
         }
 
         assertTrue {
-            val a = ulongArrayOf(0U, 0U, 0U, 1U )
-            val b = ulongArrayOf(0U, 0U, 0U, 1U )
+            val a = ulongArrayOf(0U, 0U, 0U, 1U)
+            val b = ulongArrayOf(0U, 0U, 0U, 1U)
             val result = BigInteger63Arithmetic.toomCook3Multiply(a, b)
             val basecaseMultiply = BigInteger63Arithmetic.basecaseMultiply(a, b)
             result.contentEquals(basecaseMultiply)

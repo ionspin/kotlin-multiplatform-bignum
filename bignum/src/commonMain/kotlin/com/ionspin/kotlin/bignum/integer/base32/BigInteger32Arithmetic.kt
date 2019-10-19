@@ -360,25 +360,196 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return removeLeadingZeroes(result)
     }
 
-    fun karatsubaMultiply(first: UIntArray, second: UIntArray): UIntArray {
+    fun karatsubaMultiply(firstUnsigned: UIntArray, secondUnsigned: UIntArray): UIntArray {
+        val first = SignedUIntArray(firstUnsigned, true)
+        val second = SignedUIntArray(secondUnsigned, true)
+        val halfLength = (kotlin.math.max(first.unsignedValue.size, second.unsignedValue.size) + 1) / 2
 
-        val halfLength = (kotlin.math.max(first.size, second.size) + 1) / 2
-
-        val mask = (ONE shl (halfLength * wordSizeInBits)) - 1U
-        val firstLower = and(first, mask)
+        val mask = subtract(ONE shl (halfLength * wordSizeInBits), ONE)
+        val firstLower = first and mask
         val firstHigher = first shr halfLength * wordSizeInBits
-        val secondLower = and(second, mask)
+        val secondLower = second and mask
         val secondHigher = second shr halfLength * wordSizeInBits
 
-        //
         val higherProduct = firstHigher * secondHigher
         val lowerProduct = firstLower * secondLower
         val middleProduct = (firstHigher + firstLower) * (secondHigher + secondLower)
         val result =
             (higherProduct shl (2 * wordSizeInBits * halfLength)) + ((middleProduct - higherProduct - lowerProduct) shl (wordSizeInBits * halfLength)) + lowerProduct
 
-        return result
+        return result.unsignedValue
     }
+
+    fun prependULongArray(original: UIntArray, numberOfWords: Int, value: UInt): UIntArray {
+
+        return UIntArray(original.size + numberOfWords) {
+            when {
+                it < numberOfWords -> value
+                else -> original[it - numberOfWords]
+            }
+        }
+    }
+
+    fun extendULongArray(original: UIntArray, numberOfWords: Int, value: UInt): UIntArray {
+
+        return UIntArray(original.size + numberOfWords) {
+            when {
+                it < original.size -> original[it]
+                else -> value
+            }
+        }
+    }
+
+    @Suppress("DuplicatedCode")
+    fun toomCook3Multiply(firstUnchecked: UIntArray, secondUnchecked: UIntArray): UIntArray {
+        val first = if (firstUnchecked.size % 3 != 0) {
+            firstUnchecked.plus(UIntArray((((firstUnchecked.size + 2) / 3) * 3) - firstUnchecked.size) { 0U }.asIterable())
+        } else {
+            firstUnchecked
+        }.toUIntArray()
+
+        val second = if (secondUnchecked.size % 3 != 0) {
+            secondUnchecked.plus(UIntArray((((secondUnchecked.size + 2) / 3) * 3) - secondUnchecked.size) { 0U }.asIterable())
+        } else {
+            secondUnchecked
+        }.toUIntArray()
+        val firstLength = first.size
+        val secondLength = second.size
+
+        val (firstPrepared, secondPrepared) = when {
+            firstLength > secondLength -> {
+                val prepared = extendULongArray(second, firstLength - secondLength, 0U)
+                Pair(first, prepared)
+            }
+            firstLength < secondLength -> {
+                val prepared = extendULongArray(first, secondLength - firstLength, 0U)
+                Pair(prepared, second)
+            }
+            else -> Pair(first, second)
+        }
+
+        val longestLength = kotlin.math.max(first.size, second.size)
+
+        val extendedDigit = (longestLength + 2) / 3
+        val m0 = SignedUIntArray(firstPrepared.slice(0 until extendedDigit).toUIntArray(), true)
+        val m1 = SignedUIntArray(firstPrepared.slice(extendedDigit until extendedDigit * 2).toUIntArray(), true)
+        val m2 = SignedUIntArray(firstPrepared.slice(extendedDigit * 2 until extendedDigit * 3).toUIntArray(), true)
+
+        val n0 = SignedUIntArray(secondPrepared.slice(0 until extendedDigit).toUIntArray(), true)
+        val n1 = SignedUIntArray(secondPrepared.slice(extendedDigit until extendedDigit * 2).toUIntArray(), true)
+        val n2 = SignedUIntArray(secondPrepared.slice(extendedDigit * 2 until extendedDigit * 3).toUIntArray(), true)
+
+        val p0 = m0 + m2
+        // p(0)
+        val pe0 = m0
+        // p(1)
+        val pe1 = p0 + m1
+        // p(-1)
+        val pem1 = p0 - m1
+        // p(-2)
+        val doublePemM2 = (pem1 + m2) * SIGNED_POSITIVE_TWO
+        val pem2 = doublePemM2 - m0
+        // p(inf)
+        val pinf = m2
+
+        val q0 = n0 + n2
+        // q(0)
+        val qe0 = n0
+        // q(1)
+        val qe1 = q0 + n1
+        // q(-1)
+        val qem1 = q0 - n1
+        // q(-2)
+        val doubleQemN2 = (qem1 + n2) * SIGNED_POSITIVE_TWO
+        val qem2 = doubleQemN2 - n0
+        // q(inf)
+        val qinf = n2
+
+        val re0 = pe0 * qe0
+        val re1 = pe1 * qe1
+        val rem1 = pem1 * qem1
+        val rem2 = pem2 * qem2
+        val rinf = pinf * qinf
+
+        var r0 = re0
+        var r4 = rinf
+        val rem2re1diff = (rem2 - re1)
+        // var r3 = SignedULongArray(exactDivideBy3(rem2re1diff.unsignedValue), rem2re1diff.sign)
+        var r3 = rem2re1diff / SignedUIntArray(uintArrayOf(3U), true)
+        // println("R3 ${r3.sign} ${r3.unsignedValue}")
+        var r1 = (re1 - rem1) shr 1
+        var r2 = rem1 - r0
+        r3 = ((r2 - r3) shr 1) + SIGNED_POSITIVE_TWO * rinf
+        r2 = r2 + r1 - r4
+        r1 = r1 - r3
+
+        val bShiftAmount = extendedDigit * 63
+        val rb0 = r0
+        val rb1 = (r1 shl (bShiftAmount))
+        val rb2 = (r2 shl (bShiftAmount * 2))
+        val rb3 = (r3 shl (bShiftAmount * 3))
+        val rb4 = (r4 shl (bShiftAmount * 4))
+        val rb = rb0 +
+            rb1 +
+            rb2 +
+            rb3 +
+            rb4
+
+        return rb.unsignedValue
+    }
+
+    // Signed operations TODO evaluate if we really want to do this to support Toom-Cook or just move it out of arithmetic
+
+    data class SignedUIntArray(val unsignedValue: UIntArray, val sign: Boolean)
+
+    private fun signedAdd(first: SignedUIntArray, second: SignedUIntArray) = if (first.sign xor second.sign) {
+        if (first.unsignedValue > second.unsignedValue) {
+            SignedUIntArray(first.unsignedValue - second.unsignedValue, first.sign)
+        } else {
+            SignedUIntArray(second.unsignedValue - first.unsignedValue, second.sign)
+        }
+    } else {
+        // Same sign
+        SignedUIntArray(first.unsignedValue + second.unsignedValue, first.sign)
+    }
+
+    val SIGNED_POSITIVE_TWO = SignedUIntArray(TWO, true)
+
+    private fun signedSubtract(first: SignedUIntArray, second: SignedUIntArray) = signedAdd(first, second.copy(sign = !second.sign))
+
+    private fun signedMultiply(first: SignedUIntArray, second: SignedUIntArray) = SignedUIntArray(first.unsignedValue * second.unsignedValue, !(first.sign xor second.sign))
+
+    private fun signedDivide(first: SignedUIntArray, second: SignedUIntArray) = SignedUIntArray(first.unsignedValue / second.unsignedValue, !(first.sign xor second.sign))
+
+    private fun signedRemainder(first: SignedUIntArray, second: SignedUIntArray) = SignedUIntArray(first.unsignedValue % second.unsignedValue, !(first.sign xor second.sign))
+
+    internal operator fun SignedUIntArray.plus(other: SignedUIntArray): SignedUIntArray {
+        return signedAdd(this, other)
+    }
+
+    internal operator fun SignedUIntArray.minus(other: SignedUIntArray): SignedUIntArray {
+        return signedSubtract(this, other)
+    }
+
+    internal operator fun SignedUIntArray.times(other: SignedUIntArray): SignedUIntArray {
+        return signedMultiply(this, other)
+    }
+
+    internal operator fun SignedUIntArray.div(other: SignedUIntArray): SignedUIntArray {
+        return signedDivide(this, other)
+    }
+
+    internal operator fun SignedUIntArray.rem(other: SignedUIntArray): SignedUIntArray {
+        return signedRemainder(this, other)
+    }
+
+    internal infix fun SignedUIntArray.shr(places: Int) = SignedUIntArray(unsignedValue shr places, sign)
+
+    internal infix fun SignedUIntArray.shl(places: Int) = SignedUIntArray(unsignedValue shl places, sign)
+
+    internal infix fun SignedUIntArray.and(operand: UIntArray) = SignedUIntArray(and(unsignedValue, operand), sign)
+
+    // End of signed operations
 
     override fun multiply(first: UIntArray, second: UIntArray): UIntArray {
         if (first == ZERO || second == ZERO) {
