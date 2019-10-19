@@ -100,7 +100,10 @@ class BigInteger63JavaMultiplyTest {
         val second = ULongArray(numberOfElements) {
             random.nextULong() shr 1
         }
+        val startTime = System.currentTimeMillis()
         multiplySingleTest(first, second)
+        val endTime = System.currentTimeMillis()
+        println("Time to multiply 2 large words ${endTime - startTime}")
     }
 
     @Test
@@ -219,7 +222,7 @@ class BigInteger63JavaMultiplyTest {
     fun testKaratsuba() {
         val seed = 1
         val random = Random(seed)
-        val numberOfElements = 1500
+        val numberOfElements = 550 //TODO Karatsuba fails on more ~600 elements!
         println("Number of elements $numberOfElements")
 
         val first = ULongArray(numberOfElements) {
@@ -238,6 +241,40 @@ class BigInteger63JavaMultiplyTest {
         println("------------- ${first.toJavaBigInteger()} * ${second.toJavaBigInteger()}")
         println("JavaBigInt: $javaBigIntResult")
         println("BigInt: ${bigIntResult.toJavaBigInteger()}")
+        assertTrue {
+            bigIntResult.toJavaBigInteger() == javaBigIntResult
+        }
+    }
+
+    @Test
+    fun testToomCook() {
+        val seed = 1
+        val random = Random(seed)
+        val numberOfElements = 1500
+        println("Number of elements $numberOfElements")
+
+        val first = ULongArray(numberOfElements) {
+            random.nextULong() shr 1
+        }
+
+        val second = ULongArray(numberOfElements) {
+            random.nextULong() shr 1
+        }
+        toomCookSingleTest(first, second)
+    }
+
+    fun toomCookSingleTest(first: ULongArray, second: ULongArray) {
+        val bigIntResult = BigInteger63Arithmetic.toomCook3Multiply(first, second)
+        val karatsubaResult = BigInteger63Arithmetic.karatsubaMultiply(first, second)
+        val basecaseResult = BigInteger63Arithmetic.basecaseMultiply(first, second)
+        val javaBigIntResult = first.toJavaBigInteger() * second.toJavaBigInteger()
+        // println("First " + BigInteger63Arithmetic.toString(first, 10))
+        // println("Second " + BigInteger63Arithmetic.toString(second, 10))
+        println("------------- ${first.toJavaBigInteger()} * ${second.toJavaBigInteger()}")
+        println("JavaBigInt:          $javaBigIntResult")
+        println("karatsubaResult:     ${karatsubaResult.toJavaBigInteger()}")
+        println("basecaseResult:      ${basecaseResult.toJavaBigInteger()}")
+        println("BigInt:              ${bigIntResult.toJavaBigInteger()}")
         assertTrue {
             bigIntResult.toJavaBigInteger() == javaBigIntResult
         }

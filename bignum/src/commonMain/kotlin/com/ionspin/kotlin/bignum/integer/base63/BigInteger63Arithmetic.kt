@@ -55,6 +55,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     val overflowMask = 0x8000000000000000UL
 
     const val karatsubaThreshold = 90
+    const val toomCookThreshold = 270
 
     override fun numberOfLeadingZeroes(value: ULong): Int {
         var x = value
@@ -201,7 +202,9 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return removeLeadingZeroes(result)
     }
 
-    override fun compare(first: ULongArray, second: ULongArray): Int {
+    override fun compare(firstUnprepared: ULongArray, secondUnprepared: ULongArray): Int {
+        val first = removeLeadingZeroes(firstUnprepared)
+        val second = removeLeadingZeroes(secondUnprepared)
         if (first.size > second.size) {
             return 1
         }
@@ -363,8 +366,20 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             return ZERO
         }
 
-        if (first.size >= karatsubaThreshold || second.size == karatsubaThreshold) {
+        // if ((first.size >= karatsubaThreshold || second.size >= karatsubaThreshold)
+        //
+        //     ) {
+        //     return karatsubaMultiply(first, second)
+        // }
+
+        if ((first.size >= karatsubaThreshold || second.size >= karatsubaThreshold) &&
+            (first.size <= toomCookThreshold || second.size < toomCookThreshold)
+            ) {
             return karatsubaMultiply(first, second)
+        }
+
+        if (first.size >= toomCookThreshold && second.size >= toomCookThreshold){
+            return toomCook3Multiply(first, second)
         }
 
         return basecaseMultiply(first, second)
@@ -382,14 +397,15 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         //TODO
     }
 
-    fun karatsubaMultiply(first: ULongArray, second: ULongArray): ULongArray {
-
-        val halfLength = (kotlin.math.max(first.size, second.size) + 1) / 2
+    fun karatsubaMultiply(firstUnsigned: ULongArray, secondUnsigned: ULongArray): ULongArray {
+        val first = SignedULongArray(firstUnsigned, true)
+        val second = SignedULongArray(secondUnsigned, true)
+        val halfLength = (kotlin.math.max(first.unsignedValue.size, second.unsignedValue.size) + 1) / 2
 
         val mask = (ONE shl (halfLength * wordSizeInBits)) - 1UL
-        val firstLower = and(first, mask)
+        val firstLower = first and mask
         val firstHigher = first shr halfLength * wordSizeInBits
-        val secondLower = and(second, mask)
+        val secondLower = second and mask
         val secondHigher = second shr halfLength * wordSizeInBits
 
         //
@@ -399,7 +415,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         val result =
             (higherProduct shl (2 * wordSizeInBits * halfLength)) + ((middleProduct - higherProduct - lowerProduct) shl (wordSizeInBits * halfLength)) + lowerProduct
 
-        return result
+        return result.unsignedValue
     }
 
     fun prependULongArray(original : ULongArray, numberOfWords: Int, value :ULong) : ULongArray {
@@ -413,16 +429,20 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     @Suppress("DuplicatedCode")
-    fun toomCook3Multiply(first: ULongArray, second: ULongArray): ULongArray {
+    fun toomCook3Multiply(firstUnchecked: ULongArray, secondUnchecked: ULongArray): ULongArray {
+        val first = if (firstUnchecked.size % 3 != 0) {
+            firstUnchecked.plus(ULongArray((((firstUnchecked.size + 2) / 3) * 3) - firstUnchecked.size) { 0U }.asIterable())
+        } else {
+            firstUnchecked
+        }.toULongArray()
+
+        val second = if (secondUnchecked.size % 3 != 0) {
+            secondUnchecked.plus(ULongArray((((secondUnchecked.size + 2) / 3) * 3) - secondUnchecked.size) { 0U }.asIterable())
+        } else {
+            secondUnchecked
+        }.toULongArray()
         val firstLength = first.size
         val secondLength = second.size
-
-        if (firstLength < 3 || secondLength < 3) {
-            throw RuntimeException("Operands too small for Toom-Cook 3 multiplication") //at least in this implementation
-        }
-
-
-
 
         val (firstPrepared, secondPrepared) = when {
             firstLength > secondLength -> {
@@ -438,7 +458,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
         val longestLength = kotlin.math.max(first.size, second.size)
 
-        val extendedDigit = longestLength / 3
+        val extendedDigit = (longestLength + 2) / 3
         val m0 = SignedULongArray(firstPrepared.slice(0 until extendedDigit).toULongArray(), true)
         val m1 = SignedULongArray(firstPrepared.slice(extendedDigit until extendedDigit * 2).toULongArray(), true)
         val m2 = SignedULongArray(firstPrepared.slice(extendedDigit * 2 until extendedDigit * 3).toULongArray(), true)
@@ -452,7 +472,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         val pe0 = m0
         // p(1)
         val pe1 = p0 + m1
-        // p(-1) // :( we don't handle sign at the arithmetic level and this can be negative...
+        // p(-1)
         val pem1 = p0 - m1
         // p(-2)
         val doublePemM2 = (pem1 + m2) * SIGNED_POSITIVE_TWO
@@ -479,12 +499,11 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         val rem2 = pem2 * qem2
         val rinf = pinf * qinf
 
-
-        //And all of this needs to take care of the siggs... TODO Move toom cook to bigInt level so we don't worry about sign
         var r0 = re0
         var r4 = rinf
         val rem2re1diff = (rem2 - re1)
-        var r3 = SignedULongArray(exactDivideBy3(rem2re1diff.unsignedValue), rem2re1diff.sign)
+        // var r3 = SignedULongArray(exactDivideBy3(rem2re1diff.unsignedValue), rem2re1diff.sign)
+        var r3 = rem2re1diff / SignedULongArray(ulongArrayOf(3U), true)
         var r1 = (re1 - rem1) shr 1
         var r2 = rem1 - r0
         r3 = ((r2 - r3) shr 1) + SIGNED_POSITIVE_TWO * rinf
@@ -507,6 +526,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return rb.unsignedValue
     }
 
+    // Signed operations TODO evaluate if we really want to do this to support Toom-Cook or just move it out of arithmetic
+
     data class SignedULongArray(val unsignedValue : ULongArray, val sign : Boolean)
 
     private fun signedAdd(first : SignedULongArray, second : SignedULongArray) = if (first.sign xor second.sign) {
@@ -519,8 +540,6 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         //Same sign
         SignedULongArray(first.unsignedValue + second.unsignedValue, first.sign)
     }
-
-    // Signed operations TODO evaluate if we really want to do this to support Toom-Cook or just move it out of arithmetic
 
     val SIGNED_POSITIVE_TWO = SignedULongArray(TWO, true)
 
@@ -555,6 +574,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     internal infix fun SignedULongArray.shr(places : Int) = SignedULongArray(unsignedValue shr places, sign)
 
     internal infix fun SignedULongArray.shl(places : Int) = SignedULongArray(unsignedValue shl places, sign)
+
+    internal infix fun SignedULongArray.and(operand : ULongArray) = SignedULongArray(and(unsignedValue, operand), sign)
 
     // End of signed operations
 
@@ -810,11 +831,11 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
      * TODO Need to move modInverse from BigInteger to arithmetic, and then replace here
      */
     fun exactDivideBy3(operand: ULongArray): ULongArray {
-        val base = BigInteger.ONE.shl(operand.size * 63 - 1)
+        val base = BigInteger.ONE.shl(operand.size * 63)
         val creator = ModularBigInteger.creatorForModulo(base)
         val reciprocalOf3 = creator.fromInt(3).inverse()
         val multipliedByInverse = multiply(operand, reciprocalOf3.toBigInteger().magnitude)
-        return multipliedByInverse.shr(63)
+        return multipliedByInverse.slice(0 until operand.size).toULongArray()
     }
 
     fun exactDivideBy3Better(operand: ULongArray): ULongArray {

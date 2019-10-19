@@ -18,16 +18,20 @@
 package com.ionspin.kotlin.bignum.integer.arithmetic.bigint63
 
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
+import kotlin.random.Random
+import kotlin.random.nextULong
 import kotlin.test.Test
 import kotlin.test.assertTrue
+import kotlin.test.fail
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
  * on 10-Oct-2019
  */
+@ExperimentalUnsignedTypes
 class BigInteger63ArithmeticDivisionTest {
-    @ExperimentalUnsignedTypes
+
     @Test
     fun testExactDivisionBy3() {
         assertTrue {
@@ -50,5 +54,70 @@ class BigInteger63ArithmeticDivisionTest {
             val result = BigInteger63Arithmetic.exactDivideBy3(dividend)
             result.contentEquals(expected)
         }
+    }
+
+    @Test
+    fun `Test random words`() {
+        val seed = 1
+        val random = Random(seed)
+        for (i in 1..Int.MAX_VALUE step 5001) {
+            val dividend = ulongArrayOf(random.nextULong() shr 1)
+            if (BigInteger63Arithmetic.divide(dividend, ulongArrayOf(3U)).second.contentEquals(BigInteger63Arithmetic.ZERO)) {
+                exactDivide(dividend)
+            } else {
+                val dividend2 = BigInteger63Arithmetic.add(dividend, ulongArrayOf(1U))
+                if (BigInteger63Arithmetic.divide(dividend2, ulongArrayOf(3U)).second.contentEquals(BigInteger63Arithmetic.ZERO)) {
+                    exactDivide(dividend2)
+                } else {
+                    val dividend3 = BigInteger63Arithmetic.add(dividend2, ulongArrayOf(1U))
+                    if (BigInteger63Arithmetic.divide(dividend3, ulongArrayOf(3U)).second.contentEquals(BigInteger63Arithmetic.ZERO)) {
+                        exactDivide(dividend3)
+                    } else {
+                        println("Impossible.")
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `Test long words`() {
+        val seed = 1
+        val random = Random(seed)
+
+        for (i in 1 .. 100) {
+            val dividend = ULongArray(1500) {
+                random.nextULong() shr 1
+            }
+            if (BigInteger63Arithmetic.divide(dividend, ulongArrayOf(3U)).second.contentEquals(BigInteger63Arithmetic.ZERO)) {
+                exactDivide(dividend)
+            } else {
+                val dividend2 = BigInteger63Arithmetic.add(dividend, ulongArrayOf(1U))
+                if (BigInteger63Arithmetic.divide(dividend2, ulongArrayOf(3U)).second.contentEquals(BigInteger63Arithmetic.ZERO)) {
+                    exactDivide(dividend2)
+                } else {
+                    val dividend3 = BigInteger63Arithmetic.add(dividend2, ulongArrayOf(1U))
+                    if (BigInteger63Arithmetic.divide(dividend3, ulongArrayOf(3U)).second.contentEquals(BigInteger63Arithmetic.ZERO)) {
+                        exactDivide(dividend3)
+                    } else {
+                        println("Impossible.")
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun specificDivide() {
+        val dividend = ulongArrayOf(0U, 0U, 0U, 3U)
+        exactDivide(dividend)
+    }
+
+    fun exactDivide(dividend : ULongArray) {
+        val basecaseDivideResult = BigInteger63Arithmetic.divide(dividend, ulongArrayOf(3U))
+        val result = BigInteger63Arithmetic.exactDivideBy3(dividend)
+        assertTrue(
+            "Failed on ulongArrayOf(${dividend.joinToString(separator = ", ") { it.toString() + "UL" }})"
+        ){ basecaseDivideResult.first.contentEquals(result) }
     }
 }
