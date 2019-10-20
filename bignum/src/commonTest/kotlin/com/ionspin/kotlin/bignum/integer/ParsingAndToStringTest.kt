@@ -17,6 +17,7 @@
 
 package com.ionspin.kotlin.bignum.integer
 
+import com.ionspin.kotlin.bignum.toProperType
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -60,7 +61,7 @@ class ParsingAndToStringTest {
             492133570377UL,
             0UL
         )
-        val parsed = BigInteger.fromWordArray(bigInt, Sign.POSITIVE)
+        val parsed = BigInteger.fromWordArray(bigInt.toProperType(), Sign.POSITIVE)
         parsed.toString()
     }
 }

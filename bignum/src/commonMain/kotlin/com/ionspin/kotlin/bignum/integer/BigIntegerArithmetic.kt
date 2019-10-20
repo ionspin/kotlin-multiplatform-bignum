@@ -37,7 +37,7 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
     /**
      * Returns the number of leading zeroes in highest word
      */
-    fun numberOfLeadingZeroes(value: BackingWordType): Int
+    fun numberOfLeadingZeroesInAWord(value: BackingWordType): Int
 
     /**
      * Number of bits needed to represent this number

@@ -139,7 +139,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
                         else -> Sign.ZERO
                     }
                 }
-                else -> throw RuntimeException("Unsupported type ${T::class.simpleName}")
+                else -> throw RuntimeException("Unsupported type ${T::class}")
             }
         }
 
@@ -421,11 +421,11 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     override fun isZero(): Boolean = this.sign == Sign.ZERO
 
     override fun negate(): BigInteger {
-        return BigInteger(wordArray = this.magnitude.copyOf(), sign = sign.not())
+        return BigInteger(wordArray = this.magnitude, sign = sign.not())
     }
 
     override fun abs(): BigInteger {
-        return BigInteger(wordArray = this.magnitude.copyOf(), sign = Sign.POSITIVE)
+        return BigInteger(wordArray = this.magnitude, sign = Sign.POSITIVE)
     }
 
     fun pow(exponent: BigInteger): BigInteger {
@@ -570,7 +570,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
             is UByte -> compare(fromUByte(other))
             is Float -> compareFloatAndBigInt(other) { compare(it) }
             is Double -> compareDoubleAndBigInt(other) { compare(it) }
-            else -> throw RuntimeException("Invalid comparison type for BigInteger: ${other::class.simpleName}")
+            else -> throw RuntimeException("Invalid comparison type for BigInteger: ${other::class}")
         }
     }
 
@@ -635,7 +635,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     }
 
     override fun hashCode(): Int {
-        return magnitude.contentHashCode() + sign.hashCode()
+        return magnitude.hashCode() + sign.hashCode()
     }
 
     override fun toString(): String {

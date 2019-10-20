@@ -52,7 +52,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     const val karatsubaThreshold = 120
     const val toomCookThreshold = 15_000
 
-    override fun numberOfLeadingZeroes(value: ULong): Int {
+    override fun numberOfLeadingZeroesInAWord(value: ULong): Int {
         var x = value
         var y: ULong
         var n = 63
@@ -96,7 +96,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     }
 
     fun bitLength(value: ULong): Int {
-        return 63 - numberOfLeadingZeroes(value)
+        return 63 - numberOfLeadingZeroesInAWord(value)
     }
 
     fun trailingZeroBits(value: ULong): Int {
@@ -125,7 +125,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         }
         val originalSize = operand.size
         val leadingZeroes =
-            numberOfLeadingZeroes(operand[operand.size - 1])
+            numberOfLeadingZeroesInAWord(operand[operand.size - 1])
         val shiftWords = places / basePowerOfTwo
         val shiftBits = places % basePowerOfTwo
         val wordsNeeded = if (shiftBits > leadingZeroes) {
@@ -637,7 +637,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
 
     fun normalize(dividend: List<ULong>, divisor: List<ULong>): Triple<List<ULong>, List<ULong>, Int> {
         val divisorSize = divisor.size
-        val normalizationShift = numberOfLeadingZeroes(divisor[divisorSize - 1])
+        val normalizationShift = numberOfLeadingZeroesInAWord(divisor[divisorSize - 1])
         val divisorNormalized = divisor.shl(normalizationShift)
         val dividendNormalized = dividend.shl(normalizationShift)
 
@@ -645,7 +645,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     }
 
     fun normalize(operand: List<ULong>): Pair<List<ULong>, Int> {
-        val normalizationShift = numberOfLeadingZeroes(operand[operand.size - 1])
+        val normalizationShift = numberOfLeadingZeroesInAWord(operand[operand.size - 1])
         return Pair(operand.shl(normalizationShift), normalizationShift)
     }
 
@@ -785,7 +785,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         return BigInteger32Arithmetic.removeLeadingZeroes(result)
     }
 
-    fun convertFrom32BitRepresentation(operand: UIntArray): List<ULong> {
+    internal fun convertFrom32BitRepresentation(operand: UIntArray): List<ULong> {
         if (operand.size == 0) {
             return ZERO
         }
@@ -799,40 +799,40 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
             (length / 63) + 1
         }
 
-        val result = MutableList<ULong>(requiredLength) { 0UL }
+        val result = MutableList<ULong>(requiredLength) { 0U }
         var skipWordCount: Int
         for (i in 0 until requiredLength) {
             skipWordCount = i / 32
             val shiftAmount = i % 32
             val position = (i * 2) - skipWordCount
-            when (i) {
-                0 -> {
-                    result[i] = operand[(i * 2)].toULong() or ((operand[(i * 2) + 1].toULong() shl 32) and highMask)
-                }
-                in 1 until requiredLength - 1 -> {
-                    result[i] =
-                        (operand[position - 1].toULong() shr (32 - shiftAmount)) or
-                            (operand[position].toULong() shl shiftAmount) or
-                            ((operand[position + 1].toULong() shl (32 + shiftAmount)) and highMask)
-                }
-                requiredLength - 1 -> {
-                    if (position < operand.size) {
+            if (requiredLength == 2) {
+                result[0] = operand[0].toULong() or ((operand[1].toULong() shl 32) and highMask)
+                result[i] = (operand[1].toULong() shr 31) or (operand[2].toULong() shl 1) or (operand[3].toULong() shl 33)
+            } else {
+                when (i) {
+                    0 -> {
+                        result[i] = operand[0].toULong() or ((operand[1].toULong() shl 32) and highMask)
+                    }
+                    in 1 until requiredLength - 1 -> {
                         result[i] =
                             (operand[position - 1].toULong() shr (32 - shiftAmount)) or
-                                (operand[position].toULong() shl shiftAmount)
-                    } else {
-                        result[i] =
-                            (operand[position - 1].toULong() shr (32 - shiftAmount))
+                                (operand[position].toULong() shl shiftAmount) or
+                                ((operand[position + 1].toULong() shl (32 + shiftAmount)) and highMask)
+                    }
+                    requiredLength - 1 -> {
+                        if (position < operand.size) {
+                            result[i] =
+                                (operand[position - 1].toULong() shr (32 - shiftAmount)) or
+                                    (operand[position].toULong() shl shiftAmount)
+                        } else {
+                            result[i] =
+                                (operand[position - 1].toULong() shr (32 - shiftAmount))
+                        }
                     }
                 }
             }
         }
-//        if (operand.size % 2 != 0) {
-//            val lastI = requiredLength - 1 + skipWordCount
-//            result[lastI] =
-//                (operand[(lastI * 2) - 1].toULong() shr (32 - lastI)) or (operand[(lastI * 2)].toULong() shl lastI)
-//        }
-//        result[requiredLength - 1] = (operand[operand.size - 1].toULong() shl ((operand.size - 1) / 2)) or (operand[operand.size - 2].toULong() shr (32 - (operand.size - 1)/2))
+
         return result
     }
 
@@ -988,6 +988,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     }
 
     override fun toString(operand: List<ULong>, base: Int): String {
+        if (operand == ZERO) { return "0" }
         var copy = operand
         val baseArray = listOf(base.toULong())
         val stringBuilder = StringBuilder()
@@ -1061,7 +1062,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     }
 
     override fun not(operand: List<ULong>): List<ULong> {
-        val leadingZeroes = numberOfLeadingZeroes(operand[operand.size - 1])
+        val leadingZeroes = numberOfLeadingZeroesInAWord(operand[operand.size - 1])
         val cleanupMask = (((1UL shl leadingZeroes + 1) - 1U) shl (basePowerOfTwo - leadingZeroes)).inv()
         val inverted = List<ULong>(operand.size) {
             if (it < operand.size - 2) {

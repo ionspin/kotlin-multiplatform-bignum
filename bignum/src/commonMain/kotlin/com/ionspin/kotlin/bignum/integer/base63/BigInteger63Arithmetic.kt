@@ -57,7 +57,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     const val karatsubaThreshold = 120
     const val toomCookThreshold = 15_000
 
-    override fun numberOfLeadingZeroes(value: ULong): Int {
+    override fun numberOfLeadingZeroesInAWord(value: ULong): Int {
         var x = value
         var y: ULong
         var n = 63
@@ -101,7 +101,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     fun bitLength(value: ULong): Int {
-        return 63 - numberOfLeadingZeroes(value)
+        return 63 - numberOfLeadingZeroesInAWord(value)
     }
 
     fun trailingZeroBits(value: ULong): Int {
@@ -118,6 +118,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             // Array is equal to zero, so we return array with zero elements
             return ZERO
         }
+        bigInteger.drop(5).toULongArray()
         return bigInteger.copyOfRange(0, firstEmpty)
     }
 
@@ -135,7 +136,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         }
         val originalSize = operand.size
         val leadingZeroes =
-            numberOfLeadingZeroes(operand[operand.size - 1])
+            numberOfLeadingZeroesInAWord(operand[operand.size - 1])
         val shiftWords = places / basePowerOfTwo
         val shiftBits = places % basePowerOfTwo
         val wordsNeeded = if (shiftBits > leadingZeroes) {
@@ -683,7 +684,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
     fun normalize(dividend: ULongArray, divisor: ULongArray): Triple<ULongArray, ULongArray, Int> {
         val divisorSize = divisor.size
-        val normalizationShift = numberOfLeadingZeroes(divisor[divisorSize - 1])
+        val normalizationShift = numberOfLeadingZeroesInAWord(divisor[divisorSize - 1])
         val divisorNormalized = divisor.shl(normalizationShift)
         val dividendNormalized = dividend.shl(normalizationShift)
 
@@ -691,7 +692,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     fun normalize(operand: ULongArray): Pair<ULongArray, Int> {
-        val normalizationShift = numberOfLeadingZeroes(operand[operand.size - 1])
+        val normalizationShift = numberOfLeadingZeroesInAWord(operand[operand.size - 1])
         return Pair(operand.shl(normalizationShift), normalizationShift)
     }
 
@@ -843,7 +844,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         val base = BigInteger.ONE.shl(operand.size * 63)
         val creator = ModularBigInteger.creatorForModulo(base)
         val reciprocalOf3 = creator.fromInt(3).inverse()
-        val multipliedByInverse = multiply(operand, reciprocalOf3.toBigInteger().magnitude)
+        val multipliedByInverse = multiply(operand, reciprocalOf3.toBigInteger().magnitude.toULongArray())
         return multipliedByInverse.slice(operand.indices).toULongArray()
     }
 
@@ -1276,7 +1277,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun not(operand: ULongArray): ULongArray {
-        val leadingZeroes = numberOfLeadingZeroes(operand[operand.size - 1])
+        val leadingZeroes = numberOfLeadingZeroesInAWord(operand[operand.size - 1])
         val cleanupMask = (((1UL shl leadingZeroes + 1) - 1U) shl (basePowerOfTwo - leadingZeroes)).inv()
         val inverted = ULongArray(operand.size) {
             if (it < operand.size - 2) {

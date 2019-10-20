@@ -53,7 +53,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     /**
      * Hackers delight 5-11
      */
-    override fun numberOfLeadingZeroes(value: UInt): Int {
+    override fun numberOfLeadingZeroesInAWord(value: UInt): Int {
         var x = value
         var y: UInt
         var n = basePowerOfTwo
@@ -95,7 +95,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
     fun bitLength(value: UInt): Int {
-        return basePowerOfTwo - numberOfLeadingZeroes(
+        return basePowerOfTwo - numberOfLeadingZeroesInAWord(
             value
         )
     }
@@ -118,7 +118,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
         val originalSize = operand.size
         val leadingZeroes =
-            numberOfLeadingZeroes(operand[operand.size - 1])
+            numberOfLeadingZeroesInAWord(operand[operand.size - 1])
         val shiftWords = places / basePowerOfTwo
         val shiftBits = places % basePowerOfTwo
         val wordsNeeded = if (shiftBits > leadingZeroes) {
@@ -190,7 +190,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     fun normalize(dividend: UIntArray, divisor: UIntArray): Triple<UIntArray, UIntArray, Int> {
         val divisorSize = divisor.size
         val normalizationShift =
-            numberOfLeadingZeroes(divisor[divisorSize - 1])
+            numberOfLeadingZeroesInAWord(divisor[divisorSize - 1])
         val divisorNormalized = divisor.shl(normalizationShift)
         val dividendNormalized = dividend.shl(normalizationShift)
 
@@ -199,7 +199,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     fun normalize(operand: UIntArray): Pair<UIntArray, Int> {
         val normalizationShift =
-            numberOfLeadingZeroes(operand[operand.size - 1])
+            numberOfLeadingZeroesInAWord(operand[operand.size - 1])
         return Pair(operand.shl(normalizationShift), normalizationShift)
     }
 
