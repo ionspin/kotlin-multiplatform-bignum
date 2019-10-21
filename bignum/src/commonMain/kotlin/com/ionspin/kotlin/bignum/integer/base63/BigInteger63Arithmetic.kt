@@ -21,6 +21,7 @@ import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
+import com.ionspin.kotlin.bignum.integer.Sextuple
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
 import com.ionspin.kotlin.bignum.integer.util.toDigit
@@ -118,13 +119,15 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             // Array is equal to zero, so we return array with zero elements
             return ZERO
         }
-        bigInteger.drop(5).toULongArray()
+        if (bigInteger.size == firstEmpty) {
+            return bigInteger
+        }
         return bigInteger.copyOfRange(0, firstEmpty)
     }
 
     fun countLeadingZeroes(bigInteger: ULongArray): Int {
         val firstEmpty = bigInteger.indexOfLast { it != 0UL } + 1
-        return firstEmpty
+        return bigInteger.size - firstEmpty
     }
 
     override fun shiftLeft(operand: ULongArray, places: Int): ULongArray {
@@ -208,18 +211,20 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return removeLeadingZeroes(result)
     }
 
-    override fun compare(firstUnprepared: ULongArray, secondUnprepared: ULongArray): Int {
-        val first = removeLeadingZeroes(firstUnprepared)
-        val second = removeLeadingZeroes(secondUnprepared)
+    override fun compare(first: ULongArray, second: ULongArray): Int {
+        val firstStart = countLeadingZeroes(first)
+        val secondStart = countLeadingZeroes(second)
+        val firstSize = first.size - firstStart
+        val secondSize = second.size - secondStart
 
-        if (first.size > second.size) {
+        if (firstSize > secondSize) {
             return 1
         }
-        if (second.size > first.size) {
+        if (secondSize > firstSize) {
             return -1
         }
 
-        var counter = first.size - 1
+        var counter = first.size - 1 - firstStart
         var firstIsLarger = false
         var bothAreEqual = true
         while (counter >= 0) {
@@ -269,15 +274,18 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         if (first.size == 1 && first[0] == 0UL) return second
         if (second.size == 1 && second[0] == 0UL) return first
 
-        val (maxLength, minLength, largerData, smallerData) = if (first.size > second.size) {
-            Quadruple(first.size, second.size, first, second)
+        val firstStart = first.size - countLeadingZeroes(first)
+        val secondStart = second.size - countLeadingZeroes(second)
+
+        val (largerLength, smallerLength, largerData, smallerData, largerStart, smallerStart) = if (firstStart > secondStart) {
+            Sextuple(first.size, second.size, first, second, firstStart, secondStart)
         } else {
-            Quadruple(second.size, first.size, second, first)
+            Sextuple(second.size, first.size, second, first, secondStart, firstStart)
         }
-        val result = ULongArray(maxLength + 1) { 0u }
+        val result = ULongArray(largerStart + 1) { 0u }
         var i = 0
         var sum: ULong = 0u
-        while (i < minLength) {
+        while (i < smallerStart) {
             sum = sum + largerData[i] + smallerData[i]
             result[i] = sum and baseMask
             sum = sum shr 63
@@ -286,7 +294,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
         while (true) {
             if (sum == 0UL) {
-                while (i < maxLength) {
+                while (i < largerStart) {
                     result[i] = largerData[i]
                     i++
                 }
@@ -297,8 +305,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
                 }
                 return removeLeadingZeroes(final)
             }
-            if (i == maxLength) {
-                result[maxLength] = sum
+            if (i == largerLength) {
+                result[largerLength] = sum
                 return removeLeadingZeroes(result)
             }
 
@@ -310,9 +318,11 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun subtract(first: ULongArray, second: ULongArray): ULongArray {
-        val firstPrepared = removeLeadingZeroes(first)
-        val secondPrepared = removeLeadingZeroes(second)
-        val comparison = compare(firstPrepared, secondPrepared)
+        val firstStart = first.size - countLeadingZeroes(first)
+        val secondStart = second.size - countLeadingZeroes(second)
+
+        val comparison = compare(first, second)
+
         val firstIsLarger = comparison == 1
 
         if (comparison == 0) return ZERO
@@ -325,15 +335,15 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         if (!firstIsLarger) {
             throw RuntimeException("subtract result less than zero")
         }
-        val (largerLength, smallerLength, largerData, smallerData) = if (firstIsLarger) {
-            Quadruple(firstPrepared.size, secondPrepared.size, firstPrepared, secondPrepared)
+        val (largerLength, smallerLength, largerData, smallerData, largerStart, smallerStart) = if (firstIsLarger) {
+            Sextuple(first.size, second.size, first, second, firstStart, secondStart)
         } else {
-            Quadruple(secondPrepared.size, firstPrepared.size, secondPrepared, firstPrepared)
+            Sextuple(second.size, first.size, second, first, secondStart, firstStart)
         }
         val result = ULongArray(largerLength + 1) { 0u }
         var i = 0
         var diff: ULong = 0u
-        while (i < smallerLength) {
+        while (i < smallerStart) {
             diff = largerData[i] - smallerData[i] - diff
             if ((diff and overflowMask) shr 63 == 1UL) {
                 result[i] = (diff and baseMask)
@@ -356,7 +366,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             i++
         }
 
-        while (i < largerLength) {
+        while (i < largerStart) {
             result[i] = largerData[i]
             i++
         }
@@ -387,11 +397,13 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     fun basecaseMultiply(first: ULongArray, second: ULongArray): ULongArray {
+        val firstStart = first.size - countLeadingZeroes(first)
+        val secondStart = second.size - countLeadingZeroes(second)
         var resultArray = ulongArrayOf()
         second.forEachIndexed { index: Int, element: ULong ->
             resultArray = resultArray + (baseMultiply(first, element) shl (index * basePowerOfTwo))
         }
-        return removeLeadingZeroes(resultArray)
+        return resultArray
     }
 
     fun combaMultiply(first: ULongArray, second: ULongArray) {

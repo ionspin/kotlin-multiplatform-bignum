@@ -17,9 +17,7 @@
 
 package com.ionspin.kotlin.bignum
 
-import kotlinx.cinterop.memScoped
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.runBlocking
 
 /**

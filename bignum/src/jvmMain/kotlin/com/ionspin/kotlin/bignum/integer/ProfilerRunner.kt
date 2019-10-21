@@ -23,6 +23,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.junit.Ignore
 import org.junit.Test
 import java.math.BigInteger
 import kotlin.random.Random
@@ -34,6 +35,7 @@ import kotlin.test.assertTrue
  * ugljesa.jovanovic@ionspin.com
  * on 20-Apr-2019
  */
+@Ignore // TODO refactor and move to benchmarks
 @ExperimentalUnsignedTypes
 class ProfilerRunner {
     companion object {

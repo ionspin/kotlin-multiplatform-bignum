@@ -60,7 +60,9 @@ class ModularBigIntegerDivisionTest {
                 try {
                     val aMod = creator.fromBigInteger(BigInteger(a, Sign.POSITIVE))
                     val bMod = creator.fromBigInteger(BigInteger(b, Sign.POSITIVE))
-                    singleDivisionTest(aMod, bMod)
+                    if (aMod.checkIfDivisibleBoolean(aMod, bMod)) {
+                        singleDivisionTest(aMod, bMod)
+                    }
                 } catch (exception: Exception) {
                     exception.printStackTrace()
                 }

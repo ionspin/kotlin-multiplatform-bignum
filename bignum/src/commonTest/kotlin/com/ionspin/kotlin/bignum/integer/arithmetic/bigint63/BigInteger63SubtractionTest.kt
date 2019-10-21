@@ -15,24 +15,36 @@
  *
  */
 
-package com.ionspin.kotlin.bignum
+package com.ionspin.kotlin.bignum.integer.arithmetic.bigint63
 
-import com.ionspin.kotlin.bignum.integer.TypeHelper
-import com.ionspin.kotlin.bignum.integer.WordArray
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
  * on 20-Oct-2019
  */
-
 @ExperimentalUnsignedTypes
-fun ULongArray.toProperType(): WordArray {
-    if ((TypeHelper.instance as Any) is ULongArray) {
-        return this as WordArray
+class BigInteger63SubtractionTest {
+    @Test
+    fun testAddition() {
+        assertTrue {
+            val a = ulongArrayOf(10U, 20U)
+            val b = ulongArrayOf(15U, 5U)
+            val c = BigInteger63Arithmetic.subtract(a, b)
+            c[1] == 14UL
+        }
     }
-    if ((TypeHelper.instance as Any) is List<*>) {
-        return this.toList() as WordArray
+
+    @Test
+    fun testAdditionWithLeadingZeroes() {
+        assertTrue {
+            val a = ulongArrayOf(10U, 20U, 0U, 0U)
+            val b = ulongArrayOf(15U, 5U, 0U, 0U, 0U)
+            val c = BigInteger63Arithmetic.subtract(a, b)
+            c[1] == 14UL
+        }
     }
-    throw RuntimeException("Invalid WordArray type")
 }

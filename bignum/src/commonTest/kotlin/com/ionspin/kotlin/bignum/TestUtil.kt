@@ -24,4 +24,4 @@ import kotlinx.coroutines.CoroutineScope
  * ugljesa.jovanovic@ionspin.com
  * on 20-Oct-2019
  */
-expect fun runBlockingTest(block: suspend (scope : CoroutineScope) -> Unit)
+expect fun runBlockingTest(block: suspend (scope: CoroutineScope) -> Unit)

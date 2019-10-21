@@ -30,7 +30,6 @@ import kotlin.random.nextULong
 import kotlin.test.BeforeTest
 import kotlin.test.Ignore
 import kotlin.test.Test
-import kotlin.time.Clock
 import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
@@ -42,7 +41,7 @@ import kotlin.time.measureTime
  */
 @ExperimentalUnsignedTypes
 @ExperimentalTime
-// @Ignore //Benchmarks should only be ran manually
+@Ignore // Benchmarks should only be ran manually
 class MultiplicationBenchmark {
 
     @BeforeTest
@@ -79,9 +78,8 @@ class MultiplicationBenchmark {
         }
         jobList.forEach { it.join() }
 
-        println("Total ${timeSpent/1_000_000} ms (${timeSpent/1_000_000_000} s) over $numberOfSamples")
-        println("Average run ${timeSpent/numberOfSamples} NanoSeconds ${timeSpent/numberOfSamples/1_000_000} MilliSeconds")
-
+        println("Total ${timeSpent / 1_000_000} ms (${timeSpent / 1_000_000_000} s) over $numberOfSamples")
+        println("Average run ${timeSpent / numberOfSamples} NanoSeconds ${timeSpent / numberOfSamples / 1_000_000} MilliSeconds")
     }
 
     @Test
@@ -113,11 +111,9 @@ class MultiplicationBenchmark {
         }
         jobList.forEach { it.join() }
 
-        println("Total ${timeSpent/1_000_000} ms (${timeSpent/1_000_000_000} s) over $numberOfSamples")
-        println("Average run ${timeSpent/numberOfSamples} NanoSeconds ${timeSpent/numberOfSamples/1_000_000_000} MilliSeconds")
-
+        println("Total ${timeSpent / 1_000_000} ms (${timeSpent / 1_000_000_000} s) over $numberOfSamples")
+        println("Average run ${timeSpent / numberOfSamples} NanoSeconds ${timeSpent / numberOfSamples / 1_000_000_000} MilliSeconds")
     }
-
 
     @Test
     fun benchmarkLargeOperandsSuite() {
@@ -149,12 +145,11 @@ class MultiplicationBenchmark {
         }
         jobList.forEach { it.join() }
 
-        println("Total ${timeSpent/1_000_000} ms (${timeSpent/1_000_000_000} s) over $numberOfSamples")
-        println("Average run ${timeSpent/numberOfSamples} NanoSeconds ${timeSpent/numberOfSamples/1_000_000_000} MilliSeconds")
-
+        println("Total ${timeSpent / 1_000_000} ms (${timeSpent / 1_000_000_000} s) over $numberOfSamples")
+        println("Average run ${timeSpent / numberOfSamples} NanoSeconds ${timeSpent / numberOfSamples / 1_000_000_000} MilliSeconds")
     }
 
-    fun runMultiplication(first : WordArray, second : WordArray) : Long {
+    fun runMultiplication(first: WordArray, second: WordArray): Long {
         return measureTime {
             chosenArithmetic.multiply(first, second)
         }.toLong(DurationUnit.NANOSECONDS)

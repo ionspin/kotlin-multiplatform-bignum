@@ -15,15 +15,26 @@
  *
  */
 
-package com.ionspin.kotlin.bignum
+package com.ionspin.kotlin.bignum.integer.arithmetic.bigint63
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.promise
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 20-Oct-2019
+ * on 17-Oct-2019
  */
-actual fun runBlockingTest(block: suspend (scope: CoroutineScope) -> Unit): dynamic = GlobalScope.promise { block(this) }
+@ExperimentalUnsignedTypes
+class BigInteger63BitwiseTest {
+    @Test
+    fun testShiftLeft() {
+        assertTrue {
+            val a = ulongArrayOf(1U)
+            val expected = ulongArrayOf(0U, 1U)
+            val result = BigInteger63Arithmetic.shiftLeft(a, 63)
+            expected.contentEquals(result)
+        }
+    }
+}

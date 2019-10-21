@@ -18,9 +18,6 @@
 package com.ionspin.kotlin.bignum.integer.arithmetic
 
 import com.ionspin.kotlin.bignum.integer.BigInteger
-import com.ionspin.kotlin.bignum.integer.Sign
-import com.ionspin.kotlin.bignum.integer.WordArray
-import kotlin.math.absoluteValue
 import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
@@ -63,7 +60,6 @@ class ConversionTest {
         val maxShort = BigInteger.fromShort(Short.MAX_VALUE)
         val minShort = BigInteger.fromShort(Short.MIN_VALUE)
 
-
         assertTrue { one == BigInteger.ONE }
         assertTrue { negativeOne == -BigInteger.ONE }
     }
@@ -74,7 +70,6 @@ class ConversionTest {
         val negativeOne = BigInteger.fromByte(-1)
         val maxByte = BigInteger.fromByte(Byte.MAX_VALUE)
         val minByte = BigInteger.fromByte(Byte.MIN_VALUE)
-
 
         assertTrue { one == BigInteger.ONE }
         assertTrue { negativeOne == -BigInteger.ONE }

@@ -15,15 +15,27 @@
  *
  */
 
-package com.ionspin.kotlin.bignum
+package com.ionspin.kotlin.bignum.integer
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.promise
+import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 20-Oct-2019
+ * on 09-Mar-2019
  */
-actual fun runBlockingTest(block: suspend (scope: CoroutineScope) -> Unit): dynamic = GlobalScope.promise { block(this) }
+@ExperimentalUnsignedTypes
+class BigInteger32ArithmeticSubtractionTest {
+
+    @Test
+    fun testAddition() {
+        assertTrue {
+            val a = uintArrayOf(10U, 20U)
+            val b = uintArrayOf(15U, 5U)
+            val c = BigInteger32Arithmetic.subtract(a, b)
+            c[1] == 14U
+        }
+    }
+}

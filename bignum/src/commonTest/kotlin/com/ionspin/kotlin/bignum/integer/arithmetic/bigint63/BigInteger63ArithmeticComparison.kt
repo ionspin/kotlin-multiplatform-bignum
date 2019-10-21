@@ -24,17 +24,15 @@ import kotlin.test.assertTrue
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 17-Oct-2019
+ * on 20-Oct-2019
  */
 @ExperimentalUnsignedTypes
-class BaseInteger63BitwiseTest {
+class BigInteger63ArithmeticComparison {
     @Test
-    fun testShiftLeft() {
-        assertTrue {
-            val a = ulongArrayOf(1U)
-            val expected = ulongArrayOf(0U, 1U)
-            val result = BigInteger63Arithmetic.shiftLeft(a, 63)
-            expected.contentEquals(result)
-        }
+    fun testComparisonWithLeadingZeroes() {
+        val first = ulongArrayOf(1U, 0U, 0U)
+        val second = ulongArrayOf(2U, 0U, 0U)
+        val comparison = BigInteger63Arithmetic.compare(first, second)
+        assertTrue { comparison == -1 }
     }
 }

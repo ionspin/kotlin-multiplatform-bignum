@@ -15,27 +15,36 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer
+package com.ionspin.kotlin.bignum.integer.arithmetic.bigint63
 
-import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 09-Mar-2019
+ * on 20-Oct-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger32ArithmeticsubtractionTest {
-
+class BigInteger63AdditionTest {
     @Test
     fun testAddition() {
         assertTrue {
-            val a = uintArrayOf(10U, 20U)
-            val b = uintArrayOf(15U, 5U)
-            val c = BigInteger32Arithmetic.subtract(a, b)
-            c[1] == 14U
+            val a = ulongArrayOf(10U, 20U)
+            val b = ulongArrayOf(15U, 5U)
+            val c = BigInteger63Arithmetic.add(a, b)
+            c[0] == 25UL && c[1] == 25UL
+        }
+    }
+
+    @Test
+    fun testAdditionWithLeadingZeroes() {
+        assertTrue {
+            val a = ulongArrayOf(10U, 20U, 0U, 0U)
+            val b = ulongArrayOf(15U, 5U, 0U, 0U, 0U)
+            val c = BigInteger63Arithmetic.add(a, b)
+            c[0] == 25UL && c[1] == 25UL
         }
     }
 }
