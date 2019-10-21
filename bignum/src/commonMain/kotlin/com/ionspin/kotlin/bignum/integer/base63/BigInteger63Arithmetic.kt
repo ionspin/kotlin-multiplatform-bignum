@@ -20,7 +20,6 @@ package com.ionspin.kotlin.bignum.integer.base63
 import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
-import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.Sextuple
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
@@ -303,11 +302,11 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
                 } else {
                     result
                 }
-                return removeLeadingZeroes(final)
+                return final
             }
             if (i == largerLength) {
                 result[largerLength] = sum
-                return removeLeadingZeroes(result)
+                return result
             }
 
             sum = sum + largerData[i]
@@ -401,7 +400,11 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         val secondStart = second.size - countLeadingZeroes(second)
         var resultArray = ulongArrayOf()
         second.forEachIndexed { index: Int, element: ULong ->
-            resultArray = resultArray + (baseMultiply(first, element) shl (index * basePowerOfTwo))
+            if (index > secondStart) {
+                resultArray
+            } else {
+                resultArray = resultArray + (baseMultiply(first, element) shl (index * basePowerOfTwo))
+            }
         }
         return resultArray
     }
@@ -607,6 +610,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
     fun baseMultiply(first: ULongArray, second: ULong): ULongArray {
 
+        val firstStart = first.size - countLeadingZeroes(first)
+
         val secondLow = second and lowMask
         val secondHigh = second shr 32
 
@@ -615,7 +620,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         var carryIntoNextRound = 0UL
         var i = 0
         var j = 0
-        while (i < first.size) {
+        while (i < firstStart) {
             val firstLow = first[i] and lowMask
             val firstHigh = first[i] shr 32
             i++
