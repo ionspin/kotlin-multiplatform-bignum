@@ -17,6 +17,7 @@
 
 package com.ionspin.kotlin.bignum.integer.base63
 
+import com.ionspin.kotlin.bignum.removeLeadingZeroes
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -326,7 +327,8 @@ class BigInteger63JavaDivisionTest {
         ) {
             val result = BigInteger63Arithmetic.reciprocalDivision(first, second)
             val normalResult = BigInteger63Arithmetic.divide(first, second)
-            result.first.contentEquals(normalResult.first) && result.second.contentEquals(normalResult.second)
+            result.first.removeLeadingZeroes().contentEquals(normalResult.first.removeLeadingZeroes()) &&
+                result.second.removeLeadingZeroes().contentEquals(normalResult.second.removeLeadingZeroes())
         }
     }
 }

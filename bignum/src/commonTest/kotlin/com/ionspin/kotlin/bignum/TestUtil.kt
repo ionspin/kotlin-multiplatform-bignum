@@ -17,6 +17,9 @@
 
 package com.ionspin.kotlin.bignum
 
+import com.ionspin.kotlin.bignum.integer.TypeHelper
+import com.ionspin.kotlin.bignum.integer.WordArray
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
 import kotlinx.coroutines.CoroutineScope
 
 /**
@@ -25,3 +28,14 @@ import kotlinx.coroutines.CoroutineScope
  * on 20-Oct-2019
  */
 expect fun runBlockingTest(block: suspend (scope: CoroutineScope) -> Unit)
+
+@ExperimentalUnsignedTypes
+fun ULongArray.removeLeadingZeroes(): WordArray {
+    if ((TypeHelper.instance as Any) is ULongArray) {
+        return BigInteger63Arithmetic.removeLeadingZeros(this) as WordArray
+    }
+    if ((TypeHelper.instance as Any) is List<*>) {
+        return BigInteger63Arithmetic.removeLeadingZeros(this) as WordArray
+    }
+    throw RuntimeException("Invalid WordArray type")
+}

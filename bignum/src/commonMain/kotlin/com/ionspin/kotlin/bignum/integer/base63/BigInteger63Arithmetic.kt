@@ -20,6 +20,7 @@ package com.ionspin.kotlin.bignum.integer.base63
 import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
+import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.Sextuple
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
@@ -136,8 +137,12 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun bitLength(value: ULongArray): Int {
-        val mostSignificant = value[value.size - 1]
-        return bitLength(mostSignificant) + (value.size - 1) * 63
+        if (value.contentEquals(ZERO)) {
+            return 0
+        }
+        val start = value.size - countLeadingZeroWords(value) - 1
+        val mostSignificant = value[start]
+        return bitLength(mostSignificant) + (start) * 63
     }
 
     fun bitLength(value: ULong): Int {
@@ -286,20 +291,17 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return result
     }
 
-    fun compareWithStartIndexes(first: ULongArray, second: ULongArray, firstStart : Int, secondStart : Int) : Int {
-        //debugOperandsCheck(first, second)
+    fun compareWithStartIndexes(first: ULongArray, second: ULongArray, firstStart: Int, secondStart: Int): Int {
+        // debugOperandsCheck(first, second)
 
-        val firstSize = first.size - firstStart
-        val secondSize = second.size - secondStart
-
-        if (firstSize > secondSize) {
+        if (firstStart > secondStart) {
             return 1
         }
-        if (secondSize > firstSize) {
+        if (secondStart > firstStart) {
             return -1
         }
 
-        var counter = firstSize - 1
+        var counter = firstStart - 1
         var firstIsLarger = false
         var bothAreEqual = true
         while (counter >= 0) {
@@ -326,8 +328,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun compare(first: ULongArray, second: ULongArray): Int {
-        val firstStart = countLeadingZeroWords(first)
-        val secondStart = countLeadingZeroWords(second)
+        val firstStart = first.size - countLeadingZeroWords(first)
+        val secondStart = second.size - countLeadingZeroWords(second)
         return compareWithStartIndexes(first, second, firstStart, secondStart)
     }
 
@@ -352,7 +354,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun add(first: ULongArray, second: ULongArray): ULongArray {
-        //debugOperandsCheck(first, second)
+        // debugOperandsCheck(first, second)
         if (first.size == 1 && first[0] == 0UL) return second
         if (second.size == 1 && second[0] == 0UL) return first
 
@@ -403,15 +405,21 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     fun subtractWithStartIndexes(
-        first: ULongArray, second: ULongArray,
-        firstStart : Int, secondStart : Int): ULongArray {
+        first: ULongArray,
+        second: ULongArray,
+        firstStart: Int,
+        secondStart: Int
+    ): ULongArray {
         val comparison = compareWithStartIndexes(first, second, firstStart, secondStart)
+
+        val firstSize = firstStart + 1
+        val secondSize = secondStart + 1
 
         val firstIsLarger = comparison == 1
 
         if (comparison == 0) return ZERO
 
-        if (second.size == 1 && second[0] == 0UL) {
+        if (secondSize == 1 && second[0] == 0UL) {
             return first
         }
 
@@ -419,12 +427,12 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         if (!firstIsLarger) {
             throw RuntimeException("subtract result less than zero")
         }
-        val (largerLength, smallerLength, largerData, smallerData, largerStart, smallerStart) = if (firstIsLarger) {
-            Sextuple(first.size, second.size, first, second, firstStart, secondStart)
+        val (largerData, smallerData, largerStart, smallerStart) = if (firstIsLarger) {
+            Quadruple(first, second, firstStart, secondStart)
         } else {
-            Sextuple(second.size, first.size, second, first, secondStart, firstStart)
+            Quadruple(second, first, secondStart, firstStart)
         }
-        val result = ULongArray(largerLength) { 0U }
+        val result = ULongArray(largerStart) { 0U }
         var i = 0
         var diff: ULong = 0u
         while (i < smallerStart) {
@@ -454,15 +462,14 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun subtract(first: ULongArray, second: ULongArray): ULongArray {
-        //debugOperandsCheck(first, second)
+        // debugOperandsCheck(first, second)
         val firstStart = first.size - countLeadingZeroWords(first)
         val secondStart = second.size - countLeadingZeroWords(second)
         return subtractWithStartIndexes(first, second, firstStart, secondStart)
-
     }
 
     override fun multiply(first: ULongArray, second: ULongArray): ULongArray {
-        //debugOperandsCheck(first, second)
+        // debugOperandsCheck(first, second)
         val firstRealSize = first.size - countLeadingZeroWords(first)
         val seondRealSize = second.size - countLeadingZeroWords(second)
         if (first.contentEquals(ZERO) || second.contentEquals(ZERO)) {
@@ -1167,7 +1174,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun divide(first: ULongArray, second: ULongArray): Pair<ULongArray, ULongArray> {
-        //debugOperandsCheck(first, second)
+        // debugOperandsCheck(first, second)
         return baseDivide(first, second)
     }
 
@@ -1279,7 +1286,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     private tailrec fun binaryGcd(first: ULongArray, second: ULongArray): ULongArray {
-        //debugOperandsCheck(first, second)
+        // debugOperandsCheck(first, second)
         if (first.contentEquals(second)) {
             return first
         }
