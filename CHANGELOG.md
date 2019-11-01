@@ -1,6 +1,9 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
 ##### 0.1.2-SNAPSHOT - 22.10.2019
+- Removing removeLeadingZeros and replacing with countLeadingZeros and appropriate algorithm changes
+
+
 
 
 ##### 0.1.1 - 19.10.2019

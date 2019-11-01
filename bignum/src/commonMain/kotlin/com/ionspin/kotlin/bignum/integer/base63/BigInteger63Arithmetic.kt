@@ -94,12 +94,12 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
         return n - x.toInt()
     }
-    
-    fun numberOfTrailingZeroesInAWord(value : ULong) : Int {
+
+    fun numberOfTrailingZeroesInAWord(value: ULong): Int {
         var x = value
-        var y : ULong
+        var y: ULong
         var n = 63
-        
+
         y = (x shl 32) and baseMask
         if (y != 0UL) {
             n -= 32
@@ -146,13 +146,14 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun trailingZeroBits(value: ULongArray): Int {
-        if (value.contentEquals(ZERO)) { return 0 }
+        if (value.contentEquals(ZERO)) {
+            return 0
+        }
         val zeroWordsCount = value.takeWhile { it == 0UL }.count()
         if (zeroWordsCount == value.size) {
             return 0
         }
         return trailingZeroBits(value[zeroWordsCount]) + (zeroWordsCount * 63)
-
     }
 
     fun removeLeadingZeroes(bigInteger: ULongArray): ULongArray {
@@ -167,9 +168,23 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return bigInteger.copyOfRange(0, firstEmpty)
     }
 
-    fun countLeadingZeroes(bigInteger: ULongArray): Int {
-        val firstEmpty = bigInteger.indexOfLast { it != 0UL } + 1
-        return bigInteger.size - firstEmpty
+    fun countLeadingZeroWords(bigInteger: ULongArray): Int {
+        // Presume there are no leading zeroes
+        var lastNonEmptyIndex = bigInteger.size - 1
+        // Check if it's an empty array
+        if (lastNonEmptyIndex <= 0) {
+            return 0
+        }
+        // Get the last element (Word order is high endian so leading zeroes are only on highest indexes
+        var element = bigInteger[lastNonEmptyIndex]
+        while (element == 0UL && lastNonEmptyIndex > 0) {
+            lastNonEmptyIndex -= 1
+            element = bigInteger[lastNonEmptyIndex]
+        }
+        if (bigInteger[lastNonEmptyIndex] == 0UL) {
+            lastNonEmptyIndex -= 1
+        }
+        return bigInteger.size - lastNonEmptyIndex - 1
     }
 
     override fun shiftLeft(operand: ULongArray, places: Int): ULongArray {
@@ -179,9 +194,12 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         if (operand.isEmpty() || places == 0) {
             return operand
         }
-        val originalSize = operand.size
+
+        val leadingZeroWords = countLeadingZeroWords(operand)
+
+        val originalSize = operand.size - leadingZeroWords
         val leadingZeroes =
-            numberOfLeadingZeroesInAWord(operand[operand.size - 1])
+            numberOfLeadingZeroesInAWord(operand[originalSize - 1])
         val shiftWords = places / basePowerOfTwo
         val shiftBits = places % basePowerOfTwo
         val wordsNeeded = if (shiftBits > leadingZeroes) {
@@ -190,59 +208,59 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             shiftWords
         }
         if (shiftBits == 0) {
-            return ULongArray(operand.size + wordsNeeded) {
+            return ULongArray(originalSize + wordsNeeded) {
                 when (it) {
                     in 0 until shiftWords -> 0U
                     else -> operand[it - shiftWords]
                 }
             }
         }
-        return removeLeadingZeroes(
-            ULongArray(operand.size + wordsNeeded) {
-                when (it) {
-                    in 0 until shiftWords -> 0U
-                    shiftWords -> {
-                        (operand[it - shiftWords] shl shiftBits) and baseMask
-                    }
-                    in (shiftWords + 1) until (originalSize + shiftWords) -> {
-                        ((operand[it - shiftWords] shl shiftBits) and baseMask) or (operand[it - shiftWords - 1] shr (basePowerOfTwo - shiftBits))
-                    }
-                    originalSize + wordsNeeded - 1 -> {
-                        (operand[it - wordsNeeded] shr (basePowerOfTwo - shiftBits))
-                    }
-                    else -> {
-                        throw RuntimeException("Invalid case $it")
-                    }
+        return ULongArray(originalSize + wordsNeeded) {
+            when (it) {
+                in 0 until shiftWords -> 0U
+                shiftWords -> {
+                    (operand[it - shiftWords] shl shiftBits) and baseMask
+                }
+                in (shiftWords + 1) until (originalSize + shiftWords) -> {
+                    ((operand[it - shiftWords] shl shiftBits) and baseMask) or (operand[it - shiftWords - 1] shr (basePowerOfTwo - shiftBits))
+                }
+                originalSize + wordsNeeded - 1 -> {
+                    (operand[it - wordsNeeded] shr (basePowerOfTwo - shiftBits))
+                }
+                else -> {
+                    throw RuntimeException("Invalid case $it")
                 }
             }
-        )
+        }
     }
 
     override fun shiftRight(operand: ULongArray, places: Int): ULongArray {
         if (operand.isEmpty() || places == 0) {
             return operand
         }
+        val leadingZeroWords = countLeadingZeroWords(operand)
+        val realOperandSize = operand.size - leadingZeroWords
         val shiftBits = (places % basePowerOfTwo)
         val wordsToDiscard = places / basePowerOfTwo
-        if (wordsToDiscard >= operand.size) {
+        if (wordsToDiscard >= realOperandSize) {
             return ZERO
         }
 
         if (shiftBits == 0) {
-            operand.copyOfRange(operand.size - wordsToDiscard, operand.size)
+            operand.copyOfRange(realOperandSize - wordsToDiscard, realOperandSize)
         }
 
-        if (operand.size > 1 && operand.size - wordsToDiscard == 1) {
-            return ulongArrayOf((operand[operand.size - 1] shr shiftBits))
+        if (realOperandSize > 1 && realOperandSize - wordsToDiscard == 1) {
+            return ulongArrayOf((operand[realOperandSize - 1] shr shiftBits))
         }
 
-        val result = ULongArray(operand.size - wordsToDiscard) {
+        val result = ULongArray(realOperandSize - wordsToDiscard) {
             when (it) {
-                in 0 until (operand.size - 1 - wordsToDiscard) -> {
+                in 0 until (realOperandSize - 1 - wordsToDiscard) -> {
                     ((operand[it + wordsToDiscard] shr shiftBits)) or
                         ((operand[it + wordsToDiscard + 1] shl (basePowerOfTwo - shiftBits) and baseMask))
                 }
-                operand.size - 1 - wordsToDiscard -> {
+                realOperandSize - 1 - wordsToDiscard -> {
                     (operand[it + wordsToDiscard] shr shiftBits)
                 }
                 else -> {
@@ -250,12 +268,12 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
                 }
             }
         }
-        return removeLeadingZeroes(result)
+        return result
     }
 
     override fun compare(first: ULongArray, second: ULongArray): Int {
-        val firstStart = countLeadingZeroes(first)
-        val secondStart = countLeadingZeroes(second)
+        val firstStart = countLeadingZeroWords(first)
+        val secondStart = countLeadingZeroWords(second)
         val firstSize = first.size - firstStart
         val secondSize = second.size - secondStart
 
@@ -266,7 +284,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             return -1
         }
 
-        var counter = first.size - 1 - firstStart
+        var counter = firstSize - 1
         var firstIsLarger = false
         var bothAreEqual = true
         while (counter >= 0) {
@@ -316,8 +334,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         if (first.size == 1 && first[0] == 0UL) return second
         if (second.size == 1 && second[0] == 0UL) return first
 
-        val firstStart = first.size - countLeadingZeroes(first)
-        val secondStart = second.size - countLeadingZeroes(second)
+        val firstStart = first.size - countLeadingZeroWords(first)
+        val secondStart = second.size - countLeadingZeroWords(second)
 
         val (largerLength, smallerLength, largerData, smallerData, largerStart, smallerStart) = if (firstStart > secondStart) {
             Sextuple(first.size, second.size, first, second, firstStart, secondStart)
@@ -360,8 +378,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun subtract(first: ULongArray, second: ULongArray): ULongArray {
-        val firstStart = first.size - countLeadingZeroes(first)
-        val secondStart = second.size - countLeadingZeroes(second)
+        val firstStart = first.size - countLeadingZeroWords(first)
+        val secondStart = second.size - countLeadingZeroWords(second)
 
         val comparison = compare(first, second)
 
@@ -427,7 +445,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
         if ((first.size >= karatsubaThreshold || second.size >= karatsubaThreshold) &&
             (first.size <= toomCookThreshold || second.size < toomCookThreshold)
-            ) {
+        ) {
             return karatsubaMultiply(first, second)
         }
 
@@ -439,8 +457,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     fun basecaseMultiply(first: ULongArray, second: ULongArray): ULongArray {
-        val firstStart = first.size - countLeadingZeroes(first)
-        val secondStart = second.size - countLeadingZeroes(second)
+        val firstStart = first.size - countLeadingZeroWords(first)
+        val secondStart = second.size - countLeadingZeroWords(second)
         var resultArray = ulongArrayOf()
         second.forEachIndexed { index: Int, element: ULong ->
             if (index > secondStart) {
@@ -611,13 +629,17 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
     val SIGNED_POSITIVE_TWO = SignedULongArray(TWO, true)
 
-    private fun signedSubtract(first: SignedULongArray, second: SignedULongArray) = signedAdd(first, second.copy(sign = !second.sign))
+    private fun signedSubtract(first: SignedULongArray, second: SignedULongArray) =
+        signedAdd(first, second.copy(sign = !second.sign))
 
-    private fun signedMultiply(first: SignedULongArray, second: SignedULongArray) = SignedULongArray(first.unsignedValue * second.unsignedValue, !(first.sign xor second.sign))
+    private fun signedMultiply(first: SignedULongArray, second: SignedULongArray) =
+        SignedULongArray(first.unsignedValue * second.unsignedValue, !(first.sign xor second.sign))
 
-    private fun signedDivide(first: SignedULongArray, second: SignedULongArray) = SignedULongArray(first.unsignedValue / second.unsignedValue, !(first.sign xor second.sign))
+    private fun signedDivide(first: SignedULongArray, second: SignedULongArray) =
+        SignedULongArray(first.unsignedValue / second.unsignedValue, !(first.sign xor second.sign))
 
-    private fun signedRemainder(first: SignedULongArray, second: SignedULongArray) = SignedULongArray(first.unsignedValue % second.unsignedValue, !(first.sign xor second.sign))
+    private fun signedRemainder(first: SignedULongArray, second: SignedULongArray) =
+        SignedULongArray(first.unsignedValue % second.unsignedValue, !(first.sign xor second.sign))
 
     internal operator fun SignedULongArray.plus(other: SignedULongArray): SignedULongArray {
         return signedAdd(this, other)
@@ -653,7 +675,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
     fun baseMultiply(first: ULongArray, second: ULong): ULongArray {
 
-        val firstStart = first.size - countLeadingZeroes(first)
+        val firstStart = first.size - countLeadingZeroWords(first)
 
         val secondLow = second and lowMask
         val secondHigh = second shr 32
@@ -1087,7 +1109,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             val position = (i * 2) - skipWordCount
             if (requiredLength == 2) {
                 result[0] = operand[0].toULong() or ((operand[1].toULong() shl 32) and highMask)
-                result[i] = (operand[1].toULong() shr 31) or (operand[2].toULong() shl 1) or (operand[3].toULong() shl 33)
+                result[i] =
+                    (operand[1].toULong() shr 31) or (operand[2].toULong() shl 1) or (operand[3].toULong() shl 33)
             } else {
                 when (i) {
                     0 -> {

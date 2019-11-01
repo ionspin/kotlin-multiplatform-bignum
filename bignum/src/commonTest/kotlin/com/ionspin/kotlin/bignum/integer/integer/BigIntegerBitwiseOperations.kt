@@ -17,18 +17,9 @@
 
 package com.ionspin.kotlin.bignum.integer.integer
 
-import com.ionspin.kotlin.bignum.integer.BigInteger
-import kotlin.test.Test
-import kotlin.test.assertTrue
-
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
  * on 01-Nov-2019
  */
-class BigIntegerBitwiseOperations {
-
-
-
-
-}
+class BigIntegerBitwiseOperations

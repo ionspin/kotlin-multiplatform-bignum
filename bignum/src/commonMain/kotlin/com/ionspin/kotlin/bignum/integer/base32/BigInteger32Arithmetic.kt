@@ -86,6 +86,38 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return n - x.toInt()
     }
 
+    fun numberOfTrailingZeroesInAWord(value: UInt): Int {
+        var x = value
+        var y: UInt
+        var n = 32
+
+        y = (x shl 16) and baseMaskInt
+        if (y != 0U) {
+            n -= 16
+            x = y
+        }
+        y = (x shl 8) and baseMaskInt
+        if (y != 0U) {
+            n = n - 8
+            x = y
+        }
+        y = (x shl 4) and baseMaskInt
+        if (y != 0U) {
+            n = n - 4
+            x = y
+        }
+        y = (x shl 2) and baseMaskInt
+        if (y != 0U) {
+            n = n - 2
+            x = y
+        }
+        y = (x shl 1) and baseMaskInt
+        if (y != 0U) {
+            return n - 2
+        }
+        return n - x.toInt()
+    }
+
     override fun bitLength(value: UIntArray): Int {
         if (value.isEmpty()) {
             return 0
@@ -100,8 +132,17 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         )
     }
 
+    fun trailingZeroBits(value: UInt): Int {
+        return numberOfTrailingZeroesInAWord(value)
+    }
+
     override fun trailingZeroBits(value: UIntArray): Int {
-        TODO()
+        if (value.contentEquals(ZERO)) { return 0 }
+        val zeroWordsCount = value.takeWhile { it == 0U }.count()
+        if (zeroWordsCount == value.size) {
+            return 0
+        }
+        return trailingZeroBits(value[zeroWordsCount]) + (zeroWordsCount * 63)
     }
 
     fun removeLeadingZeroes(bigInteger: UIntArray): UIntArray {

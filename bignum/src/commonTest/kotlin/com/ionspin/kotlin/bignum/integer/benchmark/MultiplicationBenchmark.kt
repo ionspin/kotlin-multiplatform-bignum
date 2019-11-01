@@ -112,18 +112,18 @@ class MultiplicationBenchmark {
         jobList.forEach { it.join() }
 
         println("Total ${timeSpent / 1_000_000} ms (${timeSpent / 1_000_000_000} s) over $numberOfSamples")
-        println("Average run ${timeSpent / numberOfSamples} NanoSeconds ${timeSpent / numberOfSamples / 1_000_000_000} MilliSeconds")
+        println("Average run ${timeSpent / numberOfSamples} NanoSeconds ${timeSpent / numberOfSamples / 1_000_000} MilliSeconds")
     }
 
     @Test
     fun benchmarkLargeOperandsSuite() {
         val randomRandom = Random.Default
         println("Stable seed")
-        for (i in 1 until 10) {
+        for (i in 1 until 5) {
             benchmarkLargeOperands(i)
         }
         println("Random seeds")
-        for (i in 1 until 10) {
+        for (i in 1 until 5) {
             val seed = randomRandom.nextInt()
             println("Seed $seed")
             benchmarkLargeOperands(seed)
@@ -134,7 +134,7 @@ class MultiplicationBenchmark {
         val random = Random(seed)
         var timeSpent = 0L
         val numberOfSamples = 100
-        val operandSize = 100_000
+        val operandSize = 16_000
         val jobList = mutableListOf<Job>()
         for (i in 0 until numberOfSamples) {
             jobList += GlobalScope.launch {

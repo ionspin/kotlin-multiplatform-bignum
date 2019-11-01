@@ -418,7 +418,10 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         return arithmetic.compare(this.magnitude, other.magnitude)
     }
 
-    override fun isZero(): Boolean = this.sign == Sign.ZERO
+    override fun isZero(): Boolean {
+        return this.sign == Sign.ZERO ||
+            chosenArithmetic.compare(this.magnitude, chosenArithmetic.ZERO) == 0
+    }
 
     override fun negate(): BigInteger {
         return BigInteger(wordArray = this.magnitude, sign = sign.not())
