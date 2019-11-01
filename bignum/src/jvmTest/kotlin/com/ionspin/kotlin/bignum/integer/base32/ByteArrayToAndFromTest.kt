@@ -45,7 +45,7 @@ class ByteArrayToAndFromTest {
             val javaBigInt = bigInt32Array.toJavaBigInteger()
             val javaBigIntByteArray = javaBigInt.toByteArray()
             val intArray = BigInteger32Arithmetic.toByteArray(bigInt32Array, Sign.POSITIVE)
-            javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray())
+            javaBigIntByteArray.dropLeadingZeros().contentEquals(intArray.dropLeadingZeros().toByteArray())
         }
 
         assertTrue {
@@ -53,7 +53,7 @@ class ByteArrayToAndFromTest {
             val javaBigInt = bigInt32Array.toJavaBigInteger().negate()
             val javaBigIntByteArray = javaBigInt.toByteArray()
             val intArray = BigInteger32Arithmetic.toByteArray(bigInt32Array, Sign.NEGATIVE)
-            javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray())
+            javaBigIntByteArray.dropLeadingZeros().contentEquals(intArray.dropLeadingZeros().toByteArray())
         }
 
         assertTrue {
@@ -65,7 +65,7 @@ class ByteArrayToAndFromTest {
             val javaBigInt = uIntArray.toJavaBigInteger()
             val javaBigIntByteArray = javaBigInt.toByteArray()
             val intArray = BigInteger32Arithmetic.toByteArray(bigInt32Array, Sign.POSITIVE)
-            javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray())
+            javaBigIntByteArray.dropLeadingZeros().contentEquals(intArray.dropLeadingZeros().toByteArray())
         }
 
         assertTrue {
@@ -77,7 +77,7 @@ class ByteArrayToAndFromTest {
             val javaBigInt = uIntArray.toJavaBigInteger().negate()
             val javaBigIntByteArray = javaBigInt.toByteArray()
             val intArray = BigInteger32Arithmetic.toByteArray(bigInt32Array, Sign.NEGATIVE)
-            javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray())
+            javaBigIntByteArray.dropLeadingZeros().contentEquals(intArray.dropLeadingZeros().toByteArray())
         }
 
         assertTrue {
@@ -86,7 +86,7 @@ class ByteArrayToAndFromTest {
             val javaBigInt = bigInt32Array.toJavaBigInteger()
             val javaBigIntByteArray = javaBigInt.toByteArray()
             val intArray = BigInteger32Arithmetic.toByteArray(bigInt32Array, Sign.POSITIVE)
-            javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray())
+            javaBigIntByteArray.dropLeadingZeros().contentEquals(intArray.dropLeadingZeros().toByteArray())
         }
     }
 
@@ -259,8 +259,8 @@ class ByteArrayToAndFromTest {
         val javaBigIntByteArray = javaBigInt.toByteArray()
         val intArray = BigInteger32Arithmetic.toByteArray(bigInt32Array, sign)
         assertTrue("Failed on TO byte array: \n val number = uintArrayOf(${bigInt32Array.joinToString(separator = ", ") { "${it}U" }})\n") {
-            javaBigIntByteArray.dropLeadingZeroes().contentEquals(intArray.dropLeadingZeroes().toByteArray()) ||
-                (byteArrayOf(0xFF.toByte()) + javaBigIntByteArray.dropLeadingZeroes()).contentEquals(intArray.dropLeadingZeroes().toByteArray())
+            javaBigIntByteArray.dropLeadingZeros().contentEquals(intArray.dropLeadingZeros().toByteArray()) ||
+                (byteArrayOf(0xFF.toByte()) + javaBigIntByteArray.dropLeadingZeros()).contentEquals(intArray.dropLeadingZeros().toByteArray())
         }
     }
 
@@ -290,11 +290,11 @@ class ByteArrayToAndFromTest {
         }
     }
 
-    private fun Array<Byte>.dropLeadingZeroes(): Array<Byte> {
+    private fun Array<Byte>.dropLeadingZeros(): Array<Byte> {
         return this.dropWhile { it == 0.toByte() }.toTypedArray()
     }
 
-    private fun ByteArray.dropLeadingZeroes(): ByteArray {
+    private fun ByteArray.dropLeadingZeros(): ByteArray {
         return this.dropWhile { it == 0.toByte() }.toByteArray()
     }
 }

@@ -57,7 +57,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     const val karatsubaThreshold = 120
     const val toomCookThreshold = 15_000
 
-    override fun numberOfLeadingZeroesInAWord(value: ULong): Int {
+    override fun numberOfLeadingZerosInAWord(value: ULong): Int {
         var x = value
         var y: ULong
         var n = 63
@@ -95,7 +95,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return n - x.toInt()
     }
 
-    fun numberOfTrailingZeroesInAWord(value: ULong): Int {
+    fun numberOfTrailingZerosInAWord(value: ULong): Int {
         var x = value
         var y: ULong
         var n = 63
@@ -138,11 +138,11 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     fun bitLength(value: ULong): Int {
-        return 63 - numberOfLeadingZeroesInAWord(value)
+        return 63 - numberOfLeadingZerosInAWord(value)
     }
 
     fun trailingZeroBits(value: ULong): Int {
-        return numberOfTrailingZeroesInAWord(value)
+        return numberOfTrailingZerosInAWord(value)
     }
 
     override fun trailingZeroBits(value: ULongArray): Int {
@@ -156,7 +156,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return trailingZeroBits(value[zeroWordsCount]) + (zeroWordsCount * 63)
     }
 
-    fun removeLeadingZeroes(bigInteger: ULongArray): ULongArray {
+    fun removeLeadingZeros(bigInteger: ULongArray): ULongArray {
         val firstEmpty = bigInteger.indexOfLast { it != 0UL } + 1
         if (firstEmpty == -1 || firstEmpty == 0) {
             // Array is equal to zero, so we return array with zero elements
@@ -169,13 +169,13 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     fun countLeadingZeroWords(bigInteger: ULongArray): Int {
-        // Presume there are no leading zeroes
+        // Presume there are no leading zeros
         var lastNonEmptyIndex = bigInteger.size - 1
         // Check if it's an empty array
         if (lastNonEmptyIndex <= 0) {
             return 0
         }
-        // Get the last element (Word order is high endian so leading zeroes are only on highest indexes
+        // Get the last element (Word order is high endian so leading zeros are only on highest indexes
         var element = bigInteger[lastNonEmptyIndex]
         while (element == 0UL && lastNonEmptyIndex > 0) {
             lastNonEmptyIndex -= 1
@@ -198,11 +198,11 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         val leadingZeroWords = countLeadingZeroWords(operand)
 
         val originalSize = operand.size - leadingZeroWords
-        val leadingZeroes =
-            numberOfLeadingZeroesInAWord(operand[originalSize - 1])
+        val leadingZeros =
+            numberOfLeadingZerosInAWord(operand[originalSize - 1])
         val shiftWords = places / basePowerOfTwo
         val shiftBits = places % basePowerOfTwo
-        val wordsNeeded = if (shiftBits > leadingZeroes) {
+        val wordsNeeded = if (shiftBits > leadingZeros) {
             shiftWords + 1
         } else {
             shiftWords
@@ -435,7 +435,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             return ULongArray(0)
         }
 
-        return removeLeadingZeroes(result)
+        return removeLeadingZeros(result)
     }
 
     override fun multiply(first: ULongArray, second: ULongArray): ULongArray {
@@ -715,7 +715,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         if (carryIntoNextRound != 0UL) {
             result[j] = carryIntoNextRound
         }
-        return removeLeadingZeroes(result)
+        return removeLeadingZeros(result)
     }
 
     /*
@@ -746,7 +746,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         val higherProduct = (firstHigh * secondHigh) shl 1
         highResult = highResult + higherProduct
 
-        return removeLeadingZeroes(ulongArrayOf(lowResult and baseMask, highResult))
+        return removeLeadingZeros(ulongArrayOf(lowResult and baseMask, highResult))
     }
 
     override fun pow(base: ULongArray, exponent: Long): ULongArray {
@@ -766,7 +766,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
     fun normalize(dividend: ULongArray, divisor: ULongArray): Triple<ULongArray, ULongArray, Int> {
         val divisorSize = divisor.size
-        val normalizationShift = numberOfLeadingZeroesInAWord(divisor[divisorSize - 1])
+        val normalizationShift = numberOfLeadingZerosInAWord(divisor[divisorSize - 1])
         val divisorNormalized = divisor.shl(normalizationShift)
         val dividendNormalized = dividend.shl(normalizationShift)
 
@@ -774,7 +774,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     fun normalize(operand: ULongArray): Pair<ULongArray, Int> {
-        val normalizationShift = numberOfLeadingZeroesInAWord(operand[operand.size - 1])
+        val normalizationShift = numberOfLeadingZerosInAWord(operand[operand.size - 1])
         return Pair(operand.shl(normalizationShift), normalizationShift)
     }
 
@@ -801,12 +801,12 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         }
         if (unnormalizedDivisor.size == 1 && unnormalizedDividend.size == 1) {
             return Pair(
-                removeLeadingZeroes(
+                removeLeadingZeros(
                     ulongArrayOf(
                         unnormalizedDividend[0] / unnormalizedDivisor[0]
                     )
                 ),
-                removeLeadingZeroes(
+                removeLeadingZeros(
                     ulongArrayOf(
                         unnormalizedDividend[0] % unnormalizedDivisor[0]
                     )
@@ -874,7 +874,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         }
         val denormRemainder =
             denormalize(dividend, normalizationShift)
-        return Pair(removeLeadingZeroes(quotient), denormRemainder)
+        return Pair(removeLeadingZeros(quotient), denormRemainder)
     }
 
     fun basicDivide2(
@@ -915,7 +915,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         }
         val denormRemainder =
             denormalize(a, shift)
-        return Pair(removeLeadingZeroes(q), denormRemainder)
+        return Pair(removeLeadingZeros(q), denormRemainder)
     }
 
     /**
@@ -1084,7 +1084,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             result[2 * i + 1] = (power64Representation[i] shr 32).toUInt()
         }
 
-        return BigInteger32Arithmetic.removeLeadingZeroes(result)
+        return BigInteger32Arithmetic.removeLeadingZeros(result)
     }
 
     internal fun convertFrom32BitRepresentation(operand: UIntArray): ULongArray {
@@ -1303,7 +1303,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         number.toLowerCase().forEach { char ->
             parsed = (parsed * base.toULong()) + (char.toDigit()).toULong()
         }
-        return removeLeadingZeroes(parsed)
+        return removeLeadingZeros(parsed)
     }
 
     override fun toString(operand: ULongArray, base: Int): String {
@@ -1324,7 +1324,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun and(operand: ULongArray, mask: ULongArray): ULongArray {
-        return removeLeadingZeroes(
+        return removeLeadingZeros(
             ULongArray(operand.size) {
                 if (it < mask.size) {
                     operand[it] and mask[it]
@@ -1336,7 +1336,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun or(operand: ULongArray, mask: ULongArray): ULongArray {
-        return removeLeadingZeroes(
+        return removeLeadingZeros(
             ULongArray(operand.size) {
                 if (it < mask.size) {
                     operand[it] or mask[it]
@@ -1348,7 +1348,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun xor(operand: ULongArray, mask: ULongArray): ULongArray {
-        return removeLeadingZeroes(
+        return removeLeadingZeros(
             ULongArray(operand.size) {
                 if (it < mask.size) {
                     operand[it] xor mask[it]
@@ -1360,8 +1360,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun not(operand: ULongArray): ULongArray {
-        val leadingZeroes = numberOfLeadingZeroesInAWord(operand[operand.size - 1])
-        val cleanupMask = (((1UL shl leadingZeroes + 1) - 1U) shl (basePowerOfTwo - leadingZeroes)).inv()
+        val leadingZeros = numberOfLeadingZerosInAWord(operand[operand.size - 1])
+        val cleanupMask = (((1UL shl leadingZeros + 1) - 1U) shl (basePowerOfTwo - leadingZeros)).inv()
         val inverted = ULongArray(operand.size) {
             if (it < operand.size - 2) {
                 operand[it].inv() and baseMask

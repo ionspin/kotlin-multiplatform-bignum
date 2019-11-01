@@ -42,7 +42,7 @@ actual object PlatformBigIntegerArithmetic : BigIntegerArithmetic<IntArray, Int>
 
     val baseMask = 0x7FFFFFFFL
 
-    override fun numberOfLeadingZeroesInAWord(value: Int): Int {
+    override fun numberOfLeadingZerosInAWord(value: Int): Int {
         TODO("not implemented yet")
     }
 

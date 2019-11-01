@@ -1426,8 +1426,8 @@ class BigDecimal private constructor(
                 val diffBigInt = (exponent - digits + 1)
 
                 if (diffBigInt > 0) {
-                    val expandZeroes = diffBigInt * '0'
-                    significandString + expandZeroes
+                    val expandZeros = diffBigInt * '0'
+                    significandString + expandZeros
                 } else {
                     placeADotInString(significandString, significandString.length - exponent.magnitude[0].toInt() - 1)
                 }
@@ -1437,8 +1437,8 @@ class BigDecimal private constructor(
                 val diffInt = exponent.magnitude[0].toInt()
 
                 if (diffInt > 0) {
-                    val expandZeroes = exponent.abs() * '0'
-                    placeADotInString(expandZeroes + significandString, diffInt + significandString.length - 1)
+                    val expandZeros = exponent.abs() * '0'
+                    placeADotInString(expandZeros + significandString, diffInt + significandString.length - 1)
                 } else {
                     placeADotInString(significandString, significandString.length - 1)
                 }

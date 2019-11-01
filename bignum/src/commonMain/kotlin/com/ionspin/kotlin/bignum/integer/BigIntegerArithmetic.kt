@@ -35,9 +35,9 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
 
     val basePowerOfTwo: Int
     /**
-     * Returns the number of leading zeroes in a word
+     * Returns the number of leading zeros in a word
      */
-    fun numberOfLeadingZeroesInAWord(value: BackingWordType): Int
+    fun numberOfLeadingZerosInAWord(value: BackingWordType): Int
 
     /**
      * Number of bits needed to represent this number
@@ -45,7 +45,7 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
     fun bitLength(value: BackingCollectionType): Int
 
     /**
-     * Number of consecutive zeroes count from the right in binary representation
+     * Number of consecutive zeros count from the right in binary representation
      */
     fun trailingZeroBits(value: BackingCollectionType): Int
 

@@ -39,7 +39,7 @@ class BigInteger63AdditionTest {
     }
 
     @Test
-    fun testAdditionWithLeadingZeroes() {
+    fun testAdditionWithLeadingZeros() {
         assertTrue {
             val a = ulongArrayOf(10U, 20U, 0U, 0U)
             val b = ulongArrayOf(15U, 5U, 0U, 0U, 0U)

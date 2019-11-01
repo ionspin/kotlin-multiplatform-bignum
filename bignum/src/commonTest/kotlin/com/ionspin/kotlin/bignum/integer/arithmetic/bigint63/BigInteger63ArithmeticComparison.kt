@@ -29,7 +29,7 @@ import kotlin.test.assertTrue
 @ExperimentalUnsignedTypes
 class BigInteger63ArithmeticComparison {
     @Test
-    fun testComparisonWithLeadingZeroes() {
+    fun testComparisonWithLeadingZeros() {
         val first = ulongArrayOf(1U, 0U, 0U)
         val second = ulongArrayOf(2U, 0U, 0U)
         val comparison = BigInteger63Arithmetic.compare(first, second)

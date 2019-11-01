@@ -1,12 +1,12 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
-##### 0.1.2-SNAPSHOT - 22.10.2019
-- Removing removeLeadingZeros and replacing with countLeadingZeros and appropriate algorithm changes
+##### 0.1.2-SNAPSHOT - 22.10.2019 Performance improvements
+- Removed removeLeadingZeros and replaced with countLeadingZeros and appropriate algorithm changes.
+- Realized plural of zero is zeros not zeroes.
 
 
 
-
-##### 0.1.1 - 19.10.2019
+##### 0.1.1 - 19.10.2019 Multiplication algorithm improvements
 - Implemented Toom-Cook-3 multiplication, although still slow because of inefficient division
 - Bumped gradle version to 5.6.1, which means that the published Gradle Metadata will be 1.0, making
 metadata resolution available only on Gradle >= 5.3
