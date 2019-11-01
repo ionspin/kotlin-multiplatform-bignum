@@ -1,6 +1,9 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
-##### 0.1.1-SNAPSHOT - 19.10.2019
+##### 0.1.2-SNAPSHOT - 22.10.2019
+
+
+##### 0.1.1 - 19.10.2019
 - Implemented Toom-Cook-3 multiplication, although still slow because of inefficient division
 - Bumped gradle version to 5.6.1, which means that the published Gradle Metadata will be 1.0, making
 metadata resolution available only on Gradle >= 5.3
@@ -26,7 +29,7 @@ parameter to preserve precision.
 - Added modInverse method to BigInteger
 - Extracted interfaces that model big numbers better (BigNumber<BigType> interface and accompanying interfaces)
 - Implemented integer reciprocal based on newton iteration (Based on paper by Yiping Cheng, Ze Lie : Refinement of a newton reciprocal algorithm for arbitrary precision numbers)
-- Implemented division by reciprocal multiplication. Not used by division at the moment as it is unoptimized and slower than basecase division in ealry benchmarks.
+- Implemented division by reciprocal multiplication. Not used by division at the moment as it is unoptimized and slower than basecase division in early benchmarks.
 - Fixed a bug in Int32 shift right when shift amount was an exact multiple of word size 
 - Added constructor overloads
 - Added value methods (intValue, longValue...)

@@ -134,7 +134,7 @@ class MultiplicationBenchmark {
         val random = Random(seed)
         var timeSpent = 0L
         val numberOfSamples = 100
-        val operandSize = 10_000
+        val operandSize = 100_000
         val jobList = mutableListOf<Job>()
         for (i in 0 until numberOfSamples) {
             jobList += GlobalScope.launch {

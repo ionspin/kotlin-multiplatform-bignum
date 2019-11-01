@@ -33,8 +33,22 @@ class BigInteger32BitWiseTest {
     @Ignore
     @Test
     fun trailingZeroBitsTest() {
-        val a = ulongArrayOf(64U)
-        val count = BigInteger63Arithmetic.trailingZeroBits(a)
-        assertTrue { count == 7 }
+        assertTrue {
+            val a = ulongArrayOf(64U)
+            val count = BigInteger63Arithmetic.trailingZeroBits(a)
+            count == 7
+        }
+
+        assertTrue {
+            val a = ulongArrayOf(0U, 64U)
+            val count = BigInteger63Arithmetic.trailingZeroBits(a)
+            count == 70
+        }
+
+        assertTrue {
+            val a = ulongArrayOf(0U, 64U, 0U)
+            val count = BigInteger63Arithmetic.trailingZeroBits(a)
+            count == 70
+        }
     }
 }

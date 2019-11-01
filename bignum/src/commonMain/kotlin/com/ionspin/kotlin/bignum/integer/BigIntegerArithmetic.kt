@@ -35,7 +35,7 @@ interface BigIntegerArithmetic<BackingCollectionType, BackingWordType> {
 
     val basePowerOfTwo: Int
     /**
-     * Returns the number of leading zeroes in highest word
+     * Returns the number of leading zeroes in a word
      */
     fun numberOfLeadingZeroesInAWord(value: BackingWordType): Int
 

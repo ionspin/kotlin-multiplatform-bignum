@@ -94,6 +94,43 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
         return n - x.toInt()
     }
+    
+    fun numberOfTrailingZeroesInAWord(value : ULong) : Int {
+        var x = value
+        var y : ULong
+        var n = 63
+        
+        y = (x shl 32) and baseMask
+        if (y != 0UL) {
+            n -= 32
+            x = y
+        }
+        y = (x shl 16) and baseMask
+        if (y != 0UL) {
+            n -= 16
+            x = y
+        }
+        y = (x shl 8) and baseMask
+        if (y != 0UL) {
+            n = n - 8
+            x = y
+        }
+        y = (x shl 4) and baseMask
+        if (y != 0UL) {
+            n = n - 4
+            x = y
+        }
+        y = (x shl 2) and baseMask
+        if (y != 0UL) {
+            n = n - 2
+            x = y
+        }
+        y = (x shl 1) and baseMask
+        if (y != 0UL) {
+            return n - 2
+        }
+        return n - x.toInt()
+    }
 
     override fun bitLength(value: ULongArray): Int {
         val mostSignificant = value[value.size - 1]
@@ -105,13 +142,19 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     fun trailingZeroBits(value: ULong): Int {
-        return 63 - bitLength(value.inv() and baseMask)
+        return numberOfTrailingZeroesInAWord(value)
     }
 
     override fun trailingZeroBits(value: ULongArray): Int {
-        TODO()
+        if (value.contentEquals(ZERO)) { return 0 }
+        val zeroWordsCount = value.takeWhile { it == 0UL }.count()
+        if (zeroWordsCount == value.size) {
+            return 0
+        }
+        return trailingZeroBits(value[zeroWordsCount]) + (zeroWordsCount * 63)
+
     }
-    // TODO This is too expensive and should be avoided everywhere
+
     fun removeLeadingZeroes(bigInteger: ULongArray): ULongArray {
         val firstEmpty = bigInteger.indexOfLast { it != 0UL } + 1
         if (firstEmpty == -1 || firstEmpty == 0) {
