@@ -149,6 +149,14 @@ class MultiplicationBenchmark {
         println("Average run ${timeSpent / numberOfSamples} NanoSeconds ${timeSpent / numberOfSamples / 1_000_000_000} MilliSeconds")
     }
 
+    @Test
+    fun specificBenchmark() {
+        val random = Random(1)
+        val a = ULongArray(100) { random.nextULong() shr 1 }.toProperType()
+        val b = ULongArray(100) { random.nextULong() shr 1 }.toProperType()
+        runMultiplication(a, b)
+    }
+
     fun runMultiplication(first: WordArray, second: WordArray): Long {
         return measureTime {
             chosenArithmetic.multiply(first, second)

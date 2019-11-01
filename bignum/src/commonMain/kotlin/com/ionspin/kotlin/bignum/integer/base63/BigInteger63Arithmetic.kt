@@ -36,6 +36,7 @@ import kotlin.math.floor
  *
  * Word order is big endian
  */
+
 @ExperimentalUnsignedTypes
 internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong> {
     override val ZERO: ULongArray = ulongArrayOf(0u)
@@ -56,6 +57,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
 
     const val karatsubaThreshold = 120
     const val toomCookThreshold = 15_000
+
+    const val debugOperandSize = true
 
     override fun numberOfLeadingZerosInAWord(value: ULong): Int {
         var x = value
@@ -188,14 +191,21 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun shiftLeft(operand: ULongArray, places: Int): ULongArray {
-        if (operand == ZERO) {
+        if (operand.contentEquals(ZERO)) {
             return operand
         }
-        if (operand.isEmpty() || places == 0) {
+        if (places == 0) {
             return operand
         }
 
+        if (operand.isEmpty()) {
+            return ZERO
+        }
+
         val leadingZeroWords = countLeadingZeroWords(operand)
+        if (operand.size == leadingZeroWords) {
+            return ZERO
+        }
 
         val originalSize = operand.size - leadingZeroWords
         val leadingZeros =
@@ -254,6 +264,11 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             return ulongArrayOf((operand[realOperandSize - 1] shr shiftBits))
         }
 
+        val newLength = realOperandSize - wordsToDiscard
+        if (newLength == 0) {
+            return ZERO
+        }
+
         val result = ULongArray(realOperandSize - wordsToDiscard) {
             when (it) {
                 in 0 until (realOperandSize - 1 - wordsToDiscard) -> {
@@ -271,9 +286,9 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         return result
     }
 
-    override fun compare(first: ULongArray, second: ULongArray): Int {
-        val firstStart = countLeadingZeroWords(first)
-        val secondStart = countLeadingZeroWords(second)
+    fun compareWithStartIndexes(first: ULongArray, second: ULongArray, firstStart : Int, secondStart : Int) : Int {
+        //debugOperandsCheck(first, second)
+
         val firstSize = first.size - firstStart
         val secondSize = second.size - secondStart
 
@@ -310,6 +325,12 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         }
     }
 
+    override fun compare(first: ULongArray, second: ULongArray): Int {
+        val firstStart = countLeadingZeroWords(first)
+        val secondStart = countLeadingZeroWords(second)
+        return compareWithStartIndexes(first, second, firstStart, secondStart)
+    }
+
     override fun numberOfDecimalDigits(operand: ULongArray): Long {
         val bitLenght = bitLength(operand)
         val minDigit = ceil((bitLenght - 1) * BigInteger.LOG_10_OF_2)
@@ -331,6 +352,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun add(first: ULongArray, second: ULongArray): ULongArray {
+        //debugOperandsCheck(first, second)
         if (first.size == 1 && first[0] == 0UL) return second
         if (second.size == 1 && second[0] == 0UL) return first
 
@@ -359,6 +381,9 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
                     i++
                 }
                 val final = if (result[result.size - 1] == 0UL) {
+                    if ((result.size - 1) == 0) {
+                        return ZERO
+                    }
                     result.copyOfRange(0, result.size - 1)
                 } else {
                     result
@@ -377,11 +402,10 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         }
     }
 
-    override fun subtract(first: ULongArray, second: ULongArray): ULongArray {
-        val firstStart = first.size - countLeadingZeroWords(first)
-        val secondStart = second.size - countLeadingZeroWords(second)
-
-        val comparison = compare(first, second)
+    fun subtractWithStartIndexes(
+        first: ULongArray, second: ULongArray,
+        firstStart : Int, secondStart : Int): ULongArray {
+        val comparison = compareWithStartIndexes(first, second, firstStart, secondStart)
 
         val firstIsLarger = comparison == 1
 
@@ -400,28 +424,19 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         } else {
             Sextuple(second.size, first.size, second, first, secondStart, firstStart)
         }
-        val result = ULongArray(largerLength + 1) { 0u }
+        val result = ULongArray(largerLength) { 0U }
         var i = 0
         var diff: ULong = 0u
         while (i < smallerStart) {
             diff = largerData[i] - smallerData[i] - diff
-            if ((diff and overflowMask) shr 63 == 1UL) {
-                result[i] = (diff and baseMask)
-            } else {
-                result[i] = diff and baseMask
-            }
+            result[i] = (diff and baseMask)
             diff = diff shr 63
             i++
         }
 
         while (diff != 0UL) {
             diff = largerData[i] - diff
-            if ((diff and overflowMask) shr 63 == 1UL) {
-                result[i] = diff and baseMask
-            } else {
-                result[i] = diff and baseMask
-                diff = 0UL
-            }
+            result[i] = (diff and baseMask)
             diff = diff shr 63
             i++
         }
@@ -431,35 +446,44 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             i++
         }
 
-        if (result.filter { it == 0UL }.isEmpty()) {
-            return ULongArray(0)
+        if (result.filter { it != 0UL }.isEmpty()) {
+            return ZERO
         }
 
-        return removeLeadingZeros(result)
+        return result
+    }
+
+    override fun subtract(first: ULongArray, second: ULongArray): ULongArray {
+        //debugOperandsCheck(first, second)
+        val firstStart = first.size - countLeadingZeroWords(first)
+        val secondStart = second.size - countLeadingZeroWords(second)
+        return subtractWithStartIndexes(first, second, firstStart, secondStart)
+
     }
 
     override fun multiply(first: ULongArray, second: ULongArray): ULongArray {
+        //debugOperandsCheck(first, second)
+        val firstRealSize = first.size - countLeadingZeroWords(first)
+        val seondRealSize = second.size - countLeadingZeroWords(second)
         if (first.contentEquals(ZERO) || second.contentEquals(ZERO)) {
             return ZERO
         }
 
-        if ((first.size >= karatsubaThreshold || second.size >= karatsubaThreshold) &&
-            (first.size <= toomCookThreshold || second.size < toomCookThreshold)
+        if ((firstRealSize >= karatsubaThreshold || seondRealSize >= karatsubaThreshold) &&
+            (firstRealSize <= toomCookThreshold || seondRealSize < toomCookThreshold)
         ) {
             return karatsubaMultiply(first, second)
         }
 
-        if (first.size >= toomCookThreshold && second.size >= toomCookThreshold) {
+        if (firstRealSize >= toomCookThreshold && seondRealSize >= toomCookThreshold) {
             return toomCook3Multiply(first, second)
         }
-
         return basecaseMultiply(first, second)
     }
 
     fun basecaseMultiply(first: ULongArray, second: ULongArray): ULongArray {
-        val firstStart = first.size - countLeadingZeroWords(first)
         val secondStart = second.size - countLeadingZeroWords(second)
-        var resultArray = ulongArrayOf()
+        var resultArray = ZERO
         second.forEachIndexed { index: Int, element: ULong ->
             if (index > secondStart) {
                 resultArray
@@ -477,7 +501,9 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     fun karatsubaMultiply(firstUnsigned: ULongArray, secondUnsigned: ULongArray): ULongArray {
         val first = SignedULongArray(firstUnsigned, true)
         val second = SignedULongArray(secondUnsigned, true)
-        val halfLength = (kotlin.math.max(first.unsignedValue.size, second.unsignedValue.size) + 1) / 2
+        val firstRealSize = first.unsignedValue.size - countLeadingZeroWords(first.unsignedValue)
+        val secondRealSize = second.unsignedValue.size - countLeadingZeroWords(second.unsignedValue)
+        val halfLength = (kotlin.math.max(firstRealSize, secondRealSize) + 1) / 2
 
         val mask = (ONE shl (halfLength * wordSizeInBits)) - 1UL
         val firstLower = first and mask
@@ -545,6 +571,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         val longestLength = kotlin.math.max(first.size, second.size)
 
         val extendedDigit = (longestLength + 2) / 3
+
         val m0 = SignedULongArray(firstPrepared.slice(0 until extendedDigit).toULongArray(), true)
         val m1 = SignedULongArray(firstPrepared.slice(extendedDigit until extendedDigit * 2).toULongArray(), true)
         val m2 = SignedULongArray(firstPrepared.slice(extendedDigit * 2 until extendedDigit * 3).toULongArray(), true)
@@ -680,7 +707,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         val secondLow = second and lowMask
         val secondHigh = second shr 32
 
-        val result = ULongArray(first.size + 1)
+        val result = ULongArray(firstStart + 1)
 
         var carryIntoNextRound = 0UL
         var i = 0
@@ -715,7 +742,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         if (carryIntoNextRound != 0UL) {
             result[j] = carryIntoNextRound
         }
-        return removeLeadingZeros(result)
+        return result
     }
 
     /*
@@ -1140,6 +1167,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun divide(first: ULongArray, second: ULongArray): Pair<ULongArray, ULongArray> {
+        //debugOperandsCheck(first, second)
         return baseDivide(first, second)
     }
 
@@ -1251,6 +1279,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     private tailrec fun binaryGcd(first: ULongArray, second: ULongArray): ULongArray {
+        //debugOperandsCheck(first, second)
         if (first.contentEquals(second)) {
             return first
         }
@@ -1324,15 +1353,13 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun and(operand: ULongArray, mask: ULongArray): ULongArray {
-        return removeLeadingZeros(
-            ULongArray(operand.size) {
+        return ULongArray(operand.size) {
                 if (it < mask.size) {
                     operand[it] and mask[it]
                 } else {
                     0UL
                 }
             }
-        )
     }
 
     override fun or(operand: ULongArray, mask: ULongArray): ULongArray {
@@ -1523,6 +1550,12 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     override fun toUByteArray(operand: ULongArray, endianness: Endianness): Array<UByte> {
         val result = BigInteger32Arithmetic.toUByteArray(convertTo32BitRepresentation(operand), endianness)
         return result
+    }
+
+    private fun debugOperandsCheck(first: ULongArray, second: ULongArray) {
+        if (debugOperandSize && (first.isEmpty() || second.isEmpty())) {
+            throw RuntimeException("Empty operands")
+        }
     }
 
     // ------------- Useful constants --------------
