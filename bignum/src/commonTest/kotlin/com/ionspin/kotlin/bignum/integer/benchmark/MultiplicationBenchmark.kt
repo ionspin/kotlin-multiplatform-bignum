@@ -119,11 +119,11 @@ class MultiplicationBenchmark {
     fun benchmarkLargeOperandsSuite() {
         val randomRandom = Random.Default
         println("Stable seed")
-        for (i in 1 until 5) {
+        for (i in 1 until 2) {
             benchmarkLargeOperands(i)
         }
         println("Random seeds")
-        for (i in 1 until 5) {
+        for (i in 1 until 0) {
             val seed = randomRandom.nextInt()
             println("Seed $seed")
             benchmarkLargeOperands(seed)
@@ -152,8 +152,8 @@ class MultiplicationBenchmark {
     @Test
     fun specificBenchmark() {
         val random = Random(1)
-        val a = ULongArray(100) { random.nextULong() shr 1 }.toProperType()
-        val b = ULongArray(100) { random.nextULong() shr 1 }.toProperType()
+        val a = ULongArray(16_000) { random.nextULong() shr 1 }.toProperType()
+        val b = ULongArray(16_000) { random.nextULong() shr 1 }.toProperType()
         runMultiplication(a, b)
     }
 

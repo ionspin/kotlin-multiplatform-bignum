@@ -173,6 +173,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         if (bigInteger.size == firstEmpty) {
             return bigInteger
         }
+        // println("RLZ original array : ${bigInteger.size} contains: ${bigInteger.size - firstEmpty} zeros")
         return bigInteger.copyOfRange(0, firstEmpty)
     }
 
@@ -454,7 +455,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             i++
         }
 
-        if (result.filter { it != 0UL }.isEmpty()) {
+        if (countLeadingZeroWords(result) == (result.size - 1) && result[0] == 0UL) {
             return ZERO
         }
 

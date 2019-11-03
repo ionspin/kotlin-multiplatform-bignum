@@ -36,3 +36,19 @@ fun ULongArray.toProperType(): WordArray {
     }
     throw RuntimeException("Invalid WordArray type")
 }
+
+@ExperimentalUnsignedTypes
+fun List<ULong>.toProperType(): WordArray {
+    if ((TypeHelper.instance as Any) is ULongArray) {
+        return this as WordArray
+    }
+    if ((TypeHelper.instance as Any) is List<*>) {
+        return this.toList() as WordArray
+    }
+    throw RuntimeException("Invalid WordArray type")
+}
+
+@ExperimentalUnsignedTypes
+fun List<ULong>.contentEquals(other : List<ULong>): Boolean {
+    return this == other
+}

@@ -20,6 +20,7 @@ package com.ionspin.kotlin.bignum.integer.benchmark
 import com.ionspin.kotlin.bignum.integer.TypeHelper
 import com.ionspin.kotlin.bignum.integer.WordArray
 import com.ionspin.kotlin.bignum.integer.base63.toJavaBigInteger
+import com.ionspin.kotlin.bignum.integer.base63List.toJavaBigInteger
 import com.ionspin.kotlin.bignum.integer.chosenArithmetic
 import com.ionspin.kotlin.bignum.runBlockingTest
 import com.ionspin.kotlin.bignum.toProperType
@@ -189,7 +190,7 @@ class JavaMultiplicationBenchmark {
         val random = Random(1)
         val a = ULongArray(10_000) { random.nextULong() shr 1 }.toProperType()
         val b = ULongArray(10_000) { random.nextULong() shr 1 }.toProperType()
-        val timeSpent = runMultiplication(a, b)
+        // val timeSpent = runMultiplication(a, b)
         val javaTimeSpent = runJavaMultipltication(a, b)
     }
 }
