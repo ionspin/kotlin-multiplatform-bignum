@@ -17,8 +17,33 @@
 
 package com.ionspin.kotlin.bignum.integer
 
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63LinkedListArithmetic
+
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
  * on 10-Mar-2019
  */
+
+@ExperimentalUnsignedTypes
+fun WordArray.removeLeadingZeroes(): WordArray {
+    if ((TypeHelper.instance as Any) is ULongArray) {
+        return BigInteger63Arithmetic.removeLeadingZeros(this) as WordArray
+    }
+    if ((TypeHelper.instance as Any) is List<*>) {
+        return BigInteger63LinkedListArithmetic.removeLeadingZeros(this as List<ULong>) as WordArray
+    }
+    throw RuntimeException("Invalid WordArray type")
+}
+
+@ExperimentalUnsignedTypes
+fun WordArray.countLeadingZeroWords(): Int {
+    if ((TypeHelper.instance as Any) is ULongArray) {
+        return BigInteger63Arithmetic.countLeadingZeroWords(this)
+    }
+    if ((TypeHelper.instance as Any) is List<*>) {
+        TODO()
+    }
+    throw RuntimeException("Invalid WordArray type")
+}

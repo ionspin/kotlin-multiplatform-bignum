@@ -49,6 +49,6 @@ fun List<ULong>.toProperType(): WordArray {
 }
 
 @ExperimentalUnsignedTypes
-fun List<ULong>.contentEquals(other : List<ULong>): Boolean {
+fun List<ULong>.contentEquals(other: List<ULong>): Boolean {
     return this == other
 }

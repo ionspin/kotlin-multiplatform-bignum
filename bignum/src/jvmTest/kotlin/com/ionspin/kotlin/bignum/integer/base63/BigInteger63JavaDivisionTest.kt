@@ -17,8 +17,7 @@
 
 package com.ionspin.kotlin.bignum.integer.base63
 
-import com.ionspin.kotlin.bignum.contentEquals
-import com.ionspin.kotlin.bignum.removeLeadingZeroes
+import com.ionspin.kotlin.bignum.integer.removeLeadingZeroes
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

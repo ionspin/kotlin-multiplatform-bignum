@@ -119,11 +119,11 @@ class MultiplicationBenchmark {
     fun benchmarkLargeOperandsSuite() {
         val randomRandom = Random.Default
         println("Stable seed")
-        for (i in 1 until 2) {
+        for (i in 1 until 3) {
             benchmarkLargeOperands(i)
         }
         println("Random seeds")
-        for (i in 1 until 0) {
+        for (i in 1 until 2) {
             val seed = randomRandom.nextInt()
             println("Seed $seed")
             benchmarkLargeOperands(seed)

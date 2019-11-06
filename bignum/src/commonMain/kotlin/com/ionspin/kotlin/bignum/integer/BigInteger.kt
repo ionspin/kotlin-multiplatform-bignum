@@ -208,7 +208,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         }
     }
 
-    internal val magnitude: WordArray = wordArray
+    internal val magnitude: WordArray = wordArray.removeLeadingZeroes()
 
     private fun isResultZero(resultMagnitude: WordArray): Boolean {
         return arithmetic.compare(resultMagnitude, arithmetic.ZERO) == 0
