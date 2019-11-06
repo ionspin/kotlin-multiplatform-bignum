@@ -137,7 +137,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun bitLength(value: ULongArray): Int {
-        if (value.contentEquals(ZERO)) {
+        if (value.isZero()) {
             return 0
         }
         val start = value.size - countLeadingZeroWords(value) - 1
@@ -154,7 +154,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun trailingZeroBits(value: ULongArray): Int {
-        if (value.contentEquals(ZERO)) {
+        if (value.isZero()) {
             return 0
         }
         val zeroWordsCount = value.takeWhile { it == 0UL }.count()
@@ -172,9 +172,9 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         if (bigInteger.size == correctedSize) {
             return bigInteger
         }
-        // if (bigInteger.size - correctedSize > 1000) {
-        //     println("RLZ original array : ${bigInteger.size} contains: ${bigInteger.size - correctedSize - 1} zeros")
-        // }
+        if (bigInteger.size - correctedSize > 1000) {
+            println("RLZ original array : ${bigInteger.size} contains: ${bigInteger.size - correctedSize - 1} zeros")
+        }
 
         return bigInteger.copyOfRange(0, correctedSize)
     }
@@ -199,7 +199,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun shiftLeft(operand: ULongArray, places: Int): ULongArray {
-        if (operand.contentEquals(ZERO)) {
+        if (operand.isZero()) {
             return operand
         }
         if (places == 0) {
@@ -484,7 +484,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         firstCorrectedSize: Int,
         secondCorrectedSize: Int
     ): ULongArray {
-        if (first.contentEquals(ZERO) || second.contentEquals(ZERO)) {
+        if (first.isZero() || second.isZero()) {
             return ZERO
         }
 
@@ -1339,23 +1339,23 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
             return first
         }
 
-        if (first.contentEquals(ZERO)) {
+        if (first.isZero()) {
             return second
         }
 
-        if (second.contentEquals(ZERO)) {
+        if (second.isZero()) {
             return first
         }
 
-        if (and(first, ONE).contentEquals(ZERO)) { // first is even
-            if (and(second, ONE).contentEquals(ZERO)) { // second is even
+        if (and(first, ONE).isZero()) { // first is even
+            if (and(second, ONE).isZero()) { // second is even
                 return binaryGcd(first shr 1, second shr 1) shl 1
             } else { // second is odd
                 return binaryGcd(first shr 1, second)
             }
         }
 
-        if (and(second, ONE).contentEquals(ZERO)) {
+        if (and(second, ONE).isZero()) {
             return binaryGcd(first, second shr 1)
         }
 
