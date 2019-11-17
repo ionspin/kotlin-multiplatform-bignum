@@ -15,30 +15,24 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer
+package com.ionspin.kotlin.bignum
 
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
-// import com.ionspin.kotlin.bignum.integer.base63.BigInteger63LinkedListArithmetic
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
  * on 10-Mar-2019
  */
+// TODO this breaks Kotln Native at the moment, since we are only releasing Array version, we'll hardcode it
+// Need to find a better solution than removal of zeroes at init time.
 @ExperimentalUnsignedTypes
-
-// typealias WordArray = List<ULong>
-typealias WordArray = ULongArray
-
-@ExperimentalUnsignedTypes
-typealias Word = ULong
-
-@ExperimentalUnsignedTypes
-internal val chosenArithmetic: BigIntegerArithmetic<WordArray, Word> = BigInteger63Arithmetic
-// internal val chosenArithmetic: BigIntegerArithmetic<WordArray, Word> = BigInteger63LinkedListArithmetic
-
-// @ExperimentalUnsignedTypes
-// object TypeHelper {
-//     // val instance: WordArray = listOf()
-//     val instance: WordArray = ulongArrayOf()
-// }
+fun ULongArray.removeLeadingZeroes(): ULongArray {
+    // if ((TypeHelper.instance as Any) is ULongArray) {
+        return BigInteger63Arithmetic.removeLeadingZeros(this) // as WordArray
+    // }
+    // if ((TypeHelper.instance as Any) is List<*>) {
+    //     return BigInteger63LinkedListArithmetic.removeLeadingZeros(this as List<ULong>) as WordArray
+    // }
+    // throw RuntimeException("Invalid WordArray type")
+}

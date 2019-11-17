@@ -17,10 +17,8 @@
 
 package com.ionspin.kotlin.bignum.integer.benchmark
 
-import com.ionspin.kotlin.bignum.integer.TypeHelper
 import com.ionspin.kotlin.bignum.integer.WordArray
 import com.ionspin.kotlin.bignum.integer.base63.toJavaBigInteger
-import com.ionspin.kotlin.bignum.integer.base63List.toJavaBigInteger
 import com.ionspin.kotlin.bignum.integer.chosenArithmetic
 import com.ionspin.kotlin.bignum.runBlockingTest
 import com.ionspin.kotlin.bignum.toProperType
@@ -49,7 +47,7 @@ class JavaMultiplicationBenchmark {
 
     @BeforeTest
     fun setup() {
-        println("Word array type: ${TypeHelper.instance::class.simpleName}")
+        // println("Word array type: ${TypeHelper.instance::class.simpleName}")
     }
 
     @Test

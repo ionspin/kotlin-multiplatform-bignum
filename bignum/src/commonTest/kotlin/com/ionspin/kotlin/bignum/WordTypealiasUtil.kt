@@ -17,7 +17,6 @@
 
 package com.ionspin.kotlin.bignum
 
-import com.ionspin.kotlin.bignum.integer.TypeHelper
 import com.ionspin.kotlin.bignum.integer.WordArray
 
 /**
@@ -28,24 +27,24 @@ import com.ionspin.kotlin.bignum.integer.WordArray
 
 @ExperimentalUnsignedTypes
 fun ULongArray.toProperType(): WordArray {
-    if ((TypeHelper.instance as Any) is ULongArray) {
+    // if ((TypeHelper.instance as Any) is ULongArray) {
         return this as WordArray
-    }
-    if ((TypeHelper.instance as Any) is List<*>) {
-        return this.toList() as WordArray
-    }
-    throw RuntimeException("Invalid WordArray type")
+    // }
+    // if ((TypeHelper.instance as Any) is List<*>) {
+    //     return this.toList() as WordArray
+    // }
+    // throw RuntimeException("Invalid WordArray type")
 }
 
 @ExperimentalUnsignedTypes
 fun List<ULong>.toProperType(): WordArray {
-    if ((TypeHelper.instance as Any) is ULongArray) {
+    // if ((TypeHelper.instance as Any) is ULongArray) {
         return this as WordArray
-    }
-    if ((TypeHelper.instance as Any) is List<*>) {
-        return this.toList() as WordArray
-    }
-    throw RuntimeException("Invalid WordArray type")
+    // }
+    // if ((TypeHelper.instance as Any) is List<*>) {
+    //     return this.toList() as WordArray
+    // }
+    // throw RuntimeException("Invalid WordArray type")
 }
 
 @ExperimentalUnsignedTypes
