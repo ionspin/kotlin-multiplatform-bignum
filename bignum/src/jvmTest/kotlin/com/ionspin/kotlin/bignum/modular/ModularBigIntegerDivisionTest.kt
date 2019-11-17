@@ -20,6 +20,7 @@ package com.ionspin.kotlin.bignum.modular
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.base63.toJavaBigInteger
+import com.ionspin.kotlin.bignum.toProperType
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -45,21 +46,23 @@ class ModularBigIntegerDivisionTest {
             val aLength = random.nextInt(2, 500)
             val a = ULongArray(aLength) {
                 random.nextULong() shr 1
-            }
+            }.toProperType()
             val b = ULongArray(random.nextInt(1, aLength)) {
                 random.nextULong() shr 1
-            }
+            }.toProperType()
 
             val modulo = ULongArray(random.nextInt(1, 500)) {
                 random.nextULong() shr 1
-            }
+            }.toProperType()
             val creator = ModularBigInteger.creatorForModulo(BigInteger(modulo, Sign.POSITIVE))
 
             val job = GlobalScope.launch {
                 try {
                     val aMod = creator.fromBigInteger(BigInteger(a, Sign.POSITIVE))
                     val bMod = creator.fromBigInteger(BigInteger(b, Sign.POSITIVE))
-                    singleDivisionTest(aMod, bMod)
+                    if (aMod.checkIfDivisibleBoolean(aMod, bMod)) {
+                        singleDivisionTest(aMod, bMod)
+                    }
                 } catch (exception: Exception) {
                     exception.printStackTrace()
                 }

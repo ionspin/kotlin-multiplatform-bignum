@@ -319,9 +319,12 @@ class ModularBigInteger @ExperimentalUnsignedTypes private constructor(
 
     private fun checkIfDivisible(other: ModularBigInteger) {
         if (other.residue.gcd(modulus) != BigInteger.ONE) {
-            throw ArithmeticException("BigInteger is not invertible. This and modulus are not relatively prime (coprime)")
+            throw ArithmeticException("BigInteger is not invertible. Operand and modulus are not relatively prime (coprime)")
         }
     }
+
+    internal fun checkIfDivisibleBoolean(first: ModularBigInteger, second: ModularBigInteger) =
+        second.residue.gcd(first.modulus) == BigInteger.ONE
 
     override fun intValue(exactRequired: Boolean): Int {
         if (exactRequired && residue > Int.MAX_VALUE.toUInt()) {

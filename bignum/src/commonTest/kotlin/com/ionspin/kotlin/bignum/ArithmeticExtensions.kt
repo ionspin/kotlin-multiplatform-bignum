@@ -15,28 +15,24 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer.base63
+package com.ionspin.kotlin.bignum
 
-import java.math.BigInteger
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 09-Mar-2019
+ * on 10-Mar-2019
  */
-@UseExperimental(ExperimentalUnsignedTypes::class)
-fun ULongArray.toJavaBigInteger(): BigInteger {
-    return this.foldIndexed(BigInteger.valueOf(0)) { index, acc, digit ->
-        acc.or(BigInteger(digit.toString(), 10).shiftLeft((index) * 63))
-    }
-}
-
-@UseExperimental(ExperimentalUnsignedTypes::class)
-fun com.ionspin.kotlin.bignum.integer.BigInteger.toJavaBigInteger(): BigInteger {
-    return (this.magnitude.toULongArray().toJavaBigInteger() * this.sign.toInt().toBigInteger())
-}
-
+// TODO this breaks Kotln Native at the moment, since we are only releasing Array version, we'll hardcode it
+// Need to find a better solution than removal of zeroes at init time.
 @ExperimentalUnsignedTypes
-fun ULong.toJavaBigInteger(): BigInteger {
-    return BigInteger(this.toString(10), 10)
+fun ULongArray.removeLeadingZeroes(): ULongArray {
+    // if ((TypeHelper.instance as Any) is ULongArray) {
+        return BigInteger63Arithmetic.removeLeadingZeros(this) // as WordArray
+    // }
+    // if ((TypeHelper.instance as Any) is List<*>) {
+    //     return BigInteger63LinkedListArithmetic.removeLeadingZeros(this as List<ULong>) as WordArray
+    // }
+    // throw RuntimeException("Invalid WordArray type")
 }

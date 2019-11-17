@@ -15,40 +15,36 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer.arithmetic
+package com.ionspin.kotlin.bignum.integer.arithmetic.bigint63
 
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 24-Mar-2019
+ * on 20-Oct-2019
  */
 @ExperimentalUnsignedTypes
-class BigInteger32BitWiseTest {
-
-    @Ignore
+class BigInteger63SubtractionTest {
     @Test
-    fun trailingZeroBitsTest() {
+    fun testAddition() {
         assertTrue {
-            val a = ulongArrayOf(64U)
-            val count = BigInteger63Arithmetic.trailingZeroBits(a)
-            count == 7
+            val a = ulongArrayOf(10U, 20U)
+            val b = ulongArrayOf(15U, 5U)
+            val c = BigInteger63Arithmetic.subtract(a, b)
+            c[1] == 14UL
         }
+    }
 
+    @Test
+    fun testAdditionWithLeadingZeros() {
         assertTrue {
-            val a = ulongArrayOf(0U, 64U)
-            val count = BigInteger63Arithmetic.trailingZeroBits(a)
-            count == 70
-        }
-
-        assertTrue {
-            val a = ulongArrayOf(0U, 64U, 0U)
-            val count = BigInteger63Arithmetic.trailingZeroBits(a)
-            count == 70
+            val a = ulongArrayOf(10U, 20U, 0U, 0U)
+            val b = ulongArrayOf(15U, 5U, 0U, 0U, 0U)
+            val c = BigInteger63Arithmetic.subtract(a, b)
+            c[1] == 14UL
         }
     }
 }

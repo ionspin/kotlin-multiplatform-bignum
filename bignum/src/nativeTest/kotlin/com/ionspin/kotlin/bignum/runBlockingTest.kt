@@ -15,28 +15,14 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer.base63
+package com.ionspin.kotlin.bignum
 
-import java.math.BigInteger
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.runBlocking
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 09-Mar-2019
+ * on 20-Oct-2019
  */
-@UseExperimental(ExperimentalUnsignedTypes::class)
-fun ULongArray.toJavaBigInteger(): BigInteger {
-    return this.foldIndexed(BigInteger.valueOf(0)) { index, acc, digit ->
-        acc.or(BigInteger(digit.toString(), 10).shiftLeft((index) * 63))
-    }
-}
-
-@UseExperimental(ExperimentalUnsignedTypes::class)
-fun com.ionspin.kotlin.bignum.integer.BigInteger.toJavaBigInteger(): BigInteger {
-    return (this.magnitude.toULongArray().toJavaBigInteger() * this.sign.toInt().toBigInteger())
-}
-
-@ExperimentalUnsignedTypes
-fun ULong.toJavaBigInteger(): BigInteger {
-    return BigInteger(this.toString(10), 10)
-}
+actual fun runBlockingTest(block: suspend (scope: CoroutineScope) -> Unit) = runBlocking { block(this) }

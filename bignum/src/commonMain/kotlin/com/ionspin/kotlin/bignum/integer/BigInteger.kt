@@ -25,6 +25,7 @@ import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.NarrowingOperations
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
 import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -139,7 +140,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
                         else -> Sign.ZERO
                     }
                 }
-                else -> throw RuntimeException("Unsupported type ${T::class.simpleName}")
+                else -> throw RuntimeException("Unsupported type ${T::class}")
             }
         }
 
@@ -208,7 +209,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         }
     }
 
-    internal val magnitude: WordArray = wordArray
+    internal val magnitude: WordArray = BigInteger63Arithmetic.removeLeadingZeros(wordArray)
 
     private fun isResultZero(resultMagnitude: WordArray): Boolean {
         return arithmetic.compare(resultMagnitude, arithmetic.ZERO) == 0
@@ -418,14 +419,17 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         return arithmetic.compare(this.magnitude, other.magnitude)
     }
 
-    override fun isZero(): Boolean = this.sign == Sign.ZERO
+    override fun isZero(): Boolean {
+        return this.sign == Sign.ZERO ||
+            chosenArithmetic.compare(this.magnitude, chosenArithmetic.ZERO) == 0
+    }
 
     override fun negate(): BigInteger {
-        return BigInteger(wordArray = this.magnitude.copyOf(), sign = sign.not())
+        return BigInteger(wordArray = this.magnitude, sign = sign.not())
     }
 
     override fun abs(): BigInteger {
-        return BigInteger(wordArray = this.magnitude.copyOf(), sign = Sign.POSITIVE)
+        return BigInteger(wordArray = this.magnitude, sign = Sign.POSITIVE)
     }
 
     fun pow(exponent: BigInteger): BigInteger {
@@ -570,7 +574,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
             is UByte -> compare(fromUByte(other))
             is Float -> compareFloatAndBigInt(other) { compare(it) }
             is Double -> compareDoubleAndBigInt(other) { compare(it) }
-            else -> throw RuntimeException("Invalid comparison type for BigInteger: ${other::class.simpleName}")
+            else -> throw RuntimeException("Invalid comparison type for BigInteger: ${other::class}")
         }
     }
 
@@ -635,7 +639,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     }
 
     override fun hashCode(): Int {
-        return magnitude.contentHashCode() + sign.hashCode()
+        return magnitude.hashCode() + sign.hashCode()
     }
 
     override fun toString(): String {

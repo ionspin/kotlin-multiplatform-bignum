@@ -54,7 +54,7 @@ class BigInteger63MultiplicationTest {
             val b = ulongArrayOf(1U, 0U, 0U)
             val result = BigInteger63Arithmetic.toomCook3Multiply(a, b)
             val basecaseMultiply = BigInteger63Arithmetic.basecaseMultiply(a, b)
-            result.contentEquals(basecaseMultiply)
+            result.contentEquals(BigInteger63Arithmetic.removeLeadingZeros(basecaseMultiply))
         }
 
         assertTrue {

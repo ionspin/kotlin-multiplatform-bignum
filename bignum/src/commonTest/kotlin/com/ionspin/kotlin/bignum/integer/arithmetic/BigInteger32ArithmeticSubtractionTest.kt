@@ -15,28 +15,27 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer.base63
+package com.ionspin.kotlin.bignum.integer
 
-import java.math.BigInteger
+import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
  * on 09-Mar-2019
  */
-@UseExperimental(ExperimentalUnsignedTypes::class)
-fun ULongArray.toJavaBigInteger(): BigInteger {
-    return this.foldIndexed(BigInteger.valueOf(0)) { index, acc, digit ->
-        acc.or(BigInteger(digit.toString(), 10).shiftLeft((index) * 63))
-    }
-}
-
-@UseExperimental(ExperimentalUnsignedTypes::class)
-fun com.ionspin.kotlin.bignum.integer.BigInteger.toJavaBigInteger(): BigInteger {
-    return (this.magnitude.toULongArray().toJavaBigInteger() * this.sign.toInt().toBigInteger())
-}
-
 @ExperimentalUnsignedTypes
-fun ULong.toJavaBigInteger(): BigInteger {
-    return BigInteger(this.toString(10), 10)
+class BigInteger32ArithmeticSubtractionTest {
+
+    @Test
+    fun testAddition() {
+        assertTrue {
+            val a = uintArrayOf(10U, 20U)
+            val b = uintArrayOf(15U, 5U)
+            val c = BigInteger32Arithmetic.subtract(a, b)
+            c[1] == 14U
+        }
+    }
 }

@@ -15,28 +15,24 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer.base63
+package com.ionspin.kotlin.bignum.integer.arithmetic.bigint63
 
-import java.math.BigInteger
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 09-Mar-2019
+ * on 20-Oct-2019
  */
-@UseExperimental(ExperimentalUnsignedTypes::class)
-fun ULongArray.toJavaBigInteger(): BigInteger {
-    return this.foldIndexed(BigInteger.valueOf(0)) { index, acc, digit ->
-        acc.or(BigInteger(digit.toString(), 10).shiftLeft((index) * 63))
-    }
-}
-
-@UseExperimental(ExperimentalUnsignedTypes::class)
-fun com.ionspin.kotlin.bignum.integer.BigInteger.toJavaBigInteger(): BigInteger {
-    return (this.magnitude.toULongArray().toJavaBigInteger() * this.sign.toInt().toBigInteger())
-}
-
 @ExperimentalUnsignedTypes
-fun ULong.toJavaBigInteger(): BigInteger {
-    return BigInteger(this.toString(10), 10)
+class BigInteger63ArithmeticComparison {
+    @Test
+    fun testComparisonWithLeadingZeros() {
+        val first = ulongArrayOf(1U, 0U, 0U)
+        val second = ulongArrayOf(2U, 0U, 0U)
+        val comparison = BigInteger63Arithmetic.compare(first, second)
+        assertTrue { comparison == -1 }
+    }
 }

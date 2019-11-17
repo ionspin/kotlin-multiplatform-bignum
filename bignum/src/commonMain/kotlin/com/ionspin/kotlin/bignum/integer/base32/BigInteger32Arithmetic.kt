@@ -53,7 +53,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     /**
      * Hackers delight 5-11
      */
-    override fun numberOfLeadingZeroes(value: UInt): Int {
+    override fun numberOfLeadingZerosInAWord(value: UInt): Int {
         var x = value
         var y: UInt
         var n = basePowerOfTwo
@@ -86,6 +86,38 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return n - x.toInt()
     }
 
+    fun numberOfTrailingZerosInAWord(value: UInt): Int {
+        var x = value
+        var y: UInt
+        var n = 32
+
+        y = (x shl 16) and baseMaskInt
+        if (y != 0U) {
+            n -= 16
+            x = y
+        }
+        y = (x shl 8) and baseMaskInt
+        if (y != 0U) {
+            n = n - 8
+            x = y
+        }
+        y = (x shl 4) and baseMaskInt
+        if (y != 0U) {
+            n = n - 4
+            x = y
+        }
+        y = (x shl 2) and baseMaskInt
+        if (y != 0U) {
+            n = n - 2
+            x = y
+        }
+        y = (x shl 1) and baseMaskInt
+        if (y != 0U) {
+            return n - 2
+        }
+        return n - x.toInt()
+    }
+
     override fun bitLength(value: UIntArray): Int {
         if (value.isEmpty()) {
             return 0
@@ -95,16 +127,25 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
     fun bitLength(value: UInt): Int {
-        return basePowerOfTwo - numberOfLeadingZeroes(
+        return basePowerOfTwo - numberOfLeadingZerosInAWord(
             value
         )
     }
 
-    override fun trailingZeroBits(value: UIntArray): Int {
-        TODO()
+    fun trailingZeroBits(value: UInt): Int {
+        return numberOfTrailingZerosInAWord(value)
     }
 
-    fun removeLeadingZeroes(bigInteger: UIntArray): UIntArray {
+    override fun trailingZeroBits(value: UIntArray): Int {
+        if (value.contentEquals(ZERO)) { return 0 }
+        val zeroWordsCount = value.takeWhile { it == 0U }.count()
+        if (zeroWordsCount == value.size) {
+            return 0
+        }
+        return trailingZeroBits(value[zeroWordsCount]) + (zeroWordsCount * 63)
+    }
+
+    fun removeLeadingZeros(bigInteger: UIntArray): UIntArray {
         val firstEmpty = bigInteger.indexOfLast { it != 0U } + 1
         if (firstEmpty == -1 || firstEmpty == 0) {
             return ZERO
@@ -117,11 +158,11 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             return operand
         }
         val originalSize = operand.size
-        val leadingZeroes =
-            numberOfLeadingZeroes(operand[operand.size - 1])
+        val leadingZeros =
+            numberOfLeadingZerosInAWord(operand[operand.size - 1])
         val shiftWords = places / basePowerOfTwo
         val shiftBits = places % basePowerOfTwo
-        val wordsNeeded = if (shiftBits > leadingZeroes) {
+        val wordsNeeded = if (shiftBits > leadingZeros) {
             shiftWords + 1
         } else {
             shiftWords
@@ -184,13 +225,13 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
                 }
             }
         }
-        return removeLeadingZeroes(result)
+        return removeLeadingZeros(result)
     }
 
     fun normalize(dividend: UIntArray, divisor: UIntArray): Triple<UIntArray, UIntArray, Int> {
         val divisorSize = divisor.size
         val normalizationShift =
-            numberOfLeadingZeroes(divisor[divisorSize - 1])
+            numberOfLeadingZerosInAWord(divisor[divisorSize - 1])
         val divisorNormalized = divisor.shl(normalizationShift)
         val dividendNormalized = dividend.shl(normalizationShift)
 
@@ -199,7 +240,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
     fun normalize(operand: UIntArray): Pair<UIntArray, Int> {
         val normalizationShift =
-            numberOfLeadingZeroes(operand[operand.size - 1])
+            numberOfLeadingZerosInAWord(operand[operand.size - 1])
         return Pair(operand.shl(normalizationShift), normalizationShift)
     }
 
@@ -340,7 +381,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         val high = (result shr basePowerOfTwo).toUInt()
         val low = result.toUInt()
 
-        return removeLeadingZeroes(uintArrayOf(low, high))
+        return removeLeadingZeros(uintArrayOf(low, high))
     }
 
     fun multiply(first: UIntArray, second: UInt): UIntArray {
@@ -357,7 +398,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             result[i + 1] = (product shr basePowerOfTwo).toUInt() + sum.toUInt()
         }
 
-        return removeLeadingZeroes(result)
+        return removeLeadingZeros(result)
     }
 
     fun karatsubaMultiply(firstUnsigned: UIntArray, secondUnsigned: UIntArray): UIntArray {
@@ -560,7 +601,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 //            return karatsubaMultiply(first, second)
 //        }
 
-        return removeLeadingZeroes(
+        return removeLeadingZeros(
             second.foldIndexed(ZERO) { index, acc, element ->
                 acc + (multiply(
                     first,
@@ -601,12 +642,12 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
         if (unnormalizedDivisor.size == 1 && unnormalizedDividend.size == 1) {
             return Pair(
-                removeLeadingZeroes(
+                removeLeadingZeros(
                     uintArrayOf(
                         unnormalizedDividend[0] / unnormalizedDivisor[0]
                     )
                 ),
-                removeLeadingZeroes(
+                removeLeadingZeros(
                     uintArrayOf(
                         unnormalizedDividend[0] % unnormalizedDivisor[0]
                     )
@@ -676,7 +717,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
         val denormRemainder =
             denormalize(dividend, normalizationShift)
-        return Pair(removeLeadingZeroes(quotient), denormRemainder)
+        return Pair(removeLeadingZeros(quotient), denormRemainder)
     }
 
     fun basicDivide2(
@@ -714,7 +755,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
         val denormRemainder =
             denormalize(a, shift)
-        return Pair(removeLeadingZeroes(q), denormRemainder)
+        return Pair(removeLeadingZeros(q), denormRemainder)
     }
 
     fun d1ReciprocalRecursiveWordVersion(a: UIntArray): Pair<UIntArray, UIntArray> {
@@ -969,7 +1010,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
     override fun and(operand: UIntArray, mask: UIntArray): UIntArray {
-        return removeLeadingZeroes(
+        return removeLeadingZeros(
             UIntArray(operand.size) {
                 if (it < mask.size) {
                     operand[it] and mask[it]
@@ -981,7 +1022,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
     override fun or(operand: UIntArray, mask: UIntArray): UIntArray {
-        return removeLeadingZeroes(
+        return removeLeadingZeros(
             UIntArray(operand.size) {
                 if (it < mask.size) {
                     operand[it] or mask[it]
@@ -993,7 +1034,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
     override fun xor(operand: UIntArray, mask: UIntArray): UIntArray {
-        return removeLeadingZeroes(
+        return removeLeadingZeros(
             UIntArray(operand.size) {
                 if (it < mask.size) {
                     operand[it] xor mask[it]
@@ -1005,7 +1046,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
     override fun not(operand: UIntArray): UIntArray {
-        return removeLeadingZeroes(
+        return removeLeadingZeros(
             UIntArray(operand.size) {
                 operand[it].inv()
             }
@@ -1224,7 +1265,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
                     return Pair(ZERO, Sign.ZERO)
                 }
                 val corrected = collected.dropLastWhile { it == 0U }.toUIntArray()
-                Pair(removeLeadingZeroes(corrected), resolvedSign)
+                Pair(removeLeadingZeros(corrected), resolvedSign)
             }
             Sign.NEGATIVE -> {
                 val collected = chunked.flatMap { chunk ->
@@ -1239,7 +1280,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
                     return Pair(ZERO, Sign.ZERO)
                 }
 
-                Pair(removeLeadingZeroes(inverted), resolvedSign)
+                Pair(removeLeadingZeros(inverted), resolvedSign)
             }
             Sign.ZERO -> throw RuntimeException("Bug in fromByteArray, sign shouldn't ever be zero at this point.")
         }
@@ -1270,7 +1311,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
         val corrected = collected.dropLastWhile { it == 0U }.toUIntArray()
 
-        return Pair(removeLeadingZeroes(corrected), resolvedSign)
+        return Pair(removeLeadingZeros(corrected), resolvedSign)
     }
 
     override fun toUByteArray(operand: UIntArray, endianness: Endianness): Array<UByte> {
@@ -1298,18 +1339,18 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
                 collected
             }
         }.toTypedArray()
-        return corrected.dropLeadingZeroes()
+        return corrected.dropLeadingZeros()
     }
 
-    private fun List<Byte>.dropLeadingZeroes(): List<Byte> {
+    private fun List<Byte>.dropLeadingZeros(): List<Byte> {
         return this.dropWhile { it == 0.toByte() }
     }
 
-    private fun Array<Byte>.dropLeadingZeroes(): Array<Byte> {
+    private fun Array<Byte>.dropLeadingZeros(): Array<Byte> {
         return this.dropWhile { it == 0.toByte() }.toTypedArray()
     }
 
-    private fun Array<UByte>.dropLeadingZeroes(): Array<UByte> {
+    private fun Array<UByte>.dropLeadingZeros(): Array<UByte> {
         return this.dropWhile { it == 0.toUByte() }.toTypedArray()
     }
 }

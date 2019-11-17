@@ -52,7 +52,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     const val karatsubaThreshold = 120
     const val toomCookThreshold = 15_000
 
-    override fun numberOfLeadingZeroes(value: ULong): Int {
+    override fun numberOfLeadingZerosInAWord(value: ULong): Int {
         var x = value
         var y: ULong
         var n = 63
@@ -90,24 +90,66 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         return n - x.toInt()
     }
 
+    fun numberOfTrailingZerosInAWord(value: ULong): Int {
+        var x = value
+        var y: ULong
+        var n = 63
+
+        y = (x shl 32) and baseMask
+        if (y != 0UL) {
+            n -= 32
+            x = y
+        }
+        y = (x shl 16) and baseMask
+        if (y != 0UL) {
+            n -= 16
+            x = y
+        }
+        y = (x shl 8) and baseMask
+        if (y != 0UL) {
+            n = n - 8
+            x = y
+        }
+        y = (x shl 4) and baseMask
+        if (y != 0UL) {
+            n = n - 4
+            x = y
+        }
+        y = (x shl 2) and baseMask
+        if (y != 0UL) {
+            n = n - 2
+            x = y
+        }
+        y = (x shl 1) and baseMask
+        if (y != 0UL) {
+            return n - 2
+        }
+        return n - x.toInt()
+    }
+
     override fun bitLength(value: List<ULong>): Int {
         val mostSignificant = value[value.size - 1]
         return bitLength(mostSignificant) + (value.size - 1) * 63
     }
 
     fun bitLength(value: ULong): Int {
-        return 63 - numberOfLeadingZeroes(value)
+        return 63 - numberOfLeadingZerosInAWord(value)
     }
 
     fun trailingZeroBits(value: ULong): Int {
-        return 63 - bitLength(value.inv() and baseMask)
+        return numberOfTrailingZerosInAWord(value)
     }
 
     override fun trailingZeroBits(value: List<ULong>): Int {
-        TODO()
+        if (value == ZERO) { return 0 }
+        val zeroWordsCount = value.takeWhile { it == 0UL }.count()
+        if (zeroWordsCount == value.size) {
+            return 0
+        }
+        return trailingZeroBits(value[zeroWordsCount]) + (zeroWordsCount * 63)
     }
 
-    fun removeLeadingZeroes(bigInteger: List<ULong>): List<ULong> {
+    fun removeLeadingZeros(bigInteger: List<ULong>): List<ULong> {
         val firstEmpty = bigInteger.indexOfLast { it != 0UL } + 1
         if (firstEmpty == -1 || firstEmpty == 0) {
             // Array is equal to zero, so we return array with zero elements
@@ -124,11 +166,11 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
             return operand
         }
         val originalSize = operand.size
-        val leadingZeroes =
-            numberOfLeadingZeroes(operand[operand.size - 1])
+        val leadingZeros =
+            numberOfLeadingZerosInAWord(operand[operand.size - 1])
         val shiftWords = places / basePowerOfTwo
         val shiftBits = places % basePowerOfTwo
-        val wordsNeeded = if (shiftBits > leadingZeroes) {
+        val wordsNeeded = if (shiftBits > leadingZeros) {
             shiftWords + 1
         } else {
             shiftWords
@@ -192,7 +234,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
                 }
             }
         }
-        return removeLeadingZeroes(result)
+        return removeLeadingZeros(result)
     }
 
     override fun compare(first: List<ULong>, second: List<ULong>): Int {
@@ -259,11 +301,11 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
                 } else {
                     result
                 }
-                return removeLeadingZeroes(final)
+                return removeLeadingZeros(final)
             }
             if (i == maxLength) {
                 result[maxLength] = sum
-                return removeLeadingZeroes(result)
+                return removeLeadingZeros(result)
             }
 
             sum = sum + largerData[i]
@@ -274,8 +316,8 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     }
 
     override fun subtract(first: List<ULong>, second: List<ULong>): List<ULong> {
-        val firstPrepared = removeLeadingZeroes(first)
-        val secondPrepared = removeLeadingZeroes(second)
+        val firstPrepared = removeLeadingZeros(first)
+        val secondPrepared = removeLeadingZeros(second)
         val comparison = compare(firstPrepared, secondPrepared)
         val firstIsLarger = comparison == 1
 
@@ -329,7 +371,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
             return List<ULong>(0) { 0UL }
         }
 
-        return removeLeadingZeroes(result)
+        return removeLeadingZeros(result)
     }
 
     override fun multiply(first: List<ULong>, second: List<ULong>): List<ULong> {
@@ -347,7 +389,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
             return toomCook3Multiply(first, second)
         }
 
-        return removeLeadingZeroes(basecaseMultiply(first, second))
+        return removeLeadingZeros(basecaseMultiply(first, second))
     }
 
     fun basecaseMultiply(first: List<ULong>, second: List<ULong>): List<ULong> {
@@ -589,7 +631,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         if (carryIntoNextRound != 0UL) {
             result[j] = carryIntoNextRound
         }
-        return removeLeadingZeroes(result)
+        return removeLeadingZeros(result)
     }
 
     /*
@@ -617,7 +659,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         val higherProduct = (firstHigh * secondHigh) shl 1
         highResult = highResult + higherProduct
 
-        return removeLeadingZeroes(listOf(lowResult and baseMask, highResult))
+        return removeLeadingZeros(listOf(lowResult and baseMask, highResult))
     }
 
     override fun pow(base: List<ULong>, exponent: Long): List<ULong> {
@@ -637,7 +679,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
 
     fun normalize(dividend: List<ULong>, divisor: List<ULong>): Triple<List<ULong>, List<ULong>, Int> {
         val divisorSize = divisor.size
-        val normalizationShift = numberOfLeadingZeroes(divisor[divisorSize - 1])
+        val normalizationShift = numberOfLeadingZerosInAWord(divisor[divisorSize - 1])
         val divisorNormalized = divisor.shl(normalizationShift)
         val dividendNormalized = dividend.shl(normalizationShift)
 
@@ -645,7 +687,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     }
 
     fun normalize(operand: List<ULong>): Pair<List<ULong>, Int> {
-        val normalizationShift = numberOfLeadingZeroes(operand[operand.size - 1])
+        val normalizationShift = numberOfLeadingZerosInAWord(operand[operand.size - 1])
         return Pair(operand.shl(normalizationShift), normalizationShift)
     }
 
@@ -672,12 +714,12 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         }
         if (unnormalizedDivisor.size == 1 && unnormalizedDividend.size == 1) {
             return Pair(
-                removeLeadingZeroes(
+                removeLeadingZeros(
                     listOf(
                         unnormalizedDividend[0] / unnormalizedDivisor[0]
                     )
                 ),
-                removeLeadingZeroes(
+                removeLeadingZeros(
                     listOf(
                         unnormalizedDividend[0] % unnormalizedDivisor[0]
                     )
@@ -745,7 +787,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         }
         val denormRemainder =
             denormalize(dividend, normalizationShift)
-        return Pair(removeLeadingZeroes(quotient), denormRemainder)
+        return Pair(removeLeadingZeros(quotient), denormRemainder)
     }
 
     fun convertTo64BitRepresentation(operand: List<ULong>): List<ULong> {
@@ -782,10 +824,10 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
             result[2 * i + 1] = (power64Representation[i] shr 32).toUInt()
         }
 
-        return BigInteger32Arithmetic.removeLeadingZeroes(result)
+        return BigInteger32Arithmetic.removeLeadingZeros(result)
     }
 
-    fun convertFrom32BitRepresentation(operand: UIntArray): List<ULong> {
+    internal fun convertFrom32BitRepresentation(operand: UIntArray): List<ULong> {
         if (operand.size == 0) {
             return ZERO
         }
@@ -799,40 +841,40 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
             (length / 63) + 1
         }
 
-        val result = MutableList<ULong>(requiredLength) { 0UL }
+        val result = MutableList<ULong>(requiredLength) { 0U }
         var skipWordCount: Int
         for (i in 0 until requiredLength) {
             skipWordCount = i / 32
             val shiftAmount = i % 32
             val position = (i * 2) - skipWordCount
-            when (i) {
-                0 -> {
-                    result[i] = operand[(i * 2)].toULong() or ((operand[(i * 2) + 1].toULong() shl 32) and highMask)
-                }
-                in 1 until requiredLength - 1 -> {
-                    result[i] =
-                        (operand[position - 1].toULong() shr (32 - shiftAmount)) or
-                            (operand[position].toULong() shl shiftAmount) or
-                            ((operand[position + 1].toULong() shl (32 + shiftAmount)) and highMask)
-                }
-                requiredLength - 1 -> {
-                    if (position < operand.size) {
+            if (requiredLength == 2) {
+                result[0] = operand[0].toULong() or ((operand[1].toULong() shl 32) and highMask)
+                result[i] = (operand[1].toULong() shr 31) or (operand[2].toULong() shl 1) or (operand[3].toULong() shl 33)
+            } else {
+                when (i) {
+                    0 -> {
+                        result[i] = operand[0].toULong() or ((operand[1].toULong() shl 32) and highMask)
+                    }
+                    in 1 until requiredLength - 1 -> {
                         result[i] =
                             (operand[position - 1].toULong() shr (32 - shiftAmount)) or
-                                (operand[position].toULong() shl shiftAmount)
-                    } else {
-                        result[i] =
-                            (operand[position - 1].toULong() shr (32 - shiftAmount))
+                                (operand[position].toULong() shl shiftAmount) or
+                                ((operand[position + 1].toULong() shl (32 + shiftAmount)) and highMask)
+                    }
+                    requiredLength - 1 -> {
+                        if (position < operand.size) {
+                            result[i] =
+                                (operand[position - 1].toULong() shr (32 - shiftAmount)) or
+                                    (operand[position].toULong() shl shiftAmount)
+                        } else {
+                            result[i] =
+                                (operand[position - 1].toULong() shr (32 - shiftAmount))
+                        }
                     }
                 }
             }
         }
-//        if (operand.size % 2 != 0) {
-//            val lastI = requiredLength - 1 + skipWordCount
-//            result[lastI] =
-//                (operand[(lastI * 2) - 1].toULong() shr (32 - lastI)) or (operand[(lastI * 2)].toULong() shl lastI)
-//        }
-//        result[requiredLength - 1] = (operand[operand.size - 1].toULong() shl ((operand.size - 1) / 2)) or (operand[operand.size - 2].toULong() shr (32 - (operand.size - 1)/2))
+
         return result
     }
 
@@ -984,10 +1026,11 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         number.toLowerCase().forEach { char ->
             parsed = (parsed * base.toULong()) + (char.toDigit()).toULong()
         }
-        return removeLeadingZeroes(parsed)
+        return removeLeadingZeros(parsed)
     }
 
     override fun toString(operand: List<ULong>, base: Int): String {
+        if (operand == ZERO) { return "0" }
         var copy = operand
         val baseArray = listOf(base.toULong())
         val stringBuilder = StringBuilder()
@@ -1025,7 +1068,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     }
 
     override fun and(operand: List<ULong>, mask: List<ULong>): List<ULong> {
-        return removeLeadingZeroes(
+        return removeLeadingZeros(
             List<ULong>(operand.size) {
                 if (it < mask.size) {
                     operand[it] and mask[it]
@@ -1037,7 +1080,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     }
 
     override fun or(operand: List<ULong>, mask: List<ULong>): List<ULong> {
-        return removeLeadingZeroes(
+        return removeLeadingZeros(
             List(operand.size) {
                 if (it < mask.size) {
                     operand[it] or mask[it]
@@ -1049,7 +1092,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     }
 
     override fun xor(operand: List<ULong>, mask: List<ULong>): List<ULong> {
-        return removeLeadingZeroes(
+        return removeLeadingZeros(
             List(operand.size) {
                 if (it < mask.size) {
                     operand[it] xor mask[it]
@@ -1061,8 +1104,8 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     }
 
     override fun not(operand: List<ULong>): List<ULong> {
-        val leadingZeroes = numberOfLeadingZeroes(operand[operand.size - 1])
-        val cleanupMask = (((1UL shl leadingZeroes + 1) - 1U) shl (basePowerOfTwo - leadingZeroes)).inv()
+        val leadingZeros = numberOfLeadingZerosInAWord(operand[operand.size - 1])
+        val cleanupMask = (((1UL shl leadingZeros + 1) - 1U) shl (basePowerOfTwo - leadingZeros)).inv()
         val inverted = List<ULong>(operand.size) {
             if (it < operand.size - 2) {
                 operand[it].inv() and baseMask

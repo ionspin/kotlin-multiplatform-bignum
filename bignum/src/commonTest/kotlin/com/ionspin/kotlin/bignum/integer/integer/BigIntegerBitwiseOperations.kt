@@ -15,27 +15,11 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer
-
-import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
-import kotlin.test.Test
-import kotlin.test.assertTrue
+package com.ionspin.kotlin.bignum.integer.integer
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
- * on 09-Mar-2019
+ * on 01-Nov-2019
  */
-@ExperimentalUnsignedTypes
-class BigInteger32ArithmeticsubtractionTest {
-
-    @Test
-    fun testAddition() {
-        assertTrue {
-            val a = uintArrayOf(10U, 20U)
-            val b = uintArrayOf(15U, 5U)
-            val c = BigInteger32Arithmetic.subtract(a, b)
-            c[1] == 14U
-        }
-    }
-}
+class BigIntegerBitwiseOperations

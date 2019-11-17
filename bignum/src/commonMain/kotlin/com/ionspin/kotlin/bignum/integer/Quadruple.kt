@@ -23,3 +23,7 @@ package com.ionspin.kotlin.bignum.integer
  * on 09-Mar-2019
  */
 data class Quadruple<A, B, C, D>(val a: A, val b: B, val c: C, val d: D)
+
+data class Quintuple<A, B, C, D, E>(val a: A, val b: B, val c: C, val d: D, val e: E)
+
+data class Sextuple<A, B, C, D, E, F>(val a: A, val b: B, val c: C, val d: D, val e: E, val f: F)
