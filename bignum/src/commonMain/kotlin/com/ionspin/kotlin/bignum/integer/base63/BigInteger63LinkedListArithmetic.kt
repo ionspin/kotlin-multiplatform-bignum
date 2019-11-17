@@ -672,9 +672,20 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         if (base.size == 1 && base[0] == 10UL && exponent < powersOf10.size) {
             return powersOf10[exponent.toInt()]
         }
-        return (0 until exponent).fold(ONE) { acc, _ ->
-            acc * base
+        var helperVar = ONE
+        var exponentVar = exponent
+        var baseVar = base
+        while (exponentVar > 1) {
+            if (exponentVar % 2 == 0L) {
+                baseVar = baseVar * baseVar
+                exponentVar /= 2
+            } else {
+                helperVar = baseVar * helperVar
+                baseVar = baseVar * baseVar
+                exponentVar = (exponentVar - 1) / 2
+            }
         }
+        return helperVar * baseVar
     }
 
     fun normalize(dividend: List<ULong>, divisor: List<ULong>): Triple<List<ULong>, List<ULong>, Int> {

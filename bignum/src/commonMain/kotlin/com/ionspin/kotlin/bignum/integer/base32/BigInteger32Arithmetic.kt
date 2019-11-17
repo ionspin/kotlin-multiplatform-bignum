@@ -618,9 +618,20 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         if (exponent == 1L) {
             return base
         }
-        return (0 until exponent).fold(ONE) { acc, _ ->
-            acc * base
+        var helperVar = ONE
+        var exponentVar = exponent
+        var baseVar = base
+        while (exponentVar > 1) {
+            if (exponentVar % 2 == 0L) {
+                baseVar = baseVar * baseVar
+                exponentVar /= 2
+            } else {
+                helperVar = baseVar * helperVar
+                baseVar = baseVar * baseVar
+                exponentVar = (exponentVar - 1) / 2
+            }
         }
+        return helperVar * baseVar
     }
 
     override fun divide(first: UIntArray, second: UIntArray): Pair<UIntArray, UIntArray> {

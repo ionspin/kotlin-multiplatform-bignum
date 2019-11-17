@@ -832,10 +832,20 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         }
 
         val firstCorrectedSize = base.size - countLeadingZeroWords(base)
-        return (0 until exponent).fold(ONE) { acc, _ ->
-            val secondCorrectedSize = acc.size - countLeadingZeroWords(acc)
-            multiplyWithCorrectedSize(base, acc, firstCorrectedSize, secondCorrectedSize)
+        var helperVar = ONE
+        var exponentVar = exponent
+        var baseVar = base
+        while (exponentVar > 1) {
+            if (exponentVar % 2 == 0L) {
+                baseVar = baseVar * baseVar
+                exponentVar /= 2
+            } else {
+                helperVar = baseVar * helperVar
+                baseVar = baseVar * baseVar
+                exponentVar = (exponentVar - 1) / 2
+            }
         }
+        return helperVar * baseVar
     }
 
     fun normalize(dividend: ULongArray, divisor: ULongArray): Triple<ULongArray, ULongArray, Int> {
