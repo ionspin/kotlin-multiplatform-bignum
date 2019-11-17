@@ -25,6 +25,7 @@ import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.NarrowingOperations
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
+import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
 import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -208,7 +209,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         }
     }
 
-    internal val magnitude: WordArray = wordArray.removeLeadingZeroes()
+    internal val magnitude: WordArray = BigInteger63Arithmetic.removeLeadingZeros(wordArray)
 
     private fun isResultZero(resultMagnitude: WordArray): Boolean {
         return arithmetic.compare(resultMagnitude, arithmetic.ZERO) == 0

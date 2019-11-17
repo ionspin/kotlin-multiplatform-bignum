@@ -17,7 +17,6 @@
 
 package com.ionspin.kotlin.bignum.integer.benchmark
 
-import com.ionspin.kotlin.bignum.integer.TypeHelper
 import com.ionspin.kotlin.bignum.integer.WordArray
 import com.ionspin.kotlin.bignum.integer.chosenArithmetic
 import com.ionspin.kotlin.bignum.runBlockingTest
@@ -46,7 +45,7 @@ class MultiplicationBenchmark {
 
     @BeforeTest
     fun setup() {
-        println("Word array type: ${TypeHelper.instance::class.simpleName}")
+        // println("Word array type: ${TypeHelper.instance::class.simpleName}")
     }
 
     @Test
