@@ -3,6 +3,7 @@
 ##### 0.1.2-SNAPSHOT - 22.10.2019 Performance improvements
 - Removed removeLeadingZeros and replaced with countLeadingZeros and appropriate algorithm changes.
 - Realized plural of zero is zeros not zeroes.
+- Improved exponentiation to use square-and-multiply method.
 
 
 
