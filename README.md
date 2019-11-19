@@ -38,7 +38,7 @@ enableFeaturePreview("GRADLE_METADATA")
 ```
 to your `settings.gradle` file
 
-From version 0.1.1 BigNum library will be publishing Gradle Metadata 1.0.0 which will only be usable by Gradle >= 5.3.
+From version 0.1.3 BigNum library will be publishing Gradle Metadata 1.0.0 which will only be usable by Gradle >= 5.3.
 If you are using version 0.1.1 you don't need to modify your settings.gradle
 
 #### Snapshot builds

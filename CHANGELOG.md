@@ -1,6 +1,13 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
-##### 0.1.2-SNAPSHOT - 22.10.2019 Performance improvements
+##### 0.1.3-SNAPSHOT - Kotlin and Gradle version bump 19.11.2019
+- Kotlin version bump to 1.3.60 - especially important as there was a comparison performance improvement for inline classes 
+which are heavily used by bignum library (ULong/UInt)
+- Actually bumped gradle to 5.6.1, it was mistakenly left at 5.1.1 in library versions 0.1.1 and 0.1.2
+- Cleaned up dependancies, coroutines are currently used only in test modules so they are moved there.
+- Main library now has dependancies only on the kotlin standard library (for now, coroutines will be coming back at some point in the future)
+
+##### 0.1.2 - 17.11.2019 Performance improvements
 - Removed removeLeadingZeros and replaced with countLeadingZeros and appropriate algorithm changes.
 - Realized plural of zero is zeros not zeroes.
 - Improved exponentiation to use square-and-multiply method.
