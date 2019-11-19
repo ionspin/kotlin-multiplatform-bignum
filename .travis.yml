@@ -14,6 +14,7 @@ matrix:
         - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./linuxBuild.sh; fi'
         - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./linuxBuildAndPublish.sh; fi'
     - os: osx
+      osx_image: xcode11.2
       language: java
       jdk: openjdk12
       #      before_script:
