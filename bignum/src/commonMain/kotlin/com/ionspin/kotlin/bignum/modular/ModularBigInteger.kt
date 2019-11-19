@@ -284,7 +284,7 @@ class ModularBigInteger @ExperimentalUnsignedTypes private constructor(
             is Int -> compare(creator.fromInt(other))
             is Short -> compare(creator.fromShort(other))
             is Byte -> compare(creator.fromByte(other))
-            else -> throw RuntimeException("Invalid comparison type for BigInteger: ${other::class.simpleName}")
+            else -> throw RuntimeException("Invalid comparison type for BigInteger: $other")
         }
     }
 

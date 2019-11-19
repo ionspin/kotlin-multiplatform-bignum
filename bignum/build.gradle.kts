@@ -101,7 +101,6 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(kotlin(Deps.Common.stdLib))
-                implementation(kotlin(Deps.Common.test))
                 implementation(Deps.Common.coroutines)
             }
         }
@@ -109,14 +108,12 @@ kotlin {
             dependencies {
                 implementation(kotlin(Deps.Common.test))
                 implementation(kotlin(Deps.Common.testAnnotation))
+                implementation(Deps.Common.coroutines)
             }
         }
         val jvmMain by getting {
             dependencies {
                 implementation(kotlin(Deps.Jvm.stdLib))
-                implementation(kotlin(Deps.Jvm.test))
-                implementation(kotlin(Deps.Jvm.testJUnit))
-                implementation(Deps.Jvm.coroutinesCore)
             }
         }
         val jvmTest by getting {
@@ -125,27 +122,29 @@ kotlin {
                 implementation(kotlin(Deps.Jvm.testJUnit))
                 implementation(Deps.Jvm.coroutinesTest)
                 implementation(kotlin(Deps.Jvm.reflection))
+                implementation(Deps.Jvm.coroutinesCore)
             }
         }
         val jsMain by getting {
             dependencies {
                 implementation(kotlin(Deps.Js.stdLib))
-                implementation(kotlin(Deps.Js.test))
                 implementation(Deps.Js.coroutines)
             }
         }
         val jsTest by getting {
             dependencies {
-                implementation(kotlin("test-js"))
+                implementation(kotlin(Deps.Js.test))
+                implementation(Deps.Js.coroutines)
             }
         }
         val nativeMain by creating {
             dependsOn(commonMain)
+        }
+        val nativeTest by creating {
+            dependsOn(commonTest)
             dependencies {
                 implementation(Deps.Native.coroutines)
             }
-        }
-        val nativeTest by creating {
         }
 
         val iosMain by getting {
@@ -207,10 +206,10 @@ tasks {
             copy {
                 from(compileKotlinJs.destinationDir)
                 configurations["jsRuntimeClasspath"].forEach {
-                    from(zipTree(it.absolutePath).matching { include("*.js") })
+                    from(fileTree(it.absolutePath).matching { include("*.js") })
                 }
                 configurations["jsTestRuntimeClasspath"].forEach {
-                    from(zipTree(it.absolutePath).matching { include("*.js") })
+                    from(fileTree(it.absolutePath).matching { include("*.js") })
                 }
 
                 into("$projectDir/node_modules")
