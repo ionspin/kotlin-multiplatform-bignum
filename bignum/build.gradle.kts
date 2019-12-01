@@ -95,6 +95,22 @@ kotlin {
         }
     }
 
+    mingwX64() {
+        binaries {
+            staticLib {
+
+            }
+        }
+    }
+
+    mingwX86() {
+        binaries {
+            staticLib {
+
+            }
+        }
+    }
+
     println(targets.names)
 
     sourceSets {
@@ -178,6 +194,22 @@ kotlin {
             dependsOn(nativeMain)
         }
         val linuxTest by getting {
+            dependsOn(nativeTest)
+        }
+
+        val mingwX86Main by getting {
+            dependsOn(nativeMain)
+        }
+
+        val mingwX86Test by getting {
+            dependsOn(nativeTest)
+        }
+
+        val mingwX64Main by getting {
+            dependsOn(nativeMain)
+        }
+
+        val mingwX64Test by getting {
             dependsOn(nativeTest)
         }
     }
