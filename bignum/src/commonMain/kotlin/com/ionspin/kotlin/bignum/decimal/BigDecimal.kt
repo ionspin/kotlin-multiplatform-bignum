@@ -1103,10 +1103,23 @@ class BigDecimal private constructor(
 
     /**
      * Returns the number of digits representing this number
-     * i.e. 12.345 will return 5
+     * i.e.
+     * 12.345 will return 5
+     * 0.001 will return 4
+     * 123000 will return 6
      */
     override fun numberOfDecimalDigits(): Long {
-        return significand.numberOfDecimalDigits()
+        val numberOfDigits = when {
+            exponent > 0 && exponent < precision -> precision
+            exponent > 0 && exponent > precision -> exponent.longValue() + 1 // Significand is already 10^1 when exponent is > 0
+            exponent > 0 && exponent.longValue() == precision -> precision + 1 // Same as above
+            exponent < 0 -> exponent.longValue().absoluteValue + precision
+            exponent == BigInteger.ZERO -> significand.toString().dropLastWhile { it == '0' }.length.toLong() // I.e. precision is 3, exponent is 0,
+            // but significand is 100, which is equivalent to 1, so the result should be 1
+            // TODO find a better way than this lazy conversion to string
+            else -> throw RuntimeException("Invalid case when getting number of decimal digits")
+        }
+        return numberOfDigits
     }
 
     override fun toString(base: Int): String {

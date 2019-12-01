@@ -231,4 +231,10 @@ class BigDecimalReadmeTest {
             bigint == expected
         }
     }
+
+    @Test
+    fun testExactNumberOfDigitsAfterRadix() {
+        val truncated = BigDecimal.fromIntWithExponent(123456789, 3).round(DecimalMode(6, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
+        assertTrue { truncated.toStringExpanded() == "1234.57" }
+    }
 }
