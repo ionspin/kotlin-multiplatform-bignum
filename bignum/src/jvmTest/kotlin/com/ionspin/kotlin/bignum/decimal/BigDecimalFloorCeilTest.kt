@@ -49,7 +49,7 @@ class BigDecimalFloorCeilTest {
         assertTrue {
             val a = 12345.6789.toBigDecimal()
             val floor = a.floor()
-            floor == 12345.toBigDecimal(exponent = 4.toBigInteger())
+            floor == 12345.toBigDecimal(exponent = 4)
         }
     }
 
@@ -58,7 +58,7 @@ class BigDecimalFloorCeilTest {
         assertTrue {
             val a = 12345.6789.toBigDecimal()
             val ceil = a.ceil()
-            ceil == 12346.toBigDecimal(exponent = 4.toBigInteger())
+            ceil == 12346.toBigDecimal(exponent = 4)
         }
     }
 }
