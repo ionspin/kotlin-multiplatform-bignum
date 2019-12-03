@@ -225,16 +225,12 @@ class BigDecimalReadmeTest {
             bigint == expected
         }
 
-        assertTrue("Double to big decimal dailed") {
+        assertTrue("Double to big decimal failed") {
             val bigint = 123456789012.0.toBigDecimal()
             val expected = BigDecimal.parseStringWithMode("1.23456789012E+11")
             bigint == expected
         }
     }
 
-    @Test
-    fun testExactNumberOfDigitsAfterRadix() {
-        val truncated = BigDecimal.fromIntWithExponent(123456789, 3).round(DecimalMode(6, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
-        assertTrue { truncated.toStringExpanded() == "1234.57" }
-    }
+
 }
