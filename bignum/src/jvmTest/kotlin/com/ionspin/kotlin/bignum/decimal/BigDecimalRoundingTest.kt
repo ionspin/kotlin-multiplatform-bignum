@@ -33,57 +33,57 @@ class BigDecimalRoundingTest {
         // Positive
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(18, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.FLOOR))
             val expected = BigDecimal.fromIntAsSignificand(1)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(15, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.FLOOR))
             val expected = BigDecimal.fromIntAsSignificand(1)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(12, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.FLOOR))
             val expected = BigDecimal.fromIntAsSignificand(1)
             rounded == expected
         }
         // Around zero
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(8, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.FLOOR))
             val expected = BigDecimal.fromDouble(0.8)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(5, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.FLOOR))
             val expected = BigDecimal.fromDouble(0.5)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(2, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.FLOOR))
             val expected = BigDecimal.fromDouble(0.2)
             rounded == expected
         }
 
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-2, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.FLOOR))
             val expected = BigDecimal.fromDouble(-0.2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-5, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.FLOOR))
             val expected = BigDecimal.fromDouble(-0.5)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-8, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.FLOOR))
             val expected = BigDecimal.fromDouble(-0.8)
             rounded == expected
         }
@@ -92,19 +92,19 @@ class BigDecimalRoundingTest {
 
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-12, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.FLOOR))
             val expected = BigDecimal.fromIntAsSignificand(-2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-15, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.FLOOR))
             val expected = BigDecimal.fromIntAsSignificand(-2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-18, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.FLOOR))
             val expected = BigDecimal.fromIntAsSignificand(-2)
             rounded == expected
         }
@@ -116,57 +116,57 @@ class BigDecimalRoundingTest {
         // Positive
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(18, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.CEILING))
             val expected = BigDecimal.fromIntAsSignificand(2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(15, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.CEILING))
             val expected = BigDecimal.fromIntAsSignificand(2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(12, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.CEILING))
             val expected = BigDecimal.fromIntAsSignificand(2)
             rounded == expected
         }
         // Around zero
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(8, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.CEILING))
             val expected = BigDecimal.fromDouble(0.8)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(5, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.CEILING))
             val expected = BigDecimal.fromDouble(0.5)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(2, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.CEILING))
             val expected = BigDecimal.fromDouble(0.2)
             rounded == expected
         }
 
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-2, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.CEILING))
             val expected = BigDecimal.fromDouble(-0.2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-5, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.CEILING))
             val expected = BigDecimal.fromDouble(-0.5)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-8, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.CEILING))
             val expected = BigDecimal.fromDouble(-0.8)
             rounded == expected
         }
@@ -175,19 +175,19 @@ class BigDecimalRoundingTest {
 
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-12, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.CEILING))
             val expected = BigDecimal.fromIntAsSignificand(-1)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-15, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.CEILING))
             val expected = BigDecimal.fromIntAsSignificand(-1)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-18, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.CEILING))
             val expected = BigDecimal.fromIntAsSignificand(-1)
             rounded == expected
         }
@@ -199,57 +199,57 @@ class BigDecimalRoundingTest {
         // Positive
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(18, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(1)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(15, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(1)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(12, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(1)
             rounded == expected
         }
         // Around zero
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(8, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
             val expected = BigDecimal.fromDouble(0.8)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(5, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
             val expected = BigDecimal.fromDouble(0.5)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(2, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
             val expected = BigDecimal.fromDouble(0.2)
             rounded == expected
         }
 
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-2, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
             val expected = BigDecimal.fromDouble(-0.2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-5, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
             val expected = BigDecimal.fromDouble(-0.5)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-8, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
             val expected = BigDecimal.fromDouble(-0.8)
             rounded == expected
         }
@@ -258,19 +258,19 @@ class BigDecimalRoundingTest {
 
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-12, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(-1)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-15, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(-1)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-18, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.TOWARDS_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(-1)
             rounded == expected
         }
@@ -282,57 +282,57 @@ class BigDecimalRoundingTest {
         // Positive
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(18, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(15, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(12, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(2)
             rounded == expected
         }
         // Around zero
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(8, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
             val expected = BigDecimal.fromDouble(0.8)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(5, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
             val expected = BigDecimal.fromDouble(0.5)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(2, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
             val expected = BigDecimal.fromDouble(0.2)
             rounded == expected
         }
 
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-2, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
             val expected = BigDecimal.fromDouble(-0.2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-5, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
             val expected = BigDecimal.fromDouble(-0.5)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-8, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
             val expected = BigDecimal.fromDouble(-0.8)
             rounded == expected
         }
@@ -341,19 +341,19 @@ class BigDecimalRoundingTest {
 
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-12, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(-2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-15, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(-2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-18, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.AWAY_FROM_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(-2)
             rounded == expected
         }
@@ -373,57 +373,57 @@ class BigDecimalRoundingTest {
         // Positive
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(18, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
             val expected = BigDecimal.fromIntAsSignificand(2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(15, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
             val expected = BigDecimal.fromIntAsSignificand(1)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(12, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
             val expected = BigDecimal.fromIntAsSignificand(1)
             rounded == expected
         }
         // Around zero
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(8, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
             val expected = BigDecimal.fromDouble(0.8)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(5, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
             val expected = BigDecimal.fromDouble(0.5)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(2, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
             val expected = BigDecimal.fromDouble(0.2)
             rounded == expected
         }
 
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-2, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
             val expected = BigDecimal.fromDouble(-0.2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-5, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
             val expected = BigDecimal.fromDouble(-0.5)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-8, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
             val expected = BigDecimal.fromDouble(-0.8)
             rounded == expected
         }
@@ -432,19 +432,19 @@ class BigDecimalRoundingTest {
 
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-12, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
             val expected = BigDecimal.fromIntAsSignificand(-1)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-15, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
             val expected = BigDecimal.fromIntAsSignificand(-2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-18, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_FLOOR))
             val expected = BigDecimal.fromIntAsSignificand(-2)
             rounded == expected
         }
@@ -456,57 +456,57 @@ class BigDecimalRoundingTest {
         // Positive
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(18, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
             val expected = BigDecimal.fromIntAsSignificand(2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(15, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
             val expected = BigDecimal.fromIntAsSignificand(2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(12, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
             val expected = BigDecimal.fromIntAsSignificand(1)
             rounded == expected
         }
         // Around zero
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(8, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
             val expected = BigDecimal.fromDouble(0.8)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(5, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
             val expected = BigDecimal.fromDouble(0.5)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(2, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
             val expected = BigDecimal.fromDouble(0.2)
             rounded == expected
         }
 
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-2, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
             val expected = BigDecimal.fromDouble(-0.2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-5, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
             val expected = BigDecimal.fromDouble(-0.5)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-8, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
             val expected = BigDecimal.fromDouble(-0.8)
             rounded == expected
         }
@@ -515,19 +515,19 @@ class BigDecimalRoundingTest {
 
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-12, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
             val expected = BigDecimal.fromIntAsSignificand(-1)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-15, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
             val expected = BigDecimal.fromIntAsSignificand(-1)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-18, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_CEILING))
             val expected = BigDecimal.fromIntAsSignificand(-2)
             rounded == expected
         }
@@ -539,57 +539,57 @@ class BigDecimalRoundingTest {
         // Positive
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(18, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(15, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(1)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(12, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(1)
             rounded == expected
         }
         // Around zero
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(8, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
             val expected = BigDecimal.fromDouble(0.8)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(5, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
             val expected = BigDecimal.fromDouble(0.5)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(2, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
             val expected = BigDecimal.fromDouble(0.2)
             rounded == expected
         }
 
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-2, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
             val expected = BigDecimal.fromDouble(-0.2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-5, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
             val expected = BigDecimal.fromDouble(-0.5)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-8, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
             val expected = BigDecimal.fromDouble(-0.8)
             rounded == expected
         }
@@ -598,19 +598,19 @@ class BigDecimalRoundingTest {
 
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-12, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(-1)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-15, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(-1)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-18, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_TOWARDS_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(-2)
             rounded == expected
         }
@@ -622,57 +622,57 @@ class BigDecimalRoundingTest {
         // Positive
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(18, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(15, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(12, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(1)
             rounded == expected
         }
         // Around zero
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(8, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
             val expected = BigDecimal.fromDouble(0.8)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(5, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
             val expected = BigDecimal.fromDouble(0.5)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(2, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
             val expected = BigDecimal.fromDouble(0.2)
             rounded == expected
         }
 
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-2, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
             val expected = BigDecimal.fromDouble(-0.2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-5, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
             val expected = BigDecimal.fromDouble(-0.5)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-8, -1)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
             val expected = BigDecimal.fromDouble(-0.8)
             rounded == expected
         }
@@ -681,19 +681,19 @@ class BigDecimalRoundingTest {
 
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-12, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(-1)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-15, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(-2)
             rounded == expected
         }
         assertTrue {
             val unrounded = BigDecimal.fromIntWithExponent(-18, 0)
-            val rounded = unrounded.round(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
+            val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(-2)
             rounded == expected
         }

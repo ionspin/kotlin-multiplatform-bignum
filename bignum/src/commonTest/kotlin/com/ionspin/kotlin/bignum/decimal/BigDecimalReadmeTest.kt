@@ -225,7 +225,7 @@ class BigDecimalReadmeTest {
             bigint == expected
         }
 
-        assertTrue("Double to big decimal dailed") {
+        assertTrue("Double to big decimal failed") {
             val bigint = 123456789012.0.toBigDecimal()
             val expected = BigDecimal.parseStringWithMode("1.23456789012E+11")
             bigint == expected
