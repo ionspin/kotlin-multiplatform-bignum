@@ -284,7 +284,7 @@ BigDecimal: 7.111E+3
 Or you can specify an exponent. when you do specify an exponent, input value (long, int, short, byte) is considered to 
 be in **scientific notation**.
 ```kotlin
-val bigDecimal = BigDecimal.fromLongWithExponent(1, (-5).toBigInteger())
+val bigDecimal = BigDecimal.fromLongWithExponent(1, -5L)
 println("BigDecimal: $bigDecimal")
 println("BigDecimalExpanded: ${bigDecimal.toStringExpanded()}")
 ----- Output -----
