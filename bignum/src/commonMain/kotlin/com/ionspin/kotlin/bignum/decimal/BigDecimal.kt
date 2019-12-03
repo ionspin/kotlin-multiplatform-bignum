@@ -1266,7 +1266,7 @@ class BigDecimal private constructor(
     /**
      * Round
      */
-    fun roundToDigitPosition(digitPosition : Long, roundingMode: RoundingMode) : BigDecimal {
+    fun roundToDigitPosition(digitPosition: Long, roundingMode: RoundingMode): BigDecimal {
         return if (this.exponent > 0) {
             roundSignificand(DecimalMode(digitPosition, roundingMode))
         } else {
@@ -1274,7 +1274,7 @@ class BigDecimal private constructor(
         }
     }
 
-    fun roundToDigitPositionAfterDecimalPoint(digitPosition : Long, roundingMode: RoundingMode) : BigDecimal {
+    fun roundToDigitPositionAfterDecimalPoint(digitPosition: Long, roundingMode: RoundingMode): BigDecimal {
         if (digitPosition < 0) {
             throw ArithmeticException("This method doesn't support negative digit position")
         }
@@ -1291,7 +1291,6 @@ class BigDecimal private constructor(
             exponent < 0 -> roundToDigitPosition(digitPosition, roundingMode)
             else -> throw RuntimeException("Unexpected state")
         }
-
     }
 
     private fun getRidOfRadix(bigDecimal: BigDecimal): BigDecimal {

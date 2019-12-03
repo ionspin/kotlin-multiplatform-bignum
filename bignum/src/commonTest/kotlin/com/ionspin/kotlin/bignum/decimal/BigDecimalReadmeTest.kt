@@ -231,6 +231,4 @@ class BigDecimalReadmeTest {
             bigint == expected
         }
     }
-
-
 }
