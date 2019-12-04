@@ -65,15 +65,34 @@ class BigDecimalRoundingTests {
     @Test
     fun testRoundToDigitPosition() {
         assertTrue {
-            val rounded = BigDecimal.fromIntWithExponent(123456789, 3)
+            val rounded = BigDecimal.parseString("1234.5678")
+                .roundToDigitPosition(3, RoundingMode.ROUND_HALF_TOWARDS_ZERO)
+            rounded.toStringExpanded() == "1230"
+        }
+
+        assertTrue {
+            val rounded = BigDecimal.parseString("0.0012345678")
+                .roundToDigitPosition(4, RoundingMode.ROUND_HALF_TOWARDS_ZERO)
+            rounded.toStringExpanded() == "0.001"
+        }
+
+        assertTrue {
+            val rounded = BigDecimal.parseString("0.0012345678")
                 .roundToDigitPosition(3, RoundingMode.CEILING)
-            rounded.toStringExpanded() == "1240"
+            rounded.toStringExpanded() == "0.01"
         }
 
         assertTrue {
             val rounded = BigDecimal.fromIntWithExponent(123456789, -3)
-                .roundToDigitPosition(3, RoundingMode.CEILING)
-            rounded.toStringExpanded() == "0.01"
+                .roundToDigitPosition(3, RoundingMode.FLOOR)
+            val rs = rounded.toStringExpanded()
+            rounded.toStringExpanded() == "0"
+        }
+
+        assertTrue {
+            val rounded = BigDecimal.fromIntWithExponent(123456789, -3)
+                .roundToDigitPosition(3, RoundingMode.ROUND_HALF_FLOOR)
+            rounded.toStringExpanded() == "0"
         }
     }
 
@@ -82,13 +101,56 @@ class BigDecimalRoundingTests {
         assertTrue {
             val rounded = BigDecimal.fromIntWithExponent(123456789, 3)
                 .roundToDigitPositionAfterDecimalPoint(3, RoundingMode.CEILING)
+            rounded.toStringExpanded() == "1234.568"
+        }
+
+        assertTrue {
+            val rounded = BigDecimal.fromIntWithExponent(123456789, 3)
+                .roundToDigitPositionAfterDecimalPoint(4, RoundingMode.CEILING)
+            val rs = rounded.toStringExpanded()
+            rounded.toStringExpanded() == "1234.5679"
+        }
+
+        assertTrue {
+            val rounded = BigDecimal.fromIntWithExponent(123456789, 3)
+                .roundToDigitPositionAfterDecimalPoint(2, RoundingMode.ROUND_HALF_TOWARDS_ZERO)
             rounded.toStringExpanded() == "1234.57"
+        }
+
+        assertTrue {
+            val rounded = BigDecimal.fromIntWithExponent(123455555, 3)
+                .roundToDigitPositionAfterDecimalPoint(2, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
+            rounded.toStringExpanded() == "1234.56"
         }
 
         assertTrue {
             val rounded = BigDecimal.fromIntWithExponent(123456789, -2)
                 .roundToDigitPositionAfterDecimalPoint(5, RoundingMode.CEILING)
-            rounded.toStringExpanded() == "0.0124"
+            rounded.toStringExpanded() == "0.01235"
+        }
+
+        assertTrue {
+            val rounded = BigDecimal.parseString("123.456")
+                .roundToDigitPositionAfterDecimalPoint(3, RoundingMode.CEILING)
+            rounded.toStringExpanded() == "123.456"
+        }
+
+        assertTrue {
+            val rounded = BigDecimal.parseString("0.000123456")
+                .roundToDigitPositionAfterDecimalPoint(5, RoundingMode.CEILING)
+            rounded.toStringExpanded() == "0.00013"
+        }
+
+        assertTrue {
+            val rounded = BigDecimal.parseString("1000000.12355")
+                .roundToDigitPositionAfterDecimalPoint(3, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
+            rounded.toStringExpanded() == "1000000.124"
+        }
+
+        assertTrue {
+            val rounded = BigDecimal.parseString("1000000.12355")
+                .roundToDigitPositionAfterDecimalPoint(3, RoundingMode.ROUND_HALF_TOWARDS_ZERO)
+            rounded.toStringExpanded() == "1000000.123"
         }
     }
 }
