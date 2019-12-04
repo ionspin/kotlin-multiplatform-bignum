@@ -103,7 +103,7 @@ class BigDecimal private constructor(
                 if (discarded == BigInteger.ZERO) {
                     BigInteger.ZERO
                 } else {
-                    (discarded / (discarded.numberOfDecimalDigits())).abs()
+                    (discarded / (BigInteger.TEN.pow(discarded.numberOfDecimalDigits() - 1))).abs()
                 }
             }
             when (decimalMode.roundingMode) {
@@ -1264,9 +1264,19 @@ class BigDecimal private constructor(
     }
 
     /**
-     * Round
+     * Round the BigDecimal to a specific length. If position is set to 0, a ArithmeticException is thrown.
+     *
+     * I.e.
+     *
+     * 1234.5678 digitPosition 3, rounding mode HALF_TOWARDS_ZERO will produce 1230
+     * 123.456 digitPosition 3, rounding mode HALF_TOWARDS_ZERO will produce 123
+     * 0.0012345678 digitPosition 4, rounding mode HALF_TOWARDS_ZERO will produce 0.001
+     * 0.0012345678 digitPosition 6, rounding mode HALF_TOWARDS_ZERO will produce 0.00123
      */
     fun roundToDigitPosition(digitPosition: Long, roundingMode: RoundingMode): BigDecimal {
+        if (digitPosition == 0L) {
+            throw ArithmeticException("Rounding to 0 position is not supported")
+        }
         return if (this.exponent > 0) {
             roundSignificand(DecimalMode(digitPosition, roundingMode))
         } else {
@@ -1274,6 +1284,16 @@ class BigDecimal private constructor(
         }
     }
 
+    /**
+     * Round the BigDecimal to a specific length AFTER the decimal point. If position is set to 0 a integer value is returned
+     *
+     * I.e.
+     *
+     * 1234.5678 digitPosition 3, rounding mode HALF_TOWARDS_ZERO will produce 1234.568
+     * 123.456 digitPosition 3, rounding mode HALF_TOWARDS_ZERO will produce 123.456
+     * 0.0012345678 digitPosition 3, rounding mode HALF_TOWARDS_ZERO will produce 0.001
+     * 0.0012345678 digitPosition 5, rounding mode HALF_TOWARDS_ZERO will produce 0.00123
+     */
     fun roundToDigitPositionAfterDecimalPoint(digitPosition: Long, roundingMode: RoundingMode): BigDecimal {
         if (digitPosition < 0) {
             throw ArithmeticException("This method doesn't support negative digit position")
@@ -1287,8 +1307,8 @@ class BigDecimal private constructor(
         //     }
         // }
         return when {
-            exponent >= 0 -> roundToDigitPosition(exponent.longValue() + digitPosition, roundingMode)
-            exponent < 0 -> roundToDigitPosition(digitPosition, roundingMode)
+            exponent >= 0 -> roundToDigitPosition(exponent.longValue() + digitPosition + 1, roundingMode)
+            exponent < 0 -> roundToDigitPosition(digitPosition + 1, roundingMode)
             else -> throw RuntimeException("Unexpected state")
         }
     }
@@ -1464,6 +1484,9 @@ class BigDecimal private constructor(
      * i.e. 123000000 for 1.23E+9 or 0.00000000123 for 1.23E-9
      */
     fun toStringExpanded(): String {
+        if (this == ZERO) {
+            return "0"
+        }
         val digits = significand.numberOfDecimalDigits()
         if (exponent > Int.MAX_VALUE) {
             throw RuntimeException("Invalid toStringExpanded request (exponent > Int.MAX_VALUE)")
