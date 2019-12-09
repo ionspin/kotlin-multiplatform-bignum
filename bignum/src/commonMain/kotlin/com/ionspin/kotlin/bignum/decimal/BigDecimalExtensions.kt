@@ -17,8 +17,6 @@
 
 package com.ionspin.kotlin.bignum.decimal
 
-import com.ionspin.kotlin.bignum.integer.BigInteger
-
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
@@ -26,7 +24,7 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
  */
 
 @ExperimentalUnsignedTypes
-fun Long.toBigDecimal(exponent: BigInteger? = null, decimalMode: DecimalMode? = null): BigDecimal {
+fun Long.toBigDecimal(exponent: Long? = null, decimalMode: DecimalMode? = null): BigDecimal {
     return if (exponent != null) {
         BigDecimal.fromLongWithExponent(this, exponent, decimalMode)
     } else {
@@ -35,7 +33,7 @@ fun Long.toBigDecimal(exponent: BigInteger? = null, decimalMode: DecimalMode? = 
 }
 
 @ExperimentalUnsignedTypes
-fun Int.toBigDecimal(exponent: BigInteger? = null, decimalMode: DecimalMode? = null): BigDecimal {
+fun Int.toBigDecimal(exponent: Long? = null, decimalMode: DecimalMode? = null): BigDecimal {
     return if (exponent != null) {
         BigDecimal.fromIntWithExponent(this, exponent, decimalMode)
     } else {
@@ -44,7 +42,7 @@ fun Int.toBigDecimal(exponent: BigInteger? = null, decimalMode: DecimalMode? = n
 }
 
 @ExperimentalUnsignedTypes
-fun Short.toBigDecimal(exponent: BigInteger? = null, decimalMode: DecimalMode? = null): BigDecimal {
+fun Short.toBigDecimal(exponent: Long? = null, decimalMode: DecimalMode? = null): BigDecimal {
     return if (exponent != null) {
         BigDecimal.fromShortWithExponent(this, exponent, decimalMode)
     } else {
@@ -53,7 +51,7 @@ fun Short.toBigDecimal(exponent: BigInteger? = null, decimalMode: DecimalMode? =
 }
 
 @ExperimentalUnsignedTypes
-fun Byte.toBigDecimal(exponent: BigInteger? = null, decimalMode: DecimalMode? = null): BigDecimal {
+fun Byte.toBigDecimal(exponent: Long? = null, decimalMode: DecimalMode? = null): BigDecimal {
     return if (exponent != null) {
         BigDecimal.fromByteWithExponent(this, exponent, decimalMode)
     } else {
@@ -62,7 +60,7 @@ fun Byte.toBigDecimal(exponent: BigInteger? = null, decimalMode: DecimalMode? = 
 }
 
 @ExperimentalUnsignedTypes
-fun String.toBigDecimal(exponent: BigInteger? = null, decimalMode: DecimalMode? = null): BigDecimal {
+fun String.toBigDecimal(exponent: Long? = null, decimalMode: DecimalMode? = null): BigDecimal {
     return BigDecimal.parseStringWithMode(this, decimalMode)
 }
 

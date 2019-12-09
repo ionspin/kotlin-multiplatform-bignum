@@ -43,7 +43,7 @@ import kotlin.math.max
 @ExperimentalUnsignedTypes
 class BigDecimal private constructor(
     val significand: BigInteger,
-    val exponent: BigInteger = BigInteger.ZERO,
+    val exponent: Long = 0L,
     val decimalMode: DecimalMode? = null
 ) : BigNumber<BigDecimal>,
     CommonBigNumberOperations<BigDecimal>,
@@ -59,9 +59,9 @@ class BigDecimal private constructor(
 
         var useToStringExpanded: Boolean = false
 
-        private fun roundOrDont(significand: BigInteger, exponent: BigInteger, decimalMode: DecimalMode): BigDecimal {
+        private fun roundOrDont(significand: BigInteger, exponent: Long, decimalMode: DecimalMode): BigDecimal {
             return if (decimalMode.decimalPrecision != 0L && decimalMode.roundingMode != RoundingMode.NONE) {
-                round(significand, exponent, decimalMode)
+                roundSignificand(significand, exponent, decimalMode)
             } else {
                 BigDecimal(significand, exponent)
             }
@@ -103,7 +103,7 @@ class BigDecimal private constructor(
                 if (discarded == BigInteger.ZERO) {
                     BigInteger.ZERO
                 } else {
-                    (discarded / (discarded.numberOfDecimalDigits())).abs()
+                    (discarded / (BigInteger.TEN.pow(discarded.numberOfDecimalDigits() - 1))).abs()
                 }
             }
             when (decimalMode.roundingMode) {
@@ -207,11 +207,11 @@ class BigDecimal private constructor(
             return result
         }
 
-        private fun round(bigDecimal: BigDecimal, decimalMode: DecimalMode): BigDecimal {
-            return round(bigDecimal.significand, bigDecimal.exponent, decimalMode)
+        private fun roundSignificand(bigDecimal: BigDecimal, decimalMode: DecimalMode): BigDecimal {
+            return roundSignificand(bigDecimal.significand, bigDecimal.exponent, decimalMode)
         }
 
-        private fun round(significand: BigInteger, exponent: BigInteger, decimalMode: DecimalMode): BigDecimal {
+        private fun roundSignificand(significand: BigInteger, exponent: Long, decimalMode: DecimalMode): BigDecimal {
             if (significand == BigInteger.ZERO) {
                 return BigDecimal(BigInteger.ZERO, exponent, decimalMode)
             }
@@ -242,7 +242,7 @@ class BigDecimal private constructor(
          * @return BigDecimal representing input
          */
         fun fromBigInteger(bigInteger: BigInteger, decimalMode: DecimalMode? = null): BigDecimal {
-            return BigDecimal(bigInteger, bigInteger.numberOfDecimalDigits().toBigInteger() - 1, decimalMode).round(
+            return BigDecimal(bigInteger, bigInteger.numberOfDecimalDigits() - 1, decimalMode).roundSignificand(
                 decimalMode
             )
         }
@@ -257,7 +257,7 @@ class BigDecimal private constructor(
          */
         fun fromLong(long: Long, decimalMode: DecimalMode? = null): BigDecimal {
             val bigint = BigInteger.fromLong(long)
-            return BigDecimal(bigint, bigint.numberOfDecimalDigits().toBigInteger() - 1, decimalMode).round(decimalMode)
+            return BigDecimal(bigint, bigint.numberOfDecimalDigits() - 1, decimalMode).roundSignificand(decimalMode)
         }
 
         /**
@@ -270,7 +270,7 @@ class BigDecimal private constructor(
          */
         fun fromULong(uLong: ULong, decimalMode: DecimalMode? = null): BigDecimal {
             val bigint = BigInteger.fromULong(uLong)
-            return BigDecimal(bigint, bigint.numberOfDecimalDigits().toBigInteger() - 1, decimalMode).round(decimalMode)
+            return BigDecimal(bigint, bigint.numberOfDecimalDigits() - 1, decimalMode).roundSignificand(decimalMode)
         }
 
         /**
@@ -283,7 +283,7 @@ class BigDecimal private constructor(
          */
         fun fromInt(int: Int, decimalMode: DecimalMode? = null): BigDecimal {
             val bigint = BigInteger.fromInt(int)
-            return BigDecimal(bigint, bigint.numberOfDecimalDigits().toBigInteger() - 1, decimalMode).round(decimalMode)
+            return BigDecimal(bigint, bigint.numberOfDecimalDigits() - 1, decimalMode).roundSignificand(decimalMode)
         }
 
         /**
@@ -296,7 +296,7 @@ class BigDecimal private constructor(
          */
         fun fromUInt(uInt: UInt, decimalMode: DecimalMode? = null): BigDecimal {
             val bigint = BigInteger.fromUInt(uInt)
-            return BigDecimal(bigint, bigint.numberOfDecimalDigits().toBigInteger() - 1, decimalMode).round(decimalMode)
+            return BigDecimal(bigint, bigint.numberOfDecimalDigits() - 1, decimalMode).roundSignificand(decimalMode)
         }
 
         /**
@@ -309,7 +309,7 @@ class BigDecimal private constructor(
          */
         fun fromUShort(uShort: UShort, decimalMode: DecimalMode? = null): BigDecimal {
             val bigint = BigInteger.fromUShort(uShort)
-            return BigDecimal(bigint, bigint.numberOfDecimalDigits().toBigInteger() - 1, decimalMode).round(decimalMode)
+            return BigDecimal(bigint, bigint.numberOfDecimalDigits() - 1, decimalMode).roundSignificand(decimalMode)
         }
 
         /**
@@ -322,7 +322,7 @@ class BigDecimal private constructor(
          */
         fun fromShort(short: Short, decimalMode: DecimalMode? = null): BigDecimal {
             val bigint = BigInteger.fromShort(short)
-            return BigDecimal(bigint, bigint.numberOfDecimalDigits().toBigInteger() - 1, decimalMode).round(decimalMode)
+            return BigDecimal(bigint, bigint.numberOfDecimalDigits() - 1, decimalMode).roundSignificand(decimalMode)
         }
 
         /**
@@ -335,7 +335,7 @@ class BigDecimal private constructor(
          */
         fun fromUByte(uByte: UByte, decimalMode: DecimalMode? = null): BigDecimal {
             val bigint = BigInteger.fromUByte(uByte)
-            return BigDecimal(bigint, bigint.numberOfDecimalDigits().toBigInteger() - 1, decimalMode).round(decimalMode)
+            return BigDecimal(bigint, bigint.numberOfDecimalDigits() - 1, decimalMode).roundSignificand(decimalMode)
         }
 
         /**
@@ -348,7 +348,7 @@ class BigDecimal private constructor(
          */
         fun fromByte(byte: Byte, decimalMode: DecimalMode? = null): BigDecimal {
             val bigint = BigInteger.fromByte(byte)
-            return BigDecimal(bigint, bigint.numberOfDecimalDigits().toBigInteger() - 1, decimalMode).round(decimalMode)
+            return BigDecimal(bigint, bigint.numberOfDecimalDigits() - 1, decimalMode).roundSignificand(decimalMode)
         }
 
         /**
@@ -360,7 +360,7 @@ class BigDecimal private constructor(
          * @return BigDecimal representing input
          */
         fun fromLongAsSignificand(long: Long, decimalMode: DecimalMode? = null) =
-            BigDecimal(BigInteger.fromLong(long), BigInteger.ZERO, decimalMode).round(decimalMode)
+            BigDecimal(BigInteger.fromLong(long), 0L, decimalMode).roundSignificand(decimalMode)
 
         /**
          * Convert a Int into a BigDecimal, but use supplied value directly as significant.
@@ -371,7 +371,7 @@ class BigDecimal private constructor(
          * @return BigDecimal representing input
          */
         fun fromIntAsSignificand(int: Int, decimalMode: DecimalMode? = null) =
-            BigDecimal(BigInteger.fromInt(int), BigInteger.ZERO, decimalMode).round(decimalMode)
+            BigDecimal(BigInteger.fromInt(int), 0L, decimalMode).roundSignificand(decimalMode)
 
         /**
          * Convert a Short into a BigDecimal, but use supplied value directly as significant.
@@ -382,7 +382,7 @@ class BigDecimal private constructor(
          * @return BigDecimal representing input
          */
         fun fromShortAsSignificand(short: Short, decimalMode: DecimalMode? = null) =
-            BigDecimal(BigInteger.fromShort(short), BigInteger.ZERO, decimalMode).round(decimalMode)
+            BigDecimal(BigInteger.fromShort(short), 0L, decimalMode).roundSignificand(decimalMode)
 
         /**
          * Convert a Short into a BigDecimal, but use supplied value directly as significant.
@@ -393,7 +393,7 @@ class BigDecimal private constructor(
          * @return BigDecimal representing input
          */
         fun fromByteAsSignificand(byte: Byte, decimalMode: DecimalMode? = null) =
-            BigDecimal(BigInteger.fromByte(byte), BigInteger.ZERO, decimalMode).round(decimalMode)
+            BigDecimal(BigInteger.fromByte(byte), 0L, decimalMode).roundSignificand(decimalMode)
 
         /**
          * Convert a float into a BigDecimal
@@ -430,14 +430,14 @@ class BigDecimal private constructor(
         }
 
         /**
-         * Create BigDecimal from BigInteger significand and BigInteger exponent
+         * Create BigDecimal from BigInteger significand and  exponent
          */
         fun fromBigIntegerWithExponent(
             bigInteger: BigInteger,
-            exponent: BigInteger,
+            exponent: Long,
             decimalMode: DecimalMode? = null
         ): BigDecimal {
-            return BigDecimal(bigInteger, exponent, decimalMode).round(decimalMode)
+            return BigDecimal(bigInteger, exponent, decimalMode).roundSignificand(decimalMode)
         }
 
         /**
@@ -445,19 +445,19 @@ class BigDecimal private constructor(
          */
         fun fromLongWithExponent(
             long: Long,
-            exponent: BigInteger,
+            exponent: Long,
             decimalMode: DecimalMode? = null
         ): BigDecimal {
             val bigint = BigInteger.fromLong(long)
-            return BigDecimal(bigint, exponent, decimalMode).round(decimalMode)
+            return BigDecimal(bigint, exponent, decimalMode).roundSignificand(decimalMode)
         }
 
         /**
          * Create BigDecimal from Int significand and BigInteger exponent
          */
-        fun fromIntWithExponent(int: Int, exponent: BigInteger, decimalMode: DecimalMode? = null): BigDecimal {
+        fun fromIntWithExponent(int: Int, exponent: Long, decimalMode: DecimalMode? = null): BigDecimal {
             val bigint = BigInteger.fromInt(int)
-            return BigDecimal(bigint, exponent, decimalMode).round(decimalMode)
+            return BigDecimal(bigint, exponent, decimalMode).roundSignificand(decimalMode)
         }
 
         /**
@@ -465,11 +465,11 @@ class BigDecimal private constructor(
          */
         fun fromShortWithExponent(
             short: Short,
-            exponent: BigInteger,
+            exponent: Long,
             decimalMode: DecimalMode? = null
         ): BigDecimal {
             val bigint = BigInteger.fromShort(short)
-            return BigDecimal(bigint, exponent, decimalMode).round(decimalMode)
+            return BigDecimal(bigint, exponent, decimalMode).roundSignificand(decimalMode)
         }
 
         /**
@@ -477,36 +477,12 @@ class BigDecimal private constructor(
          */
         fun fromByteWithExponent(
             byte: Byte,
-            exponent: BigInteger,
+            exponent: Long,
             decimalMode: DecimalMode? = null
         ): BigDecimal {
             val bigint = BigInteger.fromByte(byte)
-            return BigDecimal(bigint, exponent, decimalMode).round(decimalMode)
+            return BigDecimal(bigint, exponent, decimalMode).roundSignificand(decimalMode)
         }
-
-        /**
-         * Create BigDecimal from Long significand and Int exponent
-         */
-        fun fromLongWithExponent(long: Long, exponent: Int, decimalMode: DecimalMode? = null): BigDecimal =
-            fromLongWithExponent(long, exponent.toBigInteger(), decimalMode).round(decimalMode)
-
-        /**
-         * Create BigDecimal from Int significand and Int exponent
-         */
-        fun fromIntWithExponent(int: Int, exponent: Int, decimalMode: DecimalMode? = null): BigDecimal =
-            fromIntWithExponent(int, exponent.toBigInteger()).round(decimalMode)
-
-        /**
-         * Create BigDecimal from Short significand and Int exponent
-         */
-        fun fromShortWithExponent(short: Short, exponent: Int, decimalMode: DecimalMode = DecimalMode()): BigDecimal =
-            fromShortWithExponent(short, exponent.toBigInteger(), decimalMode).round(decimalMode)
-
-        /**
-         * Create BigDecimal from Byte significand and Int exponent
-         */
-        fun fromByteWithExponent(byte: Byte, exponent: Int, decimalMode: DecimalMode? = null): BigDecimal =
-            fromByteWithExponent(byte, exponent.toBigInteger(), decimalMode).round(decimalMode)
 
         /**
          * Convert a BigInteger into a BigDecimal, but use supplied value directly as significant.
@@ -681,9 +657,9 @@ class BigDecimal private constructor(
                         }
                         val exponentString = exponentSplit.substring(startIndex = skipSignIfPresent)
                         val exponent = if (exponentSign == Sign.POSITIVE) {
-                            BigInteger.parseString(exponentString, 10)
+                            exponentString.toLong(10)
                         } else {
-                            BigInteger.parseString(exponentString, 10).negate()
+                            exponentString.toLong(10) * -1
                         }
 
                         var leftFirstNonZero = left.indexOfFirst { it != '0' }
@@ -749,9 +725,9 @@ class BigDecimal private constructor(
                             val rightTruncated = right.substring(0, rightLastNonZero + 1)
                             var significand = BigInteger.parseString(leftTruncated + rightTruncated, 10)
                             var exponent = if (leftTruncated.length >= 1 && leftTruncated[0] != '0') {
-                                BigInteger.fromInt(leftTruncated.length - 1)
+                                leftTruncated.length - 1
                             } else {
-                                BigInteger.fromInt(rightTruncated.indexOfFirst { it != '0' } + 1).negate()
+                                (rightTruncated.indexOfFirst { it != '0' } + 1) * -1
                             }
 
                             if (significand == BigInteger.ZERO) {
@@ -760,7 +736,7 @@ class BigDecimal private constructor(
                             if (sign == Sign.NEGATIVE) {
                                 significand = significand.negate()
                             }
-                            return BigDecimal(significand, exponent, decimalMode)
+                            return BigDecimal(significand, exponent.toLong(), decimalMode)
                         }
                         else -> throw ArithmeticException("Invalid (or unsupported) floating point number format: $floatingPointString")
                     }
@@ -768,7 +744,7 @@ class BigDecimal private constructor(
                     val significand = BigInteger.parseString(floatingPointString, 10)
                     return BigDecimal(
                         significand,
-                        BigInteger.fromLong(significand.numberOfDecimalDigits() - 1),
+                        significand.numberOfDecimalDigits() - 1,
                         decimalMode
                     )
                 }
@@ -808,9 +784,6 @@ class BigDecimal private constructor(
     override fun getCreator(): BigNumber.Creator<BigDecimal> = BigDecimal
     override fun getInstance(): BigDecimal = this
 
-    val isExponentLong = exponent.numberOfWords == 0
-    val longExponent = exponent.magnitude[0]
-
     /**
      * Add two BigDecimal and return result in a new instance of BigDecimal. Default decimal mode will be used.
      *
@@ -843,7 +816,7 @@ class BigDecimal private constructor(
             secondNumOfDigits
         }
         val carryDetected = newSignificandNumOfDigit - largerOperand
-        val newExponent = BigInteger.max(this.exponent, other.exponent) + carryDetected
+        val newExponent = max(this.exponent, other.exponent) + carryDetected
 
         return roundOrDont(newSignificand, newExponent, resolvedDecimalMode)
     }
@@ -883,7 +856,7 @@ class BigDecimal private constructor(
         }
         val borrowDetected = newSignificandNumOfDigit - largerOperand
 
-        val newExponent = BigInteger.max(this.exponent, other.exponent) + borrowDetected
+        val newExponent = max(this.exponent, other.exponent) + borrowDetected
         return roundOrDont(newSignificand, newExponent, resolvedDecimalMode)
     }
 
@@ -980,7 +953,7 @@ class BigDecimal private constructor(
      * #RoundingMode.FLOOR will be used
      */
     override fun divideAndRemainder(other: BigDecimal): Pair<BigDecimal, BigDecimal> {
-        val resolvedRoundingMode = this.decimalMode ?: DecimalMode(exponent.longValue(true) + 1, RoundingMode.FLOOR)
+        val resolvedRoundingMode = this.decimalMode ?: DecimalMode(exponent + 1, RoundingMode.FLOOR)
         val quotient = divide(other, resolvedRoundingMode)
         val quotientInfinitePrecision = quotient.copy(decimalMode = DecimalMode.DEFAULT)
         val remainder = this - (quotientInfinitePrecision * other)
@@ -996,7 +969,7 @@ class BigDecimal private constructor(
      */
     fun copy(
         significand: BigInteger = this.significand,
-        exponent: BigInteger = this.exponent,
+        exponent: Long = this.exponent,
         decimalMode: DecimalMode? = this.decimalMode
     ): BigDecimal {
         return BigDecimal(significand, exponent, decimalMode)
@@ -1070,21 +1043,21 @@ class BigDecimal private constructor(
      * Return the this truncated by using floor rounding
      */
     fun floor(): BigDecimal {
-        return round(DecimalMode(exponent.longValue(true) + 1, RoundingMode.FLOOR))
+        return roundSignificand(DecimalMode(exponent + 1, RoundingMode.FLOOR))
     }
 
     /**
      * Return the this truncated by using ceil rounding
      */
     fun ceil(): BigDecimal {
-        return round(DecimalMode(exponent.longValue(true) + 1, RoundingMode.CEILING))
+        return roundSignificand(DecimalMode(exponent + 1, RoundingMode.CEILING))
     }
 
     /**
      * Convert to big integer by truncating
      */
     fun toBigInteger(): BigInteger {
-        if (exponent.sign == Sign.NEGATIVE) {
+        if (exponent < 0) {
             return BigInteger.ZERO
         }
         val precisionExponentDiff = exponent - precision
@@ -1093,7 +1066,7 @@ class BigDecimal private constructor(
                 significand * 10.toBigInteger().pow(precisionExponentDiff + 1)
             }
             precisionExponentDiff < 0 -> {
-                significand / 10.toBigInteger().pow(precisionExponentDiff + 1)
+                significand / 10.toBigInteger().pow(precisionExponentDiff.absoluteValue - 1)
             }
             else -> {
                 significand
@@ -1103,10 +1076,23 @@ class BigDecimal private constructor(
 
     /**
      * Returns the number of digits representing this number
-     * i.e. 12.345 will return 5
+     * i.e.
+     * 12.345 will return 5
+     * 0.001 will return 4
+     * 123000 will return 6
      */
     override fun numberOfDecimalDigits(): Long {
-        return significand.numberOfDecimalDigits()
+        val numberOfDigits = when {
+            exponent > 0 && exponent < precision -> precision
+            exponent > 0 && exponent > precision -> exponent + 1 // Significand is already 10^1 when exponent is > 0
+            exponent > 0 && exponent == precision -> precision + 1 // Same as above
+            exponent < 0 -> exponent.absoluteValue + precision
+            exponent == 0L -> significand.toString().dropLastWhile { it == '0' }.length.toLong() // I.e. precision is 3, exponent is 0,
+            // but significand is 100, which is equivalent to 1, so the result should be 1
+            // TODO find a better way than this lazy conversion to string
+            else -> throw RuntimeException("Invalid case when getting number of decimal digits")
+        }
+        return numberOfDigits
     }
 
     override fun toString(base: Int): String {
@@ -1136,7 +1122,7 @@ class BigDecimal private constructor(
     // TODO
     private fun divrem(other: BigDecimal, decimalMode: DecimalMode? = null): Pair<BigDecimal, BigDecimal> {
         val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
-        val newExponent = BigInteger.max(this.exponent, other.exponent)
+        val newExponent = max(this.exponent, other.exponent)
         val newSignificand = this.significand / other.significand
         val newRemainderSignificand = this.significand % other.significand
         return Pair(
@@ -1235,13 +1221,69 @@ class BigDecimal private constructor(
     override fun signum(): Int = significand.signum()
 
     /**
-     * Round using specific [DecimalMode] and return rounded instance
+     * Round using specific [DecimalMode] and return rounded instance. This is applied only to significand.
+     *
+     * I.e.:
+     * 1.234E3 == 1234, rounded with DecimalMode(2, RoundingMode.CEILING) will return 1.3E3 == 1300
+     *
+     * 1.234E-3 == 0.001234, , rounded with DecimalMode(2, RoundingMode.CEILING) will return 1.3E-3 == 0.0013
+     *
      */
-    fun round(decimalMode: DecimalMode?): BigDecimal {
+    fun roundSignificand(decimalMode: DecimalMode?): BigDecimal {
         if (decimalMode == null) {
             return this
         }
-        return Companion.round(this.significand, this.exponent, decimalMode)
+        return Companion.roundSignificand(this.significand, this.exponent, decimalMode)
+    }
+
+    /**
+     * Round the BigDecimal to a specific length. If position is set to 0, a ArithmeticException is thrown.
+     *
+     * I.e.
+     *
+     * 1234.5678 digitPosition 3, rounding mode HALF_TOWARDS_ZERO will produce 1230
+     * 123.456 digitPosition 3, rounding mode HALF_TOWARDS_ZERO will produce 123
+     * 0.0012345678 digitPosition 4, rounding mode HALF_TOWARDS_ZERO will produce 0.001
+     * 0.0012345678 digitPosition 6, rounding mode HALF_TOWARDS_ZERO will produce 0.00123
+     */
+    fun roundToDigitPosition(digitPosition: Long, roundingMode: RoundingMode): BigDecimal {
+        if (digitPosition == 0L) {
+            throw ArithmeticException("Rounding to 0 position is not supported")
+        }
+        return if (this.exponent > 0) {
+            roundSignificand(DecimalMode(digitPosition, roundingMode))
+        } else {
+            (this + 1).roundSignificand(DecimalMode(digitPosition, roundingMode)) - 1
+        }
+    }
+
+    /**
+     * Round the BigDecimal to a specific length AFTER the decimal point. If position is set to 0 a integer value is returned
+     *
+     * I.e.
+     *
+     * 1234.5678 digitPosition 3, rounding mode HALF_TOWARDS_ZERO will produce 1234.568
+     * 123.456 digitPosition 3, rounding mode HALF_TOWARDS_ZERO will produce 123.456
+     * 0.0012345678 digitPosition 3, rounding mode HALF_TOWARDS_ZERO will produce 0.001
+     * 0.0012345678 digitPosition 5, rounding mode HALF_TOWARDS_ZERO will produce 0.00123
+     */
+    fun roundToDigitPositionAfterDecimalPoint(digitPosition: Long, roundingMode: RoundingMode): BigDecimal {
+        if (digitPosition < 0) {
+            throw ArithmeticException("This method doesn't support negative digit position")
+        }
+        // if (exponent > 0) {
+        //     when {
+        //         precision <= exponent -> return this
+        //         precision > exponent ->
+        //             return this.roundSignificand(DecimalMode(exponent + digitPosition, roundingMode))
+        //         else -> return this
+        //     }
+        // }
+        return when {
+            exponent >= 0 -> roundToDigitPosition(exponent + digitPosition + 1, roundingMode)
+            exponent < 0 -> roundToDigitPosition(digitPosition + 1, roundingMode)
+            else -> throw RuntimeException("Unexpected state")
+        }
     }
 
     private fun getRidOfRadix(bigDecimal: BigDecimal): BigDecimal {
@@ -1256,7 +1298,7 @@ class BigDecimal private constructor(
     private fun bringSignificandToSameExponent(
         first: BigDecimal,
         second: BigDecimal
-    ): Triple<BigInteger, BigInteger, BigInteger> {
+    ): Triple<BigInteger, BigInteger, Long> {
         val firstPrepared = getRidOfRadix(first)
         val secondPrepared = getRidOfRadix(second)
 
@@ -1270,7 +1312,7 @@ class BigDecimal private constructor(
                     val movedFirst = firstPrepared.significand * 10.toBigInteger().pow(moveFirstBy)
                     return Triple(movedFirst, second.significand, secondPreparedExponent)
                 } else {
-                    val movedSecond = secondPrepared.significand * 10.toBigInteger().pow(moveFirstBy.negate())
+                    val movedSecond = secondPrepared.significand * 10.toBigInteger().pow(moveFirstBy * -1)
                     Triple(first.significand, movedSecond, firstPreparedExponent)
                 }
             }
@@ -1280,7 +1322,7 @@ class BigDecimal private constructor(
                     val movedSecond = secondPrepared.significand * 10.toBigInteger().pow(moveSecondBy)
                     Triple(first.significand, movedSecond, firstPreparedExponent)
                 } else {
-                    val movedFirst = firstPrepared.significand * 10.toBigInteger().pow(moveSecondBy.negate())
+                    val movedFirst = firstPrepared.significand * 10.toBigInteger().pow(moveSecondBy * -1)
                     Triple(movedFirst, second.significand, firstPreparedExponent)
                 }
             }
@@ -1292,7 +1334,7 @@ class BigDecimal private constructor(
                         Triple(movedFirst, second.significand, firstPreparedExponent)
                     }
                     delta < 0 -> {
-                        val movedSecond = second.significand * 10.toBigInteger().pow(delta.negate())
+                        val movedSecond = second.significand * 10.toBigInteger().pow(delta * -1)
                         Triple(first.significand, movedSecond, firstPreparedExponent)
                     }
                     delta.compareTo(0) == 0 -> {
@@ -1400,7 +1442,7 @@ class BigDecimal private constructor(
                     significandString.length - modifier
                 )}${expand}E$exponent"
             }
-            exponent == BigInteger.ZERO -> {
+            exponent == 0L -> {
                 "${placeADotInString(
                     significandString,
                     significandString.length - modifier
@@ -1415,6 +1457,9 @@ class BigDecimal private constructor(
      * i.e. 123000000 for 1.23E+9 or 0.00000000123 for 1.23E-9
      */
     fun toStringExpanded(): String {
+        if (this == ZERO) {
+            return "0"
+        }
         val digits = significand.numberOfDecimalDigits()
         if (exponent > Int.MAX_VALUE) {
             throw RuntimeException("Invalid toStringExpanded request (exponent > Int.MAX_VALUE)")
@@ -1429,21 +1474,21 @@ class BigDecimal private constructor(
                     val expandZeros = diffBigInt * '0'
                     significandString + expandZeros
                 } else {
-                    placeADotInString(significandString, significandString.length - exponent.magnitude[0].toInt() - 1)
+                    placeADotInString(significandString, significandString.length - exponent.toInt() - 1)
                 }
             }
             exponent < 0 -> {
 
-                val diffInt = exponent.magnitude[0].toInt()
+                val diffInt = exponent.toInt().absoluteValue
 
                 if (diffInt > 0) {
-                    val expandZeros = exponent.abs() * '0'
+                    val expandZeros = exponent.absoluteValue * '0'
                     placeADotInString(expandZeros + significandString, diffInt + significandString.length - 1)
                 } else {
                     placeADotInString(significandString, significandString.length - 1)
                 }
             }
-            exponent == BigInteger.ZERO -> "${placeADotInString(significandString, significandString.length - 1)}"
+            exponent == 0L -> "${placeADotInString(significandString, significandString.length - 1)}"
 
             else -> throw RuntimeException("Invalid state, please report a bug (Integer compareTo invalid)")
         }
@@ -1460,5 +1505,18 @@ class BigDecimal private constructor(
         val prepared = prefix + '.' + suffix
 
         return prepared.dropLastWhile { it == '0' }
+    }
+
+    operator fun Long.times(char: Char): String {
+        if (this < 0) {
+            throw RuntimeException("Char cannot be multiplied with negative number")
+        }
+        var counter = this
+        val stringBuilder = StringBuilder()
+        while (counter > 0) {
+            stringBuilder.append(char)
+            counter--
+        }
+        return stringBuilder.toString()
     }
 }

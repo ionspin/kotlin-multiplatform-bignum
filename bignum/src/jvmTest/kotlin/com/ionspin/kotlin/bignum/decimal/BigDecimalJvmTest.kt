@@ -18,7 +18,6 @@
 package com.ionspin.kotlin.bignum.decimal
 
 import com.ionspin.kotlin.bignum.integer.BigInteger
-import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -79,7 +78,7 @@ class BigDecimalJvmTest {
         val jobList: MutableList<Job> = mutableListOf()
 
         for (i in 0..Int.MAX_VALUE step 100001) {
-            jobList.add(singleCreationTestLong(random.nextLong(), random.nextInt(5000)))
+            jobList.add(singleCreationTestLong(random.nextLong(), random.nextLong(5000)))
         }
 
         runBlocking {
@@ -89,7 +88,7 @@ class BigDecimalJvmTest {
         }
     }
 
-    fun singleCreationTestLong(long: Long, exponent: Int): Job {
+    fun singleCreationTestLong(long: Long, exponent: Long): Job {
         return GlobalScope.launch {
             assertTrue("Failed on $long $exponent") {
                 val bigDecimal = BigDecimal.fromLongWithExponent(long, exponent)
@@ -158,9 +157,9 @@ class BigDecimalJvmTest {
     @Test
     fun debugAdditionTest() {
         val first =
-            BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("-71946752722652910", 10), 192.toBigInteger())
+            BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("-71946752722652910", 10), 192)
         val second =
-            BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("7834199654291277674", 10), 193.toBigInteger())
+            BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("7834199654291277674", 10), 193)
         val result = first + second
         val firstJava = first.toJavaBigDecimal()
         val secondJava = second.toJavaBigDecimal()
@@ -174,8 +173,8 @@ class BigDecimalJvmTest {
     fun aLotOfAdditionTests() {
         val jobList: MutableList<Job> = mutableListOf()
         for (i in 0..Int.MAX_VALUE step 100_000) {
-            val first = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextInt(200))
-            val second = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextInt(200))
+            val first = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextLong(200))
+            val second = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextLong(200))
             jobList.add(singleAdditionTest(i, first, second))
             singleAdditionTest(i, first, second)
         }
@@ -223,8 +222,8 @@ class BigDecimalJvmTest {
     fun aLotOfSubtractionTests() {
         val jobList: MutableList<Job> = mutableListOf()
         for (i in 0..Int.MAX_VALUE step 100_000) {
-            val first = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextInt(200))
-            val second = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextInt(200))
+            val first = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextLong(200))
+            val second = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextLong(200))
             jobList.add(singleSubtractionTest(i, first, second))
             singleAdditionTest(i, first, second)
         }
@@ -271,9 +270,9 @@ class BigDecimalJvmTest {
     @Test
     fun testDebugMultiplication() {
         val first =
-            BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("-884653051988182590", 10), 124.toBigInteger())
+            BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("-884653051988182590", 10), 124)
         val second =
-            BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("686869704857289531", 10), 51.toBigInteger())
+            BigDecimal.fromBigIntegerWithExponent(BigInteger.parseString("686869704857289531", 10), 51)
         val result = first * second
         val firstJava = first.toJavaBigDecimal()
         val secondJava = second.toJavaBigDecimal()
@@ -289,8 +288,8 @@ class BigDecimalJvmTest {
     fun aLotOfMultiplicationTests() {
         val jobList: MutableList<Job> = mutableListOf()
         for (i in 0..Int.MAX_VALUE step 100_000) {
-            val first = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextInt(200))
-            val second = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextInt(200))
+            val first = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextLong(200))
+            val second = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextLong(200))
             jobList.add(singleMultiplicationTest(i, first, second))
         }
 
@@ -398,8 +397,8 @@ class BigDecimalJvmTest {
     fun aLotOfDivisionTests() {
         val jobList: MutableList<Job> = mutableListOf()
         for (i in 0..Int.MAX_VALUE step 100_001) {
-            val first = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextInt(200))
-            val second = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextInt(200))
+            val first = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextLong(200))
+            val second = BigDecimal.fromLongWithExponent(random.nextLong(), random.nextLong(200))
             jobList.add(singleDivisionTest(first, second))
 //            singleDivisionTest(first, second)
         }

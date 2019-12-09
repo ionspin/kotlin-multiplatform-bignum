@@ -6,6 +6,9 @@ which are heavily used by bignum library (ULong/UInt)
 - Actually bumped gradle to 5.6.1, it was mistakenly left at 5.1.1 in library versions 0.1.1 and 0.1.2
 - Cleaned up dependancies, coroutines are currently used only in test modules so they are moved there.
 - Main library now has dependancies only on the kotlin standard library (for now, coroutines will be coming back at some point in the future)
+- Renamed BigDecimal round method to roundSignificand, as it describes what it does more precisely
+- Added roundAtDigitPosition and roundAfterDecimalPoint convenience methods
+- Use Long instead of BigInteger for BigDecimal exponent
 
 ##### 0.1.2 - 17.11.2019 Performance improvements
 - Removed removeLeadingZeros and replaced with countLeadingZeros and appropriate algorithm changes.
