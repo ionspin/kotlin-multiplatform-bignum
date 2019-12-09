@@ -8,6 +8,7 @@ which are heavily used by bignum library (ULong/UInt)
 - Main library now has dependancies only on the kotlin standard library (for now, coroutines will be coming back at some point in the future)
 - Renamed BigDecimal round method to roundSignificand, as it describes what it does more precisely
 - Added roundAtDigitPosition and roundAfterDecimalPoint convenience methods
+- Use Long instead of BigInteger for BigDecimal exponent
 
 ##### 0.1.2 - 17.11.2019 Performance improvements
 - Removed removeLeadingZeros and replaced with countLeadingZeros and appropriate algorithm changes.

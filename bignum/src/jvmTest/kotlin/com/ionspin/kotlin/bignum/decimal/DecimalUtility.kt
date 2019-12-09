@@ -18,6 +18,7 @@
 package com.ionspin.kotlin.bignum.decimal
 
 import com.ionspin.kotlin.bignum.integer.base63.toJavaBigInteger
+import kotlin.math.absoluteValue
 
 /**
  * Created by Ugljesa Jovanovic
@@ -32,12 +33,12 @@ fun BigDecimal.toJavaBigDecimal(): java.math.BigDecimal {
     return if (exponent > 0) {
         java.math.BigDecimal(
             this.significand.toJavaBigInteger(),
-            (this.precision.toInt() - this.exponent.magnitude[0].toInt() - 1)
+            (this.precision - this.exponent - 1).toInt()
         )
     } else {
         java.math.BigDecimal(
             this.significand.toJavaBigInteger(),
-            (this.precision.toInt() + this.exponent.magnitude[0].toInt() - 1)
+            (this.precision + this.exponent.absoluteValue - 1).toInt()
         )
     }
 //    return java.math.BigDecimal(this.toStringExpanded())
