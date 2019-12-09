@@ -30,8 +30,8 @@ matrix:
         - curl "${GRAVIS}.install-jdk-travis.sh" --output ~/.install-jdk-travis.sh
         - source ~/.install-jdk-travis.sh
       script:
-        - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./winBuild.sh; fi'
-        - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./winBuildAndPublish.sh; fi'
+        - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then ./gradlew build -x jvmTest -x jsTest; fi'
+        - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then ./gradlew build -x jvmTest -x jsTest publishMingwx86PublicationToSnapshotRepository publishMingwx64PublicationToSnapshotRepository; fi'
 cache:
   directories:
     - $HOME/.m2/
