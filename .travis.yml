@@ -3,10 +3,6 @@ matrix:
     - os: linux
       language: java
       jdk: openjdk12
-      #      before_script:
-      #        - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
-      #        - source install-jdk.sh --url 'https://api.adoptopenjdk.net/v2/binary/releases/openjdk12?openjdk_impl=hotspot&os=linux&arch=x64&release=latest&heap_size=normal&type=jdk'
-      #        - java --version
       env:
         KBUILD=linux
         JAVA_OPTS=-Xmx2g
@@ -17,16 +13,25 @@ matrix:
       osx_image: xcode11.2
       language: java
       jdk: openjdk12
-      #      before_script:
-      #        - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
-      #        - source install-jdk.sh --url 'https://api.adoptopenjdk.net/v2/binary/releases/openjdk12?openjdk_impl=hotspot&os=linux&arch=x64&release=latest&heap_size=normal&type=jdk'
-      #        - java --version
       env:
         KBUILD=linux
         JAVA_OPTS=-Xmx2g
       script:
         - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./macBuild.sh; fi'
         - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./macBuildAndPublish.sh; fi'
+    - os: windows
+      language: shell
+      jdk: openjdk12
+      env:
+        - GRAVIS="https://raw.githubusercontent.com/DanySK/Gravis-CI/master/"
+        - JAVA_OPTS=-Xmx2g
+        - JDK="adopt-openj9@1.11"
+      before_install:
+        - curl "${GRAVIS}.install-jdk-travis.sh" --output ~/.install-jdk-travis.sh
+        - source ~/.install-jdk-travis.sh
+      script:
+        - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then ./gradlew build -x jvmTest -x jsTest; fi'
+        - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then ./gradlew build -x jvmTest -x jsTest publishMingwx86PublicationToSnapshotRepository publishMingwx64PublicationToSnapshotRepository; fi'
 cache:
   directories:
     - $HOME/.m2/
