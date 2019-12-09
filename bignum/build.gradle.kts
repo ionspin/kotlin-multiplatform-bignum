@@ -98,7 +98,6 @@ kotlin {
     mingwX64() {
         binaries {
             staticLib {
-
             }
         }
     }
@@ -106,7 +105,6 @@ kotlin {
     mingwX86() {
         binaries {
             staticLib {
-
             }
         }
     }
