@@ -1,6 +1,9 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
-##### 0.1.4-SNAPSHOT - BigDecimal improvements, MINGW64 and MINGW86 targets added
+##### 0.1.5-SNAPSHOT
+
+
+##### 0.1.4 - 10.12.2019 - BigDecimal improvements, MINGW64 and MINGW86 targets added
 - Main library now has dependancies only on the kotlin standard library (for now, coroutines will be coming back at some point in the future).
 - Renamed BigDecimal `round` method to `roundSignificand`, as it describes what it does more precisely
 - Added `roundAtDigitPosition` and `roundAfterDecimalPoint` convenience methods.
