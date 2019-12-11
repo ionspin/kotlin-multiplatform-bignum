@@ -152,5 +152,23 @@ class BigDecimalRoundingTests {
                 .roundToDigitPositionAfterDecimalPoint(3, RoundingMode.ROUND_HALF_TOWARDS_ZERO)
             rounded.toStringExpanded() == "1000000.123"
         }
+
+        assertTrue {
+            val rounded = BigDecimal.parseString("1000000.12055")
+                .roundToDigitPositionAfterDecimalPoint(2, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
+            rounded.toStringExpanded() == "1000000.12"
+        }
+
+        assertTrue {
+            val rounded = BigDecimal.parseString("1000000.12055")
+                .roundToDigitPositionAfterDecimalPoint(2, RoundingMode.ROUND_HALF_TOWARDS_ZERO)
+            rounded.toStringExpanded() == "1000000.12"
+        }
+
+        assertTrue {
+            val rounded = BigDecimal.parseString("1000000.12055")
+                .roundToDigitPositionAfterDecimalPoint(3, RoundingMode.ROUND_HALF_TOWARDS_ZERO)
+            rounded.toStringExpanded() == "1000000.12"
+        }
     }
 }

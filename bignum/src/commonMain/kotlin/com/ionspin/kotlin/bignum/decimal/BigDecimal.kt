@@ -224,7 +224,12 @@ class BigDecimal private constructor(
                 }
                 desiredPrecision < significandDigits -> {
                     val divRem = significand divrem BigInteger.TEN.pow(significandDigits - desiredPrecision)
-                    val newSignificand = roundDiscarded(divRem.quotient, divRem.remainder, decimalMode)
+                    val resolvedRemainder = if (divRem.remainder.numberOfDecimalDigits() < significandDigits - desiredPrecision) {
+                        BigInteger.ZERO
+                    } else {
+                        divRem.remainder
+                    }
+                    val newSignificand = roundDiscarded(divRem.quotient, resolvedRemainder, decimalMode)
                     BigDecimal(newSignificand, exponent, decimalMode)
                 }
                 else -> {
