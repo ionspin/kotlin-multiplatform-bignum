@@ -659,7 +659,11 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         } else {
             ""
         }
-        return sign + arithmetic.toString(this.magnitude, base)
+        return sign + toStringWithoutSign(base)
+    }
+
+    internal fun toStringWithoutSign(base: Int): String {
+        return arithmetic.toString(this.magnitude, base)
     }
 
     data class QuotientAndRemainder(val quotient: BigInteger, val remainder: BigInteger)
