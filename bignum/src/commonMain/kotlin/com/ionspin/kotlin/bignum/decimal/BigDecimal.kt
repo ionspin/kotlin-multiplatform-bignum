@@ -1469,9 +1469,14 @@ class BigDecimal private constructor(
         if (exponent > Int.MAX_VALUE) {
             throw RuntimeException("Invalid toStringExpanded request (exponent > Int.MAX_VALUE)")
         }
-        val significandString = significand.toString(10)
+        val significandString = significand.toStringWithoutSign(10)
+        val sign = if (significand.sign == Sign.NEGATIVE) {
+            "-"
+        } else {
+            ""
+        }
 
-        return when {
+        val adjusted = when {
             exponent > 0 -> {
                 val diffBigInt = (exponent - digits + 1)
 
@@ -1479,7 +1484,7 @@ class BigDecimal private constructor(
                     val expandZeros = diffBigInt * '0'
                     significandString + expandZeros
                 } else {
-                    placeADotInString(significandString, significandString.length - exponent.toInt() - 1)
+                    placeADotInStringExpanded(significandString, significandString.length - exponent.toInt() - 1)
                 }
             }
             exponent < 0 -> {
@@ -1488,19 +1493,38 @@ class BigDecimal private constructor(
 
                 if (diffInt > 0) {
                     val expandZeros = exponent.absoluteValue * '0'
-                    placeADotInString(expandZeros + significandString, diffInt + significandString.length - 1)
+                    placeADotInStringExpanded(expandZeros + significandString, diffInt + significandString.length - 1)
                 } else {
-                    placeADotInString(significandString, significandString.length - 1)
+                    placeADotInStringExpanded(significandString, significandString.length - 1)
                 }
             }
-            exponent == 0L -> "${placeADotInString(significandString, significandString.length - 1)}"
+            exponent == 0L -> {
+                if (digits == 1L) {
+                    return sign + significandString
+                }
+                placeADotInStringExpanded(significandString, significandString.length - 1)
+            }
 
             else -> throw RuntimeException("Invalid state, please report a bug (Integer compareTo invalid)")
         }
+        return sign + adjusted
     }
 
     private fun noExponentStringtoScientificNotation(input: String): String {
         return placeADotInString(input, input.length - 1) + "E+${input.length - 1}"
+    }
+
+    private fun placeADotInStringExpanded(input: String, position: Int): String {
+
+        val prefix = input.substring(0 until input.length - position)
+        val suffix = input.substring(input.length - position until input.length)
+        val prepared = if (suffix.isNotEmpty()) {
+            (prefix + '.' + suffix).dropLastWhile { it == '0' }
+        } else {
+            prefix
+        }
+
+        return prepared
     }
 
     private fun placeADotInString(input: String, position: Int): String {
@@ -1510,6 +1534,8 @@ class BigDecimal private constructor(
         val prepared = prefix + '.' + suffix
 
         return prepared.dropLastWhile { it == '0' }
+
+        return prepared
     }
 
     operator fun Long.times(char: Char): String {
