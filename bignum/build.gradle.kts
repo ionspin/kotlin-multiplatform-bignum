@@ -17,7 +17,6 @@
 
 @file:Suppress("UnstableApiUsage")
 
-import com.moowork.gradle.node.task.NodeTask
 import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 
 plugins {
@@ -60,6 +59,14 @@ kotlin {
                 }
                 println("Compilation name ${it.name} set")
                 println("Destination dir ${it.compileKotlinTask.destinationDir}")
+            }
+            nodejs()
+            browser() {
+                testTask {
+                    useKarma {
+                        usePhantomJS()
+                    }
+                }
             }
         }
     }
@@ -255,42 +262,9 @@ tasks {
     val npmInstall by getting
     val compileKotlinJs by getting(AbstractCompile::class)
     val compileTestKotlinJs by getting(Kotlin2JsCompile::class)
-    val jsTest by getting
     val build by named("build")
     build.dependsOn("spotlessCheck")
     build.dependsOn("spotlessKotlinCheck")
-
-    val populateNodeModulesForTests by creating {
-        dependsOn(npmInstall, compileKotlinJs, compileTestKotlinJs)
-        doLast {
-            copy {
-                from(compileKotlinJs.destinationDir)
-                configurations["jsRuntimeClasspath"].forEach {
-                    from(fileTree(it.absolutePath).matching { include("*.js") })
-                }
-                configurations["jsTestRuntimeClasspath"].forEach {
-                    from(fileTree(it.absolutePath).matching { include("*.js") })
-                }
-
-                into("$projectDir/node_modules")
-            }
-        }
-    }
-
-    val runTestsWithMocha by creating(NodeTask::class) {
-        dependsOn(populateNodeModulesForTests)
-        setScript(file("$projectDir/node_modules/mocha/bin/mocha"))
-        setArgs(
-            listOf(
-                compileTestKotlinJs.outputFile,
-                "--reporter-options",
-                "topLevelSuite=${project.name}-tests"
-            )
-        )
-    }
-
-    jsTest.dependsOn("copyPackageJson")
-    jsTest.dependsOn(runTestsWithMocha)
 
     create<Jar>("javadocJar") {
         dependsOn(dokka)
