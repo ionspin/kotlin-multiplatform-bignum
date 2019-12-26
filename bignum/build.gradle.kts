@@ -109,6 +109,20 @@ kotlin {
         }
     }
 
+    linuxArm32Hfp() {
+        binaries {
+            staticLib {
+            }
+        }
+    }
+
+    linuxArm64() {
+        binaries {
+            staticLib {
+            }
+        }
+    }
+
     println(targets.names)
 
     sourceSets {
@@ -208,6 +222,22 @@ kotlin {
         }
 
         val mingwX64Test by getting {
+            dependsOn(nativeTest)
+        }
+
+        val linuxArm32HfpMain by getting {
+            dependsOn(nativeMain)
+        }
+
+        val linuxArm32HfpTest by getting {
+            dependsOn(nativeTest)
+        }
+
+        val linuxArm64Main by getting {
+            dependsOn(nativeMain)
+        }
+
+        val linuxArm64Test by getting {
             dependsOn(nativeTest)
         }
     }

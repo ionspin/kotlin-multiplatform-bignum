@@ -1,6 +1,9 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
 ##### 0.1.5-SNAPSHOT
+- Version bump to kotlin 1.3.61
+- Gradlew wrapper bump to 6.0.1
+- Added Linux Arm 64, and Linux Arm 32 HFP build targets
 
 
 ##### 0.1.4 - 10.12.2019 - BigDecimal improvements, MINGW64 and MINGW86 targets added
