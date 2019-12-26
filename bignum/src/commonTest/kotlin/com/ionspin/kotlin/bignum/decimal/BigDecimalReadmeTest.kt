@@ -31,7 +31,6 @@ import kotlin.test.assertTrue
 class BigDecimalReadmeTest {
     @Test
     fun toStringTest() {
-
         assertTrue {
             val bigDecimal = BigDecimal.fromLongWithExponent(1, (10))
             println("BigDecimal: $bigDecimal")
