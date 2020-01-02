@@ -17,8 +17,6 @@
 
 @file:Suppress("UnstableApiUsage")
 
-import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
-
 plugins {
     kotlin(PluginsDeps.multiplatform)
     id(PluginsDeps.mavenPublish)
@@ -45,15 +43,15 @@ repositories {
 group = "com.ionspin.kotlin"
 version = "0.1.5-SNAPSHOT"
 
-kotlin {
+fun getHostOsName(): String {
+    val target = System.getProperty("os.name")
+    if (target == "Linux") return "linux"
+    if (target.startsWith("Windows")) return "windows"
+    if (target.startsWith("Mac")) return "macos"
+    return "unknown"
+}
 
-    fun getHostOsName(): String {
-        val target = System.getProperty("os.name")
-        if (target == "Linux") return "linux"
-        if (target.startsWith("Windows")) return "windows"
-        if (target.startsWith("Mac")) return "macos"
-        return "unknown"
-    }
+kotlin {
 
     val hostOsName = getHostOsName()
     println("Host os name $hostOsName")
@@ -271,18 +269,12 @@ kotlin {
     }
 }
 
-task<Copy>("copyPackageJson") {
-    dependsOn("compileKotlinJs")
-    println("Copying package.json from $projectDir/core/src/jsMain/npm")
-    from("$projectDir/src/jsMain/npm")
-    println("Node modules dir ${node.nodeModulesDir}")
-    into("${node.nodeModulesDir}")
-}
-
 tasks {
     val build by named("build")
     build.dependsOn("spotlessCheck")
     build.dependsOn("spotlessKotlinCheck")
+
+    val hostOsName = getHostOsName()
 
     create<Jar>("javadocJar") {
         dependsOn(dokka)
@@ -302,10 +294,11 @@ tasks {
             platforms = listOf("Common")
         }
     }
-
-    val jvmTest by getting(Test::class) {
-        testLogging {
-            events("PASSED", "FAILED", "SKIPPED")
+    if (hostOsName == "linux") {
+        val jvmTest by getting(Test::class) {
+            testLogging {
+                events("PASSED", "FAILED", "SKIPPED")
+            }
         }
     }
 }
