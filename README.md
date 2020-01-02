@@ -402,6 +402,32 @@ Example from the tests:
     }
 ```
 
+#### Convenience rounding methods
+`BigDecimal` class contains two convenience rounding methods, the `roundToDigitPositionAfterDecimalPoint(digitPosition: Long, roundingMode: RoundingMode)`
+which rounds to a specific position after the decimal point, like in the following example:
+```kotlin
+        assertTrue {
+            val rounded = BigDecimal.fromIntWithExponent(123456789, 3)
+                .roundToDigitPositionAfterDecimalPoint(3, RoundingMode.CEILING)
+            rounded.toStringExpanded() == "1234.568"
+        }
+```
+and `roundToDigitPosition(digitPosition: Long, roundingMode: RoundingMode)` which rounds to a specifi digit precision
+regardless of decimal point, like in the following example:
+```kotlin
+        assertTrue {
+            val rounded = BigDecimal.parseString("1234.5678")
+                .roundToDigitPosition(3, RoundingMode.ROUND_HALF_TOWARDS_ZERO)
+            rounded.toStringExpanded() == "1230"
+        }
+
+        assertTrue {
+            val rounded = BigDecimal.parseString("0.0012345678")
+                .roundToDigitPosition(4, RoundingMode.ROUND_HALF_TOWARDS_ZERO)
+            rounded.toStringExpanded() == "0.001"
+        }
+```
+
 #### Rounding modes
 Name | Description
 -----|----------------------------
