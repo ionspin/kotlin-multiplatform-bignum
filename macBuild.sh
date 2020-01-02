@@ -1,1 +1,1 @@
-./gradlew build -x jvmTest -x jsTest
+./gradlew build
