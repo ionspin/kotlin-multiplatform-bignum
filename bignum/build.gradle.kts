@@ -17,8 +17,6 @@
 
 @file:Suppress("UnstableApiUsage")
 
-import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
-
 plugins {
     kotlin(PluginsDeps.multiplatform)
     id(PluginsDeps.mavenPublish)
@@ -45,37 +43,67 @@ repositories {
 group = "com.ionspin.kotlin"
 version = "0.1.5-SNAPSHOT"
 
-kotlin {
-    jvm()
-    js {
-        compilations {
-            this.forEach {
-                it.compileKotlinTask.kotlinOptions.sourceMap = true
-                it.compileKotlinTask.kotlinOptions.moduleKind = "commonjs"
-                it.compileKotlinTask.kotlinOptions.metaInfo = true
+fun getHostOsName(): String {
+    val target = System.getProperty("os.name")
+    if (target == "Linux") return "linux"
+    if (target.startsWith("Windows")) return "windows"
+    if (target.startsWith("Mac")) return "macos"
+    return "unknown"
+}
 
-                if (it.name == "main") {
-                    it.compileKotlinTask.kotlinOptions.main = "call"
+kotlin {
+
+    val hostOsName = getHostOsName()
+    println("Host os name $hostOsName")
+
+    if (hostOsName == "linux") {
+        jvm()
+        js {
+            compilations {
+                this.forEach {
+                    it.compileKotlinTask.kotlinOptions.sourceMap = true
+                    it.compileKotlinTask.kotlinOptions.moduleKind = "commonjs"
+                    it.compileKotlinTask.kotlinOptions.metaInfo = true
+
+                    if (it.name == "main") {
+                        it.compileKotlinTask.kotlinOptions.main = "call"
+                    }
+                    println("Compilation name ${it.name} set")
+                    println("Destination dir ${it.compileKotlinTask.destinationDir}")
                 }
-                println("Compilation name ${it.name} set")
-                println("Destination dir ${it.compileKotlinTask.destinationDir}")
-            }
-            nodejs()
-            browser() {
-                testTask {
-                    useKarma {
-                        usePhantomJS()
+                nodejs()
+                browser() {
+                    testTask {
+                        useKarma {
+                            usePhantomJS()
+                        }
                     }
                 }
             }
         }
-    }
-    linuxX64("linux") {
-        binaries {
-            staticLib {
+
+        linuxX64("linux") {
+            binaries {
+                staticLib {
+                }
+            }
+        }
+
+        linuxArm32Hfp() {
+            binaries {
+                staticLib {
+                }
+            }
+        }
+
+        linuxArm64() {
+            binaries {
+                staticLib {
+                }
             }
         }
     }
+
     iosX64("ios") {
         binaries {
             framework {
@@ -116,20 +144,6 @@ kotlin {
         }
     }
 
-    linuxArm32Hfp() {
-        binaries {
-            staticLib {
-            }
-        }
-    }
-
-    linuxArm64() {
-        binaries {
-            staticLib {
-            }
-        }
-    }
-
     println(targets.names)
 
     sourceSets {
@@ -146,32 +160,7 @@ kotlin {
                 implementation(Deps.Common.coroutines)
             }
         }
-        val jvmMain by getting {
-            dependencies {
-                implementation(kotlin(Deps.Jvm.stdLib))
-            }
-        }
-        val jvmTest by getting {
-            dependencies {
-                implementation(kotlin(Deps.Jvm.test))
-                implementation(kotlin(Deps.Jvm.testJUnit))
-                implementation(Deps.Jvm.coroutinesTest)
-                implementation(kotlin(Deps.Jvm.reflection))
-                implementation(Deps.Jvm.coroutinesCore)
-            }
-        }
-        val jsMain by getting {
-            dependencies {
-                implementation(kotlin(Deps.Js.stdLib))
-                implementation(Deps.Js.coroutines)
-            }
-        }
-        val jsTest by getting {
-            dependencies {
-                implementation(kotlin(Deps.Js.test))
-                implementation(Deps.Js.coroutines)
-            }
-        }
+
         val nativeMain by creating {
             dependsOn(commonMain)
         }
@@ -179,6 +168,58 @@ kotlin {
             dependsOn(commonTest)
             dependencies {
                 implementation(Deps.Native.coroutines)
+            }
+        }
+
+        if (hostOsName == "linux") {
+            val jvmMain by getting {
+                dependencies {
+                    implementation(kotlin(Deps.Jvm.stdLib))
+                }
+            }
+            val jvmTest by getting {
+                dependencies {
+                    implementation(kotlin(Deps.Jvm.test))
+                    implementation(kotlin(Deps.Jvm.testJUnit))
+                    implementation(Deps.Jvm.coroutinesTest)
+                    implementation(kotlin(Deps.Jvm.reflection))
+                    implementation(Deps.Jvm.coroutinesCore)
+                }
+            }
+            val jsMain by getting {
+                dependencies {
+                    implementation(kotlin(Deps.Js.stdLib))
+                    implementation(Deps.Js.coroutines)
+                }
+            }
+            val jsTest by getting {
+                dependencies {
+                    implementation(kotlin(Deps.Js.test))
+                    implementation(Deps.Js.coroutines)
+                }
+            }
+
+            val linuxMain by getting {
+                dependsOn(nativeMain)
+            }
+            val linuxTest by getting {
+                dependsOn(nativeTest)
+            }
+
+            val linuxArm32HfpMain by getting {
+                dependsOn(nativeMain)
+            }
+
+            val linuxArm32HfpTest by getting {
+                dependsOn(nativeTest)
+            }
+
+            val linuxArm64Main by getting {
+                dependsOn(nativeMain)
+            }
+
+            val linuxArm64Test by getting {
+                dependsOn(nativeTest)
             }
         }
 
@@ -209,12 +250,6 @@ kotlin {
         val macosX64Test by getting {
             dependsOn(nativeTest)
         }
-        val linuxMain by getting {
-            dependsOn(nativeMain)
-        }
-        val linuxTest by getting {
-            dependsOn(nativeTest)
-        }
 
         val mingwX86Main by getting {
             dependsOn(nativeMain)
@@ -231,40 +266,15 @@ kotlin {
         val mingwX64Test by getting {
             dependsOn(nativeTest)
         }
-
-        val linuxArm32HfpMain by getting {
-            dependsOn(nativeMain)
-        }
-
-        val linuxArm32HfpTest by getting {
-            dependsOn(nativeTest)
-        }
-
-        val linuxArm64Main by getting {
-            dependsOn(nativeMain)
-        }
-
-        val linuxArm64Test by getting {
-            dependsOn(nativeTest)
-        }
     }
 }
 
-task<Copy>("copyPackageJson") {
-    dependsOn("compileKotlinJs")
-    println("Copying package.json from $projectDir/core/src/jsMain/npm")
-    from("$projectDir/src/jsMain/npm")
-    println("Node modules dir ${node.nodeModulesDir}")
-    into("${node.nodeModulesDir}")
-}
-
 tasks {
-    val npmInstall by getting
-    val compileKotlinJs by getting(AbstractCompile::class)
-    val compileTestKotlinJs by getting(Kotlin2JsCompile::class)
     val build by named("build")
     build.dependsOn("spotlessCheck")
     build.dependsOn("spotlessKotlinCheck")
+
+    val hostOsName = getHostOsName()
 
     create<Jar>("javadocJar") {
         dependsOn(dokka)
@@ -284,10 +294,11 @@ tasks {
             platforms = listOf("Common")
         }
     }
-
-    val jvmTest by getting(Test::class) {
-        testLogging {
-            events("PASSED", "FAILED", "SKIPPED")
+    if (hostOsName == "linux") {
+        val jvmTest by getting(Test::class) {
+            testLogging {
+                events("PASSED", "FAILED", "SKIPPED")
+            }
         }
     }
 }
