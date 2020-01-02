@@ -280,9 +280,6 @@ task<Copy>("copyPackageJson") {
 }
 
 tasks {
-    val npmInstall by getting
-    val compileKotlinJs by getting(AbstractCompile::class)
-    val compileTestKotlinJs by getting(Kotlin2JsCompile::class)
     val build by named("build")
     build.dependsOn("spotlessCheck")
     build.dependsOn("spotlessKotlinCheck")
