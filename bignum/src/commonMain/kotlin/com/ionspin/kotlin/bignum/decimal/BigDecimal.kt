@@ -1534,8 +1534,6 @@ class BigDecimal private constructor(
         val prepared = prefix + '.' + suffix
 
         return prepared.dropLastWhile { it == '0' }
-
-        return prepared
     }
 
     operator fun Long.times(char: Char): String {

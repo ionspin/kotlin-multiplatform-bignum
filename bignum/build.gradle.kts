@@ -17,6 +17,8 @@
 
 @file:Suppress("UnstableApiUsage")
 
+import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
+
 plugins {
     kotlin(PluginsDeps.multiplatform)
     id(PluginsDeps.mavenPublish)
@@ -299,6 +301,20 @@ tasks {
             testLogging {
                 events("PASSED", "FAILED", "SKIPPED")
             }
+        }
+    }
+
+    val jvmTest by getting(Test::class) {
+        testLogging {
+            events("PASSED", "FAILED", "SKIPPED")
+        }
+    }
+
+    val linuxTest by getting(KotlinNativeTest::class) {
+
+        testLogging {
+            events("PASSED", "FAILED", "SKIPPED")
+            // showStandardStreams = true
         }
     }
 }
