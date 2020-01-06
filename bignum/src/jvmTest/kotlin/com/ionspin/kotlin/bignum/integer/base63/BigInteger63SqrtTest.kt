@@ -17,6 +17,7 @@
 
 package com.ionspin.kotlin.bignum.integer.base63
 
+import com.ionspin.kotlin.bignum.integer.base63.array.BigInteger63Arithmetic
 import org.junit.Test
 import kotlin.random.Random
 import kotlin.random.nextULong

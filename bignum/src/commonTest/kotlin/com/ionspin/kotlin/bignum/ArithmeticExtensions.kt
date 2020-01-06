@@ -17,7 +17,7 @@
 
 package com.ionspin.kotlin.bignum
 
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
+import com.ionspin.kotlin.bignum.integer.base63.array.BigInteger63Arithmetic
 
 /**
  * Created by Ugljesa Jovanovic
