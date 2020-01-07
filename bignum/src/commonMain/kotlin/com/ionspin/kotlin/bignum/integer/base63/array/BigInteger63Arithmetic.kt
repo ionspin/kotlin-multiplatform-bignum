@@ -1583,6 +1583,90 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         }
     }
 
+    // Signed operations TODO evaluate if we really want to do this to support Toom-Cook
+
+    data class SignedULongArray(val unsignedValue: ULongArray, val sign: Boolean)
+
+    private fun signedAdd(first: SignedULongArray, second: SignedULongArray) = if (first.sign xor second.sign) {
+        if (first.unsignedValue > second.unsignedValue) {
+            SignedULongArray(
+                first.unsignedValue - second.unsignedValue,
+                first.sign
+            )
+        } else {
+            SignedULongArray(
+                second.unsignedValue - first.unsignedValue,
+                second.sign
+            )
+        }
+    } else {
+        // Same sign
+        SignedULongArray(
+            first.unsignedValue + second.unsignedValue,
+            first.sign
+        )
+    }
+
+    val SIGNED_POSITIVE_TWO =
+        SignedULongArray(BigInteger63Arithmetic.TWO, true)
+
+    private fun signedSubtract(first: SignedULongArray, second: SignedULongArray) =
+        signedAdd(first, second.copy(sign = !second.sign))
+
+    private fun signedMultiply(first: SignedULongArray, second: SignedULongArray) =
+        SignedULongArray(
+            first.unsignedValue * second.unsignedValue,
+            !(first.sign xor second.sign)
+        )
+
+    private fun signedDivide(first: SignedULongArray, second: SignedULongArray) =
+        SignedULongArray(
+            first.unsignedValue / second.unsignedValue,
+            !(first.sign xor second.sign)
+        )
+
+    private fun signedRemainder(first: SignedULongArray, second: SignedULongArray) =
+        SignedULongArray(
+            first.unsignedValue % second.unsignedValue,
+            !(first.sign xor second.sign)
+        )
+
+    internal operator fun SignedULongArray.plus(other: SignedULongArray): SignedULongArray {
+        return signedAdd(this, other)
+    }
+
+    internal operator fun SignedULongArray.minus(other: SignedULongArray): SignedULongArray {
+        return signedSubtract(this, other)
+    }
+
+    internal operator fun SignedULongArray.times(other: SignedULongArray): SignedULongArray {
+        return signedMultiply(this, other)
+    }
+
+    internal operator fun SignedULongArray.div(other: SignedULongArray): SignedULongArray {
+        return signedDivide(this, other)
+    }
+
+    internal operator fun SignedULongArray.rem(other: SignedULongArray): SignedULongArray {
+        return signedRemainder(this, other)
+    }
+
+    internal infix fun SignedULongArray.shr(places: Int) =
+        SignedULongArray(unsignedValue shr places, sign)
+
+    internal infix fun SignedULongArray.shl(places: Int) =
+        SignedULongArray(unsignedValue shl places, sign)
+
+    internal infix fun SignedULongArray.and(operand: ULongArray) =
+        SignedULongArray(
+            BigInteger63Arithmetic.and(
+                unsignedValue,
+                operand
+            ), sign
+        )
+
+    // End of signed operations
+
     fun min(first: ULongArray, second: ULongArray): ULongArray {
         return if (first < second) {
             first
