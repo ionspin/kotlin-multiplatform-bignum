@@ -905,7 +905,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
             } else {
                 n
             }
-            val rhoPowered = ONE shl (corrected * 2 * BigInteger63Arithmetic.wordSizeInBits)
+            val rhoPowered = ONE shl (corrected * 2 * wordSizeInBits)
             val x = rhoPowered / a
             val r = rhoPowered - (x * a)
             return Pair(x, r)
@@ -917,22 +917,22 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         var (xh, rh) = d1ReciprocalRecursiveWordVersion(ah)
         val s = al * xh
 //        val rhoL = (ONE shl l)
-        val rhRhoL = rh shl (l * BigInteger63Arithmetic.wordSizeInBits)
+        val rhRhoL = rh shl (l * wordSizeInBits)
         val t = if (rhRhoL >= s) {
             rhRhoL - s
         } else {
-            xh = xh - BigInteger63Arithmetic.ONE
+            xh = xh - ONE
             (rhRhoL + a) - s
         }
-        val tm = t shr (h * BigInteger63Arithmetic.wordSizeInBits)
-        val d = (xh * tm) shr (h * BigInteger63Arithmetic.wordSizeInBits)
-        var x = (xh shl (l * BigInteger63Arithmetic.wordSizeInBits)) + d
-        var r = (t shl (l * BigInteger63Arithmetic.wordSizeInBits)) - a * d
+        val tm = t shr (h * wordSizeInBits)
+        val d = (xh * tm) shr (h * wordSizeInBits)
+        var x = (xh shl (l * wordSizeInBits)) + d
+        var r = (t shl (l * wordSizeInBits)) - a * d
         if (r >= a) {
-            x = x + BigInteger63Arithmetic.ONE
+            x = x + ONE
             r = r - a
             if (r >= a) {
-                x = x + BigInteger63Arithmetic.ONE
+                x = x + ONE
                 r = r - a
             }
         }

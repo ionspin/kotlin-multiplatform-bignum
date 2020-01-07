@@ -17,6 +17,8 @@
 
 @file:Suppress("UnstableApiUsage")
 
+import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
+
 plugins {
     kotlin(PluginsDeps.multiplatform)
     id(PluginsDeps.mavenPublish)
@@ -43,6 +45,8 @@ repositories {
 group = "com.ionspin.kotlin"
 version = "0.1.5-SNAPSHOT"
 
+val ideaActive = System.getProperty("idea.active") == "true"
+
 fun getHostOsName(): String {
     val target = System.getProperty("os.name")
     if (target == "Linux") return "linux"
@@ -55,6 +59,14 @@ kotlin {
 
     val hostOsName = getHostOsName()
     println("Host os name $hostOsName")
+
+    if (ideaActive) {
+        when (hostOsName) {
+            "linux" -> linuxX64("native")
+            "macos" -> macosX64("native")
+            "windows" -> mingwX64("native")
+        }
+    }
 
     if (hostOsName == "linux") {
         jvm()
@@ -161,14 +173,33 @@ kotlin {
             }
         }
 
-        val nativeMain by creating {
-            dependsOn(commonMain)
-        }
-        val nativeTest by creating {
-            dependsOn(commonTest)
-            dependencies {
-                implementation(Deps.Native.coroutines)
+        val nativeMain = if (ideaActive) {
+            val nativeMain by getting {
+                dependsOn(commonMain)
             }
+            nativeMain
+        } else {
+            val nativeMain by creating {
+                dependsOn(commonMain)
+            }
+            nativeMain
+        }
+        val nativeTest = if (ideaActive) {
+            val nativeTest by getting {
+                dependsOn(commonTest)
+                dependencies {
+                    implementation(Deps.Native.coroutines)
+                }
+            }
+            nativeTest
+        } else {
+            val nativeTest by creating {
+                dependsOn(commonTest)
+                dependencies {
+                    implementation(Deps.Native.coroutines)
+                }
+            }
+            nativeTest
         }
 
         if (hostOsName == "linux") {
@@ -298,6 +329,13 @@ tasks {
         val jvmTest by getting(Test::class) {
             testLogging {
                 events("PASSED", "FAILED", "SKIPPED")
+            }
+        }
+
+        val linuxTest by getting(KotlinNativeTest::class) {
+            testLogging {
+                events("PASSED", "FAILED", "SKIPPED")
+                // showStandardStreams = true
             }
         }
     }

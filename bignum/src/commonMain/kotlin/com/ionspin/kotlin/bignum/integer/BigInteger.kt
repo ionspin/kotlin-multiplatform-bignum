@@ -25,7 +25,7 @@ import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.NarrowingOperations
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic
+import com.ionspin.kotlin.bignum.integer.base63.array.BigInteger63Arithmetic
 import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 import kotlin.math.ceil
 import kotlin.math.floor

@@ -17,6 +17,7 @@
 
 package com.ionspin.kotlin.bignum.integer.base63
 
+import com.ionspin.kotlin.bignum.integer.base63.array.BigInteger63Arithmetic
 import kotlin.random.Random
 import kotlin.random.nextULong
 import kotlin.test.Test
@@ -36,15 +37,18 @@ class BigInteger63ArithmeticDivisionTest {
         val random = Random(seed)
         for (i in 1..Int.MAX_VALUE step 5001) {
             val dividend = ulongArrayOf(random.nextULong() shr 1)
-            if (BigInteger63Arithmetic.divide(dividend, ulongArrayOf(3U)).second.contentEquals(BigInteger63Arithmetic.ZERO)) {
+            if (BigInteger63Arithmetic.divide(dividend, ulongArrayOf(3U)).second.contentEquals(
+                    BigInteger63Arithmetic.ZERO)) {
                 exactDivide(dividend)
             } else {
                 val dividend2 = BigInteger63Arithmetic.add(dividend, ulongArrayOf(1U))
-                if (BigInteger63Arithmetic.divide(dividend2, ulongArrayOf(3U)).second.contentEquals(BigInteger63Arithmetic.ZERO)) {
+                if (BigInteger63Arithmetic.divide(dividend2, ulongArrayOf(3U)).second.contentEquals(
+                        BigInteger63Arithmetic.ZERO)) {
                     exactDivide(dividend2)
                 } else {
                     val dividend3 = BigInteger63Arithmetic.add(dividend2, ulongArrayOf(1U))
-                    if (BigInteger63Arithmetic.divide(dividend3, ulongArrayOf(3U)).second.contentEquals(BigInteger63Arithmetic.ZERO)) {
+                    if (BigInteger63Arithmetic.divide(dividend3, ulongArrayOf(3U)).second.contentEquals(
+                            BigInteger63Arithmetic.ZERO)) {
                         exactDivide(dividend3)
                     } else {
                         println("Something is wrong, number should be divisible by 3")
@@ -63,15 +67,18 @@ class BigInteger63ArithmeticDivisionTest {
             val dividend = ULongArray(1500) {
                 random.nextULong() shr 1
             }
-            if (BigInteger63Arithmetic.divide(dividend, ulongArrayOf(3U)).second.contentEquals(BigInteger63Arithmetic.ZERO)) {
+            if (BigInteger63Arithmetic.divide(dividend, ulongArrayOf(3U)).second.contentEquals(
+                    BigInteger63Arithmetic.ZERO)) {
                 exactDivide(dividend)
             } else {
                 val dividend2 = BigInteger63Arithmetic.add(dividend, ulongArrayOf(1U))
-                if (BigInteger63Arithmetic.divide(dividend2, ulongArrayOf(3U)).second.contentEquals(BigInteger63Arithmetic.ZERO)) {
+                if (BigInteger63Arithmetic.divide(dividend2, ulongArrayOf(3U)).second.contentEquals(
+                        BigInteger63Arithmetic.ZERO)) {
                     exactDivide(dividend2)
                 } else {
                     val dividend3 = BigInteger63Arithmetic.add(dividend2, ulongArrayOf(1U))
-                    if (BigInteger63Arithmetic.divide(dividend3, ulongArrayOf(3U)).second.contentEquals(BigInteger63Arithmetic.ZERO)) {
+                    if (BigInteger63Arithmetic.divide(dividend3, ulongArrayOf(3U)).second.contentEquals(
+                            BigInteger63Arithmetic.ZERO)) {
                         exactDivide(dividend3)
                     } else {
                         println("Something is wrong, number should be divisible by 3")
@@ -90,15 +97,18 @@ class BigInteger63ArithmeticDivisionTest {
             val dividend = ULongArray(i) {
                 random.nextULong() shr 1
             }
-            if (BigInteger63Arithmetic.divide(dividend, ulongArrayOf(3U)).second.contentEquals(BigInteger63Arithmetic.ZERO)) {
+            if (BigInteger63Arithmetic.divide(dividend, ulongArrayOf(3U)).second.contentEquals(
+                    BigInteger63Arithmetic.ZERO)) {
                 exactDivide(dividend)
             } else {
                 val dividend2 = BigInteger63Arithmetic.add(dividend, ulongArrayOf(1U))
-                if (BigInteger63Arithmetic.divide(dividend2, ulongArrayOf(3U)).second.contentEquals(BigInteger63Arithmetic.ZERO)) {
+                if (BigInteger63Arithmetic.divide(dividend2, ulongArrayOf(3U)).second.contentEquals(
+                        BigInteger63Arithmetic.ZERO)) {
                     exactDivide(dividend2)
                 } else {
                     val dividend3 = BigInteger63Arithmetic.add(dividend2, ulongArrayOf(1U))
-                    if (BigInteger63Arithmetic.divide(dividend3, ulongArrayOf(3U)).second.contentEquals(BigInteger63Arithmetic.ZERO)) {
+                    if (BigInteger63Arithmetic.divide(dividend3, ulongArrayOf(3U)).second.contentEquals(
+                            BigInteger63Arithmetic.ZERO)) {
                         exactDivide(dividend3)
                     } else {
                         println("Something is wrong, number should be divisible by 3")

@@ -18,7 +18,8 @@
 package com.ionspin.kotlin.bignum.integer.base63
 
 import com.ionspin.kotlin.bignum.integer.base32.toJavaBigInteger
-import com.ionspin.kotlin.bignum.integer.base63.BigInteger63Arithmetic.baseMask
+import com.ionspin.kotlin.bignum.integer.base63.array.BigInteger63Arithmetic
+import com.ionspin.kotlin.bignum.integer.base63.array.BigInteger63Arithmetic.baseMask
 import java.math.BigInteger
 import kotlin.random.Random
 import kotlin.random.nextUInt
