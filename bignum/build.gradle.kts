@@ -339,7 +339,6 @@ tasks {
             }
         }
     }
-
 }
 
 spotless {
