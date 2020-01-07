@@ -61,7 +61,7 @@ kotlin {
     println("Host os name $hostOsName")
 
     if (ideaActive) {
-        when(hostOsName) {
+        when (hostOsName) {
             "linux" -> linuxX64("native")
             "macos" -> macosX64("native")
             "windows" -> mingwX64("native")
@@ -331,21 +331,15 @@ tasks {
                 events("PASSED", "FAILED", "SKIPPED")
             }
         }
-    }
 
-    val jvmTest by getting(Test::class) {
-        testLogging {
-            events("PASSED", "FAILED", "SKIPPED")
+        val linuxTest by getting(KotlinNativeTest::class) {
+            testLogging {
+                events("PASSED", "FAILED", "SKIPPED")
+                // showStandardStreams = true
+            }
         }
     }
 
-    val linuxTest by getting(KotlinNativeTest::class) {
-
-        testLogging {
-            events("PASSED", "FAILED", "SKIPPED")
-            // showStandardStreams = true
-        }
-    }
 }
 
 spotless {
