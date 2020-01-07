@@ -1,6 +1,8 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
-##### 0.1.5-SNAPSHOT
+##### 0.1.6-SNAPSHOT 
+
+##### 0.1.5 - 07.01.2020 - Adding linux arm targets, BigDecimal bug fixes
 - Version bump to kotlin 1.3.61
 - Gradlew wrapper bump to 6.0.1
 - Added Linux Arm 64, and Linux Arm 32 HFP build targets
