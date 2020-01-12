@@ -15,17 +15,27 @@
  *
  */
 
-pluginManagement {
-    resolutionStrategy {
-        eachPlugin {
-            if (requested.id.id == "kotlin-multiplatform") {
-                useModule("org.jetbrains.kotlin:kotlin-gradle-plugin:${requested.version}")
-            }
-        }
+package com.example.test
+
+import android.support.test.InstrumentationRegistry
+import android.support.test.runner.AndroidJUnit4
+
+import org.junit.Test
+import org.junit.runner.RunWith
+
+import org.junit.Assert.*
+
+/**
+ * Instrumented test, which will execute on an Android device.
+ *
+ * See [testing documentation](http://d.android.com/tools/testing).
+ */
+@RunWith(AndroidJUnit4::class)
+class ExampleInstrumentedTest {
+    @Test
+    fun useAppContext() {
+        // Context of the app under test.
+        val appContext = InstrumentationRegistry.getTargetContext()
+        assertEquals("com.example.test", appContext.packageName)
     }
 }
-enableFeaturePreview("GRADLE_METADATA")
-rootProject.name = "KotlinBigInteger"
-include("bignum")
-include("test")
-

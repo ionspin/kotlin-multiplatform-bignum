@@ -15,17 +15,23 @@
  *
  */
 
-pluginManagement {
-    resolutionStrategy {
-        eachPlugin {
-            if (requested.id.id == "kotlin-multiplatform") {
-                useModule("org.jetbrains.kotlin:kotlin-gradle-plugin:${requested.version}")
-            }
-        }
+package com.example.test
+
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.os.Bundle
+import android.widget.TextView
+import com.ionspin.kotlin.bignum.integer.BigInteger
+
+class MainActivity : Activity() {
+
+    @ExperimentalUnsignedTypes
+    @SuppressLint("SetTextI18n")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        val test = BigInteger.fromLong(Long.MAX_VALUE)
+        val helloView = findViewById<TextView>(R.id.hello)
+        helloView.setText("BigInt ${test.toString(16)}")
     }
 }
-enableFeaturePreview("GRADLE_METADATA")
-rootProject.name = "KotlinBigInteger"
-include("bignum")
-include("test")
-
