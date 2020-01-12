@@ -15,23 +15,20 @@
  *
  */
 
-package com.example.test
+package com.ionspin.bignum.sample.android
 
-import android.annotation.SuppressLint
-import android.app.Activity
-import android.os.Bundle
-import android.widget.TextView
-import com.ionspin.kotlin.bignum.integer.BigInteger
+import org.junit.Test
 
-class MainActivity : Activity() {
+import org.junit.Assert.*
 
-    @ExperimentalUnsignedTypes
-    @SuppressLint("SetTextI18n")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        val test = BigInteger.fromLong(Long.MAX_VALUE)
-        val helloView = findViewById<TextView>(R.id.hello)
-        helloView.setText("BigInt ${test.toString(16)}")
+/**
+ * Example local unit test, which will execute on the development machine (host).
+ *
+ * See [testing documentation](http://d.android.com/tools/testing).
+ */
+class ExampleUnitTest {
+    @Test
+    fun addition_isCorrect() {
+        assertEquals(4.toBigInteger(), 2.toBigInteger() + 2.toBigInteger())
     }
 }
