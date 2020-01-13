@@ -35,7 +35,9 @@ fun getHostOsName(): String {
     return "unknown"
 }
 
-if (getHostOsName() == "linux") {
+val host = getHostOsName()
+
+if (host == "linux") {
     include("android-usage-sample")
 }
 
