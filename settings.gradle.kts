@@ -27,5 +27,15 @@ pluginManagement {
 enableFeaturePreview("GRADLE_METADATA")
 rootProject.name = "KotlinBigInteger"
 include("bignum")
-include("android-usage-sample")
+fun getHostOsName(): String {
+    val target = System.getProperty("os.name")
+    if (target == "Linux") return "linux"
+    if (target.startsWith("Windows")) return "windows"
+    if (target.startsWith("Mac")) return "macos"
+    return "unknown"
+}
+
+if (getHostOsName() == "linux") {
+    include("android-usage-sample")
+}
 
