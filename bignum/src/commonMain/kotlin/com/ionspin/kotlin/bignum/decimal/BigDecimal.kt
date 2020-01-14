@@ -1255,7 +1255,7 @@ class BigDecimal private constructor(
         if (digitPosition == 0L) {
             throw ArithmeticException("Rounding to 0 position is not supported")
         }
-        return if (this.exponent > 0) {
+        return if (this.exponent >= 0) {
             roundSignificand(DecimalMode(digitPosition, roundingMode))
         } else {
             (this + 1).roundSignificand(DecimalMode(digitPosition, roundingMode)) - 1
