@@ -48,6 +48,26 @@ fun String.toBigInteger(base: Int = 10): BigInteger {
     return BigInteger.parseString(this, base)
 }
 
+@ExperimentalUnsignedTypes
+fun ULong.toBigInteger(): BigInteger {
+    return BigInteger.fromULong(this)
+}
+
+@ExperimentalUnsignedTypes
+fun UInt.toBigInteger(): BigInteger {
+    return BigInteger.fromUInt(this)
+}
+
+@ExperimentalUnsignedTypes
+fun UShort.toBigInteger(): BigInteger {
+    return BigInteger.fromUShort(this)
+}
+
+@ExperimentalUnsignedTypes
+fun UByte.toBigInteger(): BigInteger {
+    return BigInteger.fromUByte(this)
+}
+
 //
 //  -------- Basic type arithmetic operation extensions -------
 //
@@ -74,6 +94,26 @@ operator fun Byte.plus(other: BigInteger): BigInteger {
     return this.toBigInteger() + other
 }
 
+@ExperimentalUnsignedTypes
+operator fun ULong.plus(other: BigInteger): BigInteger {
+    return this.toBigInteger() + other
+}
+
+@ExperimentalUnsignedTypes
+operator fun UInt.plus(other: BigInteger): BigInteger {
+    return this.toBigInteger() + other
+}
+
+@ExperimentalUnsignedTypes
+operator fun UShort.plus(other: BigInteger): BigInteger {
+    return this.toBigInteger() + other
+}
+
+@ExperimentalUnsignedTypes
+operator fun UByte.plus(other: BigInteger): BigInteger {
+    return this.toBigInteger() + other
+}
+
 // --------- Subtraction -----------------
 
 @ExperimentalUnsignedTypes
@@ -93,6 +133,26 @@ operator fun Short.minus(other: BigInteger): BigInteger {
 
 @ExperimentalUnsignedTypes
 operator fun Byte.minus(other: BigInteger): BigInteger {
+    return this.toBigInteger() - other
+}
+
+@ExperimentalUnsignedTypes
+operator fun ULong.minus(other: BigInteger): BigInteger {
+    return this.toBigInteger() - other
+}
+
+@ExperimentalUnsignedTypes
+operator fun UInt.minus(other: BigInteger): BigInteger {
+    return this.toBigInteger() - other
+}
+
+@ExperimentalUnsignedTypes
+operator fun UShort.minus(other: BigInteger): BigInteger {
+    return this.toBigInteger() - other
+}
+
+@ExperimentalUnsignedTypes
+operator fun UByte.minus(other: BigInteger): BigInteger {
     return this.toBigInteger() - other
 }
 
@@ -118,6 +178,26 @@ operator fun Byte.times(other: BigInteger): BigInteger {
     return this.toBigInteger() * other
 }
 
+@ExperimentalUnsignedTypes
+operator fun ULong.times(other: BigInteger): BigInteger {
+    return this.toBigInteger() * other
+}
+
+@ExperimentalUnsignedTypes
+operator fun UInt.times(other: BigInteger): BigInteger {
+    return this.toBigInteger() * other
+}
+
+@ExperimentalUnsignedTypes
+operator fun UShort.times(other: BigInteger): BigInteger {
+    return this.toBigInteger() * other
+}
+
+@ExperimentalUnsignedTypes
+operator fun UByte.times(other: BigInteger): BigInteger {
+    return this.toBigInteger() * other
+}
+
 // --------- Division -----------------
 
 @ExperimentalUnsignedTypes
@@ -140,6 +220,26 @@ operator fun Byte.div(other: BigInteger): BigInteger {
     return this.toBigInteger() / other
 }
 
+@ExperimentalUnsignedTypes
+operator fun ULong.div(other: BigInteger): BigInteger {
+    return this.toBigInteger() / other
+}
+
+@ExperimentalUnsignedTypes
+operator fun UInt.div(other: BigInteger): BigInteger {
+    return this.toBigInteger() / other
+}
+
+@ExperimentalUnsignedTypes
+operator fun UShort.div(other: BigInteger): BigInteger {
+    return this.toBigInteger() / other
+}
+
+@ExperimentalUnsignedTypes
+operator fun UByte.div(other: BigInteger): BigInteger {
+    return this.toBigInteger() / other
+}
+
 // --------- Remainder -----------------
 
 @ExperimentalUnsignedTypes
@@ -159,5 +259,25 @@ operator fun Short.rem(other: BigInteger): BigInteger {
 
 @ExperimentalUnsignedTypes
 operator fun Byte.rem(other: BigInteger): BigInteger {
+    return this.toBigInteger() % other
+}
+
+@ExperimentalUnsignedTypes
+operator fun ULong.rem(other: BigInteger): BigInteger {
+    return this.toBigInteger() % other
+}
+
+@ExperimentalUnsignedTypes
+operator fun UInt.rem(other: BigInteger): BigInteger {
+    return this.toBigInteger() % other
+}
+
+@ExperimentalUnsignedTypes
+operator fun UShort.rem(other: BigInteger): BigInteger {
+    return this.toBigInteger() % other
+}
+
+@ExperimentalUnsignedTypes
+operator fun UByte.rem(other: BigInteger): BigInteger {
     return this.toBigInteger() % other
 }

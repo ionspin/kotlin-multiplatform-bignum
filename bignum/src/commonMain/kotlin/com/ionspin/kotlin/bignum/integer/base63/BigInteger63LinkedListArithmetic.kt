@@ -23,6 +23,7 @@ import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
+import com.ionspin.kotlin.bignum.integer.base63.array.BigInteger63Arithmetic
 import com.ionspin.kotlin.bignum.integer.util.toDigit
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
@@ -1238,7 +1239,13 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
         return convertFrom32BitRepresentation(this)
     }
 
-    override fun fromULong(uLong: ULong): List<ULong> = listOf(uLong)
+    override fun fromULong(uLong: ULong): List<ULong> {
+        return if ((uLong and BigInteger63Arithmetic.overflowMask) != 0UL) {
+            listOf(uLong and BigInteger63Arithmetic.baseMask, 1U)
+        } else {
+            listOf(uLong)
+        }
+    }
 
     override fun fromUInt(uInt: UInt): List<ULong> = listOf(uInt.toULong())
 
@@ -1247,10 +1254,10 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULo
     override fun fromUByte(uByte: UByte): List<ULong> = listOf(uByte.toULong())
 
     override fun fromLong(long: Long): List<ULong> {
-        if ((long.absoluteValue.toULong() and overflowMask shr 63) == 1UL) {
-            return listOf(baseMask) + 1U
+        if (long == Long.MIN_VALUE) {
+            return listOf((Long.MAX_VALUE).toULong() + 1UL)
         }
-        return listOf((long.absoluteValue.toULong() and baseMask))
+        return listOf((long.absoluteValue.toULong() and BigInteger63Arithmetic.baseMask))
     }
 
     override fun fromInt(int: Int): List<ULong> = listOf(int.absoluteValue.toULong())

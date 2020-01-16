@@ -58,6 +58,29 @@ class BitwiseTest {
     }
 
     @Test
+    fun testBitAt() {
+        assertTrue {
+            val bigInt = 2.toBigInteger()
+            bigInt.bitAt(0) == false && bigInt.bitAt(1) == true
+        }
+        assertTrue {
+            val bigInt = Long.MAX_VALUE.toBigInteger() + 1
+            (bigInt.bitAt(62) == false) && (bigInt.bitAt(63) == true)
+        }
+        assertTrue {
+            val bigInt = ULong.MAX_VALUE.toBigInteger() + 1
+            bigInt.bitAt(63) == false && bigInt.bitAt(64) == true
+        }
+
+        assertTrue {
+            val bigInt = Long.MAX_VALUE.toBigInteger()
+            (0..62L).fold(true) { acc, i ->
+                acc and bigInt.bitAt(i)
+            }
+        }
+    }
+
+    @Test
     fun setBitAtTest() {
         assertTrue {
             val bigInt = BigInteger.fromInt(4)

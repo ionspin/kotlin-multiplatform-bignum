@@ -1,6 +1,8 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
 ##### 0.1.6-SNAPSHOT 
+- Fixed #86 - Rounding fails when integer part is 9
+- Fixed #88 - BigInteger.bitAt() returns invalid value
 
 ##### 0.1.5 - 07.01.2020 - Adding linux arm targets, BigDecimal bug fixes
 - Version bump to kotlin 1.3.61

@@ -1788,7 +1788,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
         }
         val bitPosition = position % 63
         val word = operand[wordPosition.toInt()]
-        return (word and (1UL shl bitPosition.toInt()) == 1UL)
+        return (word and (1UL shl bitPosition.toInt()) != 0UL)
     }
 
     override fun setBitAt(operand: ULongArray, position: Long, bit: Boolean): ULongArray {
@@ -1918,9 +1918,11 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     }
 
     override fun fromULong(uLong: ULong): ULongArray {
-        return removeLeadingZeros(
-            fromLong(uLong.toLong())
-        )
+        return if ((uLong and overflowMask) != 0UL) {
+            ulongArrayOf(uLong and baseMask, 1U)
+        } else {
+            ulongArrayOf(uLong)
+        }
     }
 
     override fun fromUInt(uInt: UInt): ULongArray = ulongArrayOf(uInt.toULong())
@@ -1930,8 +1932,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic<ULongArray, ULong>
     override fun fromUByte(uByte: UByte): ULongArray = ulongArrayOf(uByte.toULong())
 
     override fun fromLong(long: Long): ULongArray {
-        if ((long.absoluteValue.toULong() and overflowMask shr 63) == 1UL) {
-            return ulongArrayOf(baseMask) + 1U
+        if (long == Long.MIN_VALUE) {
+            return ulongArrayOf((Long.MAX_VALUE).toULong() + 1UL)
         }
         return ulongArrayOf((long.absoluteValue.toULong() and baseMask))
     }
