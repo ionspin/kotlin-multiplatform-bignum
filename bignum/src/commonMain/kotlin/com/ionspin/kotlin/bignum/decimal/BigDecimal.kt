@@ -1258,7 +1258,7 @@ class BigDecimal private constructor(
         return if (this.exponent >= 0) {
             roundSignificand(DecimalMode(digitPosition, roundingMode))
         } else {
-            (this + 1).roundSignificand(DecimalMode(digitPosition, roundingMode)) - 1
+            (this + this.signum()).roundSignificand(DecimalMode(digitPosition, roundingMode)) - this.signum()
         }
     }
 
