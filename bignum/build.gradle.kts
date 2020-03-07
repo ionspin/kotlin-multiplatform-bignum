@@ -315,14 +315,7 @@ tasks {
 
     dokka {
         println("Dokka !")
-        impliedPlatforms = mutableListOf("Common")
-        kotlinTasks {
-            listOf()
-        }
-        sourceRoot {
-            println("Common !")
-            path = "/home/ionspin/Projects/Future/KotlinBigInteger/bignum/src/commonMain"
-            platforms = listOf("Common")
+        multiplatform {
         }
     }
     if (hostOsName == "linux") {
