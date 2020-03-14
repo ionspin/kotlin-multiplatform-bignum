@@ -48,7 +48,8 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     override val TWO = UIntArray(1) { 2U }
     override val TEN = UIntArray(1) { 10U }
 
-    const val karatsubaThreshold = 3
+    const val karatsubaThreshold = 60 // TODO Improve thresholds
+    const val toomCookThreshold = 15_000 // TODO Use Toom-Cook3
 
     /**
      * Hackers delight 5-11
@@ -617,6 +618,27 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     // End of signed operations
 
     override fun multiply(first: UIntArray, second: UIntArray): UIntArray {
+        if (first == ZERO || second == ZERO) {
+            return ZERO
+        }
+        if (first.size >= karatsubaThreshold || second.size == karatsubaThreshold) {
+            return karatsubaMultiply(first, second)
+        }
+
+        return removeLeadingZeros(
+            second.foldIndexed(ZERO) { index, acc, element ->
+                acc + (multiply(
+                    first,
+                    element
+                ) shl (index * basePowerOfTwo))
+            }
+        )
+    }
+
+    /**
+     * Just for testing against basecase multiplication. TODO add basecase multiply
+     */
+    internal fun multiplyNoKaratsuba(first: UIntArray, second: UIntArray): UIntArray {
         if (first == ZERO || second == ZERO) {
             return ZERO
         }
