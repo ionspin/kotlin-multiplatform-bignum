@@ -451,7 +451,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }.toUIntArray()
         val firstLength = first.size
         val secondLength = second.size
-        val secondLength = second.size
 
         val (firstPrepared, secondPrepared) = when {
             firstLength > secondLength -> {
