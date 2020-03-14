@@ -346,19 +346,26 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         while (i < smallerLength) {
             diff = largerData[i].toULong() - smallerData[i] - diff
             result[i] = diff.toUInt()
-            diff = (diff and overflowMask) shr basePowerOfTwo
+            diff = (diff and overflowMask) shr wordSizeInBits
             i++
         }
 
+        // while (diff != 0UL) {
+        //     diff = largerData[i].toULong() - diff
+        //     if ((diff and overflowMask) shr basePowerOfTwo == 1UL) {
+        //         result[i] = (diff - 1UL).toUInt()
+        //     } else {
+        //         result[i] = diff.toUInt()
+        //         diff = 0UL
+        //     }
+        //     diff = diff shr 63
+        //     i++
+        // }
+
         while (diff != 0UL) {
-            diff = largerData[i].toULong() - diff
-            if ((diff and overflowMask) shr basePowerOfTwo == 1UL) {
-                result[i] = (diff - 1UL).toUInt()
-            } else {
-                result[i] = diff.toUInt()
-                diff = 0UL
-            }
-            diff = diff shr 63
+            diff = largerData[i] - diff
+            result[i] = (diff.toUInt() and baseMaskInt)
+            diff = (diff and overflowMask) shr wordSizeInBits
             i++
         }
 
@@ -431,7 +438,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
     }
 
-    fun extendULongArray(original: UIntArray, numberOfWords: Int, value: UInt): UIntArray {
+    fun extendUIntArray(original: UIntArray, numberOfWords: Int, value: UInt): UIntArray {
 
         return UIntArray(original.size + numberOfWords) {
             when {
@@ -459,11 +466,21 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
         val (firstPrepared, secondPrepared) = when {
             firstLength > secondLength -> {
-                val prepared = extendULongArray(second, firstLength - secondLength, 0U)
+                val prepared =
+                    extendUIntArray(
+                        second,
+                        firstLength - secondLength,
+                        0U
+                    )
                 Pair(first, prepared)
             }
             firstLength < secondLength -> {
-                val prepared = extendULongArray(first, secondLength - firstLength, 0U)
+                val prepared =
+                    extendUIntArray(
+                        first,
+                        secondLength - firstLength,
+                        0U
+                    )
                 Pair(prepared, second)
             }
             else -> Pair(first, second)
@@ -472,13 +489,28 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         val longestLength = kotlin.math.max(first.size, second.size)
 
         val extendedDigit = (longestLength + 2) / 3
-        val m0 = SignedUIntArray(firstPrepared.slice(0 until extendedDigit).toUIntArray(), true)
-        val m1 = SignedUIntArray(firstPrepared.slice(extendedDigit until extendedDigit * 2).toUIntArray(), true)
-        val m2 = SignedUIntArray(firstPrepared.slice(extendedDigit * 2 until extendedDigit * 3).toUIntArray(), true)
 
-        val n0 = SignedUIntArray(secondPrepared.slice(0 until extendedDigit).toUIntArray(), true)
-        val n1 = SignedUIntArray(secondPrepared.slice(extendedDigit until extendedDigit * 2).toUIntArray(), true)
-        val n2 = SignedUIntArray(secondPrepared.slice(extendedDigit * 2 until extendedDigit * 3).toUIntArray(), true)
+        val m0 = SignedUIntArray(
+            firstPrepared.slice(0 until extendedDigit).toUIntArray(),
+            true
+        )
+        val m1 = SignedUIntArray(
+            firstPrepared.slice(extendedDigit until extendedDigit * 2).toUIntArray(), true
+        )
+        val m2 = SignedUIntArray(
+            firstPrepared.slice(extendedDigit * 2 until extendedDigit * 3).toUIntArray(), true
+        )
+
+        val n0 = SignedUIntArray(
+            secondPrepared.slice(0 until extendedDigit).toUIntArray(),
+            true
+        )
+        val n1 = SignedUIntArray(
+            secondPrepared.slice(extendedDigit until extendedDigit * 2).toUIntArray(), true
+        )
+        val n2 = SignedUIntArray(
+            secondPrepared.slice(extendedDigit * 2 until extendedDigit * 3).toUIntArray(), true
+        )
 
         val p0 = m0 + m2
         // p(0)
@@ -515,8 +547,12 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         var r0 = re0
         var r4 = rinf
         val rem2re1diff = (rem2 - re1)
-        // var r3 = SignedULongArray(exactDivideBy3(rem2re1diff.unsignedValue), rem2re1diff.sign)
-        var r3 = rem2re1diff / SignedUIntArray(uintArrayOf(3U), true)
+        // var r3 = SignedUIntArray(exactDivideBy3(rem2re1diff.unsignedValue), rem2re1diff.sign)
+        var r3 = rem2re1diff / SignedUIntArray(
+            uintArrayOf(
+                3U
+            ), true
+        )
         // println("R3 ${r3.sign} ${r3.unsignedValue}")
         var r1 = (re1 - rem1) shr 1
         var r2 = rem1 - r0
@@ -524,7 +560,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         r2 = r2 + r1 - r4
         r1 = r1 - r3
 
-        val bShiftAmount = extendedDigit * 63
+        val bShiftAmount = extendedDigit * wordSizeInBits
         val rb0 = r0
         val rb1 = (r1 shl (bShiftAmount))
         val rb2 = (r2 shl (bShiftAmount * 2))
@@ -597,9 +633,24 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             return ZERO
         }
         // TODO Need to debug 32 bit variant, seems to fail on lower product
-//        if (first.size >= karatsubaThreshold || second.size == karatsubaThreshold) {
-//            return karatsubaMultiply(first, second)
-//        }
+        if (first.size >= karatsubaThreshold || second.size == karatsubaThreshold) {
+            return karatsubaMultiply(first, second)
+        }
+
+        return removeLeadingZeros(
+            second.foldIndexed(ZERO) { index, acc, element ->
+                acc + (multiply(
+                    first,
+                    element
+                ) shl (index * basePowerOfTwo))
+            }
+        )
+    }
+
+    fun debugNoKaratsuba(first: UIntArray, second: UIntArray): UIntArray {
+        if (first == ZERO || second == ZERO) {
+            return ZERO
+        }
 
         return removeLeadingZeros(
             second.foldIndexed(ZERO) { index, acc, element ->

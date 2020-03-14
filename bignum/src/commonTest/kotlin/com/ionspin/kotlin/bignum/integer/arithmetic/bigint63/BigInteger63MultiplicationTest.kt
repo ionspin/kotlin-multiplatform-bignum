@@ -17,6 +17,7 @@
 
 package com.ionspin.kotlin.bignum.integer.arithmetic.bigint63
 
+import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
 import com.ionspin.kotlin.bignum.integer.base63.array.BigInteger63Arithmetic
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -32,8 +33,8 @@ class BigInteger63MultiplicationTest {
     @Test
     fun testToomCook3() {
         assertTrue {
-            val a = ulongArrayOf(1U, 2U, 3U)
-            val b = ulongArrayOf(3U, 2U, 1U)
+            val a = ulongArrayOf(0U, 0U, 1U)
+            val b = ulongArrayOf(0U, 0U, 1U)
             val result = BigInteger63Arithmetic.toomCook3Multiply(a, b)
             val basecaseMultiply = BigInteger63Arithmetic.basecaseMultiply(a, b)
             result.contentEquals(basecaseMultiply)
@@ -77,6 +78,17 @@ class BigInteger63MultiplicationTest {
             val a = ulongArrayOf(100U, 200U, 300U, 50U)
             val b = ulongArrayOf(301U, 201U, 101U, 40U)
             val result = BigInteger63Arithmetic.toomCook3Multiply(a, b)
+            val basecaseMultiply = BigInteger63Arithmetic.basecaseMultiply(a, b)
+            result.contentEquals(basecaseMultiply)
+        }
+    }
+
+    @Test
+    fun testKaratsubaSimple() {
+        assertTrue {
+            val a = ulongArrayOf(100UL, 200UL, 300UL, 50UL)
+            val b = ulongArrayOf(301UL, 201UL, 101UL, 40UL)
+            val result = BigInteger63Arithmetic.karatsubaMultiply(a, b)
             val basecaseMultiply = BigInteger63Arithmetic.basecaseMultiply(a, b)
             result.contentEquals(basecaseMultiply)
         }
