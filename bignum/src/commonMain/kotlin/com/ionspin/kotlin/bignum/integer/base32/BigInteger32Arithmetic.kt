@@ -350,18 +350,6 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             i++
         }
 
-        // while (diff != 0UL) {
-        //     diff = largerData[i].toULong() - diff
-        //     if ((diff and overflowMask) shr basePowerOfTwo == 1UL) {
-        //         result[i] = (diff - 1UL).toUInt()
-        //     } else {
-        //         result[i] = diff.toUInt()
-        //         diff = 0UL
-        //     }
-        //     diff = diff shr 63
-        //     i++
-        // }
-
         while (diff != 0UL) {
             diff = largerData[i] - diff
             result[i] = (diff.toUInt() and baseMaskInt)
@@ -462,6 +450,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
             secondUnchecked
         }.toUIntArray()
         val firstLength = first.size
+        val secondLength = second.size
         val secondLength = second.size
 
         val (firstPrepared, secondPrepared) = when {
@@ -632,24 +621,8 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         if (first == ZERO || second == ZERO) {
             return ZERO
         }
-        // TODO Need to debug 32 bit variant, seems to fail on lower product
         if (first.size >= karatsubaThreshold || second.size == karatsubaThreshold) {
             return karatsubaMultiply(first, second)
-        }
-
-        return removeLeadingZeros(
-            second.foldIndexed(ZERO) { index, acc, element ->
-                acc + (multiply(
-                    first,
-                    element
-                ) shl (index * basePowerOfTwo))
-            }
-        )
-    }
-
-    fun debugNoKaratsuba(first: UIntArray, second: UIntArray): UIntArray {
-        if (first == ZERO || second == ZERO) {
-            return ZERO
         }
 
         return removeLeadingZeros(
