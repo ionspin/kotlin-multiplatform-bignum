@@ -48,7 +48,8 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     override val TWO = UIntArray(1) { 2U }
     override val TEN = UIntArray(1) { 10U }
 
-    const val karatsubaThreshold = 3
+    const val karatsubaThreshold = 60 // TODO Improve thresholds
+    const val toomCookThreshold = 15_000 // TODO Use Toom-Cook3
 
     /**
      * Hackers delight 5-11
@@ -153,6 +154,25 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return bigInteger.copyOfRange(0, firstEmpty)
     }
 
+    fun countLeadingZeroWords(bigInteger: UIntArray): Int {
+        // Presume there are no leading zeros
+        var lastNonEmptyIndex = bigInteger.size - 1
+        // Check if it's an empty array
+        if (lastNonEmptyIndex <= 0) {
+            return 0
+        }
+        // Get the last element (Word order is high endian so leading zeros are only on highest indexes
+        var element = bigInteger[lastNonEmptyIndex]
+        while (element == 0U && lastNonEmptyIndex > 0) {
+            lastNonEmptyIndex -= 1
+            element = bigInteger[lastNonEmptyIndex]
+        }
+        if (bigInteger[lastNonEmptyIndex] == 0U) {
+            lastNonEmptyIndex -= 1
+        }
+        return bigInteger.size - lastNonEmptyIndex - 1
+    }
+
     override fun shiftLeft(operand: UIntArray, places: Int): UIntArray {
         if (operand.isEmpty() || places == 0) {
             return operand
@@ -255,14 +275,16 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     // ---------------- Primitive operations -----------------------//
 
     override fun compare(first: UIntArray, second: UIntArray): Int {
-        if (first.size > second.size) {
+        val firstStart = first.size - countLeadingZeroWords(first)
+        val secondStart = second.size - countLeadingZeroWords(second)
+        if (firstStart > secondStart) {
             return 1
         }
-        if (second.size > first.size) {
+        if (secondStart > firstStart) {
             return -1
         }
 
-        var counter = first.size - 1
+        var counter = firstStart - 1
         var firstIsLarger = false
         var bothAreEqual = true
         while (counter >= 0) {
@@ -333,32 +355,34 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
     override fun subtract(first: UIntArray, second: UIntArray): UIntArray {
-        val firstIsLarger = compare(first, second) == 1
-
+        val firstWithoutLeadingZeroes = removeLeadingZeros(first)
+        val secondWithoutLeadingZeroes = removeLeadingZeros(second)
+        val firstIsLarger = compare(firstWithoutLeadingZeroes, secondWithoutLeadingZeroes) == 1
         val (largerLength, smallerLength, largerData, smallerData) = if (firstIsLarger) {
-            Quadruple(first.size, second.size, first, second)
+            Quadruple(firstWithoutLeadingZeroes.size, secondWithoutLeadingZeroes.size, firstWithoutLeadingZeroes, secondWithoutLeadingZeroes)
         } else {
-            Quadruple(second.size, first.size, second, first)
+            Quadruple(secondWithoutLeadingZeroes.size, firstWithoutLeadingZeroes.size, secondWithoutLeadingZeroes, firstWithoutLeadingZeroes)
         }
         val result = UIntArray(largerLength + 1) { 0u }
         var i = 0
         var diff: ULong = 0u
         while (i < smallerLength) {
+            if (i >= largerData.size) {
+                println("Breakpoint")
+            }
+            if (i >= smallerData.size) {
+                println("Breakpoint")
+            }
             diff = largerData[i].toULong() - smallerData[i] - diff
             result[i] = diff.toUInt()
-            diff = (diff and overflowMask) shr basePowerOfTwo
+            diff = (diff and overflowMask) shr wordSizeInBits
             i++
         }
 
         while (diff != 0UL) {
-            diff = largerData[i].toULong() - diff
-            if ((diff and overflowMask) shr basePowerOfTwo == 1UL) {
-                result[i] = (diff - 1UL).toUInt()
-            } else {
-                result[i] = diff.toUInt()
-                diff = 0UL
-            }
-            diff = diff shr 63
+            diff = largerData[i] - diff
+            result[i] = (diff.toUInt() and baseMaskInt)
+            diff = (diff and overflowMask) shr wordSizeInBits
             i++
         }
 
@@ -431,7 +455,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         }
     }
 
-    fun extendULongArray(original: UIntArray, numberOfWords: Int, value: UInt): UIntArray {
+    fun extendUIntArray(original: UIntArray, numberOfWords: Int, value: UInt): UIntArray {
 
         return UIntArray(original.size + numberOfWords) {
             when {
@@ -459,11 +483,21 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
 
         val (firstPrepared, secondPrepared) = when {
             firstLength > secondLength -> {
-                val prepared = extendULongArray(second, firstLength - secondLength, 0U)
+                val prepared =
+                    extendUIntArray(
+                        second,
+                        firstLength - secondLength,
+                        0U
+                    )
                 Pair(first, prepared)
             }
             firstLength < secondLength -> {
-                val prepared = extendULongArray(first, secondLength - firstLength, 0U)
+                val prepared =
+                    extendUIntArray(
+                        first,
+                        secondLength - firstLength,
+                        0U
+                    )
                 Pair(prepared, second)
             }
             else -> Pair(first, second)
@@ -472,13 +506,28 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         val longestLength = kotlin.math.max(first.size, second.size)
 
         val extendedDigit = (longestLength + 2) / 3
-        val m0 = SignedUIntArray(firstPrepared.slice(0 until extendedDigit).toUIntArray(), true)
-        val m1 = SignedUIntArray(firstPrepared.slice(extendedDigit until extendedDigit * 2).toUIntArray(), true)
-        val m2 = SignedUIntArray(firstPrepared.slice(extendedDigit * 2 until extendedDigit * 3).toUIntArray(), true)
 
-        val n0 = SignedUIntArray(secondPrepared.slice(0 until extendedDigit).toUIntArray(), true)
-        val n1 = SignedUIntArray(secondPrepared.slice(extendedDigit until extendedDigit * 2).toUIntArray(), true)
-        val n2 = SignedUIntArray(secondPrepared.slice(extendedDigit * 2 until extendedDigit * 3).toUIntArray(), true)
+        val m0 = SignedUIntArray(
+            firstPrepared.slice(0 until extendedDigit).toUIntArray(),
+            true
+        )
+        val m1 = SignedUIntArray(
+            firstPrepared.slice(extendedDigit until extendedDigit * 2).toUIntArray(), true
+        )
+        val m2 = SignedUIntArray(
+            firstPrepared.slice(extendedDigit * 2 until extendedDigit * 3).toUIntArray(), true
+        )
+
+        val n0 = SignedUIntArray(
+            secondPrepared.slice(0 until extendedDigit).toUIntArray(),
+            true
+        )
+        val n1 = SignedUIntArray(
+            secondPrepared.slice(extendedDigit until extendedDigit * 2).toUIntArray(), true
+        )
+        val n2 = SignedUIntArray(
+            secondPrepared.slice(extendedDigit * 2 until extendedDigit * 3).toUIntArray(), true
+        )
 
         val p0 = m0 + m2
         // p(0)
@@ -515,8 +564,12 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         var r0 = re0
         var r4 = rinf
         val rem2re1diff = (rem2 - re1)
-        // var r3 = SignedULongArray(exactDivideBy3(rem2re1diff.unsignedValue), rem2re1diff.sign)
-        var r3 = rem2re1diff / SignedUIntArray(uintArrayOf(3U), true)
+        // var r3 = SignedUIntArray(exactDivideBy3(rem2re1diff.unsignedValue), rem2re1diff.sign)
+        var r3 = rem2re1diff / SignedUIntArray(
+            uintArrayOf(
+                3U
+            ), true
+        )
         // println("R3 ${r3.sign} ${r3.unsignedValue}")
         var r1 = (re1 - rem1) shr 1
         var r2 = rem1 - r0
@@ -524,7 +577,7 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         r2 = r2 + r1 - r4
         r1 = r1 - r3
 
-        val bShiftAmount = extendedDigit * 63
+        val bShiftAmount = extendedDigit * wordSizeInBits
         val rb0 = r0
         val rb1 = (r1 shl (bShiftAmount))
         val rb2 = (r2 shl (bShiftAmount * 2))
@@ -596,10 +649,30 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         if (first == ZERO || second == ZERO) {
             return ZERO
         }
-        // TODO Need to debug 32 bit variant, seems to fail on lower product
-//        if (first.size >= karatsubaThreshold || second.size == karatsubaThreshold) {
-//            return karatsubaMultiply(first, second)
-//        }
+        if (first.size >= karatsubaThreshold || second.size == karatsubaThreshold) {
+            return karatsubaMultiply(first, second)
+        }
+
+        return removeLeadingZeros(
+            second.foldIndexed(ZERO) { index, acc, element ->
+                acc + (multiply(
+                    first,
+                    element
+                ) shl (index * basePowerOfTwo))
+            }
+        )
+    }
+
+    /**
+     * Just for testing against basecase multiplication. TODO add basecase multiply
+     */
+    internal fun multiplyNoKaratsuba(first: UIntArray, second: UIntArray): UIntArray {
+        if (first == ZERO || second == ZERO) {
+            return ZERO
+        }
+        if (first.size >= karatsubaThreshold || second.size == karatsubaThreshold) {
+            return karatsubaMultiply(first, second)
+        }
 
         return removeLeadingZeros(
             second.foldIndexed(ZERO) { index, acc, element ->

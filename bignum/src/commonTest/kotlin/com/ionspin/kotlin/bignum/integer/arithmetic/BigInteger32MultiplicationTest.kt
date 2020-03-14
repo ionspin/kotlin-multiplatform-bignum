@@ -159,4 +159,68 @@ class BigInteger32MultiplicationTest {
         val result = BigInteger32Arithmetic.multiply(a, b)
         assertTrue { BigInteger32Arithmetic.compare(c, result) == 0 }
     }
+
+    @Test
+    fun testToomCook3() {
+        assertTrue {
+            val a = UIntArray(30) { 0U } + uintArrayOf(0U, 0U, 1U)
+            val b = UIntArray(30) { 0U } + uintArrayOf(0U, 0U, 1U)
+            val result = BigInteger32Arithmetic.toomCook3Multiply(a, b)
+            val basecaseMultiply = BigInteger32Arithmetic.multiplyNoKaratsuba(a, b)
+            result.contentEquals(basecaseMultiply)
+        }
+
+        assertTrue {
+            val a = UIntArray(30) { 0U } + uintArrayOf((0U - 1U) shr 1, (0U - 1U) shr 1, (0U - 1U) shr 1)
+            val b = UIntArray(30) { 0U } + uintArrayOf((0U - 1U) shr 1, (0U - 1U) shr 1, (0U - 1U) shr 1)
+            val result = BigInteger32Arithmetic.toomCook3Multiply(a, b)
+            val basecaseMultiply = BigInteger32Arithmetic.multiplyNoKaratsuba(a, b)
+            // println(BigInteger32Arithmetic.toString(result, 10))
+            // println(BigInteger32Arithmetic.toString(basecaseMultiply, 10))
+            result.contentEquals(basecaseMultiply)
+        }
+
+        assertTrue {
+            val a = UIntArray(30) { 0U } + uintArrayOf(1U, 1U, 1U)
+            val b = UIntArray(30) { 0U } + uintArrayOf(1U, 0U, 0U)
+            val result = BigInteger32Arithmetic.toomCook3Multiply(a, b)
+            val basecaseMultiply = BigInteger32Arithmetic.multiplyNoKaratsuba(a, b)
+            result.contentEquals(BigInteger32Arithmetic.removeLeadingZeros(basecaseMultiply))
+        }
+
+        assertTrue {
+            val a = UIntArray(30) { 0U } + uintArrayOf(1U, 2U, 3U, 4U, 5U, 6U)
+            val b = UIntArray(30) { 0U } + uintArrayOf(1U, 2U, 3U, 4U, 5U, 6U)
+            val result = BigInteger32Arithmetic.toomCook3Multiply(a, b)
+            val basecaseMultiply = BigInteger32Arithmetic.multiplyNoKaratsuba(a, b)
+            result.contentEquals(basecaseMultiply)
+        }
+
+        assertTrue {
+            val a = UIntArray(30) { 0U } + uintArrayOf(0U, 0U, 0U, 1U)
+            val b = UIntArray(30) { 0U } + uintArrayOf(0U, 0U, 0U, 1U)
+            val result = BigInteger32Arithmetic.toomCook3Multiply(a, b)
+            val basecaseMultiply = BigInteger32Arithmetic.multiply(a, b)
+            result.contentEquals(basecaseMultiply)
+        }
+
+        assertTrue {
+            val a = UIntArray(30) { 0U } + uintArrayOf(100U, 200U, 300U, 50U)
+            val b = UIntArray(30) { 0U } + uintArrayOf(301U, 201U, 101U, 40U)
+            val result = BigInteger32Arithmetic.toomCook3Multiply(a, b)
+            val basecaseMultiply = BigInteger32Arithmetic.multiplyNoKaratsuba(a, b)
+            result.contentEquals(basecaseMultiply)
+        }
+    }
+
+    @Test
+    fun testKaratsubaSimple() {
+        assertTrue {
+            val a = UIntArray(30) { 0U } + uintArrayOf(100U, 200U, 300U, 50U)
+            val b = UIntArray(30) { 0U } + uintArrayOf(301U, 201U, 101U, 40U)
+            val result = BigInteger32Arithmetic.karatsubaMultiply(a, b)
+            val basecaseMultiply = BigInteger32Arithmetic.multiplyNoKaratsuba(a, b)
+            result.contentEquals(basecaseMultiply)
+        }
+    }
 }
