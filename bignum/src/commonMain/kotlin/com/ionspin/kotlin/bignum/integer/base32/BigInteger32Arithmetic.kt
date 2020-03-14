@@ -154,6 +154,25 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
         return bigInteger.copyOfRange(0, firstEmpty)
     }
 
+    fun countLeadingZeroWords(bigInteger: UIntArray): Int {
+        // Presume there are no leading zeros
+        var lastNonEmptyIndex = bigInteger.size - 1
+        // Check if it's an empty array
+        if (lastNonEmptyIndex <= 0) {
+            return 0
+        }
+        // Get the last element (Word order is high endian so leading zeros are only on highest indexes
+        var element = bigInteger[lastNonEmptyIndex]
+        while (element == 0U && lastNonEmptyIndex > 0) {
+            lastNonEmptyIndex -= 1
+            element = bigInteger[lastNonEmptyIndex]
+        }
+        if (bigInteger[lastNonEmptyIndex] == 0U) {
+            lastNonEmptyIndex -= 1
+        }
+        return bigInteger.size - lastNonEmptyIndex - 1
+    }
+
     override fun shiftLeft(operand: UIntArray, places: Int): UIntArray {
         if (operand.isEmpty() || places == 0) {
             return operand
@@ -256,14 +275,16 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     // ---------------- Primitive operations -----------------------//
 
     override fun compare(first: UIntArray, second: UIntArray): Int {
-        if (first.size > second.size) {
+        val firstStart = first.size - countLeadingZeroWords(first)
+        val secondStart = second.size - countLeadingZeroWords(second)
+        if (firstStart > secondStart) {
             return 1
         }
-        if (second.size > first.size) {
+        if (secondStart > firstStart) {
             return -1
         }
 
-        var counter = first.size - 1
+        var counter = firstStart - 1
         var firstIsLarger = false
         var bothAreEqual = true
         while (counter >= 0) {
@@ -334,17 +355,24 @@ internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
     }
 
     override fun subtract(first: UIntArray, second: UIntArray): UIntArray {
-        val firstIsLarger = compare(first, second) == 1
-
+        val firstWithoutLeadingZeroes = removeLeadingZeros(first)
+        val secondWithoutLeadingZeroes = removeLeadingZeros(second)
+        val firstIsLarger = compare(firstWithoutLeadingZeroes, secondWithoutLeadingZeroes) == 1
         val (largerLength, smallerLength, largerData, smallerData) = if (firstIsLarger) {
-            Quadruple(first.size, second.size, first, second)
+            Quadruple(firstWithoutLeadingZeroes.size, secondWithoutLeadingZeroes.size, firstWithoutLeadingZeroes, secondWithoutLeadingZeroes)
         } else {
-            Quadruple(second.size, first.size, second, first)
+            Quadruple(secondWithoutLeadingZeroes.size, firstWithoutLeadingZeroes.size, secondWithoutLeadingZeroes, firstWithoutLeadingZeroes)
         }
         val result = UIntArray(largerLength + 1) { 0u }
         var i = 0
         var diff: ULong = 0u
         while (i < smallerLength) {
+            if (i >= largerData.size) {
+                println("Breakpoint")
+            }
+            if (i >= smallerData.size) {
+                println("Breakpoint")
+            }
             diff = largerData[i].toULong() - smallerData[i] - diff
             result[i] = diff.toUInt()
             diff = (diff and overflowMask) shr wordSizeInBits
