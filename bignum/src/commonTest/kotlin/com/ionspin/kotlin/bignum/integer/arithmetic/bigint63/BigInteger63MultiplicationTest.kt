@@ -17,7 +17,6 @@
 
 package com.ionspin.kotlin.bignum.integer.arithmetic.bigint63
 
-import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
 import com.ionspin.kotlin.bignum.integer.base63.array.BigInteger63Arithmetic
 import kotlin.test.Test
 import kotlin.test.assertTrue

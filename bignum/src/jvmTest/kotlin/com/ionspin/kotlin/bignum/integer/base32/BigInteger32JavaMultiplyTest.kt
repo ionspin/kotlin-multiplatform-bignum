@@ -199,7 +199,7 @@ class BigInteger32JavaMultiplyTest {
         }
     }
 
-    //@Ignore("Need to debug both karatsuba and toom-cook in 32 bit")
+    // @Ignore("Need to debug both karatsuba and toom-cook in 32 bit")
     @Test
     fun testKaratsuba() {
         val seed = 1
