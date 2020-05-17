@@ -16,9 +16,10 @@
  */
 
 object Versions {
-    val kotlinCoroutines = "1.3.4"
-    val kotlin = "1.3.72"
-    val kotlinSerialization = "0.20.0"
+    val kotlinCoroutines = "1.3.5-native-mt-1.4-M1"
+    val kotlin = "1.4-M1"
+    val kotlinSerialization = "0.20.0-1.4-M1"
+    val atomicfu = "0.14.2-1.4-M1"
     val nodePlugin = "1.3.0"
     val dokkaPlugin = "0.10.1"
 }
