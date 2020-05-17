@@ -7,6 +7,5 @@
 build/
 /captures
 /bignum/node_modules
-gradle.properties
 /buildSrc/out
 /bignum/node_modules
