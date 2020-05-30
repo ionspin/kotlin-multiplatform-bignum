@@ -23,12 +23,14 @@ buildscript {
         google()
         maven("https://kotlin.bintray.com/kotlinx")
         maven("https://dl.bintray.com/kotlin/kotlin-eap")
+        maven("https://dl.bintray.com/kotlin/kotlin-dev")
         gradlePluginPortal()
         jcenter()
     }
 
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}")
+        classpath("org.jetbrains.dokka:dokka-gradle-plugin:${Versions.dokkaPlugin}")
     }
 }
 
@@ -39,6 +41,7 @@ allprojects {
         google()
         maven("https://kotlin.bintray.com/kotlinx")
         maven("https://dl.bintray.com/kotlin/kotlin-eap")
+        maven("https://dl.bintray.com/kotlin/kotlin-dev")
         jcenter()
     }
 }

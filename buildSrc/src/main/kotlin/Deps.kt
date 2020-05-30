@@ -21,7 +21,7 @@ object Versions {
     val kotlinSerialization = "0.20.0-1.4-M1"
     val atomicfu = "0.14.2-1.4-M1"
     val nodePlugin = "1.3.0"
-    val dokkaPlugin = "0.10.1"
+    val dokkaPlugin = "0.11.0-dev-45"
 }
 
 object Deps {

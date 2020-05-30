@@ -24,7 +24,7 @@ plugins {
     id(PluginsDeps.mavenPublish)
     id(PluginsDeps.signing)
     id(PluginsDeps.node) version Versions.nodePlugin
-    id(PluginsDeps.dokka) version Versions.dokkaPlugin
+    id(PluginsDeps.dokka)
     id(PluginsDeps.spotless) version PluginsDeps.Versions.spotlessVersion
 }
 
@@ -342,8 +342,6 @@ tasks {
 
     dokka {
         println("Dokka !")
-        multiplatform {
-        }
     }
     if (hostOsName == "linux") {
         val jvmTest by getting(Test::class) {
