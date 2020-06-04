@@ -48,7 +48,7 @@ object Deps {
         val reflection = "reflect"
         val coroutinesCore = "com.ionspin.kotlin.coroutines:kotlinx-coroutines:${Versions.kotlinCoroutines}"
         val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Versions.kotlinSerialization}"
-        val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.kotlinCoroutines}"
+        val coroutinesTest = "com.ionspin.kotlin.coroutines:kotlinx-coroutines-test:${Versions.kotlinCoroutines}"
     }
 
     object iOs {

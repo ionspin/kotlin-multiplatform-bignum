@@ -202,7 +202,6 @@ kotlin {
             val nativeTest by getting {
                 dependsOn(commonTest)
                 dependencies {
-                    implementation(Deps.Native.coroutines)
                 }
             }
             nativeTest
@@ -210,7 +209,6 @@ kotlin {
             val nativeTest by creating {
                 dependsOn(commonTest)
                 dependencies {
-                    implementation(Deps.Native.coroutines)
                 }
             }
             nativeTest
@@ -228,19 +226,16 @@ kotlin {
                     implementation(kotlin(Deps.Jvm.testJUnit))
                     implementation(Deps.Jvm.coroutinesTest)
                     implementation(kotlin(Deps.Jvm.reflection))
-                    implementation(Deps.Jvm.coroutinesCore)
                 }
             }
             val jsMain by getting {
                 dependencies {
                     implementation(kotlin(Deps.Js.stdLib))
-                    implementation(Deps.Js.coroutines)
                 }
             }
             val jsTest by getting {
                 dependencies {
                     implementation(kotlin(Deps.Js.test))
-                    implementation(Deps.Js.coroutines)
                 }
             }
 
