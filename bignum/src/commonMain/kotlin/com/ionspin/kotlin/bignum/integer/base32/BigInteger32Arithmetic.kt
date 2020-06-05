@@ -19,6 +19,7 @@ package com.ionspin.kotlin.bignum.integer.base32
 
 import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.integer.BigInteger
+import com.ionspin.kotlin.bignum.integer.BigInteger32ArithmeticInterface
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.Sign
@@ -34,7 +35,7 @@ import kotlin.math.min
  * on 09-Mar-2019
  */
 @ExperimentalUnsignedTypes
-internal object BigInteger32Arithmetic : BigIntegerArithmetic<UIntArray, UInt> {
+internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
     val baseMask = 0xFFFFFFFFUL
     val baseMaskInt = 0xFFFFFFFFU
     val overflowMask = 0x100000000U
