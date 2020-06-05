@@ -31,7 +31,7 @@ matrix:
         - source ~/.install-jdk-travis.sh
       script:
         - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then ./gradlew build; fi'
-        - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then ./gradlew build publishMingwx86PublicationToSnapshotRepository publishMingwx64PublicationToSnapshotRepository; fi'
+        - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then ./gradlew build publishMingwx64PublicationToSnapshotRepository; fi'
 cache:
   directories:
     - $HOME/.m2/
