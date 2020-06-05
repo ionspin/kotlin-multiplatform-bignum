@@ -40,6 +40,7 @@ import kotlin.math.floor
 
 @ExperimentalUnsignedTypes
 internal object BigInteger63InPlaceArithmetic : BigIntegerArithmetic {
+    override val _emitLongArray: LongArray = longArrayOf()
     override val ZERO: ULongArray = ulongArrayOf(0u)
     override val ONE: ULongArray = ulongArrayOf(1u)
     override val TWO: ULongArray = ulongArrayOf(2u)

@@ -28,6 +28,7 @@ import com.ionspin.kotlin.bignum.Endianness
  */
 @ExperimentalUnsignedTypes
 interface BigIntegerArithmetic {
+    val _emitLongArray: LongArray
     val ZERO: ULongArray
     val ONE: ULongArray
     val TWO: ULongArray

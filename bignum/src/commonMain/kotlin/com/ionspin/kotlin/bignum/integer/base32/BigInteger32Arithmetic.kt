@@ -36,6 +36,7 @@ import kotlin.math.min
  */
 @ExperimentalUnsignedTypes
 internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
+    override val _emitIntArray: IntArray = intArrayOf()
     val baseMask = 0xFFFFFFFFUL
     val baseMaskInt = 0xFFFFFFFFU
     val overflowMask = 0x100000000U
