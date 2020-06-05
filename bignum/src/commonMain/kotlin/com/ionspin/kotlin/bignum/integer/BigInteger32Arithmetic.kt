@@ -28,7 +28,7 @@ import com.ionspin.kotlin.bignum.Endianness
  */
 @ExperimentalUnsignedTypes
 interface BigInteger32ArithmeticInterface {
-    val _emitIntArray : IntArray
+    val _emitIntArray: IntArray
     val ZERO: UIntArray
     val ONE: UIntArray
     val TWO: UIntArray
@@ -144,4 +144,3 @@ interface BigInteger32ArithmeticInterface {
     fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness = Endianness.BIG): Pair<UIntArray, Sign>
     fun toUByteArray(operand: UIntArray, endianness: Endianness = Endianness.BIG): Array<UByte>
 }
-
