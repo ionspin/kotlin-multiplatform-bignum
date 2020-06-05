@@ -34,7 +34,7 @@ typealias WordArray = ULongArray
 typealias Word = ULong
 
 @ExperimentalUnsignedTypes
-internal val chosenArithmetic: BigIntegerArithmetic<WordArray, Word> =
+internal val chosenArithmetic: BigIntegerArithmetic =
     BigInteger63Arithmetic
 // internal val chosenArithmetic: BigIntegerArithmetic<WordArray, Word> = BigInteger63LinkedListArithmetic
 
