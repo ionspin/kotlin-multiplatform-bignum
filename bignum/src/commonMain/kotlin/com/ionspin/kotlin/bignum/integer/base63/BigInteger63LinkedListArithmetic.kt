@@ -19,7 +19,7 @@ package com.ionspin.kotlin.bignum.integer.base63
 
 import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.integer.BigInteger
-import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
+import com.ionspin.kotlin.bignum.integer.BigIntegerList63Arithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
@@ -36,7 +36,7 @@ import kotlin.math.floor
  * on 30-Mar-2019
  */
 @ExperimentalUnsignedTypes
-internal object BigInteger63LinkedListArithmetic : BigIntegerArithmetic<List<ULong>, ULong> {
+internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
     override val ZERO: List<ULong> = listOf(0u)
     override val ONE: List<ULong> = listOf(1u)
     override val TWO: List<ULong> = listOf(2u)
