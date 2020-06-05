@@ -5,7 +5,7 @@ matrix:
       jdk: openjdk12
       env:
         KBUILD=linux
-        JAVA_OPTS=-Xmx2g
+        JAVA_OPTS=-Xmx3g
       script:
         - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./linuxBuild.sh; fi'
         - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./linuxBuildAndPublish.sh; fi'
@@ -15,7 +15,7 @@ matrix:
       jdk: openjdk12
       env:
         KBUILD=linux
-        JAVA_OPTS=-Xmx2g
+        JAVA_OPTS=-Xmx3g
       script:
         - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./macBuild.sh; fi'
         - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./macBuildAndPublish.sh; fi'
@@ -24,7 +24,7 @@ matrix:
       jdk: openjdk12
       env:
         - GRAVIS="https://raw.githubusercontent.com/DanySK/Gravis-CI/master/"
-        - JAVA_OPTS=-Xmx2g
+        - JAVA_OPTS=-Xmx3g
         - JDK="adopt-openj9@1.11"
       before_install:
         - curl "${GRAVIS}.install-jdk-travis.sh" --output ~/.install-jdk-travis.sh
