@@ -297,14 +297,13 @@ kotlin {
             dependsOn(nativeTest)
         }
 
-        val mingwX86Main by getting {
+        val mingwX64Main by getting {
             dependsOn(nativeMain)
         }
 
-        val mingwX86Test by getting {
+        val mingwX64Test by getting {
             dependsOn(nativeTest)
         }
-
     }
 }
 
