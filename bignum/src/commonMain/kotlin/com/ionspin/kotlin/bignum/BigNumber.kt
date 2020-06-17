@@ -253,11 +253,14 @@ interface BitwiseCapable<BigType> {
 interface ByteArraySerializable {
 
     fun toByteArray(): Array<Byte>
-    fun toUByteArray(endianness: Endianness = Endianness.BIG): Array<UByte>
+    fun toTypedUByteArray(endianness: Endianness = Endianness.BIG): Array<UByte>
+    fun toUByteArray(endianness: Endianness = Endianness.BIG): UByteArray
 }
 
 @ExperimentalUnsignedTypes
 interface ByteArrayDeserializable<BigType : BigNumber<BigType>> {
     fun fromByteArray(byteArray: Array<Byte>): BigType
+    fun fromByteArray(byteArray: ByteArray): BigType
     fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness = Endianness.BIG): BigType
+    fun fromUByteArray(uByteArray: UByteArray, endianness: Endianness = Endianness.BIG): BigType
 }

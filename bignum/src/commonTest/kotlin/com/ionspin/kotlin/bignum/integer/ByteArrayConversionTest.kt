@@ -63,8 +63,27 @@ class ByteArrayConversionTest {
                 uByteArray,
                 Endianness.BIG
             )
-            val reconstructed = bigInt.toUByteArray()
+            val reconstructed = bigInt.toTypedUByteArray()
             uByteArray.contentEquals(reconstructed)
+        }
+    }
+
+    @Test
+    fun specificToUByteArrayTest() {
+        val bigInteger = BigInteger.parseString("01234567", 16)
+        val expectedBigEndian = ubyteArrayOf(
+            0x01U, 0x23U, 0x45U, 0x67U
+        )
+        val expectedLittleEndian = ubyteArrayOf(
+            0x67U, 0x45U, 0x23U, 0x01U
+        )
+        assertTrue {
+            val littleResult = bigInteger.toUByteArray(Endianness.LITTLE)
+            littleResult.contentEquals(expectedLittleEndian)
+        }
+        assertTrue {
+            val bigResult = bigInteger.toUByteArray(Endianness.BIG)
+            bigResult.contentEquals(expectedBigEndian)
         }
     }
 }

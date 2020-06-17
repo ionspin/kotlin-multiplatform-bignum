@@ -1281,7 +1281,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
     }
 
     override fun toUByteArray(operand: List<ULong>, endianness: Endianness): Array<UByte> {
-        val result = BigInteger32Arithmetic.toUByteArray(convertTo32BitRepresentation(operand), endianness)
+        val result = BigInteger32Arithmetic.toTypedUByteArray(convertTo32BitRepresentation(operand), endianness)
         return result
     }
 
