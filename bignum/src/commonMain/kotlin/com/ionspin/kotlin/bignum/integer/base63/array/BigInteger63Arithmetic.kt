@@ -1960,6 +1960,14 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
             ), result.second)
     }
 
+    override fun fromByteArray(byteArray: ByteArray): Pair<ULongArray, Sign> {
+        val result = BigInteger32Arithmetic.fromByteArray(byteArray)
+        return Pair(
+            convertFrom32BitRepresentation(
+                result.first
+            ), result.second)
+    }
+
     override fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness): Pair<ULongArray, Sign> {
         val result = BigInteger32Arithmetic.fromUByteArray(uByteArray, endianness)
         return Pair(
@@ -1968,7 +1976,23 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
             ), result.second)
     }
 
-    override fun toUByteArray(operand: ULongArray, endianness: Endianness): Array<UByte> {
+    override fun fromUByteArray(uByteArray: UByteArray, endianness: Endianness): Pair<ULongArray, Sign> {
+        val result = BigInteger32Arithmetic.fromUByteArray(uByteArray, endianness)
+        return Pair(
+            convertFrom32BitRepresentation(
+                result.first
+            ), result.second)
+    }
+
+    override fun toTypedUByteArray(operand: ULongArray, endianness: Endianness): Array<UByte> {
+        val result = BigInteger32Arithmetic.toTypedUByteArray(
+            convertTo32BitRepresentation(
+                operand
+            ), endianness)
+        return result
+    }
+
+    override fun toUByteArray(operand: ULongArray, endianness: Endianness): UByteArray {
         val result = BigInteger32Arithmetic.toUByteArray(
             convertTo32BitRepresentation(
                 operand

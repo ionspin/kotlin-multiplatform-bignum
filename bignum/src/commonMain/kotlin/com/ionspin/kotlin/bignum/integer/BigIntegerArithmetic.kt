@@ -141,8 +141,11 @@ interface BigIntegerArithmetic {
 
     fun toByteArray(operand: ULongArray, sign: Sign): Array<Byte>
     fun fromByteArray(byteArray: Array<Byte>): Pair<ULongArray, Sign>
+    fun fromByteArray(byteArray: ByteArray): Pair<ULongArray, Sign>
     fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness = Endianness.BIG): Pair<ULongArray, Sign>
-    fun toUByteArray(operand: ULongArray, endianness: Endianness = Endianness.BIG): Array<UByte>
+    fun fromUByteArray(uByteArray: UByteArray, endianness: Endianness = Endianness.BIG): Pair<ULongArray, Sign>
+    fun toTypedUByteArray(operand: ULongArray, endianness: Endianness = Endianness.BIG): Array<UByte>
+    fun toUByteArray(operand: ULongArray, endianness: Endianness = Endianness.BIG): UByteArray
 }
 
 /**

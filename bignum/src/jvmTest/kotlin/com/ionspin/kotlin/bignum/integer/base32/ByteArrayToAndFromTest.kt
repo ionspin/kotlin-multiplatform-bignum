@@ -278,14 +278,14 @@ class ByteArrayToAndFromTest {
         assertTrue {
             val uByteArray = "FF01ABCD01FF".chunked(2).map { it.toUByte(16) }.toTypedArray()
             val bigInt = BigInteger32Arithmetic.fromUByteArray(uByteArray, Endianness.BIG)
-            val reconstructed = BigInteger32Arithmetic.toUByteArray(bigInt.first, Endianness.BIG)
+            val reconstructed = BigInteger32Arithmetic.toTypedUByteArray(bigInt.first, Endianness.BIG)
             uByteArray.contentEquals(reconstructed)
         }
 
         assertTrue {
             val uByteArray = "19191919191919191919191919191919".chunked(2).map { it.toUByte(16) }.toTypedArray()
             val bigInt = BigInteger32Arithmetic.fromUByteArray(uByteArray, Endianness.BIG)
-            val reconstructed = BigInteger32Arithmetic.toUByteArray(bigInt.first, Endianness.BIG)
+            val reconstructed = BigInteger32Arithmetic.toTypedUByteArray(bigInt.first, Endianness.BIG)
             uByteArray.contentEquals(reconstructed)
         }
     }

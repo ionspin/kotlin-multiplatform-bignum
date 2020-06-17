@@ -141,6 +141,9 @@ interface BigInteger32ArithmeticInterface {
 
     fun toByteArray(operand: UIntArray, sign: Sign): Array<Byte>
     fun fromByteArray(byteArray: Array<Byte>): Pair<UIntArray, Sign>
+    fun fromByteArray(byteArray: ByteArray): Pair<UIntArray, Sign>
     fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness = Endianness.BIG): Pair<UIntArray, Sign>
-    fun toUByteArray(operand: UIntArray, endianness: Endianness = Endianness.BIG): Array<UByte>
+    fun fromUByteArray(uByteArray: UByteArray, endianness: Endianness = Endianness.BIG): Pair<UIntArray, Sign>
+    fun toTypedUByteArray(operand: UIntArray, endianness: Endianness = Endianness.BIG): Array<UByte>
+    fun toUByteArray(operand: UIntArray, endianness: Endianness = Endianness.BIG): UByteArray
 }

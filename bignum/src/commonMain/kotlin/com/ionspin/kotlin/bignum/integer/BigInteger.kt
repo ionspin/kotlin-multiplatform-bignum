@@ -203,7 +203,17 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
             return BigInteger(result.first, result.second)
         }
 
+        override fun fromByteArray(byteArray: ByteArray): BigInteger {
+            val result = arithmetic.fromByteArray(byteArray)
+            return BigInteger(result.first, result.second)
+        }
+
         override fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness): BigInteger {
+            val result = arithmetic.fromUByteArray(uByteArray, endianness)
+            return BigInteger(result.first, result.second)
+        }
+
+        override fun fromUByteArray(uByteArray: UByteArray, endianness: Endianness): BigInteger {
             val result = arithmetic.fromUByteArray(uByteArray, endianness)
             return BigInteger(result.first, result.second)
         }
@@ -763,7 +773,11 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         return arithmetic.toByteArray(magnitude, sign)
     }
 
-    override fun toUByteArray(endianness: Endianness): Array<UByte> {
+    override fun toTypedUByteArray(endianness: Endianness): Array<UByte> {
+        return arithmetic.toTypedUByteArray(magnitude, endianness)
+    }
+
+    override fun toUByteArray(endianness: Endianness): UByteArray {
         return arithmetic.toUByteArray(magnitude, endianness)
     }
 

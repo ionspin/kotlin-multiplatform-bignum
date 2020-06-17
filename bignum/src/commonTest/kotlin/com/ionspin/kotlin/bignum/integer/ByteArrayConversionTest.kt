@@ -63,7 +63,7 @@ class ByteArrayConversionTest {
                 uByteArray,
                 Endianness.BIG
             )
-            val reconstructed = bigInt.toUByteArray()
+            val reconstructed = bigInt.toTypedUByteArray()
             uByteArray.contentEquals(reconstructed)
         }
     }

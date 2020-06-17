@@ -394,7 +394,11 @@ class ModularBigInteger @ExperimentalUnsignedTypes private constructor(
         return residue.toByteArray()
     }
 
-    override fun toUByteArray(endianness: Endianness): Array<UByte> {
-        return residue.toUByteArray(endianness)
+    override fun toTypedUByteArray(endianness: Endianness): Array<UByte> {
+        return residue.toTypedUByteArray(endianness)
+    }
+
+    override fun toUByteArray(endianness: Endianness): UByteArray {
+        return residue.toUByteArray()
     }
 }

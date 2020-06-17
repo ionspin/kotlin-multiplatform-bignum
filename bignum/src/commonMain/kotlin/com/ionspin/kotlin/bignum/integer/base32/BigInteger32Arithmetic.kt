@@ -1371,6 +1371,50 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
         }
     }
 
+    override fun fromByteArray(byteArray: ByteArray): Pair<UIntArray, Sign> {
+        val sign = (byteArray[0].toInt() ushr 7) and 0b00000001
+        val chunked = byteArray.toList().reversed().chunked(4)
+
+        val resolvedSign = when (sign) {
+            0 -> Sign.POSITIVE
+            1 -> Sign.NEGATIVE
+            else -> throw RuntimeException("Invalid sign value when converting from byte array")
+        }
+        return when (resolvedSign) {
+            Sign.POSITIVE -> {
+                val collected = chunked.flatMap { chunk ->
+                    val result = chunk.reversed().foldIndexed(0U) { index, acc, byte ->
+                        acc + ((byte.toUInt() and 0xFFU) shl ((chunk.size - 1) * 8 - index * 8))
+                    }
+                    val discard = 4 - chunk.size
+                    val discarded = (result shl (8 * discard)) shr (8 * discard)
+                    uintArrayOf(discarded)
+                }.toUIntArray()
+                if (collected.contentEquals(ZERO)) {
+                    return Pair(ZERO, Sign.ZERO)
+                }
+                val corrected = collected.dropLastWhile { it == 0U }.toUIntArray()
+                Pair(removeLeadingZeros(corrected), resolvedSign)
+            }
+            Sign.NEGATIVE -> {
+                val collected = chunked.flatMap { chunk ->
+                    val result = chunk.reversed().foldIndexed(0U) { index, acc, byte ->
+                        acc + (byte.toUInt() shl ((chunk.size - 1) * 8 - index * 8))
+                    }
+                    uintArrayOf(result)
+                }.toUIntArray()
+                val subtracted = collected - 1U
+                val inverted = subtracted.map { it.inv() }.toUIntArray()
+                if (collected.contentEquals(ZERO)) {
+                    return Pair(ZERO, Sign.ZERO)
+                }
+
+                Pair(removeLeadingZeros(inverted), resolvedSign)
+            }
+            Sign.ZERO -> throw RuntimeException("Bug in fromByteArray, sign shouldn't ever be zero at this point.")
+        }
+    }
+
     override fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness): Pair<UIntArray, Sign> {
         val chunked = when (endianness) {
             Endianness.BIG -> {
@@ -1399,7 +1443,35 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
         return Pair(removeLeadingZeros(corrected), resolvedSign)
     }
 
-    override fun toUByteArray(operand: UIntArray, endianness: Endianness): Array<UByte> {
+    override fun fromUByteArray(uByteArray: UByteArray, endianness: Endianness): Pair<UIntArray, Sign> {
+        val chunked = when (endianness) {
+            Endianness.BIG -> {
+                uByteArray.toList().reversed().chunked(4)
+            }
+            Endianness.LITTLE -> {
+                uByteArray.toList().chunked(4)
+            }
+        }
+
+        val resolvedSign = Sign.POSITIVE
+
+        val collected = chunked.flatMap { chunk ->
+            val result = chunk.reversed().foldIndexed(0U) { index, acc, byte ->
+                acc + ((byte.toUInt() and 0xFFU) shl ((chunk.size - 1) * 8 - index * 8))
+            }
+            val discard = 4 - chunk.size
+            val discarded = (result shl (8 * discard)) shr (8 * discard)
+            uintArrayOf(discarded)
+        }.toUIntArray()
+        if (collected.contentEquals(ZERO)) {
+            return Pair(ZERO, Sign.ZERO)
+        }
+        val corrected = collected.dropLastWhile { it == 0U }.toUIntArray()
+
+        return Pair(removeLeadingZeros(corrected), resolvedSign)
+    }
+
+    override fun toTypedUByteArray(operand: UIntArray, endianness: Endianness): Array<UByte> {
         val corrected = when (endianness) {
             Endianness.BIG -> {
                 val collected = operand.reversed().flatMap {
@@ -1427,6 +1499,34 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
         return corrected.dropLeadingZeros()
     }
 
+    override fun toUByteArray(operand: UIntArray, endianness: Endianness): UByteArray {
+        val corrected = when (endianness) {
+            Endianness.BIG -> {
+                val collected = operand.reversed().flatMap {
+                    listOf(
+                        ((it shr 24) and 0xFFU).toUByte(),
+                        ((it shr 16) and 0xFFU).toUByte(),
+                        ((it shr 8) and 0xFFU).toUByte(),
+                        ((it) and 0xFFU).toUByte()
+                    )
+                }
+                collected.toUByteArray()
+            }
+            Endianness.LITTLE -> {
+                val collected = operand.flatMap {
+                    listOf(
+                        ((it shr 24) and 0xFFU).toUByte(),
+                        ((it shr 16) and 0xFFU).toUByte(),
+                        ((it shr 8) and 0xFFU).toUByte(),
+                        ((it) and 0xFFU).toUByte()
+                    )
+                }
+                collected.toUByteArray()
+            }
+        }
+        return corrected.dropLeadingZeros()
+    }
+
     private fun List<Byte>.dropLeadingZeros(): List<Byte> {
         return this.dropWhile { it == 0.toByte() }
     }
@@ -1437,5 +1537,9 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
 
     private fun Array<UByte>.dropLeadingZeros(): Array<UByte> {
         return this.dropWhile { it == 0.toUByte() }.toTypedArray()
+    }
+
+    private fun UByteArray.dropLeadingZeros(): UByteArray {
+        return this.dropWhile { it == 0.toUByte() }.toUByteArray()
     }
 }
