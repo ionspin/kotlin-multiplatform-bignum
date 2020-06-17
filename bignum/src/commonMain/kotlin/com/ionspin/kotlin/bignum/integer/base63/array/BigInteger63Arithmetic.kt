@@ -1309,7 +1309,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
             }
         }
 
-        return result
+        return removeLeadingZeros(result)
     }
 
     internal fun convertTo32BitRepresentation(operand: ULongArray): UIntArray {

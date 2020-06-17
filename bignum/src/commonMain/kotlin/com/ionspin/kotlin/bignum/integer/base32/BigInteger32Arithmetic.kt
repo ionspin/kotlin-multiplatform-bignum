@@ -1474,24 +1474,40 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
     override fun toTypedUByteArray(operand: UIntArray, endianness: Endianness): Array<UByte> {
         val corrected = when (endianness) {
             Endianness.BIG -> {
+                var index = 0
                 val collected = operand.reversed().flatMap {
-                    listOf(
+                    val leadingZeroBytes = if (index == operand.size - 1) {
+                        numberOfLeadingZerosInAWord(it) / 8
+                    } else {
+                        0
+                    }
+                    val converted = listOf(
                         ((it shr 24) and 0xFFU).toUByte(),
                         ((it shr 16) and 0xFFU).toUByte(),
                         ((it shr 8) and 0xFFU).toUByte(),
                         ((it) and 0xFFU).toUByte()
                     )
+                    index++
+                    converted.drop(leadingZeroBytes)
                 }
                 collected
             }
             Endianness.LITTLE -> {
-                val collected = operand.flatMap {
-                    listOf(
-                        ((it shr 24) and 0xFFU).toUByte(),
-                        ((it shr 16) and 0xFFU).toUByte(),
+                var index = 0
+                val collected = operand.reversed().flatMap {
+                    val leadingZeroBytes = if (index == operand.size - 1) {
+                        numberOfLeadingZerosInAWord(it) / 8
+                    } else {
+                        0
+                    }
+                    val converted = listOf(
+                        ((it) and 0xFFU).toUByte(),
                         ((it shr 8) and 0xFFU).toUByte(),
-                        ((it) and 0xFFU).toUByte()
+                        ((it shr 16) and 0xFFU).toUByte(),
+                        ((it shr 24) and 0xFFU).toUByte()
                     )
+                    index++
+                    converted.dropLast(leadingZeroBytes)
                 }
                 collected
             }
@@ -1502,29 +1518,48 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
     override fun toUByteArray(operand: UIntArray, endianness: Endianness): UByteArray {
         val corrected = when (endianness) {
             Endianness.BIG -> {
+                var index = 0
                 val collected = operand.reversed().flatMap {
-                    listOf(
+                    val leadingZeroBytes = if (index == operand.size - 1) {
+                        numberOfLeadingZerosInAWord(it) / 8
+                    } else {
+                        0
+                    }
+                    val converted = listOf(
                         ((it shr 24) and 0xFFU).toUByte(),
                         ((it shr 16) and 0xFFU).toUByte(),
                         ((it shr 8) and 0xFFU).toUByte(),
                         ((it) and 0xFFU).toUByte()
                     )
+                    index++
+                    converted.drop(leadingZeroBytes)
                 }
-                collected.toUByteArray()
+                collected
             }
             Endianness.LITTLE -> {
                 val collected = operand.flatMap {
-                    listOf(
-                        ((it shr 24) and 0xFFU).toUByte(),
-                        ((it shr 16) and 0xFFU).toUByte(),
-                        ((it shr 8) and 0xFFU).toUByte(),
-                        ((it) and 0xFFU).toUByte()
-                    )
+                    var index = 0
+                    val collected = operand.reversed().flatMap {
+                        val leadingZeroBytes = if (index == operand.size - 1) {
+                            numberOfLeadingZerosInAWord(it) / 8
+                        } else {
+                            0
+                        }
+                        val converted = listOf(
+                            ((it) and 0xFFU).toUByte(),
+                            ((it shr 8) and 0xFFU).toUByte(),
+                            ((it shr 16) and 0xFFU).toUByte(),
+                            ((it shr 24) and 0xFFU).toUByte()
+                        )
+                        index++
+                        converted.dropLast(leadingZeroBytes)
+                    }
+                    collected
                 }
                 collected.toUByteArray()
             }
         }
-        return corrected.dropLeadingZeros()
+        return corrected.toUByteArray()
     }
 
     private fun List<Byte>.dropLeadingZeros(): List<Byte> {
