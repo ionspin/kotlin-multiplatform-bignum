@@ -1348,8 +1348,13 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
             val position = (i * 2) - skipWordCount
             if (requiredLength == 2) {
                 result[0] = operand[0].toULong() or ((operand[1].toULong() shl 32) and highMask)
-                result[i] =
-                    (operand[1].toULong() shr 31) or (operand[2].toULong() shl 1) or (operand[3].toULong() shl 33)
+                if (operand.size == 4) {
+                    result[1] =
+                        (operand[1].toULong() shr 31) or (operand[2].toULong() shl 1) or (operand[3].toULong() shl 33)
+                } else {
+                    result[1] =
+                        (operand[1].toULong() shr 31) or (operand[2].toULong() shl 1)
+                }
             } else {
                 when (i) {
                     0 -> {
