@@ -17,7 +17,6 @@
 
 package com.ionspin.kotlin.bignum
 
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -25,4 +24,4 @@ import kotlinx.coroutines.runBlocking
  * ugljesa.jovanovic@ionspin.com
  * on 20-Oct-2019
  */
-actual fun runBlockingTest(block: suspend (scope: CoroutineScope) -> Unit) = runBlocking { block(this) }
+actual fun runBlockingTest(block: suspend () -> Unit) = runBlocking { block() }

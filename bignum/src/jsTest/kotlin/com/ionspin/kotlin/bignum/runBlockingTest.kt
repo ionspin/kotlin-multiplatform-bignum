@@ -17,7 +17,6 @@
 
 package com.ionspin.kotlin.bignum
 
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.promise
 
@@ -26,4 +25,4 @@ import kotlinx.coroutines.promise
  * ugljesa.jovanovic@ionspin.com
  * on 20-Oct-2019
  */
-actual fun runBlockingTest(block: suspend (scope: CoroutineScope) -> Unit): dynamic = GlobalScope.promise { block(this) }
+actual fun runBlockingTest(block: suspend () -> Unit): dynamic = GlobalScope.promise { block() }
