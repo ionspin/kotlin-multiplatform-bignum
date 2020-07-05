@@ -43,7 +43,7 @@ repositories {
     jcenter()
 }
 group = "com.ionspin.kotlin"
-version = "0.1.6-1.4-M2-2-SNAPSHOT"
+version = "0.1.6-1.4-M2-3-SNAPSHOT"
 
 val ideaActive = System.getProperty("idea.active") == "true"
 
@@ -169,14 +169,12 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(kotlin(Deps.Common.stdLib))
-                implementation(Deps.Common.coroutines)
             }
         }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin(Deps.Common.test))
                 implementation(kotlin(Deps.Common.testAnnotation))
-                implementation(Deps.Common.coroutines)
             }
         }
 
@@ -195,6 +193,7 @@ kotlin {
             val nativeTest by getting {
                 dependsOn(commonTest)
                 dependencies {
+                    implementation(Deps.Native.coroutines)
                 }
             }
             nativeTest
@@ -202,6 +201,7 @@ kotlin {
             val nativeTest by creating {
                 dependsOn(commonTest)
                 dependencies {
+                    implementation(Deps.Native.coroutines)
                 }
             }
             nativeTest
@@ -215,9 +215,9 @@ kotlin {
             }
             val jvmTest by getting {
                 dependencies {
+                    implementation(Deps.Jvm.coroutinesCore)
                     implementation(kotlin(Deps.Jvm.test))
                     implementation(kotlin(Deps.Jvm.testJUnit))
-                    implementation(Deps.Jvm.coroutinesTest)
                     implementation(kotlin(Deps.Jvm.reflection))
                 }
             }
@@ -229,6 +229,7 @@ kotlin {
             val jsTest by getting {
                 dependencies {
                     implementation(kotlin(Deps.Js.test))
+                    implementation(Deps.Js.coroutines)
                 }
             }
 
