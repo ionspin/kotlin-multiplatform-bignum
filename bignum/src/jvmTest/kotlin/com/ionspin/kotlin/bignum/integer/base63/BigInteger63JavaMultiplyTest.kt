@@ -35,7 +35,7 @@ import kotlin.test.assertTrue
  * ugljesa.jovanovic@ionspin.com
  * on 09-Mar-2019
  */
-@ExperimentalUnsignedTypes
+
 class BigInteger63JavaMultiplyTest {
     @Test
     fun `Test for sentimental value`() {

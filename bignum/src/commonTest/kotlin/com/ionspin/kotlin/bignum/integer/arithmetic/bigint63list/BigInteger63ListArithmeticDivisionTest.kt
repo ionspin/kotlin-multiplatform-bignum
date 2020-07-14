@@ -31,7 +31,7 @@ package com.ionspin.kotlin.bignum.integer.arithmetic.bigint63list
 //  */
 // TODO once linked list is implemented in 63bit arithmetic port it here and test it
 
-// @ExperimentalUnsignedTypes
+//
 // class BigInteger63ListArithmeticDivisionTest {
 //
 //     @Test

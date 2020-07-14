@@ -25,20 +25,20 @@ import com.ionspin.kotlin.bignum.integer.base63.array.BigInteger63Arithmetic
  * ugljesa.jovanovic@ionspin.com
  * on 10-Mar-2019
  */
-@ExperimentalUnsignedTypes
+
 
 // typealias WordArray = List<ULong>
 typealias WordArray = ULongArray
 
-@ExperimentalUnsignedTypes
+
 typealias Word = ULong
 
-@ExperimentalUnsignedTypes
+
 internal val chosenArithmetic: BigIntegerArithmetic =
     BigInteger63Arithmetic
 // internal val chosenArithmetic: BigIntegerArithmetic<WordArray, Word> = BigInteger63LinkedListArithmetic
 
-// @ExperimentalUnsignedTypes
+//
 // object TypeHelper {
 //     // val instance: WordArray = listOf()
 //     val instance: WordArray = ulongArrayOf()

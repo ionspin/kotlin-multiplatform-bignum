@@ -36,7 +36,7 @@ import kotlin.test.assertTrue
  * on 20-Apr-2019
  */
 @Ignore // TODO refactor and move to benchmarks
-@ExperimentalUnsignedTypes
+
 class ProfilerRunner {
     companion object {
         @Suppress("UNUSED_PARAMETER")

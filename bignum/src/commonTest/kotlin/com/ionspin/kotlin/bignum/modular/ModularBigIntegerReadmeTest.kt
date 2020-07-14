@@ -27,7 +27,7 @@ import kotlin.test.assertTrue
  * ugljesa.jovanovic@ionspin.com
  * on 22-Apr-2019
  */
-@ExperimentalUnsignedTypes
+
 class ModularBigIntegerReadmeTest {
 
     @Test

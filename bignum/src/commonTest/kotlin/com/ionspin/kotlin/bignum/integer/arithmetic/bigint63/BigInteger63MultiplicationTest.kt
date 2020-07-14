@@ -27,7 +27,7 @@ import kotlin.test.assertTrue
  * on 17-Oct-2019
  */
 
-@ExperimentalUnsignedTypes
+
 class BigInteger63MultiplicationTest {
     @Test
     fun testToomCook3() {

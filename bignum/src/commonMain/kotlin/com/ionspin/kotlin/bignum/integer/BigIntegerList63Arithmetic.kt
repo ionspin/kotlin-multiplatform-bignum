@@ -26,7 +26,7 @@ import com.ionspin.kotlin.bignum.Endianness
  * ugljesa.jovanovic@ionspin.com
  * on 10-Mar-2019
  */
-@ExperimentalUnsignedTypes
+
 interface BigIntegerList63Arithmetic {
     val ZERO: List<ULong>
     val ONE: List<ULong>

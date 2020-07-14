@@ -39,7 +39,7 @@ import kotlin.test.assertTrue
  * ugljesa.jovanovic@ionspin.com
  * on 09-Mar-2019
  */
-@ExperimentalUnsignedTypes
+
 class BigInteger32JavaDivisionTest {
 
     @Test
@@ -384,7 +384,7 @@ class BigInteger32JavaDivisionTest {
     }
 }
 
-@ExperimentalUnsignedTypes
+
 class DivisionBenchmark {
 
     data class BenchmarkSample32Bit(

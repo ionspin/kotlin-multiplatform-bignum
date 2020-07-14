@@ -35,7 +35,7 @@ import kotlin.math.floor
  * ugljesa.jovanovic@ionspin.com
  * on 30-Mar-2019
  */
-@ExperimentalUnsignedTypes
+
 internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
     override val ZERO: List<ULong> = listOf(0u)
     override val ONE: List<ULong> = listOf(1u)
@@ -1267,21 +1267,21 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
     override fun fromByte(byte: Byte): List<ULong> = listOf(byte.toInt().absoluteValue.toULong())
 
     override fun toByteArray(operand: List<ULong>, sign: Sign): Array<Byte> {
-        return BigInteger32Arithmetic.toByteArray(convertTo32BitRepresentation(operand), sign)
+        return BigInteger32Arithmetic.oldToByteArray(convertTo32BitRepresentation(operand), sign)
     }
 
     override fun fromByteArray(byteArray: Array<Byte>): Pair<List<ULong>, Sign> {
-        val result = BigInteger32Arithmetic.fromByteArray(byteArray)
+        val result = BigInteger32Arithmetic.oldFromByteArray(byteArray)
         return Pair(convertFrom32BitRepresentation(result.first), result.second)
     }
 
     override fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness): Pair<List<ULong>, Sign> {
-        val result = BigInteger32Arithmetic.fromUByteArray(uByteArray, endianness)
+        val result = BigInteger32Arithmetic.olfFromUByteArray(uByteArray, endianness)
         return Pair(convertFrom32BitRepresentation(result.first), result.second)
     }
 
     override fun toUByteArray(operand: List<ULong>, endianness: Endianness): Array<UByte> {
-        val result = BigInteger32Arithmetic.toTypedUByteArray(convertTo32BitRepresentation(operand), endianness)
+        val result = BigInteger32Arithmetic.toUIntArrayRepresentedAsTypedUByteArray(convertTo32BitRepresentation(operand), endianness)
         return result
     }
 

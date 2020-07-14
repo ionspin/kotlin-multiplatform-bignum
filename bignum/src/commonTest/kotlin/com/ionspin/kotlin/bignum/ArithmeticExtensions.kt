@@ -26,7 +26,7 @@ import com.ionspin.kotlin.bignum.integer.base63.array.BigInteger63Arithmetic
  */
 // TODO this breaks Kotln Native at the moment, since we are only releasing Array version, we'll hardcode it
 // Need to find a better solution than removal of zeroes at init time.
-@ExperimentalUnsignedTypes
+
 fun ULongArray.removeLeadingZeroes(): ULongArray {
     // if ((TypeHelper.instance as Any) is ULongArray) {
         return BigInteger63Arithmetic.removeLeadingZeros(this) // as WordArray

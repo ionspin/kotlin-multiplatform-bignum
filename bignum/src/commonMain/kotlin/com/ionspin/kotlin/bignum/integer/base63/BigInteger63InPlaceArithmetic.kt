@@ -17,6 +17,7 @@
 
 package com.ionspin.kotlin.bignum.integer.base63
 
+import com.ionspin.kotlin.bignum.ByteArrayRepresentation
 import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
@@ -38,7 +39,7 @@ import kotlin.math.floor
  * Word order is big endian
  */
 
-@ExperimentalUnsignedTypes
+
 internal object BigInteger63InPlaceArithmetic : BigIntegerArithmetic {
     override val _emitLongArray: LongArray = longArrayOf()
     override val ZERO: ULongArray = ulongArrayOf(0u)
@@ -1544,38 +1545,74 @@ internal object BigInteger63InPlaceArithmetic : BigIntegerArithmetic {
 
     override fun fromByte(byte: Byte): ULongArray = ulongArrayOf(byte.toInt().absoluteValue.toULong())
 
-    override fun toByteArray(operand: ULongArray, sign: Sign): Array<Byte> {
-        return BigInteger32Arithmetic.toByteArray(convertTo32BitRepresentation(operand), sign)
+    override fun oldToByteArray(operand: ULongArray, sign: Sign): Array<Byte> {
+        return BigInteger32Arithmetic.oldToByteArray(convertTo32BitRepresentation(operand), sign)
     }
 
-    override fun fromByteArray(byteArray: Array<Byte>): Pair<ULongArray, Sign> {
-        val result = BigInteger32Arithmetic.fromByteArray(byteArray)
+    override fun oldFromByteArray(byteArray: Array<Byte>): Pair<ULongArray, Sign> {
+        val result = BigInteger32Arithmetic.oldFromByteArray(byteArray)
         return Pair(convertFrom32BitRepresentation(result.first), result.second)
     }
 
-    override fun fromByteArray(byteArray: ByteArray): Pair<ULongArray, Sign> {
-        val result = BigInteger32Arithmetic.fromByteArray(byteArray)
+    override fun oldFromByteArray(byteArray: ByteArray): Pair<ULongArray, Sign> {
+        val result = BigInteger32Arithmetic.oldFromByteArray(byteArray)
         return Pair(convertFrom32BitRepresentation(result.first), result.second)
     }
 
-    override fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness): Pair<ULongArray, Sign> {
-        val result = BigInteger32Arithmetic.fromUByteArray(uByteArray, endianness)
+    override fun oldFromUByteArray(uByteArray: Array<UByte>, endianness: Endianness): Pair<ULongArray, Sign> {
+        val result = BigInteger32Arithmetic.olfFromUByteArray(uByteArray, endianness)
         return Pair(convertFrom32BitRepresentation(result.first), result.second)
     }
 
-    override fun fromUByteArray(uByteArray: UByteArray, endianness: Endianness): Pair<ULongArray, Sign> {
-        val result = BigInteger32Arithmetic.fromUByteArray(uByteArray, endianness)
+    override fun oldFromUByteArray(uByteArray: UByteArray, endianness: Endianness): Pair<ULongArray, Sign> {
+        val result = BigInteger32Arithmetic.olfFromUByteArray(uByteArray, endianness)
         return Pair(convertFrom32BitRepresentation(result.first), result.second)
     }
 
-    override fun toTypedUByteArray(operand: ULongArray, endianness: Endianness): Array<UByte> {
-        val result = BigInteger32Arithmetic.toTypedUByteArray(convertTo32BitRepresentation(operand), endianness)
+    override fun oldToTypedUByteArray(operand: ULongArray, endianness: Endianness): Array<UByte> {
+        val result = BigInteger32Arithmetic.toUIntArrayRepresentedAsTypedUByteArray(convertTo32BitRepresentation(operand), endianness)
         return result
     }
 
-    override fun toUByteArray(operand: ULongArray, endianness: Endianness): UByteArray {
-        val result = BigInteger32Arithmetic.toUByteArray(convertTo32BitRepresentation(operand), endianness)
+    override fun oldToUByteArray(operand: ULongArray, endianness: Endianness): UByteArray {
+        val result = BigInteger32Arithmetic.toUIntArrayRepresentedAsUByteArray(convertTo32BitRepresentation(operand), endianness)
         return result
+    }
+
+    override fun fromUByteArray(
+        source: UByteArray,
+        byteArrayRepresentation: ByteArrayRepresentation,
+        endianness: Endianness,
+        isTwosComplement: Boolean
+    ): Pair<ULongArray, Sign> {
+        TODO("not implemented yet")
+    }
+
+    override fun fromByteArray(
+        source: ByteArray,
+        byteArrayRepresentation: ByteArrayRepresentation,
+        endianness: Endianness,
+        isTwosComplement: Boolean
+    ): Pair<ULongArray, Sign> {
+        TODO("not implemented yet")
+    }
+
+    override fun toUByteArray(
+        operand: ULongArray,
+        byteArrayRepresentation: ByteArrayRepresentation,
+        endianness: Endianness,
+        isTwosComplement: Boolean
+    ): UByteArray {
+        TODO("not implemented yet")
+    }
+
+    override fun toByteArray(
+        operand: ULongArray,
+        byteArrayRepresentation: ByteArrayRepresentation,
+        endianness: Endianness,
+        isTwosComplement: Boolean
+    ): ByteArray {
+        TODO("not implemented yet")
     }
 
     private fun debugOperandsCheck(first: ULongArray, second: ULongArray) {

@@ -32,7 +32,7 @@ import kotlin.test.assertTrue
  * ugljesa.jovanovic@ionspin.com
  * on 27-Apr-2019
  */
-@ExperimentalUnsignedTypes
+
 class BigInteger63ListGcdTest() {
 
     @Test

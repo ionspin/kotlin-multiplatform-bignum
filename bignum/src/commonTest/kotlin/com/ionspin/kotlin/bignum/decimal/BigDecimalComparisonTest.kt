@@ -25,7 +25,7 @@ import kotlin.test.assertTrue
  * ugljesa.jovanovic@ionspin.com
  * on 10-Aug-2019
  */
-@ExperimentalUnsignedTypes
+
 class BigDecimalComparisonTest {
     @Test
     fun testDifferentPrecisionComparison() {

@@ -18,6 +18,7 @@
 package com.ionspin.kotlin.bignum.modular
 
 import com.ionspin.kotlin.bignum.BigNumber
+import com.ionspin.kotlin.bignum.ByteArrayRepresentation
 import com.ionspin.kotlin.bignum.ByteArraySerializable
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.Endianness
@@ -34,8 +35,8 @@ import com.ionspin.kotlin.bignum.integer.Sign
  * on 04-Apr-2019
  */
 
-@ExperimentalUnsignedTypes
-class ModularBigInteger @ExperimentalUnsignedTypes private constructor(
+
+class ModularBigInteger  private constructor(
     signedResidue: BigInteger,
     val modulus: BigInteger,
     private val creator: BigNumber.Creator<ModularBigInteger>
@@ -390,15 +391,35 @@ class ModularBigInteger @ExperimentalUnsignedTypes private constructor(
         return residue.doubleValue()
     }
 
-    override fun toByteArray(): Array<Byte> {
-        return residue.toByteArray()
+    override fun oldToTypedByteArray(): Array<Byte> {
+        return residue.oldToTypedByteArray()
     }
 
-    override fun toTypedUByteArray(endianness: Endianness): Array<UByte> {
-        return residue.toTypedUByteArray(endianness)
+    override fun oldToTypedUByteArray(endianness: Endianness): Array<UByte> {
+        return residue.oldToTypedUByteArray(endianness)
     }
 
-    override fun toUByteArray(endianness: Endianness): UByteArray {
-        return residue.toUByteArray()
+    override fun oldToUByteArray(endianness: Endianness): UByteArray {
+        return residue.oldToUByteArray()
+    }
+
+    override fun oldToByteArray(): ByteArray {
+        TODO("not implemented yet")
+    }
+
+    override fun toUByteArray(
+        byteArrayRepresentation: ByteArrayRepresentation,
+        endianness: Endianness,
+        twosComplement: Boolean
+    ): UByteArray {
+        TODO("not implemented yet")
+    }
+
+    override fun toByteArray(
+        byteArrayRepresentation: ByteArrayRepresentation,
+        endianness: Endianness,
+        twosComplement: Boolean
+    ): ByteArray {
+        TODO("not implemented yet")
     }
 }

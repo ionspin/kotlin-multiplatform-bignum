@@ -20,6 +20,7 @@ package com.ionspin.kotlin.bignum.integer
 import com.ionspin.kotlin.bignum.BigNumber
 import com.ionspin.kotlin.bignum.BitwiseCapable
 import com.ionspin.kotlin.bignum.ByteArrayDeserializable
+import com.ionspin.kotlin.bignum.ByteArrayRepresentation
 import com.ionspin.kotlin.bignum.ByteArraySerializable
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.Endianness
@@ -36,7 +37,7 @@ import kotlin.math.log10
  *
  * Based on unsigned arrays, currently limited to [Int.MAX_VALUE] words.
  */
-@ExperimentalUnsignedTypes
+
 class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : BigNumber<BigInteger>,
     CommonBigNumberOperations<BigInteger>,
     NarrowingOperations<BigInteger>,
@@ -56,7 +57,7 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         return this
     }
 
-    @ExperimentalUnsignedTypes
+
     companion object : BigNumber.Creator<BigInteger>, BigNumber.Util<BigInteger>, ByteArrayDeserializable<BigInteger> {
         private val arithmetic: BigIntegerArithmetic = chosenArithmetic
 
@@ -198,23 +199,43 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
             }
         }
 
-        override fun fromByteArray(byteArray: Array<Byte>): BigInteger {
-            val result = arithmetic.fromByteArray(byteArray)
+        override fun oldFromByteArray(byteArray: Array<Byte>): BigInteger {
+            val result = arithmetic.oldFromByteArray(byteArray)
             return BigInteger(result.first, result.second)
         }
 
-        override fun fromByteArray(byteArray: ByteArray): BigInteger {
-            val result = arithmetic.fromByteArray(byteArray)
+        override fun oldFromByteArray(byteArray: ByteArray): BigInteger {
+            val result = arithmetic.oldFromByteArray(byteArray)
             return BigInteger(result.first, result.second)
         }
 
-        override fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness): BigInteger {
-            val result = arithmetic.fromUByteArray(uByteArray, endianness)
+        override fun oldFromUByteArray(uByteArray: Array<UByte>, endianness: Endianness): BigInteger {
+            val result = arithmetic.oldFromUByteArray(uByteArray, endianness)
             return BigInteger(result.first, result.second)
         }
 
-        override fun fromUByteArray(uByteArray: UByteArray, endianness: Endianness): BigInteger {
-            val result = arithmetic.fromUByteArray(uByteArray, endianness)
+        override fun oldFromUByteArray(uByteArray: UByteArray, endianness: Endianness): BigInteger {
+            val result = arithmetic.oldFromUByteArray(uByteArray, endianness)
+            return BigInteger(result.first, result.second)
+        }
+
+        override fun fromUByteArray(
+            source: UByteArray,
+            byteArrayRepresentation: ByteArrayRepresentation,
+            endianness: Endianness,
+            twosComplement: Boolean
+        ): BigInteger {
+            val result = arithmetic.fromUByteArray(source, byteArrayRepresentation, endianness, twosComplement)
+            return BigInteger(result.first, result.second)
+        }
+
+        override fun fromByteArray(
+            source: ByteArray,
+            byteArrayRepresentation: ByteArrayRepresentation,
+            endianness: Endianness,
+            twosComplement: Boolean
+        ): BigInteger {
+            val result = arithmetic.fromByteArray(source, byteArrayRepresentation, endianness, twosComplement)
             return BigInteger(result.first, result.second)
         }
     }
@@ -769,17 +790,33 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         return this.toString().toDouble()
     }
 
-    override fun toByteArray(): Array<Byte> {
-        return arithmetic.toByteArray(magnitude, sign)
+
+
+    override fun oldToTypedByteArray(): Array<Byte> {
+        return arithmetic.oldToByteArray(magnitude, sign)
     }
 
-    override fun toTypedUByteArray(endianness: Endianness): Array<UByte> {
-        return arithmetic.toTypedUByteArray(magnitude, endianness)
+    override fun oldToByteArray(): ByteArray {
+        TODO("not implemented yet")
     }
 
-    override fun toUByteArray(endianness: Endianness): UByteArray {
-        return arithmetic.toUByteArray(magnitude, endianness)
+    override fun oldToTypedUByteArray(endianness: Endianness): Array<UByte> {
+        return arithmetic.oldToTypedUByteArray(magnitude, endianness)
     }
+
+    override fun oldToUByteArray(endianness: Endianness): UByteArray {
+        return arithmetic.oldToUByteArray(magnitude, endianness)
+    }
+
+    override fun toUByteArray(byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, twosComplement: Boolean): UByteArray {
+        return arithmetic.toUByteArray(magnitude, byteArrayRepresentation, endianness, twosComplement)
+    }
+
+    override fun toByteArray(byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, twosComplement: Boolean): ByteArray {
+        return arithmetic.toByteArray(magnitude, byteArrayRepresentation, endianness, twosComplement)
+    }
+
+
 
     operator fun rangeTo(other: BigInteger) = BigIntegerRange(this, other)
 

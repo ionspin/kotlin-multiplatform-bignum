@@ -24,7 +24,7 @@
 //  * ugljesa.jovanovic@ionspin.com
 //  * on 10-Mar-2019
 //  */
-// @ExperimentalUnsignedTypes
+//
 // actual object PlatformBigIntegerArithmetic : BigIntegerArithmetic {
 //
 //     override val ZERO: IntArray

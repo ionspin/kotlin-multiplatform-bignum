@@ -25,7 +25,7 @@ import kotlin.math.absoluteValue
  * ugljesa.jovanovic@ionspin.com
  * on 24-Mar-2019
  */
-@UseExperimental(ExperimentalUnsignedTypes::class)
+
 fun BigDecimal.toJavaBigDecimal(): java.math.BigDecimal {
     if (this.precision > Int.MAX_VALUE) {
         throw RuntimeException("Numbers with more digits than Int.MAX_VALUE cannot be converted to java BigDecimal")

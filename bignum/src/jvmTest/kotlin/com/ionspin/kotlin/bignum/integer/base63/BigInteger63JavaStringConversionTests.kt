@@ -33,7 +33,7 @@ import kotlin.test.assertTrue
  * ugljesa.jovanovic@ionspin.com
  * on 16-Mar-2019
  */
-@ExperimentalUnsignedTypes
+
 class BigInteger63JavaStringConversionTests {
 
     @Test

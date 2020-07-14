@@ -25,7 +25,7 @@ import kotlin.test.assertTrue
  * ugljesa.jovanovic@ionspin.com
  * on 04-May-2019
  */
-@ExperimentalUnsignedTypes
+
 class BigDecimalDivPowTest {
 
     @Test

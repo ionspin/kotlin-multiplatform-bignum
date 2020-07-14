@@ -3,6 +3,13 @@
 ##### 0.1.6-SNAPSHOT 
 - Fixed #86 - Rounding fails when integer part is 9
 - Fixed #88 - BigInteger.bitAt() returns invalid value
+- Built with Kotlin 1.4-M3
+- Reworked to(U)ByteArray conversion methods
+    - from and to conversions were not consistent, from(U)ByteArray expected a string of bytes ordered in little or big endian,
+    while to(U)ByteArray produced `Int` or `Long` repreented as byte with little endian or big endian order.
+    - Now there are two flavors of conversion
+        - To/From (U)ByteString which produces a Big Endian or a Little Endian string
+        - To/From (U)ByteNumberRepresentation which can be Big Endian or Little Endian, 4 or 8 byte represenation
 
 ##### 0.1.5 - 07.01.2020 - Adding linux arm targets, BigDecimal bug fixes
 - Version bump to kotlin 1.3.61

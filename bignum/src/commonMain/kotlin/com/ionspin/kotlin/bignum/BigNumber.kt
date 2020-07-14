@@ -25,10 +25,10 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
  * on 04-Apr-2019
  */
 
-@ExperimentalUnsignedTypes
+
 interface BigNumber<BigType> where BigType : BigNumber<BigType> {
 
-    @ExperimentalUnsignedTypes
+
     interface Creator<BigType> {
         val ZERO: BigType
         val ONE: BigType
@@ -151,7 +151,7 @@ internal interface NarrowingOperations<BigType> where BigType : BigNumber<BigTyp
     fun doubleValue(exactRequired: Boolean = false): Double
 }
 
-@ExperimentalUnsignedTypes
+
 internal interface CommonBigNumberOperations<BigType> where BigType : BigNumber<BigType> {
 
     fun getCreator(): BigNumber.Creator<BigType>
@@ -249,18 +249,25 @@ interface BitwiseCapable<BigType> {
     fun not(): BigType
 }
 
-@ExperimentalUnsignedTypes
+
 interface ByteArraySerializable {
 
-    fun toByteArray(): Array<Byte>
-    fun toTypedUByteArray(endianness: Endianness = Endianness.BIG): Array<UByte>
-    fun toUByteArray(endianness: Endianness = Endianness.BIG): UByteArray
+    fun oldToTypedByteArray(): Array<Byte>
+    fun oldToByteArray(): ByteArray
+    fun oldToTypedUByteArray(endianness: Endianness = Endianness.BIG): Array<UByte>
+    fun oldToUByteArray(endianness: Endianness = Endianness.BIG): UByteArray
+
+    fun toUByteArray(byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, twosComplement: Boolean) : UByteArray
+    fun toByteArray(byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, twosComplement: Boolean) : ByteArray
 }
 
-@ExperimentalUnsignedTypes
+
 interface ByteArrayDeserializable<BigType : BigNumber<BigType>> {
-    fun fromByteArray(byteArray: Array<Byte>): BigType
-    fun fromByteArray(byteArray: ByteArray): BigType
-    fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness = Endianness.BIG): BigType
-    fun fromUByteArray(uByteArray: UByteArray, endianness: Endianness = Endianness.BIG): BigType
+    fun oldFromByteArray(byteArray: Array<Byte>): BigType
+    fun oldFromByteArray(byteArray: ByteArray): BigType
+    fun oldFromUByteArray(uByteArray: Array<UByte>, endianness: Endianness = Endianness.BIG): BigType
+    fun oldFromUByteArray(uByteArray: UByteArray, endianness: Endianness = Endianness.BIG): BigType
+
+    fun fromUByteArray(source: UByteArray, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, twosComplement: Boolean) : BigType
+    fun fromByteArray(source: ByteArray, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, twosComplement: Boolean) : BigType
 }

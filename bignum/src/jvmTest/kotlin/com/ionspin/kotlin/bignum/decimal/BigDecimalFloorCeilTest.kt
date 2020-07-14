@@ -26,7 +26,7 @@ import kotlin.test.assertTrue
  * ugljesa.jovanovic@ionspin.com
  * on 08-May-2019
  */
-@ExperimentalUnsignedTypes
+
 class BigDecimalFloorCeilTest {
 
     @Test

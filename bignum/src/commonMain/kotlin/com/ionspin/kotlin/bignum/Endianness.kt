@@ -25,3 +25,22 @@ package com.ionspin.kotlin.bignum
 enum class Endianness {
     BIG, LITTLE
 }
+
+enum class ByteArrayRepresentation {
+    /**
+     * Usually represented as array of UInt or Int
+     */
+    FOUR_BYTE_NUMBER,
+
+    /**
+     * Usually represented as array of ULong or Long
+     */
+    EIGHT_BYTE_NUMBER,
+
+    /**
+     * An array of bytes, each byte represents a number in base 2^8
+     */
+    BYTE_STRING
+}
+
+

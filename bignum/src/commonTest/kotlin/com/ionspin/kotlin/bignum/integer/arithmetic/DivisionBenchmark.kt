@@ -22,7 +22,7 @@ package com.ionspin.kotlin.bignum.integer.arithmetic
  * ugljesa.jovanovic@ionspin.com
  * on 20-Apr-2019
  */
-@ExperimentalUnsignedTypes
+
 class DivisionBenchmark {
 
 //    fun divideUsingReciprocal(dividend : ULongArray, divisor : ULongArray, expectedQuotient : ULongArray, expectedRemainder : ULongArray) {

@@ -27,7 +27,7 @@ import kotlin.test.assertTrue
  * ugljesa.jovanovic@ionspin.com
  * on 27-Apr-2019
  */
-@ExperimentalUnsignedTypes
+
 class BigInteger32SqrtTest {
 
     @Ignore("Need to improve basic divide algo before using it in sqrt")

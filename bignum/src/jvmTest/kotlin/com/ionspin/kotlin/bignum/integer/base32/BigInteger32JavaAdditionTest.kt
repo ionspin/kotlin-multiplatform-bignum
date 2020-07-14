@@ -24,7 +24,7 @@ import org.junit.Test
  * ugljesa.jovanovic@ionspin.com
  * on 17-Mar-2019
  */
-@ExperimentalUnsignedTypes
+
 class BigInteger32JavaAdditionTest {
 
     @Test

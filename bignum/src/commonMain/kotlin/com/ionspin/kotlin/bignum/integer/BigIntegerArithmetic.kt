@@ -17,6 +17,7 @@
 
 package com.ionspin.kotlin.bignum.integer
 
+import com.ionspin.kotlin.bignum.ByteArrayRepresentation
 import com.ionspin.kotlin.bignum.Endianness
 
 /**
@@ -26,7 +27,7 @@ import com.ionspin.kotlin.bignum.Endianness
  * ugljesa.jovanovic@ionspin.com
  * on 10-Mar-2019
  */
-@ExperimentalUnsignedTypes
+
 interface BigIntegerArithmetic {
     val _emitLongArray: LongArray
     val ZERO: ULongArray
@@ -139,14 +140,25 @@ interface BigIntegerArithmetic {
     fun bitAt(operand: ULongArray, position: Long): Boolean
     fun setBitAt(operand: ULongArray, position: Long, bit: Boolean): ULongArray
 
-    fun toByteArray(operand: ULongArray, sign: Sign): Array<Byte>
-    fun fromByteArray(byteArray: Array<Byte>): Pair<ULongArray, Sign>
-    fun fromByteArray(byteArray: ByteArray): Pair<ULongArray, Sign>
-    fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness = Endianness.BIG): Pair<ULongArray, Sign>
-    fun fromUByteArray(uByteArray: UByteArray, endianness: Endianness = Endianness.BIG): Pair<ULongArray, Sign>
-    fun toTypedUByteArray(operand: ULongArray, endianness: Endianness = Endianness.BIG): Array<UByte>
-    fun toUByteArray(operand: ULongArray, endianness: Endianness = Endianness.BIG): UByteArray
+    fun oldToByteArray(operand: ULongArray, sign: Sign): Array<Byte>
+    fun oldFromByteArray(byteArray: Array<Byte>): Pair<ULongArray, Sign>
+
+    fun oldFromByteArray(byteArray: ByteArray): Pair<ULongArray, Sign>
+    fun oldFromUByteArray(uByteArray: Array<UByte>, endianness: Endianness = Endianness.BIG): Pair<ULongArray, Sign>
+    fun oldFromUByteArray(uByteArray: UByteArray, endianness: Endianness = Endianness.BIG): Pair<ULongArray, Sign>
+    fun oldToTypedUByteArray(operand: ULongArray, endianness: Endianness = Endianness.BIG): Array<UByte>
+    fun oldToUByteArray(operand: ULongArray, endianness: Endianness = Endianness.BIG): UByteArray
+
+    fun fromUByteArray(source : UByteArray, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, isTwosComplement: Boolean) : Pair<ULongArray, Sign>
+    fun fromByteArray(source : ByteArray, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, isTwosComplement: Boolean) : Pair<ULongArray, Sign>
+
+    fun toUByteArray(operand:ULongArray, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, isTwosComplement: Boolean) : UByteArray
+    fun toByteArray(operand:ULongArray, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, isTwosComplement: Boolean) : ByteArray
+
+
 }
+
+
 
 /**
  * Created by Ugljesa Jovanovic

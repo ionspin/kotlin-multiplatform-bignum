@@ -305,6 +305,12 @@ kotlin {
         val mingwX64Test by getting {
             dependsOn(nativeTest)
         }
+
+        all {
+            languageSettings.enableLanguageFeature("InlineClasses")
+            languageSettings.useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
+            languageSettings.useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
+        }
     }
 }
 

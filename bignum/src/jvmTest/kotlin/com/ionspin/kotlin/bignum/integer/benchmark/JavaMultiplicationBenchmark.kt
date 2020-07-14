@@ -40,7 +40,7 @@ import kotlin.time.measureTime
  * ugljesa.jovanovic@ionspin.com
  * on 20-Oct-2019
  */
-@ExperimentalUnsignedTypes
+
 @ExperimentalTime
 @Ignore // Benchmarks should only be ran manually
 class JavaMultiplicationBenchmark {

@@ -28,7 +28,7 @@ import kotlin.test.assertTrue
  * on 16-Mar-2019
  */
 @ExperimentalCoroutinesApi
-@ExperimentalUnsignedTypes
+
 class BigInteger32MultiplicationTest {
 
     @Test

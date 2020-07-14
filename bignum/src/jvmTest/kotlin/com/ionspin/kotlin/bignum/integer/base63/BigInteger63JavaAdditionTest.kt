@@ -35,7 +35,7 @@ import kotlin.test.assertTrue
 + 8
  */
 
-@ExperimentalUnsignedTypes
+
 class BigInteger63JavaAdditionTest {
 
     @Test

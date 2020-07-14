@@ -22,5 +22,5 @@ package com.ionspin.kotlin.bignum.integer
  * ugljesa.jovanovic@ionspin.com
  * on 24-Sep-2019
  */
-@ExperimentalUnsignedTypes
+
 class DebugTest

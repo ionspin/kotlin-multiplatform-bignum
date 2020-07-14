@@ -26,7 +26,7 @@ import kotlin.test.assertTrue
  * ugljesa.jovanovic@ionspin.com
  * on 17-Oct-2019
  */
-@ExperimentalUnsignedTypes
+
 class BigInteger63BitwiseTest {
     @Test
     fun testShiftLeft() {

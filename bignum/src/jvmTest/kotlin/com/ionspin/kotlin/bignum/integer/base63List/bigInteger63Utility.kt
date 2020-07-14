@@ -24,7 +24,7 @@ import java.math.BigInteger
  * ugljesa.jovanovic@ionspin.com
  * on 09-Mar-2019
  */
-@UseExperimental(ExperimentalUnsignedTypes::class)
+
 fun List<ULong>.toJavaBigInteger(): BigInteger {
     return this.foldIndexed(BigInteger.valueOf(0)) { index, acc, digit ->
         acc.or(BigInteger(digit.toString(), 10).shiftLeft((index) * 63))

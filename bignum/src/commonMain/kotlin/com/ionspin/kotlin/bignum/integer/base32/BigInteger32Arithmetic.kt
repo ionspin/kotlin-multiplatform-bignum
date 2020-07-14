@@ -17,6 +17,7 @@
 
 package com.ionspin.kotlin.bignum.integer.base32
 
+import com.ionspin.kotlin.bignum.ByteArrayRepresentation
 import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigInteger32ArithmeticInterface
@@ -33,7 +34,7 @@ import kotlin.math.min
  * ugljesa.jovanovic@ionspin.com
  * on 09-Mar-2019
  */
-@ExperimentalUnsignedTypes
+
 internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
     override val _emitIntArray: IntArray = intArrayOf()
     val baseMask = 0xFFFFFFFFUL
@@ -1275,7 +1276,7 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
         return result
     }
 
-    override fun toByteArray(operand: UIntArray, sign: Sign): Array<Byte> {
+    override fun oldToByteArray(operand: UIntArray, sign: Sign): Array<Byte> {
         if (operand.isEmpty()) {
             return emptyArray()
         }
@@ -1327,7 +1328,7 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
         }.toTypedArray()
     }
 
-    override fun fromByteArray(byteArray: Array<Byte>): Pair<UIntArray, Sign> {
+    override fun oldFromByteArray(byteArray: Array<Byte>): Pair<UIntArray, Sign> {
         val sign = (byteArray[0].toInt() ushr 7) and 0b00000001
         val chunked = byteArray.toList().reversed().chunked(4)
 
@@ -1371,7 +1372,7 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
         }
     }
 
-    override fun fromByteArray(byteArray: ByteArray): Pair<UIntArray, Sign> {
+    override fun oldFromByteArray(byteArray: ByteArray): Pair<UIntArray, Sign> {
         val sign = (byteArray[0].toInt() ushr 7) and 0b00000001
         val chunked = byteArray.toList().reversed().chunked(4)
 
@@ -1415,7 +1416,7 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
         }
     }
 
-    override fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness): Pair<UIntArray, Sign> {
+    override fun olfFromUByteArray(uByteArray: Array<UByte>, endianness: Endianness): Pair<UIntArray, Sign> {
         val chunked = when (endianness) {
             Endianness.BIG -> {
                 uByteArray.toList().reversed().chunked(4)
@@ -1443,7 +1444,7 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
         return Pair(removeLeadingZeros(corrected), resolvedSign)
     }
 
-    override fun fromUByteArray(uByteArray: UByteArray, endianness: Endianness): Pair<UIntArray, Sign> {
+    override fun olfFromUByteArray(uByteArray: UByteArray, endianness: Endianness): Pair<UIntArray, Sign> {
         val chunked = when (endianness) {
             Endianness.BIG -> {
                 uByteArray.toList().reversed().chunked(4)
@@ -1471,7 +1472,7 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
         return Pair(removeLeadingZeros(corrected), resolvedSign)
     }
 
-    override fun toTypedUByteArray(operand: UIntArray, endianness: Endianness): Array<UByte> {
+    override fun toUIntArrayRepresentedAsTypedUByteArray(operand: UIntArray, endianness: Endianness): Array<UByte> {
         val corrected = when (endianness) {
             Endianness.BIG -> {
                 var index = 0
@@ -1515,7 +1516,7 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
         return corrected.dropLeadingZeros()
     }
 
-    override fun toUByteArray(operand: UIntArray, endianness: Endianness): UByteArray {
+    override fun toUIntArrayRepresentedAsUByteArray(operand: UIntArray, endianness: Endianness): UByteArray {
         val corrected = when (endianness) {
             Endianness.BIG -> {
                 var index = 0
@@ -1560,6 +1561,42 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
             }
         }
         return corrected.toUByteArray()
+    }
+
+    override fun fromUByteArray(
+        source: UByteArray,
+        byteArrayRepresentation: ByteArrayRepresentation,
+        endianness: Endianness,
+        isTwosComplement: Boolean
+    ): Pair<UIntArray, Sign> {
+        TODO("not implemented yet")
+    }
+
+    override fun fromByteArray(
+        source: ByteArray,
+        byteArrayRepresentation: ByteArrayRepresentation,
+        endianness: Endianness,
+        isTwosComplement: Boolean
+    ): Pair<UIntArray, Sign> {
+        TODO("not implemented yet")
+    }
+
+    override fun toUByteArray(
+        operand: UIntArray,
+        byteArrayRepresentation: ByteArrayRepresentation,
+        endianness: Endianness,
+        isTwosComplement: Boolean
+    ): UByteArray {
+        TODO("not implemented yet")
+    }
+
+    override fun toByteArray(
+        operand: UIntArray,
+        byteArrayRepresentation: ByteArrayRepresentation,
+        endianness: Endianness,
+        isTwosComplement: Boolean
+    ): ByteArray {
+        TODO("not implemented yet")
     }
 
     private fun List<Byte>.dropLeadingZeros(): List<Byte> {
