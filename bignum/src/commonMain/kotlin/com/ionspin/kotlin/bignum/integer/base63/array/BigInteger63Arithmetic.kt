@@ -25,6 +25,8 @@ import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.Sextuple
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
+import com.ionspin.kotlin.bignum.integer.util.increment
+import com.ionspin.kotlin.bignum.integer.util.invert
 import com.ionspin.kotlin.bignum.integer.util.toBigEndianUByteArray
 import com.ionspin.kotlin.bignum.integer.util.toDigit
 import com.ionspin.kotlin.bignum.integer.util.toLittleEndianUByteArray
@@ -2052,20 +2054,16 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         endianness: Endianness,
         isTwosComplement: Boolean
     ): UByteArray {
-        val finalOperand = if (isTwosComplement) {
-            if (sign == Sign.NEGATIVE) {
-                val inverted = operand.map { it.inv() }
-                val converted = inverted + 1U
-                converted.toULongArray()
-            } else {
-                operand
-            }
-        } else {
-            operand
-        }
         return when (byteArrayRepresentation) {
             ByteArrayRepresentation.FOUR_BYTE_NUMBER -> {
-                val as32Bit = convertTo32BitRepresentation(finalOperand).reversedArray()
+                val as32Bit = if (isTwosComplement && sign == Sign.NEGATIVE) {
+                    val aligned = convertTo32BitRepresentation(operand).reversedArray()
+                    val inverted = invert(aligned)
+                    val converted = increment(inverted)
+                    converted
+                } else {
+                    convertTo32BitRepresentation(operand).reversedArray()
+                }
                 val result = UByteArray(operand.size * 8)
                 for (i in 0 until as32Bit.size) {
                     if (endianness == Endianness.LITTLE) {
@@ -2077,7 +2075,14 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
                 result
             }
             ByteArrayRepresentation.EIGHT_BYTE_NUMBER -> {
-                val as64Bit = convertTo64BitRepresentation(finalOperand).reversedArray()
+                val as64Bit = if (isTwosComplement && sign == Sign.NEGATIVE) {
+                    val aligned = convertTo64BitRepresentation(operand).reversedArray()
+                    val inverted = invert(aligned)
+                    val converted = increment(inverted)
+                    converted
+                } else {
+                    convertTo64BitRepresentation(operand).reversedArray()
+                }
                 val result = UByteArray(operand.size * 8)
                 for (i in 0 until as64Bit.size) {
                     if (endianness == Endianness.LITTLE) {
@@ -2089,16 +2094,23 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
                 result
             }
             ByteArrayRepresentation.BYTE_STRING -> {
-                val as64Bit = convertTo64BitRepresentation(finalOperand).reversedArray()
-                val result = UByteArray(operand.size * 8)
+                val as64Bit = if (isTwosComplement && sign == Sign.NEGATIVE) {
+                    val aligned = convertTo64BitRepresentation(operand).reversedArray()
+                    val inverted = invert(aligned)
+                    val converted = increment(inverted)
+                    converted
+                } else {
+                    convertTo64BitRepresentation(operand).reversedArray()
+                }
+                val result = UByteArray(as64Bit.size * 8)
                 for (i in 0 until as64Bit.size) {
                     as64Bit[i].toBigEndianUByteArray().copyInto(result, i * 8, 0, 8)
                 }
                 if (endianness == Endianness.LITTLE) {
                     //Same as big endian just reversed
-                    result.reversedArray()
+                    result.dropWhile { it.toUInt() == 0U }.reversed().toUByteArray()
                 } else {
-                    result
+                    result.dropWhile { it.toUInt() == 0U }.toUByteArray()
                 }
             }
         }

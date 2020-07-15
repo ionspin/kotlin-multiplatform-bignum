@@ -19,6 +19,8 @@ package com.ionspin.kotlin.bignum.integer.base32
 
 import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.integer.Sign
+import com.ionspin.kotlin.bignum.integer.base63.toJavaBigInteger
+import com.ionspin.kotlin.bignum.integer.util.hexColumsPrint
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -88,6 +90,15 @@ class ByteArrayToAndFromTest {
             val intArray = BigInteger32Arithmetic.oldToByteArray(bigInt32Array, Sign.POSITIVE)
             javaBigIntByteArray.dropLeadingZeros().contentEquals(intArray.dropLeadingZeros().toByteArray())
         }
+    }
+
+    @Test
+    fun debug() {
+        val bigIntArray = com.ionspin.kotlin.bignum.integer.BigInteger.parseString("-00112233445566778899AABBCCDDEEFF", 16)
+        val javaBigInt = bigIntArray.toJavaBigInteger()
+        println(bigIntArray.toString(2))
+        println(javaBigInt.toByteArray().asUByteArray().hexColumsPrint())
+        println(javaBigInt.toByteArray().asUByteArray().joinToString { it.toString(2) })
     }
 
     @Test

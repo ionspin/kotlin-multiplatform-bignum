@@ -57,7 +57,7 @@ class ByteArrayConversionTest {
     }
 
     @Test
-    fun toUByteArray() {
+    fun toUByteArrayPositive() {
         assertTrue {
             val expected = ubyteArrayOf(
                 0x00U, 0x11U, 0x22U, 0x33U, 0x44U, 0x55U, 0x66U, 0x77U, 0x88U, 0x99U, 0xAAU, 0xBBU, 0xCCU, 0xDDU, 0xEEU, 0xFFU
@@ -122,6 +122,77 @@ class ByteArrayConversionTest {
                 byteArrayRepresentation = ByteArrayRepresentation.FOUR_BYTE_NUMBER,
                 endianness = Endianness.LITTLE,
                 twosComplement = false
+            )
+            byteArray.contentEquals(expected)
+        }
+    }
+
+    @Test
+    fun toUByteArrayNegative() {
+        assertTrue {
+            val expected = ubyteArrayOf(
+                0xEEU, 0xDDU, 0xCCU, 0xBBU, 0xAAU, 0x99U, 0x88U, 0x77U, 0x66U, 0x55U, 0x44U, 0x33U, 0x22U, 0x11U, 0x01U
+            )
+            val bigIntOriginal = BigInteger.parseString("-00112233445566778899AABBCCDDEEFF", 16)
+            val byteArray = bigIntOriginal.toUByteArray(twosComplement = true)
+            byteArray.contentEquals(expected)
+        }
+
+        assertTrue {
+            val expected = ubyteArrayOf(
+                0x01U, 0x11U, 0x22U, 0x33U, 0x44U, 0x55U, 0x66U, 0x77U, 0x88U, 0x99U, 0xAAU, 0xBBU, 0xCCU, 0xDDU, 0xEEU
+            )
+            val bigIntOriginal = BigInteger.parseString("-00112233445566778899AABBCCDDEEFF", 16)
+            val byteArray = bigIntOriginal.toUByteArray(endianness = Endianness.LITTLE, twosComplement = true)
+            byteArray.contentEquals(expected)
+        }
+
+        assertTrue {
+            val expected = ubyteArrayOf(
+                0xEEU, 0xDDU, 0xCCU, 0xBBU, 0xAAU, 0x99U, 0x88U, 0x77U, 0x66U, 0x55U, 0x44U, 0x33U, 0x22U, 0x11U, 0x01U
+            )
+            val bigIntOriginal = BigInteger.parseString("-00112233445566778899AABBCCDDEEFF", 16)
+            val byteArray = bigIntOriginal.toUByteArray(
+                byteArrayRepresentation = ByteArrayRepresentation.EIGHT_BYTE_NUMBER,
+                endianness = Endianness.BIG,
+                twosComplement = true
+            )
+            byteArray.contentEquals(expected)
+        }
+        assertTrue {
+            val expected = ubyteArrayOf(
+                0x77U, 0x66U, 0x55U, 0x44U, 0x33U, 0x22U, 0x11U, 0x01U, 0xEEU, 0xDDU, 0xCCU, 0xBBU, 0xAAU, 0x99U, 0x88U,
+            )
+            val bigIntOriginal = BigInteger.parseString("-00112233445566778899AABBCCDDEEFF", 16)
+            val byteArray = bigIntOriginal.toUByteArray(
+                byteArrayRepresentation = ByteArrayRepresentation.EIGHT_BYTE_NUMBER,
+                endianness = Endianness.LITTLE,
+                twosComplement = true
+            )
+            byteArray.contentEquals(expected)
+        }
+
+        assertTrue {
+            val expected = ubyteArrayOf(
+                0x00U, 0x11U, 0x22U, 0x33U, 0x44U, 0x55U, 0x66U, 0x77U, 0x88U, 0x99U, 0xAAU, 0xBBU, 0xCCU, 0xDDU, 0xEEU, 0xFFU
+            )
+            val bigIntOriginal = BigInteger.parseString("-00112233445566778899AABBCCDDEEFF", 16)
+            val byteArray = bigIntOriginal.toUByteArray(
+                byteArrayRepresentation = ByteArrayRepresentation.FOUR_BYTE_NUMBER,
+                endianness = Endianness.BIG,
+                twosComplement = true
+            )
+            byteArray.contentEquals(expected)
+        }
+        assertTrue {
+            val expected = ubyteArrayOf(
+                0x33U, 0x22U, 0x11U, 0x00U, 0x77U, 0x66U, 0x55U, 0x44U, 0xBBU, 0xAAU, 0x99U, 0x88U, 0xFFU, 0xEEU, 0xDDU, 0xCCU
+            )
+            val bigIntOriginal = BigInteger.parseString("-00112233445566778899AABBCCDDEEFF", 16)
+            val byteArray = bigIntOriginal.toUByteArray(
+                byteArrayRepresentation = ByteArrayRepresentation.FOUR_BYTE_NUMBER,
+                endianness = Endianness.LITTLE,
+                twosComplement = true
             )
             byteArray.contentEquals(expected)
         }
