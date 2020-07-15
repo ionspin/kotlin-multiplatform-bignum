@@ -1581,6 +1581,7 @@ internal object BigInteger63InPlaceArithmetic : BigIntegerArithmetic {
 
     override fun fromUByteArray(
         source: UByteArray,
+        sign: Sign,
         byteArrayRepresentation: ByteArrayRepresentation,
         endianness: Endianness,
         isTwosComplement: Boolean
@@ -1590,6 +1591,7 @@ internal object BigInteger63InPlaceArithmetic : BigIntegerArithmetic {
 
     override fun fromByteArray(
         source: ByteArray,
+        sign: Sign,
         byteArrayRepresentation: ByteArrayRepresentation,
         endianness: Endianness,
         isTwosComplement: Boolean
@@ -1599,6 +1601,7 @@ internal object BigInteger63InPlaceArithmetic : BigIntegerArithmetic {
 
     override fun toUByteArray(
         operand: ULongArray,
+        sign: Sign,
         byteArrayRepresentation: ByteArrayRepresentation,
         endianness: Endianness,
         isTwosComplement: Boolean
@@ -1608,6 +1611,7 @@ internal object BigInteger63InPlaceArithmetic : BigIntegerArithmetic {
 
     override fun toByteArray(
         operand: ULongArray,
+        sign: Sign,
         byteArrayRepresentation: ByteArrayRepresentation,
         endianness: Endianness,
         isTwosComplement: Boolean

@@ -25,7 +25,9 @@ import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.Sextuple
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
+import com.ionspin.kotlin.bignum.integer.util.toBigEndianUByteArray
 import com.ionspin.kotlin.bignum.integer.util.toDigit
+import com.ionspin.kotlin.bignum.integer.util.toLittleEndianUByteArray
 import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
@@ -37,9 +39,9 @@ import kotlin.math.floor
  * on 10-Mar-2019
  *
  * 63 bit integer arithmetic uses an array of base 2^63 numbers to represent a big integer. Each element of an array is a
- * word representing the base 2^63 number. Words are in Big Endian order. Bytes inside the word are in Big Endian order as well.
+ * word representing the base 2^63 number. Words are in Little Endian order (least significant word is at address 0).
+ * Bytes inside the word are in Big Endian order.
  */
-
 
 internal object BigInteger63Arithmetic : BigIntegerArithmetic {
     override val _emitLongArray: LongArray = longArrayOf()
@@ -388,7 +390,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         while (compare(
                 tmp,
                 ZERO
-            ) != 0) {
+            ) != 0
+        ) {
             tmp /= TEN
             counter++
         }
@@ -508,7 +511,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
 
         if (countLeadingZeroWords(
                 result
-            ) == (result.size - 1) && result[0] == 0UL) {
+            ) == (result.size - 1) && result[0] == 0UL
+        ) {
             return ZERO
         }
 
@@ -1086,7 +1090,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         return Pair(
             removeLeadingZeros(
                 quotient
-            ), denormRemainder)
+            ), denormRemainder
+        )
     }
 
     fun basicDivide2(
@@ -1139,7 +1144,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         return Pair(
             removeLeadingZeros(
                 q
-            ), denormRemainder)
+            ), denormRemainder
+        )
     }
 
     /**
@@ -1510,7 +1516,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         if (this.size == 1 && this[0] == 0UL) return true
         if (this.size - countLeadingZeroWords(
                 this
-            ) == 0) return true
+            ) == 0
+        ) return true
         return false
     }
 
@@ -1542,11 +1549,13 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         if (and(
                 first,
                 ONE
-            ).isZero()) { // first is even
+            ).isZero()
+        ) { // first is even
             if (and(
                     second,
                     ONE
-                ).isZero()) { // second is even
+                ).isZero()
+            ) { // second is even
                 return binaryGcd(
                     first shr 1,
                     second shr 1
@@ -1562,7 +1571,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         if (and(
                 second,
                 ONE
-            ).isZero()) {
+            ).isZero()
+        ) {
             return binaryGcd(
                 first,
                 second shr 1
@@ -1572,7 +1582,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         return if (compare(
                 first,
                 second
-            ) == 1) {
+            ) == 1
+        ) {
             binaryGcd(
                 subtract(
                     first,
@@ -1956,7 +1967,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         return BigInteger32Arithmetic.oldToByteArray(
             convertTo32BitRepresentation(
                 operand
-            ), sign)
+            ), sign
+        )
     }
 
     override fun oldFromByteArray(byteArray: Array<Byte>): Pair<ULongArray, Sign> {
@@ -1964,7 +1976,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         return Pair(
             convertFrom32BitRepresentation(
                 result.first
-            ), result.second)
+            ), result.second
+        )
     }
 
     override fun oldFromByteArray(byteArray: ByteArray): Pair<ULongArray, Sign> {
@@ -1972,7 +1985,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         return Pair(
             convertFrom32BitRepresentation(
                 result.first
-            ), result.second)
+            ), result.second
+        )
     }
 
     override fun oldFromUByteArray(uByteArray: Array<UByte>, endianness: Endianness): Pair<ULongArray, Sign> {
@@ -1980,7 +1994,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         return Pair(
             convertFrom32BitRepresentation(
                 result.first
-            ), result.second)
+            ), result.second
+        )
     }
 
     override fun oldFromUByteArray(uByteArray: UByteArray, endianness: Endianness): Pair<ULongArray, Sign> {
@@ -1988,14 +2003,16 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         return Pair(
             convertFrom32BitRepresentation(
                 result.first
-            ), result.second)
+            ), result.second
+        )
     }
 
     override fun oldToTypedUByteArray(operand: ULongArray, endianness: Endianness): Array<UByte> {
         val result = BigInteger32Arithmetic.toUIntArrayRepresentedAsTypedUByteArray(
             convertTo32BitRepresentation(
                 operand
-            ), endianness)
+            ), endianness
+        )
         return result
     }
 
@@ -2003,12 +2020,14 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         val result = BigInteger32Arithmetic.toUIntArrayRepresentedAsUByteArray(
             convertTo32BitRepresentation(
                 operand
-            ), endianness)
+            ), endianness
+        )
         return result
     }
 
     override fun fromUByteArray(
         source: UByteArray,
+        sign: Sign,
         byteArrayRepresentation: ByteArrayRepresentation,
         endianness: Endianness,
         isTwosComplement: Boolean
@@ -2018,37 +2037,81 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
 
     override fun fromByteArray(
         source: ByteArray,
+        sign: Sign,
         byteArrayRepresentation: ByteArrayRepresentation,
         endianness: Endianness,
         isTwosComplement: Boolean
     ): Pair<ULongArray, Sign> {
-        TODO("not implemented yet")
+        return fromUByteArray(source.asUByteArray(), sign, byteArrayRepresentation, endianness, isTwosComplement)
     }
 
     override fun toUByteArray(
-        operand:ULongArray,
+        operand: ULongArray,
+        sign: Sign,
         byteArrayRepresentation: ByteArrayRepresentation,
         endianness: Endianness,
         isTwosComplement: Boolean
     ): UByteArray {
-        // val as64bit = convertTo64BitRepresentation(operand)
-        // when (byteArrayRepresentation) {
-        //     ByteArrayRepresentation.FOUR_BYTE_NUMBER -> {
-        //         val result =
-        //     }
-        //     ByteArrayRepresentation.EIGHT_BYTE_NUMBER -> TODO()
-        //     ByteArrayRepresentation.BYTE_STRING -> TODO()
-        // }
-        TODO()
+        val finalOperand = if (isTwosComplement) {
+            if (sign == Sign.NEGATIVE) {
+                val inverted = operand.map { it.inv() }
+                val converted = inverted + 1U
+                converted.toULongArray()
+            } else {
+                operand
+            }
+        } else {
+            operand
+        }
+        return when (byteArrayRepresentation) {
+            ByteArrayRepresentation.FOUR_BYTE_NUMBER -> {
+                val as32Bit = convertTo32BitRepresentation(finalOperand).reversedArray()
+                val result = UByteArray(operand.size * 8)
+                for (i in 0 until as32Bit.size) {
+                    if (endianness == Endianness.LITTLE) {
+                        as32Bit[i].toLittleEndianUByteArray().copyInto(result, i * 4, 0, 4)
+                    } else {
+                        as32Bit[i].toBigEndianUByteArray().copyInto(result, i * 4, 0, 4)
+                    }
+                }
+                result
+            }
+            ByteArrayRepresentation.EIGHT_BYTE_NUMBER -> {
+                val as64Bit = convertTo64BitRepresentation(finalOperand).reversedArray()
+                val result = UByteArray(operand.size * 8)
+                for (i in 0 until as64Bit.size) {
+                    if (endianness == Endianness.LITTLE) {
+                        as64Bit[i].toLittleEndianUByteArray().copyInto(result, i * 8, 0, 8)
+                    } else {
+                        as64Bit[i].toBigEndianUByteArray().copyInto(result, i * 8, 0, 8)
+                    }
+                }
+                result
+            }
+            ByteArrayRepresentation.BYTE_STRING -> {
+                val as64Bit = convertTo64BitRepresentation(finalOperand).reversedArray()
+                val result = UByteArray(operand.size * 8)
+                for (i in 0 until as64Bit.size) {
+                    as64Bit[i].toBigEndianUByteArray().copyInto(result, i * 8, 0, 8)
+                }
+                if (endianness == Endianness.LITTLE) {
+                    //Same as big endian just reversed
+                    result.reversedArray()
+                } else {
+                    result
+                }
+            }
+        }
     }
 
     override fun toByteArray(
-        operand:ULongArray,
+        operand: ULongArray,
+        sign: Sign,
         byteArrayRepresentation: ByteArrayRepresentation,
         endianness: Endianness,
         isTwosComplement: Boolean
     ): ByteArray {
-        TODO("not implemented yet")
+        return toUByteArray(operand, sign, byteArrayRepresentation, endianness, isTwosComplement).asByteArray()
     }
 
     private fun debugOperandsCheck(first: ULongArray, second: ULongArray) {

@@ -18,6 +18,7 @@
 package com.ionspin.kotlin.bignum
 
 import com.ionspin.kotlin.bignum.integer.BigInteger
+import com.ionspin.kotlin.bignum.integer.Sign
 
 /**
  * Created by Ugljesa Jovanovic
@@ -257,7 +258,10 @@ interface ByteArraySerializable {
     fun oldToTypedUByteArray(endianness: Endianness = Endianness.BIG): Array<UByte>
     fun oldToUByteArray(endianness: Endianness = Endianness.BIG): UByteArray
 
-    fun toUByteArray(byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, twosComplement: Boolean) : UByteArray
+    fun toUByteArray(
+        byteArrayRepresentation: ByteArrayRepresentation = ByteArrayRepresentation.BYTE_STRING,
+        endianness: Endianness = Endianness.BIG,
+        twosComplement: Boolean = false) : UByteArray
     fun toByteArray(byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, twosComplement: Boolean) : ByteArray
 }
 
@@ -268,6 +272,6 @@ interface ByteArrayDeserializable<BigType : BigNumber<BigType>> {
     fun oldFromUByteArray(uByteArray: Array<UByte>, endianness: Endianness = Endianness.BIG): BigType
     fun oldFromUByteArray(uByteArray: UByteArray, endianness: Endianness = Endianness.BIG): BigType
 
-    fun fromUByteArray(source: UByteArray, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, twosComplement: Boolean) : BigType
-    fun fromByteArray(source: ByteArray, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, twosComplement: Boolean) : BigType
+    fun fromUByteArray(source: UByteArray, sign: Sign, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, twosComplement: Boolean) : BigType
+    fun fromByteArray(source: ByteArray, sign: Sign, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, twosComplement: Boolean) : BigType
 }

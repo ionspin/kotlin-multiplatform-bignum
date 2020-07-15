@@ -17,6 +17,7 @@
 
 package com.ionspin.kotlin.bignum.integer
 
+import com.ionspin.kotlin.bignum.ByteArrayRepresentation
 import com.ionspin.kotlin.bignum.Endianness
 import kotlin.test.Ignore
 import kotlin.test.Test
@@ -30,7 +31,7 @@ import kotlin.test.assertTrue
 
 class ByteArrayConversionTest {
 
-    @Ignore // Travis can't run this test on JS for some reason but they pass on local machine.
+    @Ignore // Travis can't run this test on JS for some reason but they pass locally.
     @Test
     fun testToAndFromByteArray() {
         assertTrue {
@@ -52,6 +53,77 @@ class ByteArrayConversionTest {
             val byteArray = bigIntOriginal.oldToTypedByteArray()
             val reconstructed = BigInteger.oldFromByteArray(byteArray)
             bigIntOriginal.equals(reconstructed)
+        }
+    }
+
+    @Test
+    fun toUByteArray() {
+        assertTrue {
+            val expected = ubyteArrayOf(
+                0x00U, 0x11U, 0x22U, 0x33U, 0x44U, 0x55U, 0x66U, 0x77U, 0x88U, 0x99U, 0xAAU, 0xBBU, 0xCCU, 0xDDU, 0xEEU, 0xFFU
+            )
+            val bigIntOriginal = BigInteger.parseString("00112233445566778899AABBCCDDEEFF", 16)
+            val byteArray = bigIntOriginal.toUByteArray()
+            byteArray.contentEquals(expected)
+        }
+
+        assertTrue {
+            val expected = ubyteArrayOf(
+                0xFFU, 0xEEU, 0xDDU, 0xCCU, 0xBBU, 0xAAU, 0x99U, 0x88U, 0x77U, 0x66U, 0x55U, 0x44U, 0x33U, 0x22U, 0x11U, 0x00U
+            )
+            val bigIntOriginal = BigInteger.parseString("00112233445566778899AABBCCDDEEFF", 16)
+            val byteArray = bigIntOriginal.toUByteArray(endianness = Endianness.LITTLE)
+            byteArray.contentEquals(expected)
+        }
+
+        assertTrue {
+            val expected = ubyteArrayOf(
+                0x00U, 0x11U, 0x22U, 0x33U, 0x44U, 0x55U, 0x66U, 0x77U, 0x88U, 0x99U, 0xAAU, 0xBBU, 0xCCU, 0xDDU, 0xEEU, 0xFFU
+            )
+            val bigIntOriginal = BigInteger.parseString("00112233445566778899AABBCCDDEEFF", 16)
+            val byteArray = bigIntOriginal.toUByteArray(
+                byteArrayRepresentation = ByteArrayRepresentation.EIGHT_BYTE_NUMBER,
+                endianness = Endianness.BIG,
+                twosComplement = false
+            )
+            byteArray.contentEquals(expected)
+        }
+        assertTrue {
+            val expected = ubyteArrayOf(
+                0x77U, 0x66U, 0x55U, 0x44U, 0x33U, 0x22U, 0x11U, 0x00U, 0xFFU, 0xEEU, 0xDDU, 0xCCU, 0xBBU, 0xAAU, 0x99U, 0x88U
+            )
+            val bigIntOriginal = BigInteger.parseString("00112233445566778899AABBCCDDEEFF", 16)
+            val byteArray = bigIntOriginal.toUByteArray(
+                byteArrayRepresentation = ByteArrayRepresentation.EIGHT_BYTE_NUMBER,
+                endianness = Endianness.LITTLE,
+                twosComplement = false
+            )
+            byteArray.contentEquals(expected)
+        }
+
+        assertTrue {
+            val expected = ubyteArrayOf(
+                0x00U, 0x11U, 0x22U, 0x33U, 0x44U, 0x55U, 0x66U, 0x77U, 0x88U, 0x99U, 0xAAU, 0xBBU, 0xCCU, 0xDDU, 0xEEU, 0xFFU
+            )
+            val bigIntOriginal = BigInteger.parseString("00112233445566778899AABBCCDDEEFF", 16)
+            val byteArray = bigIntOriginal.toUByteArray(
+                byteArrayRepresentation = ByteArrayRepresentation.FOUR_BYTE_NUMBER,
+                endianness = Endianness.BIG,
+                twosComplement = false
+            )
+            byteArray.contentEquals(expected)
+        }
+        assertTrue {
+            val expected = ubyteArrayOf(
+                0x33U, 0x22U, 0x11U, 0x00U, 0x77U, 0x66U, 0x55U, 0x44U, 0xBBU, 0xAAU, 0x99U, 0x88U, 0xFFU, 0xEEU, 0xDDU, 0xCCU
+            )
+            val bigIntOriginal = BigInteger.parseString("00112233445566778899AABBCCDDEEFF", 16)
+            val byteArray = bigIntOriginal.toUByteArray(
+                byteArrayRepresentation = ByteArrayRepresentation.FOUR_BYTE_NUMBER,
+                endianness = Endianness.LITTLE,
+                twosComplement = false
+            )
+            byteArray.contentEquals(expected)
         }
     }
 

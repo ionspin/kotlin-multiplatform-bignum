@@ -149,11 +149,11 @@ interface BigIntegerArithmetic {
     fun oldToTypedUByteArray(operand: ULongArray, endianness: Endianness = Endianness.BIG): Array<UByte>
     fun oldToUByteArray(operand: ULongArray, endianness: Endianness = Endianness.BIG): UByteArray
 
-    fun fromUByteArray(source : UByteArray, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, isTwosComplement: Boolean) : Pair<ULongArray, Sign>
-    fun fromByteArray(source : ByteArray, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, isTwosComplement: Boolean) : Pair<ULongArray, Sign>
+    fun fromUByteArray(source : UByteArray, sign: Sign, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, isTwosComplement: Boolean) : Pair<ULongArray, Sign>
+    fun fromByteArray(source : ByteArray, sign: Sign, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, isTwosComplement: Boolean) : Pair<ULongArray, Sign>
 
-    fun toUByteArray(operand:ULongArray, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, isTwosComplement: Boolean) : UByteArray
-    fun toByteArray(operand:ULongArray, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, isTwosComplement: Boolean) : ByteArray
+    fun toUByteArray(operand:ULongArray, sign: Sign, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, isTwosComplement: Boolean) : UByteArray
+    fun toByteArray(operand:ULongArray, sign: Sign, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, isTwosComplement: Boolean) : ByteArray
 
 
 }

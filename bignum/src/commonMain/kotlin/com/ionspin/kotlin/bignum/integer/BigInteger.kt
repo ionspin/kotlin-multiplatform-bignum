@@ -221,21 +221,23 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
 
         override fun fromUByteArray(
             source: UByteArray,
+            sign: Sign,
             byteArrayRepresentation: ByteArrayRepresentation,
             endianness: Endianness,
             twosComplement: Boolean
         ): BigInteger {
-            val result = arithmetic.fromUByteArray(source, byteArrayRepresentation, endianness, twosComplement)
+            val result = arithmetic.fromUByteArray(source, sign, byteArrayRepresentation, endianness, twosComplement)
             return BigInteger(result.first, result.second)
         }
 
         override fun fromByteArray(
             source: ByteArray,
+            sign: Sign,
             byteArrayRepresentation: ByteArrayRepresentation,
             endianness: Endianness,
             twosComplement: Boolean
         ): BigInteger {
-            val result = arithmetic.fromByteArray(source, byteArrayRepresentation, endianness, twosComplement)
+            val result = arithmetic.fromByteArray(source, sign, byteArrayRepresentation, endianness, twosComplement)
             return BigInteger(result.first, result.second)
         }
     }
@@ -809,11 +811,11 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     }
 
     override fun toUByteArray(byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, twosComplement: Boolean): UByteArray {
-        return arithmetic.toUByteArray(magnitude, byteArrayRepresentation, endianness, twosComplement)
+        return arithmetic.toUByteArray(magnitude, sign, byteArrayRepresentation, endianness, twosComplement)
     }
 
     override fun toByteArray(byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, twosComplement: Boolean): ByteArray {
-        return arithmetic.toByteArray(magnitude, byteArrayRepresentation, endianness, twosComplement)
+        return arithmetic.toByteArray(magnitude, sign, byteArrayRepresentation, endianness, twosComplement)
     }
 
 

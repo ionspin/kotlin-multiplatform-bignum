@@ -18,3 +18,13 @@ fun UByteArray.hexColumsPrint(chunk: Int = 16) {
     val printout = this.map { it.toString(16).padStart(2, '0') }.chunked(chunk)
     printout.forEach { println(it.joinToString(separator = " ") { it.toUpperCase() }) }
 }
+
+@Suppress("CAST_NEVER_SUCCEEDS")
+fun ByteArray.asUByteArray() : UByteArray {
+    return this as UByteArray
+}
+
+@Suppress("CAST_NEVER_SUCCEEDS")
+fun UByteArray.asByteArray() : ByteArray {
+    return this as ByteArray
+}
