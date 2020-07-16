@@ -17,7 +17,6 @@
 
 package com.ionspin.kotlin.bignum.integer.base63
 
-import com.ionspin.kotlin.bignum.ByteArrayRepresentation
 import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
@@ -1580,41 +1579,25 @@ internal object BigInteger63InPlaceArithmetic : BigIntegerArithmetic {
     }
 
     override fun fromUByteArray(
-        source: UByteArray,
-        sign: Sign,
-        byteArrayRepresentation: ByteArrayRepresentation,
-        endianness: Endianness,
-        isTwosComplement: Boolean
+        source: UByteArray
     ): Pair<ULongArray, Sign> {
         TODO("not implemented yet")
     }
 
     override fun fromByteArray(
-        source: ByteArray,
-        sign: Sign,
-        byteArrayRepresentation: ByteArrayRepresentation,
-        endianness: Endianness,
-        isTwosComplement: Boolean
+        source: ByteArray
     ): Pair<ULongArray, Sign> {
         TODO("not implemented yet")
     }
 
     override fun toUByteArray(
-        operand: ULongArray,
-        sign: Sign,
-        byteArrayRepresentation: ByteArrayRepresentation,
-        endianness: Endianness,
-        isTwosComplement: Boolean
+        operand: ULongArray
     ): UByteArray {
         TODO("not implemented yet")
     }
 
     override fun toByteArray(
-        operand: ULongArray,
-        sign: Sign,
-        byteArrayRepresentation: ByteArrayRepresentation,
-        endianness: Endianness,
-        isTwosComplement: Boolean
+        operand: ULongArray
     ): ByteArray {
         TODO("not implemented yet")
     }

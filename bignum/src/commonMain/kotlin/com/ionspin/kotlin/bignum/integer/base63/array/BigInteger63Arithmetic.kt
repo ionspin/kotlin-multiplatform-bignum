@@ -17,7 +17,6 @@
 
 package com.ionspin.kotlin.bignum.integer.base63.array
 
-import com.ionspin.kotlin.bignum.ByteArrayRepresentation
 import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
@@ -25,11 +24,8 @@ import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.Sextuple
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
-import com.ionspin.kotlin.bignum.integer.util.increment
-import com.ionspin.kotlin.bignum.integer.util.invert
 import com.ionspin.kotlin.bignum.integer.util.toBigEndianUByteArray
 import com.ionspin.kotlin.bignum.integer.util.toDigit
-import com.ionspin.kotlin.bignum.integer.util.toLittleEndianUByteArray
 import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
@@ -72,6 +68,44 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         var x = value
         var y: ULong
         var n = 63
+
+        y = x shr 32
+        if (y != 0UL) {
+            n = n - 32
+            x = y
+        }
+        y = x shr 16
+        if (y != 0UL) {
+            n = n - 16
+            x = y
+        }
+        y = x shr 8
+        if (y != 0UL) {
+            n = n - 8
+            x = y
+        }
+        y = x shr 4
+        if (y != 0UL) {
+            n = n - 4
+            x = y
+        }
+        y = x shr 2
+        if (y != 0UL) {
+            n = n - 2
+            x = y
+        }
+        y = x shr 1
+        if (y != 0UL) {
+            return n - 2
+        }
+
+        return n - x.toInt()
+    }
+
+    fun numberOfLeadingZeroesInA64BitWord(value: ULong): Int {
+        var x = value
+        var y: ULong
+        var n = 64
 
         y = x shr 32
         if (y != 0UL) {
@@ -156,10 +190,22 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         ) + (start) * 63
     }
 
+    fun bitLengthFor64BitArray(value: ULongArray): Int {
+        if (value.isZero()) {
+            return 0
+        }
+        val mostSignificant = value[value.size - 1]
+        return bitLengthFor64BitWord(mostSignificant) + (value.size - 1) * 64
+    }
+
     fun bitLength(value: ULong): Int {
         return 63 - numberOfLeadingZerosInAWord(
             value
         )
+    }
+
+    fun bitLengthFor64BitWord(value: ULong) : Int {
+        return 64 - numberOfLeadingZeroesInA64BitWord(value)
     }
 
     fun trailingZeroBits(value: ULong): Int {
@@ -1393,6 +1439,56 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         return result
     }
 
+    internal fun convertFrom64BitRepresentation(operand: ULongArray): ULongArray {
+        if (operand.size == 0) {
+            return ZERO
+        }
+        if (operand.size == 1) {
+            val result = ULongArray(2)
+            result[0] = operand[0] and baseMask
+            result[1] = operand[0] shr 63
+            return result
+        }
+
+        val length = bitLengthFor64BitArray(operand)
+        val requiredLength = if (length % 63 == 0) {
+            length / 63
+        } else {
+            (length / 63) + 1
+        }
+
+        if (requiredLength == 2) {
+            val result = ULongArray(2)
+            result[0] = operand[0] and baseMask
+            result[1] = (operand[1] shl 1) or (operand[0] shr 63)
+            return result
+        }
+
+        val result = ULongArray(requiredLength)
+        var skipWordCount: Int
+        for (i in 0 until requiredLength) {
+            skipWordCount = i / 64
+            val shiftAmount = i % 64
+            val position = i - skipWordCount
+            when (i) {
+                0 -> {
+                    result[i] = operand[0] and baseMask
+                }
+                in 1 until requiredLength - 1 -> {
+                    result[i] =
+                        ((operand[position - 1] shr (64 - shiftAmount)) or
+                            (operand[position] shl shiftAmount)) and baseMask
+                }
+                requiredLength - 1 -> {
+                    result[i] = (operand[position - 1] shr (64 - shiftAmount)) and baseMask
+                }
+            }
+
+        }
+
+        return result
+    }
+
     override fun divide(first: ULongArray, second: ULongArray): Pair<ULongArray, ULongArray> {
         // debugOperandsCheck(first, second)
         return baseDivide(
@@ -2028,102 +2124,46 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
     }
 
     override fun fromUByteArray(
-        source: UByteArray,
-        sign: Sign,
-        byteArrayRepresentation: ByteArrayRepresentation,
-        endianness: Endianness,
-        isTwosComplement: Boolean
+        source: UByteArray
     ): Pair<ULongArray, Sign> {
-        TODO("not implemented yet")
+        val trimmedSource = source.dropWhile { it.toUInt() == 0U }.toUByteArray()
+        val ulongsCount = (trimmedSource.size / 8)
+        val ulongRest = trimmedSource.size % 8
+        val ulongArray = ULongArray(ulongsCount + 1)
+        for (i in 0 until ulongsCount) {
+            for (j in 0 until 8) {
+                ulongArray[i] = ulongArray[i] or (trimmedSource[i * 8 + j].toULong() shl (56 - j * 8))
+            }
+        }
+        for(i in 0 until ulongRest) {
+            ulongArray[ulongArray.size - 1] = ulongArray[ulongArray.size - 1] or (trimmedSource[ulongsCount * 8 + i].toULong() shl (64 - i * 8))
+        }
+        val result = convertFrom64BitRepresentation(ulongArray.reversedArray().dropWhile { it == 0UL }.toULongArray())
+        return Pair(result, Sign.POSITIVE)
     }
 
     override fun fromByteArray(
         source: ByteArray,
-        sign: Sign,
-        byteArrayRepresentation: ByteArrayRepresentation,
-        endianness: Endianness,
-        isTwosComplement: Boolean
     ): Pair<ULongArray, Sign> {
-        return fromUByteArray(source.asUByteArray(), sign, byteArrayRepresentation, endianness, isTwosComplement)
+        return fromUByteArray(source.asUByteArray())
     }
 
     override fun toUByteArray(
-        operand: ULongArray,
-        sign: Sign,
-        byteArrayRepresentation: ByteArrayRepresentation,
-        endianness: Endianness,
-        isTwosComplement: Boolean
+        operand: ULongArray
     ): UByteArray {
-        return when (byteArrayRepresentation) {
-            ByteArrayRepresentation.FOUR_BYTE_NUMBER -> {
-                val as32Bit = if (isTwosComplement && sign == Sign.NEGATIVE) {
-                    val aligned = convertTo32BitRepresentation(operand).reversedArray()
-                    val inverted = invert(aligned)
-                    val converted = increment(inverted)
-                    converted
-                } else {
-                    convertTo32BitRepresentation(operand).reversedArray()
-                }
-                val result = UByteArray(operand.size * 8)
-                for (i in 0 until as32Bit.size) {
-                    if (endianness == Endianness.LITTLE) {
-                        as32Bit[i].toLittleEndianUByteArray().copyInto(result, i * 4, 0, 4)
-                    } else {
-                        as32Bit[i].toBigEndianUByteArray().copyInto(result, i * 4, 0, 4)
-                    }
-                }
-                result
-            }
-            ByteArrayRepresentation.EIGHT_BYTE_NUMBER -> {
-                val as64Bit = if (isTwosComplement && sign == Sign.NEGATIVE) {
-                    val aligned = convertTo64BitRepresentation(operand).reversedArray()
-                    val inverted = invert(aligned)
-                    val converted = increment(inverted)
-                    converted
-                } else {
-                    convertTo64BitRepresentation(operand).reversedArray()
-                }
-                val result = UByteArray(operand.size * 8)
-                for (i in 0 until as64Bit.size) {
-                    if (endianness == Endianness.LITTLE) {
-                        as64Bit[i].toLittleEndianUByteArray().copyInto(result, i * 8, 0, 8)
-                    } else {
-                        as64Bit[i].toBigEndianUByteArray().copyInto(result, i * 8, 0, 8)
-                    }
-                }
-                result
-            }
-            ByteArrayRepresentation.BYTE_STRING -> {
-                val as64Bit = if (isTwosComplement && sign == Sign.NEGATIVE) {
-                    val aligned = convertTo64BitRepresentation(operand).reversedArray()
-                    val inverted = invert(aligned)
-                    val converted = increment(inverted)
-                    converted
-                } else {
-                    convertTo64BitRepresentation(operand).reversedArray()
-                }
-                val result = UByteArray(as64Bit.size * 8)
-                for (i in 0 until as64Bit.size) {
-                    as64Bit[i].toBigEndianUByteArray().copyInto(result, i * 8, 0, 8)
-                }
-                if (endianness == Endianness.LITTLE) {
-                    //Same as big endian just reversed
-                    result.dropWhile { it.toUInt() == 0U }.reversed().toUByteArray()
-                } else {
-                    result.dropWhile { it.toUInt() == 0U }.toUByteArray()
-                }
-            }
+        val as64Bit = convertTo64BitRepresentation(operand).reversedArray()
+        val result = UByteArray(as64Bit.size * 8)
+        for (i in 0 until as64Bit.size) {
+            as64Bit[i].toBigEndianUByteArray().copyInto(result, i * 8, 0, 8)
         }
+        result.dropWhile { it.toUInt() == 0U }.toUByteArray()
+        return result
     }
 
     override fun toByteArray(
         operand: ULongArray,
-        sign: Sign,
-        byteArrayRepresentation: ByteArrayRepresentation,
-        endianness: Endianness,
-        isTwosComplement: Boolean
     ): ByteArray {
-        return toUByteArray(operand, sign, byteArrayRepresentation, endianness, isTwosComplement).asByteArray()
+        return toUByteArray(operand).asByteArray()
     }
 
     private fun debugOperandsCheck(first: ULongArray, second: ULongArray) {

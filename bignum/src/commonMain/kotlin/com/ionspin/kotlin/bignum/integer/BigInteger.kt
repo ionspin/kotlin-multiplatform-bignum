@@ -20,7 +20,6 @@ package com.ionspin.kotlin.bignum.integer
 import com.ionspin.kotlin.bignum.BigNumber
 import com.ionspin.kotlin.bignum.BitwiseCapable
 import com.ionspin.kotlin.bignum.ByteArrayDeserializable
-import com.ionspin.kotlin.bignum.ByteArrayRepresentation
 import com.ionspin.kotlin.bignum.ByteArraySerializable
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.Endianness
@@ -220,24 +219,16 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         }
 
         override fun fromUByteArray(
-            source: UByteArray,
-            sign: Sign,
-            byteArrayRepresentation: ByteArrayRepresentation,
-            endianness: Endianness,
-            twosComplement: Boolean
+            source: UByteArray
         ): BigInteger {
-            val result = arithmetic.fromUByteArray(source, sign, byteArrayRepresentation, endianness, twosComplement)
+            val result = arithmetic.fromUByteArray(source)
             return BigInteger(result.first, result.second)
         }
 
         override fun fromByteArray(
-            source: ByteArray,
-            sign: Sign,
-            byteArrayRepresentation: ByteArrayRepresentation,
-            endianness: Endianness,
-            twosComplement: Boolean
+            source: ByteArray
         ): BigInteger {
-            val result = arithmetic.fromByteArray(source, sign, byteArrayRepresentation, endianness, twosComplement)
+            val result = arithmetic.fromByteArray(source)
             return BigInteger(result.first, result.second)
         }
     }
@@ -810,12 +801,12 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         return arithmetic.oldToUByteArray(magnitude, endianness)
     }
 
-    override fun toUByteArray(byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, twosComplement: Boolean): UByteArray {
-        return arithmetic.toUByteArray(magnitude, sign, byteArrayRepresentation, endianness, twosComplement)
+    override fun toUByteArray(): UByteArray {
+        return arithmetic.toUByteArray(magnitude)
     }
 
-    override fun toByteArray(byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, twosComplement: Boolean): ByteArray {
-        return arithmetic.toByteArray(magnitude, sign, byteArrayRepresentation, endianness, twosComplement)
+    override fun toByteArray(): ByteArray {
+        return arithmetic.toByteArray(magnitude)
     }
 
 

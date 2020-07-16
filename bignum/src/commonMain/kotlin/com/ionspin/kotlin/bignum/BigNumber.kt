@@ -258,11 +258,8 @@ interface ByteArraySerializable {
     fun oldToTypedUByteArray(endianness: Endianness = Endianness.BIG): Array<UByte>
     fun oldToUByteArray(endianness: Endianness = Endianness.BIG): UByteArray
 
-    fun toUByteArray(
-        byteArrayRepresentation: ByteArrayRepresentation = ByteArrayRepresentation.BYTE_STRING,
-        endianness: Endianness = Endianness.BIG,
-        twosComplement: Boolean = false) : UByteArray
-    fun toByteArray(byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, twosComplement: Boolean) : ByteArray
+    fun toUByteArray() : UByteArray
+    fun toByteArray() : ByteArray
 }
 
 
@@ -272,6 +269,6 @@ interface ByteArrayDeserializable<BigType : BigNumber<BigType>> {
     fun oldFromUByteArray(uByteArray: Array<UByte>, endianness: Endianness = Endianness.BIG): BigType
     fun oldFromUByteArray(uByteArray: UByteArray, endianness: Endianness = Endianness.BIG): BigType
 
-    fun fromUByteArray(source: UByteArray, sign: Sign, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, twosComplement: Boolean) : BigType
-    fun fromByteArray(source: ByteArray, sign: Sign, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, twosComplement: Boolean) : BigType
+    fun fromUByteArray(source: UByteArray) : BigType
+    fun fromByteArray(source: ByteArray) : BigType
 }

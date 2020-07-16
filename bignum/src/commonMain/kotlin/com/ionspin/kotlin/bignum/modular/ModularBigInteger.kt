@@ -18,7 +18,6 @@
 package com.ionspin.kotlin.bignum.modular
 
 import com.ionspin.kotlin.bignum.BigNumber
-import com.ionspin.kotlin.bignum.ByteArrayRepresentation
 import com.ionspin.kotlin.bignum.ByteArraySerializable
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.Endianness
@@ -407,19 +406,11 @@ class ModularBigInteger  private constructor(
         TODO("not implemented yet")
     }
 
-    override fun toUByteArray(
-        byteArrayRepresentation: ByteArrayRepresentation,
-        endianness: Endianness,
-        twosComplement: Boolean
-    ): UByteArray {
+    override fun toUByteArray(): UByteArray {
         TODO("not implemented yet")
     }
 
-    override fun toByteArray(
-        byteArrayRepresentation: ByteArrayRepresentation,
-        endianness: Endianness,
-        twosComplement: Boolean
-    ): ByteArray {
+    override fun toByteArray(): ByteArray {
         TODO("not implemented yet")
     }
 }

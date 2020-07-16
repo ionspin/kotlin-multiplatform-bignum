@@ -17,7 +17,6 @@
 
 package com.ionspin.kotlin.bignum.integer
 
-import com.ionspin.kotlin.bignum.ByteArrayRepresentation
 import com.ionspin.kotlin.bignum.Endianness
 
 /**
@@ -149,11 +148,11 @@ interface BigIntegerArithmetic {
     fun oldToTypedUByteArray(operand: ULongArray, endianness: Endianness = Endianness.BIG): Array<UByte>
     fun oldToUByteArray(operand: ULongArray, endianness: Endianness = Endianness.BIG): UByteArray
 
-    fun fromUByteArray(source : UByteArray, sign: Sign, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, isTwosComplement: Boolean) : Pair<ULongArray, Sign>
-    fun fromByteArray(source : ByteArray, sign: Sign, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, isTwosComplement: Boolean) : Pair<ULongArray, Sign>
+    fun fromUByteArray(source : UByteArray) : Pair<ULongArray, Sign>
+    fun fromByteArray(source : ByteArray) : Pair<ULongArray, Sign>
 
-    fun toUByteArray(operand:ULongArray, sign: Sign, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, isTwosComplement: Boolean) : UByteArray
-    fun toByteArray(operand:ULongArray, sign: Sign, byteArrayRepresentation: ByteArrayRepresentation, endianness: Endianness, isTwosComplement: Boolean) : ByteArray
+    fun toUByteArray(operand:ULongArray) : UByteArray
+    fun toByteArray(operand:ULongArray) : ByteArray
 
 
 }

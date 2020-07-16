@@ -17,7 +17,6 @@
 
 package com.ionspin.kotlin.bignum.integer.base32
 
-import com.ionspin.kotlin.bignum.ByteArrayRepresentation
 import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigInteger32ArithmeticInterface
@@ -1564,37 +1563,25 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
     }
 
     override fun fromUByteArray(
-        source: UByteArray,
-        byteArrayRepresentation: ByteArrayRepresentation,
-        endianness: Endianness,
-        isTwosComplement: Boolean
+        source: UByteArray
     ): Pair<UIntArray, Sign> {
         TODO("not implemented yet")
     }
 
     override fun fromByteArray(
-        source: ByteArray,
-        byteArrayRepresentation: ByteArrayRepresentation,
-        endianness: Endianness,
-        isTwosComplement: Boolean
+        source: ByteArray
     ): Pair<UIntArray, Sign> {
         TODO("not implemented yet")
     }
 
     override fun toUByteArray(
-        operand: UIntArray,
-        byteArrayRepresentation: ByteArrayRepresentation,
-        endianness: Endianness,
-        isTwosComplement: Boolean
+        operand: UIntArray
     ): UByteArray {
         TODO("not implemented yet")
     }
 
     override fun toByteArray(
-        operand: UIntArray,
-        byteArrayRepresentation: ByteArrayRepresentation,
-        endianness: Endianness,
-        isTwosComplement: Boolean
+        operand: UIntArray
     ): ByteArray {
         TODO("not implemented yet")
     }

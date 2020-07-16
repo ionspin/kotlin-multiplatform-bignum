@@ -17,7 +17,6 @@
 
 package com.ionspin.kotlin.bignum.integer
 
-import com.ionspin.kotlin.bignum.ByteArrayRepresentation
 import com.ionspin.kotlin.bignum.Endianness
 
 /**
@@ -148,31 +147,19 @@ interface BigInteger32ArithmeticInterface {
     fun olfFromUByteArray(uByteArray: UByteArray, endianness: Endianness = Endianness.BIG): Pair<UIntArray, Sign>
 
     fun fromUByteArray(
-        source: UByteArray,
-        byteArrayRepresentation: ByteArrayRepresentation,
-        endianness: Endianness,
-        isTwosComplement: Boolean
+        source: UByteArray
     ): Pair<UIntArray, Sign>
 
     fun fromByteArray(
-        source: ByteArray,
-        byteArrayRepresentation: ByteArrayRepresentation,
-        endianness: Endianness,
-        isTwosComplement: Boolean
+        source: ByteArray
     ): Pair<UIntArray, Sign>
 
     fun toUByteArray(
-        operand: UIntArray,
-        byteArrayRepresentation: ByteArrayRepresentation,
-        endianness: Endianness,
-        isTwosComplement: Boolean
+        operand: UIntArray
     ): UByteArray
 
     fun toByteArray(
-        operand: UIntArray,
-        byteArrayRepresentation: ByteArrayRepresentation,
-        endianness: Endianness,
-        isTwosComplement: Boolean
+        operand: UIntArray
     ): ByteArray
 
     /**
