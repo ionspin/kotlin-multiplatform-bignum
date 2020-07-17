@@ -52,6 +52,27 @@ implementation("com.ionspin.kotlin:bignum:0.1.6-SNAPSHOT ")
 
 ```
 
+Interim version built with 1.3.72
+```kotlin
+repositories {
+    maven {
+        url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+    }
+}
+implementation("com.ionspin.kotlin:bignum:0.1.6-1.3.72-SNAPSHOT")
+```
+Latest snapshot with kotlin 1.4-M3
+```kotlin
+repositories {
+    maven {
+        url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+    }
+}
+implementation("com.ionspin.kotlin:bignum:0.1.6-1.4-M3-2-SNAPSHOT")
+```
+
+**Stable version 0.1.6 will be released after Kotlin 1.4 is released** 
+
 ## Usage
 
 ### Integers
