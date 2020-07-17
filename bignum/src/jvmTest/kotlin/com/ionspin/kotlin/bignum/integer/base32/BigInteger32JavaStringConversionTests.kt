@@ -17,15 +17,15 @@
 
 package com.ionspin.kotlin.bignum.integer.base32
 
+import java.math.BigInteger
+import kotlin.random.Random
+import kotlin.random.nextUInt
+import kotlin.test.assertTrue
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
-import java.math.BigInteger
-import kotlin.random.Random
-import kotlin.random.nextUInt
-import kotlin.test.assertTrue
 
 /**
  * Created by Ugljesa Jovanovic

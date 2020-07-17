@@ -18,10 +18,10 @@
 package com.ionspin.kotlin.bignum.integer.base63List
 
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63LinkedListArithmetic
-import org.junit.Test
 import kotlin.random.Random
 import kotlin.random.nextULong
 import kotlin.test.assertTrue
+import org.junit.Test
 
 /**
  * Created by Ugljesa Jovanovic

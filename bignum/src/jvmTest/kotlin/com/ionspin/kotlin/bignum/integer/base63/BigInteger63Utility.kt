@@ -31,11 +31,9 @@ fun ULongArray.toJavaBigInteger(): BigInteger {
     }
 }
 
-
 fun com.ionspin.kotlin.bignum.integer.BigInteger.toJavaBigInteger(): BigInteger {
     return (this.magnitude.toULongArray().toJavaBigInteger() * this.sign.toInt().toBigInteger())
 }
-
 
 fun ULong.toJavaBigInteger(): BigInteger {
     return BigInteger(this.toString(10), 10)

@@ -17,8 +17,8 @@
 
 package com.ionspin.kotlin.bignum.decimal
 
-import org.junit.Test
 import kotlin.test.assertTrue
+import org.junit.Test
 
 /**
  * Created by Ugljesa Jovanovic

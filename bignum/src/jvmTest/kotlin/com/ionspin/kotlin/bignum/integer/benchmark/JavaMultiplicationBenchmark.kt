@@ -22,9 +22,6 @@ import com.ionspin.kotlin.bignum.integer.base63.toJavaBigInteger
 import com.ionspin.kotlin.bignum.integer.chosenArithmetic
 import com.ionspin.kotlin.bignum.runBlockingTest
 import com.ionspin.kotlin.bignum.toProperType
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import java.math.BigInteger
 import kotlin.random.Random
 import kotlin.random.nextULong
@@ -34,6 +31,9 @@ import kotlin.test.Test
 import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 /**
  * Created by Ugljesa Jovanovic

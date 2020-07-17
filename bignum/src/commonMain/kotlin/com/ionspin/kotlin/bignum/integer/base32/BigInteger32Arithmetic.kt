@@ -1274,11 +1274,12 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
         }
         return result
     }
-
-    override fun oldToByteArray(operand: UIntArray, sign: Sign): Array<Byte> {
+    @Deprecated("Old byte conversion API")
+    private fun oldToByteArray(operand: UIntArray, sign: Sign): Array<Byte> {
         if (operand.isEmpty()) {
             return emptyArray()
         }
+        byteArrayOf(1).toUByteArray()
         val bitLength = bitLength(operand)
         return when (sign) {
             Sign.ZERO -> {
@@ -1327,7 +1328,8 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
         }.toTypedArray()
     }
 
-    override fun oldFromByteArray(byteArray: Array<Byte>): Pair<UIntArray, Sign> {
+    @Deprecated("Old byte conversion API")
+    private fun oldFromByteArray(byteArray: Array<Byte>): Pair<UIntArray, Sign> {
         val sign = (byteArray[0].toInt() ushr 7) and 0b00000001
         val chunked = byteArray.toList().reversed().chunked(4)
 
@@ -1370,8 +1372,8 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
             Sign.ZERO -> throw RuntimeException("Bug in fromByteArray, sign shouldn't ever be zero at this point.")
         }
     }
-
-    override fun oldFromByteArray(byteArray: ByteArray): Pair<UIntArray, Sign> {
+    @Deprecated("Old byte conversion API")
+    private fun oldFromByteArray(byteArray: ByteArray): Pair<UIntArray, Sign> {
         val sign = (byteArray[0].toInt() ushr 7) and 0b00000001
         val chunked = byteArray.toList().reversed().chunked(4)
 
@@ -1414,8 +1416,8 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
             Sign.ZERO -> throw RuntimeException("Bug in fromByteArray, sign shouldn't ever be zero at this point.")
         }
     }
-
-    override fun olfFromUByteArray(uByteArray: Array<UByte>, endianness: Endianness): Pair<UIntArray, Sign> {
+    @Deprecated("Old byte conversion API")
+    private fun oldFromUByteArray(uByteArray: Array<UByte>, endianness: Endianness): Pair<UIntArray, Sign> {
         val chunked = when (endianness) {
             Endianness.BIG -> {
                 uByteArray.toList().reversed().chunked(4)
@@ -1442,8 +1444,8 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
 
         return Pair(removeLeadingZeros(corrected), resolvedSign)
     }
-
-    override fun olfFromUByteArray(uByteArray: UByteArray, endianness: Endianness): Pair<UIntArray, Sign> {
+    @Deprecated("Old byte conversion API")
+    private fun oldFromUByteArray(uByteArray: UByteArray, endianness: Endianness): Pair<UIntArray, Sign> {
         val chunked = when (endianness) {
             Endianness.BIG -> {
                 uByteArray.toList().reversed().chunked(4)

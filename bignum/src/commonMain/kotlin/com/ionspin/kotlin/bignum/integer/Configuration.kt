@@ -26,13 +26,10 @@ import com.ionspin.kotlin.bignum.integer.base63.array.BigInteger63Arithmetic
  * on 10-Mar-2019
  */
 
-
 // typealias WordArray = List<ULong>
 typealias WordArray = ULongArray
 
-
 typealias Word = ULong
-
 
 internal val chosenArithmetic: BigIntegerArithmetic =
     BigInteger63Arithmetic

@@ -140,12 +140,6 @@ interface BigInteger32ArithmeticInterface {
     fun bitAt(operand: UIntArray, position: Long): Boolean
     fun setBitAt(operand: UIntArray, position: Long, bit: Boolean): UIntArray
 
-    fun oldToByteArray(operand: UIntArray, sign: Sign): Array<Byte>
-    fun oldFromByteArray(byteArray: Array<Byte>): Pair<UIntArray, Sign>
-    fun oldFromByteArray(byteArray: ByteArray): Pair<UIntArray, Sign>
-    fun olfFromUByteArray(uByteArray: Array<UByte>, endianness: Endianness = Endianness.BIG): Pair<UIntArray, Sign>
-    fun olfFromUByteArray(uByteArray: UByteArray, endianness: Endianness = Endianness.BIG): Pair<UIntArray, Sign>
-
     fun fromUByteArray(
         source: UByteArray
     ): Pair<UIntArray, Sign>

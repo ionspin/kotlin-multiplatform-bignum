@@ -17,10 +17,10 @@
 
 package com.ionspin.kotlin.bignum.integer.base32
 
-import org.junit.Ignore
-import org.junit.Test
 import kotlin.random.Random
 import kotlin.test.assertTrue
+import org.junit.Ignore
+import org.junit.Test
 
 /**
  * Created by Ugljesa Jovanovic

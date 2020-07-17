@@ -17,12 +17,10 @@
 
 package com.ionspin.kotlin.bignum.integer.base63.array
 
-import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerArithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
 import com.ionspin.kotlin.bignum.integer.Sextuple
-import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
 import com.ionspin.kotlin.bignum.integer.util.toBigEndianUByteArray
 import com.ionspin.kotlin.bignum.integer.util.toDigit
@@ -204,7 +202,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         )
     }
 
-    fun bitLengthFor64BitWord(value: ULong) : Int {
+    fun bitLengthFor64BitWord(value: ULong): Int {
         return 64 - numberOfLeadingZeroesInA64BitWord(value)
     }
 
@@ -1475,15 +1473,30 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
                     result[i] = operand[0] and baseMask
                 }
                 in 1 until requiredLength - 1 -> {
-                    result[i] =
+                    result[i] = if (shiftAmount > 0) {
                         ((operand[position - 1] shr (64 - shiftAmount)) or
                             (operand[position] shl shiftAmount)) and baseMask
+                    } else {
+                        (operand[position] shl shiftAmount) and baseMask
+                    }
                 }
                 requiredLength - 1 -> {
-                    result[i] = (operand[position - 1] shr (64 - shiftAmount)) and baseMask
+                    if (position < operand.size) {
+                        result[i] = if (shiftAmount > 0) {
+                            ((operand[position - 1] shr (64 - shiftAmount)) or
+                                (operand[position] shl shiftAmount)) and baseMask
+                        } else {
+                            (operand[position] shl shiftAmount) and baseMask
+                        }
+                    } else {
+                        result[i] = if (shiftAmount > 0) {
+                            ((operand[position - 1] shr (64 - shiftAmount)))
+                        } else {
+                            0U
+                        }
+                    }
                 }
             }
-
         }
 
         return result
@@ -2061,72 +2074,12 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
 
     override fun fromByte(byte: Byte): ULongArray = ulongArrayOf(byte.toInt().absoluteValue.toULong())
 
-    override fun oldToByteArray(operand: ULongArray, sign: Sign): Array<Byte> {
-        return BigInteger32Arithmetic.oldToByteArray(
-            convertTo32BitRepresentation(
-                operand
-            ), sign
-        )
-    }
-
-    override fun oldFromByteArray(byteArray: Array<Byte>): Pair<ULongArray, Sign> {
-        val result = BigInteger32Arithmetic.oldFromByteArray(byteArray)
-        return Pair(
-            convertFrom32BitRepresentation(
-                result.first
-            ), result.second
-        )
-    }
-
-    override fun oldFromByteArray(byteArray: ByteArray): Pair<ULongArray, Sign> {
-        val result = BigInteger32Arithmetic.oldFromByteArray(byteArray)
-        return Pair(
-            convertFrom32BitRepresentation(
-                result.first
-            ), result.second
-        )
-    }
-
-    override fun oldFromUByteArray(uByteArray: Array<UByte>, endianness: Endianness): Pair<ULongArray, Sign> {
-        val result = BigInteger32Arithmetic.olfFromUByteArray(uByteArray, endianness)
-        return Pair(
-            convertFrom32BitRepresentation(
-                result.first
-            ), result.second
-        )
-    }
-
-    override fun oldFromUByteArray(uByteArray: UByteArray, endianness: Endianness): Pair<ULongArray, Sign> {
-        val result = BigInteger32Arithmetic.olfFromUByteArray(uByteArray, endianness)
-        return Pair(
-            convertFrom32BitRepresentation(
-                result.first
-            ), result.second
-        )
-    }
-
-    override fun oldToTypedUByteArray(operand: ULongArray, endianness: Endianness): Array<UByte> {
-        val result = BigInteger32Arithmetic.toUIntArrayRepresentedAsTypedUByteArray(
-            convertTo32BitRepresentation(
-                operand
-            ), endianness
-        )
-        return result
-    }
-
-    override fun oldToUByteArray(operand: ULongArray, endianness: Endianness): UByteArray {
-        val result = BigInteger32Arithmetic.toUIntArrayRepresentedAsUByteArray(
-            convertTo32BitRepresentation(
-                operand
-            ), endianness
-        )
-        return result
-    }
-
     override fun fromUByteArray(
         source: UByteArray
-    ): Pair<ULongArray, Sign> {
-        val trimmedSource = source.dropWhile { it.toUInt() == 0U }.toUByteArray()
+    ): ULongArray {
+        val padLength = 8 - source.size % 8
+        val paddedSource = UByteArray(padLength) + source
+        val trimmedSource = paddedSource.chunked(8).reversed().flatten().toUByteArray()
         val ulongsCount = (trimmedSource.size / 8)
         val ulongRest = trimmedSource.size % 8
         val ulongArray = ULongArray(ulongsCount + 1)
@@ -2135,16 +2088,18 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
                 ulongArray[i] = ulongArray[i] or (trimmedSource[i * 8 + j].toULong() shl (56 - j * 8))
             }
         }
-        for(i in 0 until ulongRest) {
-            ulongArray[ulongArray.size - 1] = ulongArray[ulongArray.size - 1] or (trimmedSource[ulongsCount * 8 + i].toULong() shl (64 - i * 8))
+        for (i in 0 until ulongRest) {
+            ulongArray[ulongArray.size - 1] =
+                ulongArray[ulongArray.size - 1] or
+                    (trimmedSource[ulongsCount * 8 + i].toULong() shl ((ulongRest - 1) * 8 - i * 8))
         }
-        val result = convertFrom64BitRepresentation(ulongArray.reversedArray().dropWhile { it == 0UL }.toULongArray())
-        return Pair(result, Sign.POSITIVE)
+        val result = convertFrom64BitRepresentation(ulongArray.dropLastWhile { it.toUInt() == 0U }.toULongArray())
+        return result
     }
 
     override fun fromByteArray(
-        source: ByteArray,
-    ): Pair<ULongArray, Sign> {
+        source: ByteArray
+    ): ULongArray {
         return fromUByteArray(source.asUByteArray())
     }
 
@@ -2161,7 +2116,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
     }
 
     override fun toByteArray(
-        operand: ULongArray,
+        operand: ULongArray
     ): ByteArray {
         return toUByteArray(operand).asByteArray()
     }

@@ -18,9 +18,9 @@
 package com.ionspin.kotlin.bignum.integer.arithmetic
 
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlin.test.Test
 import kotlin.test.assertTrue
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 /**
  * Created by Ugljesa Jovanovic

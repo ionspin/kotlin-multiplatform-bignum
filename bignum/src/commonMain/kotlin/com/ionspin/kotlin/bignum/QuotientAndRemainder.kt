@@ -26,11 +26,9 @@ import com.ionspin.kotlin.bignum.modular.ModularBigInteger
  * on 04-Apr-2019
  */
 
-
 data class QuotientAndRemainder(
     val quotient: BigInteger,
     val remainder: BigInteger
 )
-
 
 data class ModularQuotientAndRemainder(val quotient: ModularBigInteger, val remainder: ModularBigInteger)

@@ -25,7 +25,6 @@ import com.ionspin.kotlin.bignum.integer.WordArray
  * on 20-Oct-2019
  */
 
-
 fun ULongArray.toProperType(): WordArray {
     // if ((TypeHelper.instance as Any) is ULongArray) {
         return this as WordArray
@@ -36,7 +35,6 @@ fun ULongArray.toProperType(): WordArray {
     // throw RuntimeException("Invalid WordArray type")
 }
 
-
 fun List<ULong>.toProperType(): WordArray {
     // if ((TypeHelper.instance as Any) is ULongArray) {
         return this as WordArray
@@ -46,7 +44,6 @@ fun List<ULong>.toProperType(): WordArray {
     // }
     // throw RuntimeException("Invalid WordArray type")
 }
-
 
 fun List<ULong>.contentEquals(other: List<ULong>): Boolean {
     return this == other

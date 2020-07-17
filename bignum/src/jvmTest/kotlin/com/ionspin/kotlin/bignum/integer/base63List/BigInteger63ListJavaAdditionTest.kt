@@ -18,15 +18,14 @@
 package com.ionspin.kotlin.bignum.integer.base63List
 
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63LinkedListArithmetic
-import org.junit.Test
 import kotlin.test.assertTrue
+import org.junit.Test
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
  * on 17-Mar-2019
  */
-
 
 class BigInteger63ListJavaAdditionTest() {
 

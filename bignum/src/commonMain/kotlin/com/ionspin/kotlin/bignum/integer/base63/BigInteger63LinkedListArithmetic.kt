@@ -17,11 +17,9 @@
 
 package com.ionspin.kotlin.bignum.integer.base63
 
-import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.BigIntegerList63Arithmetic
 import com.ionspin.kotlin.bignum.integer.Quadruple
-import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
 import com.ionspin.kotlin.bignum.integer.base63.array.BigInteger63Arithmetic
 import com.ionspin.kotlin.bignum.integer.util.toDigit
@@ -1266,23 +1264,22 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
 
     override fun fromByte(byte: Byte): List<ULong> = listOf(byte.toInt().absoluteValue.toULong())
 
-    override fun toByteArray(operand: List<ULong>, sign: Sign): Array<Byte> {
-        return BigInteger32Arithmetic.oldToByteArray(convertTo32BitRepresentation(operand), sign)
+    override fun fromUByteArray(source: UByteArray): List<ULong> {
+        val result = BigInteger63Arithmetic.fromUByteArray(source)
+        val converted = result.toList()
+        return converted
     }
 
-    override fun fromByteArray(byteArray: Array<Byte>): Pair<List<ULong>, Sign> {
-        val result = BigInteger32Arithmetic.oldFromByteArray(byteArray)
-        return Pair(convertFrom32BitRepresentation(result.first), result.second)
+    override fun fromByteArray(source: ByteArray): List<ULong> {
+        val result = BigInteger63Arithmetic.fromByteArray(source)
+        val converted = result.toList()
+        return converted
     }
-
-    override fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness): Pair<List<ULong>, Sign> {
-        val result = BigInteger32Arithmetic.olfFromUByteArray(uByteArray, endianness)
-        return Pair(convertFrom32BitRepresentation(result.first), result.second)
+    override fun toUByteArray(operand: List<ULong>): UByteArray {
+        return BigInteger63Arithmetic.toUByteArray(operand.toULongArray())
     }
-
-    override fun toUByteArray(operand: List<ULong>, endianness: Endianness): Array<UByte> {
-        val result = BigInteger32Arithmetic.toUIntArrayRepresentedAsTypedUByteArray(convertTo32BitRepresentation(operand), endianness)
-        return result
+    override fun toByteArray(operand: List<ULong>): ByteArray {
+        return BigInteger63Arithmetic.toByteArray(operand.toULongArray())
     }
 
     // ------------- Useful constants --------------

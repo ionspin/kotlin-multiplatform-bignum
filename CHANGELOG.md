@@ -6,10 +6,15 @@
 - Built with Kotlin 1.4-M3
 - Reworked to(U)ByteArray conversion methods
     - from and to conversions were not consistent, from(U)ByteArray expected a string of bytes ordered in little or big endian,
-    while to(U)ByteArray produced `Int` or `Long` repreented as byte with little endian or big endian order.
-    - Now there are two flavors of conversion
-        - To/From (U)ByteString which produces a Big Endian or a Little Endian string
-        - To/From (U)ByteNumberRepresentation which can be Big Endian or Little Endian, 4 or 8 byte represenation
+    while to(U)ByteArray produced `Int` or `Long` represented as byte with little endian or big endian order.
+    - Replaced with a consistent to and from byte/ubyte array conversions
+        - `fromUByteArray` always expects a big-endian ordered array of unsigned bytes
+        - `fromByteArray` always expects a big-endian ordered array of bytes
+        - `toUByteArray` produces unsigned byte array in big-endian order 
+        - `toByteArray` produces signed byte array in big-endian order
+    - There are two helper methods that convert  to and from a two's complement ByteArray, this form conforms to Java BigIntegers toByteArray
+        - `fromTwosComplementByteArray` expects a two's complement ByteArray with at least one sign bit
+        - `toTwosComplementByteArray`produces a two's complement ByteArray with at least one sign bit
 
 ##### 0.1.5 - 07.01.2020 - Adding linux arm targets, BigDecimal bug fixes
 - Version bump to kotlin 1.3.61

@@ -17,12 +17,10 @@
 
 package com.ionspin.kotlin.bignum.integer
 
-import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.integer.base63.array.BigInteger63Arithmetic
 import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertTrue
-import kotlin.test.expect
 
 /**
  * Created by Ugljesa Jovanovic
@@ -37,22 +35,22 @@ class ByteArrayConversionTest {
     fun testToAndFromByteArray() {
         assertTrue {
             val bigIntOriginal = BigInteger.fromULong(ULong.MAX_VALUE)
-            val byteArray = bigIntOriginal.oldToTypedByteArray()
-            val reconstructed = BigInteger.oldFromByteArray(byteArray)
+            val byteArray = bigIntOriginal.toUByteArray()
+            val reconstructed = BigInteger.fromUByteArray(byteArray, Sign.POSITIVE)
             bigIntOriginal == reconstructed
         }
 
         assertTrue {
             val bigIntOriginal = BigInteger.fromLong(Long.MIN_VALUE)
-            val byteArray = bigIntOriginal.oldToTypedByteArray()
-            val reconstructed = BigInteger.oldFromByteArray(byteArray)
+            val byteArray = bigIntOriginal.toUByteArray()
+            val reconstructed = BigInteger.fromUByteArray(byteArray, Sign.NEGATIVE)
             bigIntOriginal.equals(reconstructed)
         }
 
         assertTrue {
             val bigIntOriginal = BigInteger.fromULong(ULong.MAX_VALUE) + BigInteger.fromULong(ULong.MAX_VALUE)
-            val byteArray = bigIntOriginal.oldToTypedByteArray()
-            val reconstructed = BigInteger.oldFromByteArray(byteArray)
+            val byteArray = bigIntOriginal.toUByteArray()
+            val reconstructed = BigInteger.fromUByteArray(byteArray, Sign.POSITIVE)
             bigIntOriginal.equals(reconstructed)
         }
     }
@@ -61,7 +59,8 @@ class ByteArrayConversionTest {
     fun toUByteArray() {
         assertTrue {
             val expected = ubyteArrayOf(
-                0x00U, 0x11U, 0x22U, 0x33U, 0x44U, 0x55U, 0x66U, 0x77U, 0x88U, 0x99U, 0xAAU, 0xBBU, 0xCCU, 0xDDU, 0xEEU, 0xFFU
+                0x00U, 0x11U, 0x22U, 0x33U, 0x44U, 0x55U, 0x66U, 0x77U,
+                0x88U, 0x99U, 0xAAU, 0xBBU, 0xCCU, 0xDDU, 0xEEU, 0xFFU
             )
             val bigIntOriginal = BigInteger.parseString("00112233445566778899AABBCCDDEEFF", 16)
             val byteArray = bigIntOriginal.toUByteArray()
@@ -72,11 +71,15 @@ class ByteArrayConversionTest {
     @Test
     fun fromUByteArray() {
         assertTrue {
-            val expected =  BigInteger.parseString("112233445566778899AABBCCDDEEFF00", 16)
-            val bigInt = BigInteger.fromUByteArray(ubyteArrayOf(
-                0x11U, 0x22U, 0x33U, 0x44U, 0x55U, 0x66U, 0x77U, 0x88U, 0x99U, 0xAAU, 0xBBU, 0xCCU, 0xDDU, 0xEEU, 0xFFU, 0x00U
-            ))
-           bigInt == expected
+            val expected = BigInteger.parseString("112233445566778899AABBCCDDEEFF00", 16)
+            val bigInt = BigInteger.fromUByteArray(
+                ubyteArrayOf(
+                    0x11U, 0x22U, 0x33U, 0x44U, 0x55U, 0x66U, 0x77U, 0x88U,
+                    0x99U, 0xAAU, 0xBBU, 0xCCU, 0xDDU, 0xEEU, 0xFFU, 0x00U
+                ),
+                Sign.POSITIVE
+            )
+            bigInt == expected
         }
     }
 
@@ -97,8 +100,15 @@ class ByteArrayConversionTest {
             expected.contentEquals(result)
         }
         assertTrue {
-            val input = ulongArrayOf(0b1111000000000000000000000000000000000000000000000000000000011111UL, 0b1111000000000000000000000000000000000000000000000000000000011111UL)
-            val expected = ulongArrayOf(0b0111000000000000000000000000000000000000000000000000000000011111UL, 0b0110000000000000000000000000000000000000000000000000000000111111UL, 0b11UL)
+            val input = ulongArrayOf(
+                0b1111000000000000000000000000000000000000000000000000000000011111UL,
+                0b1111000000000000000000000000000000000000000000000000000000011111UL
+            )
+            val expected = ulongArrayOf(
+                0b0111000000000000000000000000000000000000000000000000000000011111UL,
+                0b0110000000000000000000000000000000000000000000000000000000111111UL,
+                0b11UL
+            )
             val result = BigInteger63Arithmetic.convertFrom64BitRepresentation(input)
 
             expected.contentEquals(result)
@@ -172,7 +182,7 @@ class ByteArrayConversionTest {
                 0b1111000000000000000000000000000000000000000000000000000000011111UL,
                 0b1111000000000000000000000000000000000000000000000000000000011111UL,
                 0b1111000000000000000000000000000000000000000000000000000000011111UL,
-                0b1111000000000000000000000000000000000000000000000000000000011111UL,
+                0b1111000000000000000000000000000000000000000000000000000000011111UL
             )
             val expected = ulongArrayOf(
                 0b0111000000000000000000000000000000000000000000000000000000011111UL,
@@ -249,58 +259,22 @@ class ByteArrayConversionTest {
 
             expected.contentEquals(result)
         }
-
     }
 
-
     @Test
-    fun fromUByteArrayOld() {
+    fun fromUByteArraySpecific() {
         assertTrue {
-            val uByteArray = "19191919191919191919191919191919".chunked(2).map { it.toUByte(16) }.toTypedArray()
-            val bigInt = BigInteger.oldFromUByteArray(
+            val uByteArray = "19191919191919191919191919191919".chunked(2).map { it.toUByte(16) }.toUByteArray()
+            val bigInt = BigInteger.fromUByteArray(
                 uByteArray,
-                Endianness.BIG
+                Sign.POSITIVE
             )
-            val reconstructed = bigInt.oldToTypedUByteArray()
+            val reconstructed = bigInt.toUByteArray()
             uByteArray.contentEquals(reconstructed)
         }
     }
 
     @Test
-    fun specificToUByteArrayTest() {
-        val bigInteger = BigInteger.parseString("01234567", 16)
-        val expectedBigEndian = ubyteArrayOf(
-            0x01U, 0x23U, 0x45U, 0x67U
-        )
-        val expectedLittleEndian = ubyteArrayOf(
-            0x67U, 0x45U, 0x23U, 0x01U
-        )
-        assertTrue {
-            val littleResult = bigInteger.oldToUByteArray(Endianness.LITTLE)
-            littleResult.contentEquals(expectedLittleEndian)
-        }
-        assertTrue {
-            val bigResult = bigInteger.oldToUByteArray(Endianness.BIG)
-            bigResult.contentEquals(expectedBigEndian)
-        }
-    }
-
-    @Test
-    fun specificFromUbyteArrayTest() {
-        val expected = BigInteger.parseString("01234567012345670123", 16)
-        val inputBigEndian = ubyteArrayOf(
-            0x01U, 0x23U, 0x45U, 0x67U, 0x01U, 0x23U, 0x45U, 0x67U, 0x01U, 0x23U
-        )
-        val inputLittleEndian = ubyteArrayOf(
-            0x67U, 0x45U, 0x23U, 0x01U, 0x67U, 0x45U, 0x23U, 0x01U, 0x23U, 0x01U
-        )
-        // assertTrue {
-        //     val littleResult = BigInteger.fromUByteArray(inputLittleEndian)
-        //     littleResult == expected
-        // }
-        assertTrue {
-            val bigResult = BigInteger.oldFromUByteArray(inputBigEndian)
-            bigResult == expected
-        }
+    fun testTwosComplementHelperConversion() {
     }
 }

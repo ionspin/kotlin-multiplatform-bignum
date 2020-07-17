@@ -21,14 +21,14 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.base63.toJavaBigInteger
 import com.ionspin.kotlin.bignum.toProperType
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlin.random.Random
 import kotlin.random.nextULong
 import kotlin.test.Test
 import kotlin.test.assertTrue
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 /**
  * Created by Ugljesa Jovanovic

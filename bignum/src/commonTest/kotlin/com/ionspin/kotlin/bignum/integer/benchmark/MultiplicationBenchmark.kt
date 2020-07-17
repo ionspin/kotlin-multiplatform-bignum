@@ -21,9 +21,6 @@ import com.ionspin.kotlin.bignum.integer.WordArray
 import com.ionspin.kotlin.bignum.integer.chosenArithmetic
 import com.ionspin.kotlin.bignum.runBlockingTest
 import com.ionspin.kotlin.bignum.toProperType
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import kotlin.random.Random
 import kotlin.random.nextULong
 import kotlin.test.BeforeTest
@@ -32,6 +29,9 @@ import kotlin.test.Test
 import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 /**
  * Created by Ugljesa Jovanovic

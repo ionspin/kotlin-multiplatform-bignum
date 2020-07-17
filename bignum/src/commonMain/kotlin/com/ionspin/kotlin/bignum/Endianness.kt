@@ -25,5 +25,3 @@ package com.ionspin.kotlin.bignum
 enum class Endianness {
     BIG, LITTLE
 }
-
-

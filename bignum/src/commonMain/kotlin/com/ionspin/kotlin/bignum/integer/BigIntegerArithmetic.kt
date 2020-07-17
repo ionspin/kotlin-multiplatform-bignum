@@ -17,8 +17,6 @@
 
 package com.ionspin.kotlin.bignum.integer
 
-import com.ionspin.kotlin.bignum.Endianness
-
 /**
  * Interface defining big integer operations
  *
@@ -139,25 +137,12 @@ interface BigIntegerArithmetic {
     fun bitAt(operand: ULongArray, position: Long): Boolean
     fun setBitAt(operand: ULongArray, position: Long, bit: Boolean): ULongArray
 
-    fun oldToByteArray(operand: ULongArray, sign: Sign): Array<Byte>
-    fun oldFromByteArray(byteArray: Array<Byte>): Pair<ULongArray, Sign>
+    fun fromUByteArray(source: UByteArray): ULongArray
+    fun fromByteArray(source: ByteArray): ULongArray
 
-    fun oldFromByteArray(byteArray: ByteArray): Pair<ULongArray, Sign>
-    fun oldFromUByteArray(uByteArray: Array<UByte>, endianness: Endianness = Endianness.BIG): Pair<ULongArray, Sign>
-    fun oldFromUByteArray(uByteArray: UByteArray, endianness: Endianness = Endianness.BIG): Pair<ULongArray, Sign>
-    fun oldToTypedUByteArray(operand: ULongArray, endianness: Endianness = Endianness.BIG): Array<UByte>
-    fun oldToUByteArray(operand: ULongArray, endianness: Endianness = Endianness.BIG): UByteArray
-
-    fun fromUByteArray(source : UByteArray) : Pair<ULongArray, Sign>
-    fun fromByteArray(source : ByteArray) : Pair<ULongArray, Sign>
-
-    fun toUByteArray(operand:ULongArray) : UByteArray
-    fun toByteArray(operand:ULongArray) : ByteArray
-
-
+    fun toUByteArray(operand: ULongArray): UByteArray
+    fun toByteArray(operand: ULongArray): ByteArray
 }
-
-
 
 /**
  * Created by Ugljesa Jovanovic

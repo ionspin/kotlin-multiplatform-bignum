@@ -20,7 +20,6 @@ package com.ionspin.kotlin.bignum.modular
 import com.ionspin.kotlin.bignum.BigNumber
 import com.ionspin.kotlin.bignum.ByteArraySerializable
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
-import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.ModularQuotientAndRemainder
 import com.ionspin.kotlin.bignum.NarrowingOperations
 import com.ionspin.kotlin.bignum.integer.BigInteger
@@ -34,8 +33,7 @@ import com.ionspin.kotlin.bignum.integer.Sign
  * on 04-Apr-2019
  */
 
-
-class ModularBigInteger  private constructor(
+class ModularBigInteger private constructor(
     signedResidue: BigInteger,
     val modulus: BigInteger,
     private val creator: BigNumber.Creator<ModularBigInteger>
@@ -390,27 +388,11 @@ class ModularBigInteger  private constructor(
         return residue.doubleValue()
     }
 
-    override fun oldToTypedByteArray(): Array<Byte> {
-        return residue.oldToTypedByteArray()
-    }
-
-    override fun oldToTypedUByteArray(endianness: Endianness): Array<UByte> {
-        return residue.oldToTypedUByteArray(endianness)
-    }
-
-    override fun oldToUByteArray(endianness: Endianness): UByteArray {
-        return residue.oldToUByteArray()
-    }
-
-    override fun oldToByteArray(): ByteArray {
-        TODO("not implemented yet")
-    }
-
     override fun toUByteArray(): UByteArray {
-        TODO("not implemented yet")
+        return residue.toUByteArray()
     }
 
     override fun toByteArray(): ByteArray {
-        TODO("not implemented yet")
+        return residue.toByteArray()
     }
 }

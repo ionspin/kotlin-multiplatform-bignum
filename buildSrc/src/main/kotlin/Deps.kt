@@ -64,7 +64,7 @@ object Deps {
 
 object PluginsDeps {
     object Versions {
-        val spotlessVersion = "3.24.2"
+        val spotlessVersion = "5.1.0"
     }
 
     val kotlinSerializationPlugin = "kotlinx-serialization"
@@ -73,6 +73,6 @@ object PluginsDeps {
     val mavenPublish = "maven-publish"
     val signing = "signing"
     val dokka = "org.jetbrains.dokka"
-    val spotless = "com.diffplug.gradle.spotless"
+    val spotless = "com.diffplug.spotless"
 }
 
