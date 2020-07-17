@@ -26,7 +26,6 @@ import kotlin.test.assertTrue
  * on 01-Dec-2019
  */
 
-@ExperimentalUnsignedTypes
 class BigDecimalRoundingTests {
 
     @Test

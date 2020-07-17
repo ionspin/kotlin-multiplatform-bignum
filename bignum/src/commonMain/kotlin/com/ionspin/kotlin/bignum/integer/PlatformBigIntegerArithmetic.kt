@@ -22,5 +22,5 @@
 //  * ugljesa.jovanovic@ionspin.com
 //  * on 10-Mar-2019
 //  */
-// @ExperimentalUnsignedTypes
+//
 // expect object PlatformBigIntegerArithmetic : BigIntegerArithmetic

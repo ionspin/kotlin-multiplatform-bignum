@@ -22,7 +22,6 @@ import com.ionspin.kotlin.bignum.BitwiseCapable
 import com.ionspin.kotlin.bignum.ByteArrayDeserializable
 import com.ionspin.kotlin.bignum.ByteArraySerializable
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
-import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.NarrowingOperations
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.integer.base63.array.BigInteger63Arithmetic
@@ -36,7 +35,7 @@ import kotlin.math.log10
  *
  * Based on unsigned arrays, currently limited to [Int.MAX_VALUE] words.
  */
-@ExperimentalUnsignedTypes
+
 class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : BigNumber<BigInteger>,
     CommonBigNumberOperations<BigInteger>,
     NarrowingOperations<BigInteger>,
@@ -56,7 +55,6 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         return this
     }
 
-    @ExperimentalUnsignedTypes
     companion object : BigNumber.Creator<BigInteger>, BigNumber.Util<BigInteger>, ByteArrayDeserializable<BigInteger> {
         private val arithmetic: BigIntegerArithmetic = chosenArithmetic
 
@@ -198,24 +196,20 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
             }
         }
 
-        override fun fromByteArray(byteArray: Array<Byte>): BigInteger {
-            val result = arithmetic.fromByteArray(byteArray)
-            return BigInteger(result.first, result.second)
+        override fun fromUByteArray(
+            source: UByteArray,
+            sign: Sign
+        ): BigInteger {
+            val result = arithmetic.fromUByteArray(source)
+            return BigInteger(result, sign)
         }
 
-        override fun fromByteArray(byteArray: ByteArray): BigInteger {
-            val result = arithmetic.fromByteArray(byteArray)
-            return BigInteger(result.first, result.second)
-        }
-
-        override fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness): BigInteger {
-            val result = arithmetic.fromUByteArray(uByteArray, endianness)
-            return BigInteger(result.first, result.second)
-        }
-
-        override fun fromUByteArray(uByteArray: UByteArray, endianness: Endianness): BigInteger {
-            val result = arithmetic.fromUByteArray(uByteArray, endianness)
-            return BigInteger(result.first, result.second)
+        override fun fromByteArray(
+            source: ByteArray,
+            sign: Sign
+        ): BigInteger {
+            val result = arithmetic.fromByteArray(source)
+            return BigInteger(result, sign)
         }
     }
 
@@ -769,16 +763,12 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         return this.toString().toDouble()
     }
 
-    override fun toByteArray(): Array<Byte> {
-        return arithmetic.toByteArray(magnitude, sign)
+    override fun toUByteArray(): UByteArray {
+        return arithmetic.toUByteArray(magnitude)
     }
 
-    override fun toTypedUByteArray(endianness: Endianness): Array<UByte> {
-        return arithmetic.toTypedUByteArray(magnitude, endianness)
-    }
-
-    override fun toUByteArray(endianness: Endianness): UByteArray {
-        return arithmetic.toUByteArray(magnitude, endianness)
+    override fun toByteArray(): ByteArray {
+        return arithmetic.toByteArray(magnitude)
     }
 
     operator fun rangeTo(other: BigInteger) = BigIntegerRange(this, other)

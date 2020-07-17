@@ -26,7 +26,7 @@ import com.ionspin.kotlin.bignum.Endianness
  * ugljesa.jovanovic@ionspin.com
  * on 10-Mar-2019
  */
-@ExperimentalUnsignedTypes
+
 interface BigInteger32ArithmeticInterface {
     val _emitIntArray: IntArray
     val ZERO: UIntArray
@@ -35,6 +35,7 @@ interface BigInteger32ArithmeticInterface {
     val TEN: UIntArray
 
     val basePowerOfTwo: Int
+
     /**
      * Returns the number of leading zeros in a word
      */
@@ -139,11 +140,50 @@ interface BigInteger32ArithmeticInterface {
     fun bitAt(operand: UIntArray, position: Long): Boolean
     fun setBitAt(operand: UIntArray, position: Long, bit: Boolean): UIntArray
 
-    fun toByteArray(operand: UIntArray, sign: Sign): Array<Byte>
-    fun fromByteArray(byteArray: Array<Byte>): Pair<UIntArray, Sign>
-    fun fromByteArray(byteArray: ByteArray): Pair<UIntArray, Sign>
-    fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness = Endianness.BIG): Pair<UIntArray, Sign>
-    fun fromUByteArray(uByteArray: UByteArray, endianness: Endianness = Endianness.BIG): Pair<UIntArray, Sign>
-    fun toTypedUByteArray(operand: UIntArray, endianness: Endianness = Endianness.BIG): Array<UByte>
-    fun toUByteArray(operand: UIntArray, endianness: Endianness = Endianness.BIG): UByteArray
+    fun fromUByteArray(
+        source: UByteArray
+    ): Pair<UIntArray, Sign>
+
+    fun fromByteArray(
+        source: ByteArray
+    ): Pair<UIntArray, Sign>
+
+    fun toUByteArray(
+        operand: UIntArray
+    ): UByteArray
+
+    fun toByteArray(
+        operand: UIntArray
+    ): ByteArray
+
+    /**
+     * Converts an UIntArray into a byte array representation, with consideration to requested endianness
+     *
+     * E.g.
+     * Input UIntArray:
+     * 0xAABBCCDDU, 0x11223344
+     * Output UByteArray
+     * Little endian:
+     * 0xDD, 0xCC, 0xBB, 0xAA, 0x44, 0x33, 0x22, 0x11
+     * Big endian:
+     * 0xAA, 0xBB, 0xCC, 0xDD, 0x11, 0x22, 0x33, 0x44
+     */
+    fun toUIntArrayRepresentedAsTypedUByteArray(
+        operand: UIntArray,
+        endianness: Endianness = Endianness.BIG
+    ): Array<UByte>
+
+    /**
+     * Converts an UIntArray into a byte array representation, with consideration to requested endianness
+     *
+     * E.g.
+     * Input UIntArray:
+     * 0xAABBCCDDU, 0x11223344
+     * Output UByteArray
+     * Little endian:
+     * 0xDD, 0xCC, 0xBB, 0xAA, 0x44, 0x33, 0x22, 0x11
+     * Big endian:
+     * 0xAA, 0xBB, 0xCC, 0xDD, 0x11, 0x22, 0x33, 0x44
+     */
+    fun toUIntArrayRepresentedAsUByteArray(operand: UIntArray, endianness: Endianness = Endianness.BIG): UByteArray
 }

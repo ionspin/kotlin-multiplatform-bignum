@@ -28,7 +28,7 @@ import kotlin.test.assertTrue
  * ugljesa.jovanovic@ionspin.com
  * on 23-Mar-2019
  */
-@ExperimentalUnsignedTypes
+
 class ConversionTest {
 
     @Test

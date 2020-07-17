@@ -25,7 +25,7 @@ import kotlin.test.assertTrue
  * ugljesa.jovanovic@ionspin.com
  * on 30-Mar-2019
  */
-@ExperimentalUnsignedTypes
+
 class BigDecimalCreationTest {
 
     @Test

@@ -17,8 +17,6 @@
 
 package com.ionspin.kotlin.bignum.integer
 
-import com.ionspin.kotlin.bignum.Endianness
-
 /**
  * Interface defining big integer operations
  *
@@ -26,7 +24,7 @@ import com.ionspin.kotlin.bignum.Endianness
  * ugljesa.jovanovic@ionspin.com
  * on 10-Mar-2019
  */
-@ExperimentalUnsignedTypes
+
 interface BigIntegerArithmetic {
     val _emitLongArray: LongArray
     val ZERO: ULongArray
@@ -139,13 +137,11 @@ interface BigIntegerArithmetic {
     fun bitAt(operand: ULongArray, position: Long): Boolean
     fun setBitAt(operand: ULongArray, position: Long, bit: Boolean): ULongArray
 
-    fun toByteArray(operand: ULongArray, sign: Sign): Array<Byte>
-    fun fromByteArray(byteArray: Array<Byte>): Pair<ULongArray, Sign>
-    fun fromByteArray(byteArray: ByteArray): Pair<ULongArray, Sign>
-    fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness = Endianness.BIG): Pair<ULongArray, Sign>
-    fun fromUByteArray(uByteArray: UByteArray, endianness: Endianness = Endianness.BIG): Pair<ULongArray, Sign>
-    fun toTypedUByteArray(operand: ULongArray, endianness: Endianness = Endianness.BIG): Array<UByte>
-    fun toUByteArray(operand: ULongArray, endianness: Endianness = Endianness.BIG): UByteArray
+    fun fromUByteArray(source: UByteArray): ULongArray
+    fun fromByteArray(source: ByteArray): ULongArray
+
+    fun toUByteArray(operand: ULongArray): UByteArray
+    fun toByteArray(operand: ULongArray): ByteArray
 }
 
 /**

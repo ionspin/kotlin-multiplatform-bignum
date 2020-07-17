@@ -18,6 +18,7 @@
 package com.ionspin.kotlin.bignum
 
 import com.ionspin.kotlin.bignum.integer.BigInteger
+import com.ionspin.kotlin.bignum.integer.Sign
 
 /**
  * Created by Ugljesa Jovanovic
@@ -25,10 +26,8 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
  * on 04-Apr-2019
  */
 
-@ExperimentalUnsignedTypes
 interface BigNumber<BigType> where BigType : BigNumber<BigType> {
 
-    @ExperimentalUnsignedTypes
     interface Creator<BigType> {
         val ZERO: BigType
         val ONE: BigType
@@ -151,7 +150,6 @@ internal interface NarrowingOperations<BigType> where BigType : BigNumber<BigTyp
     fun doubleValue(exactRequired: Boolean = false): Double
 }
 
-@ExperimentalUnsignedTypes
 internal interface CommonBigNumberOperations<BigType> where BigType : BigNumber<BigType> {
 
     fun getCreator(): BigNumber.Creator<BigType>
@@ -249,18 +247,12 @@ interface BitwiseCapable<BigType> {
     fun not(): BigType
 }
 
-@ExperimentalUnsignedTypes
 interface ByteArraySerializable {
-
-    fun toByteArray(): Array<Byte>
-    fun toTypedUByteArray(endianness: Endianness = Endianness.BIG): Array<UByte>
-    fun toUByteArray(endianness: Endianness = Endianness.BIG): UByteArray
+    fun toUByteArray(): UByteArray
+    fun toByteArray(): ByteArray
 }
 
-@ExperimentalUnsignedTypes
 interface ByteArrayDeserializable<BigType : BigNumber<BigType>> {
-    fun fromByteArray(byteArray: Array<Byte>): BigType
-    fun fromByteArray(byteArray: ByteArray): BigType
-    fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness = Endianness.BIG): BigType
-    fun fromUByteArray(uByteArray: UByteArray, endianness: Endianness = Endianness.BIG): BigType
+    fun fromUByteArray(source: UByteArray, sign: Sign): BigType
+    fun fromByteArray(source: ByteArray, sign: Sign): BigType
 }

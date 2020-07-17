@@ -40,7 +40,6 @@ import kotlin.math.max
  * on 23-Mar-2019
  */
 
-@ExperimentalUnsignedTypes
 class BigDecimal private constructor(
     val significand: BigInteger,
     val exponent: Long = 0L,

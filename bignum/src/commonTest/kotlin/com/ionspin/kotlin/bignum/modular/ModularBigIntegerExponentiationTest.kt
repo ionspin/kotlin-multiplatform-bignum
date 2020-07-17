@@ -25,7 +25,7 @@ import kotlin.test.assertEquals
  * ugljesa.jovanovic@ionspin.com
  * on 28-Jul-2019
  */
-@ExperimentalUnsignedTypes
+
 class ModularBigIntegerExponentiationTest {
     @Test
     fun testExponentiation() {

@@ -52,6 +52,27 @@ implementation("com.ionspin.kotlin:bignum:0.1.6-SNAPSHOT ")
 
 ```
 
+Interim version built with 1.3.72
+```kotlin
+repositories {
+    maven {
+        url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+    }
+}
+implementation("com.ionspin.kotlin:bignum:0.1.6-1.3.72-SNAPSHOT")
+```
+Latest snapshot with kotlin 1.4-M3
+```kotlin
+repositories {
+    maven {
+        url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+    }
+}
+implementation("com.ionspin.kotlin:bignum:0.1.6-1.4-M3-2-SNAPSHOT")
+```
+
+**Stable version 0.1.6 will be released after Kotlin 1.4 is released** 
+
 ## Usage
 
 ### Integers
@@ -329,7 +350,7 @@ BigDecimal: 123.456
 
 ## toByteArray and fromByteArray
 
-Converts the BigInteger to and from two's complement big endian array of bytes
+Converts the BigInteger to and from big endian byte array.  
 ```kotlin
 val bigIntOriginal = BigInteger.fromULong(ULong.MAX_VALUE)
 val byteArray = bigIntOriginal.toByteArray()
@@ -337,6 +358,21 @@ val reconstructed = BigInteger.fromByteArray(byteArray)
 println("${bigIntOriginal == reconstructed}")
 ----- Output -----
 true
+```
+
+There are two helper methods when converting from two's complement array (the same form that Java BigInteger provides):
+- `fromTwosComplementByteArray`
+```kotlin
+val negativeInput = ubyteArrayOf(0xFFU, 0x55U, 0x44U, 0x34U)
+val negativeBigInt = BigInteger.fromTwosComplementByteArray(negativeInput.asByteArray())
+```
+
+- `toTwosComplementByteArray`
+```kotlin
+val negativeBigInt = BigInteger.parseString("-AABBCC", 16)
+val negativeBigIntArray = negativeBigInt.toTwosComplementByteArray()
+
+
 ```
 
 ### Arithmetic operations

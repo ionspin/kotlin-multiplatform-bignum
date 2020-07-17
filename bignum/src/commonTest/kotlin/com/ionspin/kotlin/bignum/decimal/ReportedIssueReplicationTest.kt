@@ -25,7 +25,7 @@ import kotlin.test.assertTrue
  * ugljesa.jovanovic@ionspin.com
  * on 15-Feb-2020
  */
-@ExperimentalUnsignedTypes
+
 class ReportedIssueReplicationTest {
 
     /**

@@ -17,17 +17,17 @@
 
 package com.ionspin.kotlin.bignum.integer.base32
 
-import org.junit.Ignore
-import org.junit.Test
 import kotlin.random.Random
 import kotlin.test.assertTrue
+import org.junit.Ignore
+import org.junit.Test
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
  * on 27-Apr-2019
  */
-@ExperimentalUnsignedTypes
+
 class BigInteger32SqrtTest {
 
     @Ignore("Need to improve basic divide algo before using it in sqrt")

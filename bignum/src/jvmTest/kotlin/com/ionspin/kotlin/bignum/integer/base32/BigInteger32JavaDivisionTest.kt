@@ -19,13 +19,6 @@
 
 package com.ionspin.kotlin.bignum.integer.base32
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import org.junit.Ignore
-import org.junit.Test
 import java.math.BigDecimal
 import java.math.MathContext
 import java.math.RoundingMode
@@ -33,13 +26,20 @@ import kotlin.random.Random
 import kotlin.random.nextUInt
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import org.junit.Ignore
+import org.junit.Test
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
  * on 09-Mar-2019
  */
-@ExperimentalUnsignedTypes
+
 class BigInteger32JavaDivisionTest {
 
     @Test
@@ -384,7 +384,6 @@ class BigInteger32JavaDivisionTest {
     }
 }
 
-@ExperimentalUnsignedTypes
 class DivisionBenchmark {
 
     data class BenchmarkSample32Bit(

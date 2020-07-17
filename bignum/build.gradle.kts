@@ -43,7 +43,7 @@ repositories {
     jcenter()
 }
 group = "com.ionspin.kotlin"
-version = "0.1.6-1.4-M3-1-SNAPSHOT"
+version = "0.1.6-1.4-M3-2-SNAPSHOT"
 
 val ideaActive = System.getProperty("idea.active") == "true"
 
@@ -304,6 +304,12 @@ kotlin {
 
         val mingwX64Test by getting {
             dependsOn(nativeTest)
+        }
+
+        all {
+            languageSettings.enableLanguageFeature("InlineClasses")
+            languageSettings.useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
+            languageSettings.useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
         }
     }
 }

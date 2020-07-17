@@ -20,7 +20,6 @@ package com.ionspin.kotlin.bignum.modular
 import com.ionspin.kotlin.bignum.BigNumber
 import com.ionspin.kotlin.bignum.ByteArraySerializable
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
-import com.ionspin.kotlin.bignum.Endianness
 import com.ionspin.kotlin.bignum.ModularQuotientAndRemainder
 import com.ionspin.kotlin.bignum.NarrowingOperations
 import com.ionspin.kotlin.bignum.integer.BigInteger
@@ -34,8 +33,7 @@ import com.ionspin.kotlin.bignum.integer.Sign
  * on 04-Apr-2019
  */
 
-@ExperimentalUnsignedTypes
-class ModularBigInteger @ExperimentalUnsignedTypes private constructor(
+class ModularBigInteger private constructor(
     signedResidue: BigInteger,
     val modulus: BigInteger,
     private val creator: BigNumber.Creator<ModularBigInteger>
@@ -390,15 +388,11 @@ class ModularBigInteger @ExperimentalUnsignedTypes private constructor(
         return residue.doubleValue()
     }
 
-    override fun toByteArray(): Array<Byte> {
-        return residue.toByteArray()
-    }
-
-    override fun toTypedUByteArray(endianness: Endianness): Array<UByte> {
-        return residue.toTypedUByteArray(endianness)
-    }
-
-    override fun toUByteArray(endianness: Endianness): UByteArray {
+    override fun toUByteArray(): UByteArray {
         return residue.toUByteArray()
+    }
+
+    override fun toByteArray(): ByteArray {
+        return residue.toByteArray()
     }
 }

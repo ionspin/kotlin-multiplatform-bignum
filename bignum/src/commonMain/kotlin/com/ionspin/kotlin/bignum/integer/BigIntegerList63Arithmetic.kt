@@ -17,8 +17,6 @@
 
 package com.ionspin.kotlin.bignum.integer
 
-import com.ionspin.kotlin.bignum.Endianness
-
 /**
  * Interface defining big integer operations
  *
@@ -26,7 +24,7 @@ import com.ionspin.kotlin.bignum.Endianness
  * ugljesa.jovanovic@ionspin.com
  * on 10-Mar-2019
  */
-@ExperimentalUnsignedTypes
+
 interface BigIntegerList63Arithmetic {
     val ZERO: List<ULong>
     val ONE: List<ULong>
@@ -138,8 +136,9 @@ interface BigIntegerList63Arithmetic {
     fun bitAt(operand: List<ULong>, position: Long): Boolean
     fun setBitAt(operand: List<ULong>, position: Long, bit: Boolean): List<ULong>
 
-    fun toByteArray(operand: List<ULong>, sign: Sign): Array<Byte>
-    fun fromByteArray(byteArray: Array<Byte>): Pair<List<ULong>, Sign>
-    fun fromUByteArray(uByteArray: Array<UByte>, endianness: Endianness = Endianness.BIG): Pair<List<ULong>, Sign>
-    fun toUByteArray(operand: List<ULong>, endianness: Endianness = Endianness.BIG): Array<UByte>
+    fun fromUByteArray(source: UByteArray): List<ULong>
+    fun fromByteArray(source: ByteArray): List<ULong>
+
+    fun toUByteArray(operand: List<ULong>): UByteArray
+    fun toByteArray(operand: List<ULong>): ByteArray
 }

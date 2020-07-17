@@ -27,7 +27,7 @@ import kotlin.test.assertTrue
  * ugljesa.jovanovic@ionspin.com
  * on 24-Mar-2019
  */
-@ExperimentalUnsignedTypes
+
 class BigDecimalReadmeTest {
     @Test
     fun toStringTest() {

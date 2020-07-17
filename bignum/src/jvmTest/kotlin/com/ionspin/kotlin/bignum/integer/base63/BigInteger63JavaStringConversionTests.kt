@@ -18,22 +18,22 @@
 package com.ionspin.kotlin.bignum.integer.base63
 
 import com.ionspin.kotlin.bignum.integer.base63.array.BigInteger63Arithmetic
+import java.math.BigInteger
+import kotlin.random.Random
+import kotlin.random.nextULong
+import kotlin.test.assertTrue
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
-import java.math.BigInteger
-import kotlin.random.Random
-import kotlin.random.nextULong
-import kotlin.test.assertTrue
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
  * on 16-Mar-2019
  */
-@ExperimentalUnsignedTypes
+
 class BigInteger63JavaStringConversionTests {
 
     @Test

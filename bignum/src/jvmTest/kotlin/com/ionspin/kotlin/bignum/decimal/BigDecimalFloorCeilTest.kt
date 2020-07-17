@@ -18,15 +18,15 @@
 package com.ionspin.kotlin.bignum.decimal
 
 import com.ionspin.kotlin.bignum.integer.toBigInteger
-import org.junit.Test
 import kotlin.test.assertTrue
+import org.junit.Test
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
  * on 08-May-2019
  */
-@ExperimentalUnsignedTypes
+
 class BigDecimalFloorCeilTest {
 
     @Test

@@ -18,17 +18,17 @@
 package com.ionspin.kotlin.bignum.integer.base63
 
 import com.ionspin.kotlin.bignum.integer.base63.array.BigInteger63Arithmetic
-import org.junit.Test
 import kotlin.random.Random
 import kotlin.random.nextULong
 import kotlin.test.assertTrue
+import org.junit.Test
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
  * on 27-Apr-2019
  */
-@ExperimentalUnsignedTypes
+
 class BigInteger63SqrtTest {
 
     @Test
