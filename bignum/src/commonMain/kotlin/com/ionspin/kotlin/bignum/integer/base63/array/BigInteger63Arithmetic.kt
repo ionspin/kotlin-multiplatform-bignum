@@ -235,7 +235,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         if (bigInteger.size == correctedSize) {
             return bigInteger
         }
-        if (bigInteger.size - correctedSize > 10) {
+        if (bigInteger.size - correctedSize > 5) {
             println("RLZ original array : ${bigInteger.size} contains: ${bigInteger.size - correctedSize - 1} zeros")
         }
 
@@ -319,7 +319,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
             }
         }
     }
-    //TODO Remove leading zeroes!
+
     override fun shiftRight(operand: ULongArray, places: Int): ULongArray {
         if (operand.isEmpty() || places == 0) {
             return operand
@@ -496,15 +496,6 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
     }
 
     override fun add(first: ULongArray, second: ULongArray): ULongArray {
-        if (countLeadingZeroWords(first) >= 1) {
-        println("First : ${countLeadingZeroWords(first)}")
-        }
-        if (countLeadingZeroWords(second) >= 1) {
-        println("Second: ${countLeadingZeroWords(second)}")
-        }
-        if (countLeadingZeroWords(second) == 1406) {
-            println("Debug")
-        }
         // debugOperandsCheck(first, second)
         if (first.isZero()) return second
         if (second.isZero()) return first
@@ -533,7 +524,6 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         } else {
             result
         }
-
     }
 
     private inline fun possibleAdditionOverflow(
@@ -548,7 +538,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         var firstMostSignificant = largerData[largerStart - 1]
         var secondMostSignificant = smallerData[smallerStart - 1]
 
-        //if two consecutive bits on same positions in both operands are 0, they cannot overflow
+        // if two consecutive bits on same positions in both operands are 0, they cannot overflow
         val possibleOverflow = ((firstMostSignificant and 0x6000000000000000UL) != 0UL) ||
             ((secondMostSignificant and 0x6000000000000000UL) != 0UL)
         return possibleOverflow
@@ -1011,7 +1001,13 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         val secondLow = second and lowMask
         val secondHigh = second shr 32
 
-        val result = ULongArray(firstCorrectedSize + 1)
+        val requiredBits = bitLength(first) + bitLength(second)
+        val requiredWords = if (requiredBits % 63 != 0) {
+            (requiredBits / 63) + 1
+        } else {
+            requiredBits / 63
+        }
+        val result = ULongArray(requiredWords)
 
         var carryIntoNextRound = 0UL
         var i = 0
@@ -1903,7 +1899,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
 
     internal infix fun SignedULongArray.and(operand: ULongArray) =
         SignedULongArray(
-            BigInteger63Arithmetic.and(
+            and(
                 unsignedValue,
                 operand
             ), sign
@@ -1955,12 +1951,13 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
     }
 
     override fun and(operand: ULongArray, mask: ULongArray): ULongArray {
-        return ULongArray(operand.size) {
-            if (it < mask.size) {
-                operand[it] and mask[it]
-            } else {
-                0UL
-            }
+        val (bigger, smaller) = if (operand.size > mask.size) {
+            Pair(operand, mask)
+        } else {
+            Pair(mask, operand)
+        }
+        return ULongArray(smaller.size) {
+            operand[it] and mask[it]
         }
     }
 

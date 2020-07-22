@@ -271,7 +271,9 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         if (this.isZero() || other.isZero()) {
             return ZERO
         }
-
+        if (other == ONE) {
+            return this
+        }
         val sign = if (this.sign != other.sign) {
             Sign.NEGATIVE
         } else {
