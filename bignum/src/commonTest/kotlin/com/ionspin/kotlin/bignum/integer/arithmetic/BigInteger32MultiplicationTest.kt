@@ -20,14 +20,12 @@ package com.ionspin.kotlin.bignum.integer.arithmetic
 import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
 import kotlin.test.Test
 import kotlin.test.assertTrue
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
  * on 16-Mar-2019
  */
-@ExperimentalCoroutinesApi
 
 class BigInteger32MultiplicationTest {
 

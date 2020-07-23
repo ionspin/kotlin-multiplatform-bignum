@@ -249,7 +249,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         if (lastNonEmptyIndex <= 0) {
             return 0
         }
-        // Get the last element (Word order is high endian so leading zeros are only on highest indexes
+        // Get the last element (Word order is little endian so leading zeros are only on highest indexes
         var element = bigInteger[lastNonEmptyIndex]
         while (element == 0UL && lastNonEmptyIndex > 0) {
             lastNonEmptyIndex -= 1
@@ -444,10 +444,110 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         return counter + minDigit.toInt()
     }
 
+    fun baseAddIntoArray(resultArray: ULongArray, resultArrayStart: Int, first: ULongArray, second: ULongArray) {
+        // debugOperandsCheck(first, second)
+        if (first.isZero()) {
+            first.copyInto(resultArray, resultArrayStart)
+            return
+        }
+        if (second.isZero()) {
+            second.copyInto(resultArray, resultArrayStart)
+            return
+        }
+        val firstStart = first.size - countLeadingZeroWords(
+            first
+        )
+        val secondStart = second.size - countLeadingZeroWords(
+            second
+        )
+
+        val (largerLength, smallerLength, largerData, smallerData, largerStart, smallerStart) = if (firstStart > secondStart) {
+            Sextuple(first.size, second.size, first, second, firstStart, secondStart)
+        } else {
+            Sextuple(second.size, first.size, second, first, secondStart, firstStart)
+        }
+        var i = 0
+        var sum: ULong = 0u
+        while (i < smallerStart) {
+            sum = sum + largerData[i] + smallerData[i]
+            resultArray[i + resultArrayStart] = sum and baseMask
+            sum = sum shr 63
+            i++
+        }
+
+        while (true) {
+            if (sum == 0UL) {
+                while (i < largerStart) {
+                    resultArray[i + resultArrayStart] = largerData[i]
+                    i++
+                }
+                return
+            }
+            if (i == largerLength) {
+                resultArray[largerLength + resultArrayStart] = sum
+                return
+            }
+
+            sum = sum + largerData[i]
+            resultArray[i] = (sum and baseMask)
+            sum = sum shr 63
+            i++
+        }
+    }
+
     override fun add(first: ULongArray, second: ULongArray): ULongArray {
         // debugOperandsCheck(first, second)
-        if (first.size == 1 && first[0] == 0UL) return second
-        if (second.size == 1 && second[0] == 0UL) return first
+        if (first.isZero()) return second
+        if (second.isZero()) return first
+
+        val firstStart = first.size - countLeadingZeroWords(
+            first
+        )
+        val secondStart = second.size - countLeadingZeroWords(
+            second
+        )
+
+        val (largerLength, smallerLength, largerData, smallerData, largerStart, smallerStart) = if (firstStart > secondStart) {
+            Sextuple(first.size, second.size, first, second, firstStart, secondStart)
+        } else {
+            Sextuple(second.size, first.size, second, first, secondStart, firstStart)
+        }
+        val possibleOverflow = possibleAdditionOverflow(largerLength, smallerLength, largerData, smallerData, largerStart, smallerStart)
+        val result = if (possibleOverflow) {
+            ULongArray(largerLength + 1) { 0u }
+        } else {
+            ULongArray(largerLength) { 0u }
+        }
+        baseAddIntoArray(result, 0, first, second)
+        return if (possibleOverflow) {
+            removeLeadingZeros(result)
+        } else {
+            result
+        }
+    }
+
+    private inline fun possibleAdditionOverflow(
+        largerLength: Int,
+        smallerLength: Int,
+        largerData: ULongArray,
+        smallerData: ULongArray,
+        largerStart: Int,
+        smallerStart: Int
+    ): Boolean {
+
+        var firstMostSignificant = largerData[largerStart - 1]
+        var secondMostSignificant = smallerData[smallerStart - 1]
+
+        // if two consecutive bits on same positions in both operands are 0, they cannot overflow
+        val possibleOverflow = ((firstMostSignificant and 0x6000000000000000UL) != 0UL) ||
+            ((secondMostSignificant and 0x6000000000000000UL) != 0UL)
+        return possibleOverflow
+    }
+
+    fun oldAdd(first: ULongArray, second: ULongArray): ULongArray {
+        // debugOperandsCheck(first, second)
+        if (first.isZero()) return second
+        if (second.isZero()) return first
 
         val firstStart = first.size - countLeadingZeroWords(
             first
@@ -561,8 +661,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         ) {
             return ZERO
         }
-
-        return result
+        return removeLeadingZeros(result)
     }
 
     override fun subtract(first: ULongArray, second: ULongArray): ULongArray {
@@ -893,11 +992,21 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         )
     }
 
+    fun baseMultiplyIntoArray(result: ULongArray, resultStart: Int, resultEnd: Int, first: ULongArray, second: ULong): ULongArray {
+        TODO()
+    }
+
     fun baseMultiplyWithCorrectedSize(first: ULongArray, second: ULong, firstCorrectedSize: Int): ULongArray {
         val secondLow = second and lowMask
         val secondHigh = second shr 32
 
-        val result = ULongArray(firstCorrectedSize + 1)
+        val requiredBits = bitLength(first) + bitLength(second)
+        val requiredWords = if (requiredBits % 63 != 0) {
+            (requiredBits / 63) + 1
+        } else {
+            requiredBits / 63
+        }
+        val result = ULongArray(requiredWords)
 
         var carryIntoNextRound = 0UL
         var i = 0
@@ -1789,7 +1898,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
 
     internal infix fun SignedULongArray.and(operand: ULongArray) =
         SignedULongArray(
-            BigInteger63Arithmetic.and(
+            and(
                 unsignedValue,
                 operand
             ), sign
@@ -1841,12 +1950,13 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
     }
 
     override fun and(operand: ULongArray, mask: ULongArray): ULongArray {
-        return ULongArray(operand.size) {
-            if (it < mask.size) {
-                operand[it] and mask[it]
-            } else {
-                0UL
-            }
+        val (bigger, smaller) = if (operand.size > mask.size) {
+            Pair(operand, mask)
+        } else {
+            Pair(mask, operand)
+        }
+        return ULongArray(smaller.size) {
+            operand[it] and mask[it]
         }
     }
 
