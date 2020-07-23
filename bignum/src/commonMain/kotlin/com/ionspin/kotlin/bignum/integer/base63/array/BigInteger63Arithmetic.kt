@@ -235,7 +235,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         if (bigInteger.size == correctedSize) {
             return bigInteger
         }
-        if (bigInteger.size - correctedSize > 5) {
+        if (bigInteger.size - correctedSize > 1000) {
             println("RLZ original array : ${bigInteger.size} contains: ${bigInteger.size - correctedSize - 1} zeros")
         }
 
@@ -661,8 +661,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         ) {
             return ZERO
         }
-
-        return result
+        return removeLeadingZeros(result)
     }
 
     override fun subtract(first: ULongArray, second: ULongArray): ULongArray {
