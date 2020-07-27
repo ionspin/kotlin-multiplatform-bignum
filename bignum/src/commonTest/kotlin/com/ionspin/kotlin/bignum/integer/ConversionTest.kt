@@ -18,6 +18,7 @@
 package com.ionspin.kotlin.bignum.integer.arithmetic
 
 import com.ionspin.kotlin.bignum.integer.BigInteger
+import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
@@ -161,6 +162,35 @@ class ConversionTest {
         assertTrue {
             val bigInt = BigInteger.tryFromDouble(Double.MIN_VALUE)
             bigInt.doubleValue() == 0.0
+        }
+    }
+
+    @Test
+    fun testPrimitiveConversionSignValues() {
+        assertTrue {
+            -1.toBigInteger().longValue() == -1L
+        }
+        assertTrue {
+            -1.toBigInteger().intValue() == -1
+        }
+        assertTrue {
+            -1.toBigInteger().shortValue() == -1
+        }
+        assertTrue {
+            -1.toBigInteger().byteValue() == -1
+        }
+
+        assertTrue {
+            1.toBigInteger().longValue() == 1L
+        }
+        assertTrue {
+            1.toBigInteger().intValue() == 1
+        }
+        assertTrue {
+            1.toBigInteger().shortValue() == 1.toShort()
+        }
+        assertTrue {
+            1.toBigInteger().byteValue() == 1.toByte()
         }
     }
 }
