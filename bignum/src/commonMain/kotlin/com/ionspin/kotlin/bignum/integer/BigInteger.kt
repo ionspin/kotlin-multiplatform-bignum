@@ -705,28 +705,28 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         if (exactRequired && this > Int.MAX_VALUE.toUInt()) {
             throw ArithmeticException("Cannot convert to int and provide exact value")
         }
-        return magnitude[0].toInt()
+        return magnitude[0].toInt() * signum()
     }
 
     override fun longValue(exactRequired: Boolean): Long {
         if (exactRequired && (this > Long.MAX_VALUE.toUInt())) {
             throw ArithmeticException("Cannot convert to long and provide exact value")
         }
-        return magnitude[0].toLong()
+        return magnitude[0].toLong() * signum()
     }
 
     override fun byteValue(exactRequired: Boolean): Byte {
         if (exactRequired && this > Byte.MAX_VALUE.toUInt()) {
             throw ArithmeticException("Cannot convert to byte and provide exact value")
         }
-        return magnitude[0].toByte()
+        return (magnitude[0].toByte() * signum()).toByte()
     }
 
     override fun shortValue(exactRequired: Boolean): Short {
         if (exactRequired && this > Short.MAX_VALUE.toUInt()) {
             throw ArithmeticException("Cannot convert to short and provide exact value")
         }
-        return magnitude[0].toShort()
+        return (magnitude[0].toShort() * signum()).toShort()
     }
 
     override fun uintValue(exactRequired: Boolean): UInt {
