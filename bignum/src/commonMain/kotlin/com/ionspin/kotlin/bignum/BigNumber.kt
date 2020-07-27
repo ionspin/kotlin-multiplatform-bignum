@@ -135,6 +135,13 @@ interface BigNumber<BigType> where BigType : BigNumber<BigType> {
     fun toString(base: Int): String
 
     operator fun unaryMinus(): BigType
+
+    /**
+     *  Overwrite the underlying backing structure with zeroes. Meant to be used by libraries that require it for
+     *  security purposes. NOTE: This breaks the immutability of BigNumber, and this instance cannot be used for further
+     *  calculations. If it used the results are undefined.
+     */
+    fun secureOverwrite()
 }
 
 internal interface NarrowingOperations<BigType> where BigType : BigNumber<BigType> {
