@@ -15,6 +15,9 @@
     - There are two helper methods that convert  to and from a two's complement ByteArray, this form conforms to Java BigIntegers toByteArray
         - `fromTwosComplementByteArray` expects a two's complement ByteArray with at least one sign bit
         - `toTwosComplementByteArray`produces a two's complement ByteArray with at least one sign bit
+- Added `secureOverwrite` to BigNumber interface, with role of overwriting backing structures with zeroes. It's meant to 
+be used by libraries that require such a functionlity (i.e. crypto). The function also breaks immutability contract
+of BigNumber implementations, and further operations with that instances have undefined results.
 
 ##### 0.1.5 - 07.01.2020 - Adding linux arm targets, BigDecimal bug fixes
 - Version bump to kotlin 1.3.61

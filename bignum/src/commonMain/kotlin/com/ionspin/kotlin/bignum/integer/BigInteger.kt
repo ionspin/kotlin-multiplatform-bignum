@@ -527,6 +527,12 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
 
     override operator fun unaryMinus(): BigInteger = negate()
 
+    override fun secureOverwrite() {
+        for (i in 0 until magnitude.size) {
+            magnitude[i] = 0U
+        }
+    }
+
     operator fun dec(): BigInteger {
         return this - ONE
     }

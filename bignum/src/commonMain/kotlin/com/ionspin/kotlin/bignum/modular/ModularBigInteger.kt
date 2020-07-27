@@ -270,6 +270,10 @@ class ModularBigInteger private constructor(
         return negate()
     }
 
+    override fun secureOverwrite() {
+        residue.secureOverwrite()
+    }
+
     override fun rem(other: ModularBigInteger): ModularBigInteger {
         return remainder(other)
     }
