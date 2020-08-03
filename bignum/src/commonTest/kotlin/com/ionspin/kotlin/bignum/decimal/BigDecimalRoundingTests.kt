@@ -59,6 +59,30 @@ class BigDecimalRoundingTests {
                 .roundSignificand(DecimalMode(2, RoundingMode.CEILING))
             rounded.toStringExpanded() == "0.0013"
         }
+
+        assertTrue {
+            val rounded = BigDecimal.fromIntWithExponent(1234, 3)
+                .roundSignificand(DecimalMode(3, RoundingMode.FLOOR))
+            rounded.toStringExpanded() == "1230"
+        }
+
+        assertTrue {
+            val rounded = BigDecimal.fromIntWithExponent(1234, 3)
+                .roundSignificand(DecimalMode(3, RoundingMode.CEILING))
+            rounded.toStringExpanded() == "1240"
+        }
+
+        assertTrue {
+            val rounded = BigDecimal.fromIntWithExponent(-1234, 3)
+                .roundSignificand(DecimalMode(3, RoundingMode.FLOOR))
+            rounded.toStringExpanded() == "-1240"
+        }
+
+        assertTrue {
+            val rounded = BigDecimal.fromIntWithExponent(-1234, 3)
+                .roundSignificand(DecimalMode(3, RoundingMode.CEILING))
+            rounded.toStringExpanded() == "-1230"
+        }
     }
 
     @Test
