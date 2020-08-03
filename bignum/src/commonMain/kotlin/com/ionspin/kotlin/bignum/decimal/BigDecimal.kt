@@ -105,6 +105,9 @@ class BigDecimal private constructor(
                     (discarded / (BigInteger.TEN.pow(discarded.numberOfDecimalDigits() - 1))).abs()
                 }
             }
+            if (significantRemainderDigit.isZero()) {
+                return result
+            }
             when (decimalMode.roundingMode) {
                 RoundingMode.AWAY_FROM_ZERO -> {
                     if (sign == Sign.POSITIVE) {

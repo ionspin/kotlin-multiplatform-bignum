@@ -39,6 +39,16 @@ class BigDecimalDivPowTest {
     }
 
     @Test
+    fun testSpecificIntegerDivision() {
+        val dividend = Short.MIN_VALUE.toBigDecimal()
+        val divisor = 1.toBigDecimal()
+        val (quotient, remainder) = dividend divrem divisor
+        assertTrue {
+            quotient == Short.MIN_VALUE.toBigDecimal() && remainder == 0.toBigDecimal()
+        }
+    }
+
+    @Test
     fun testDecimalExponentiation() {
         assertTrue {
             val a = 2.toBigDecimal()
