@@ -18,7 +18,9 @@
 package com.ionspin.kotlin.bignum.integer.arithmetic
 
 import com.ionspin.kotlin.bignum.integer.BigInteger
+import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.toBigInteger
+import kotlin.math.absoluteValue
 import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
@@ -41,6 +43,15 @@ class ConversionTest {
 
         assertTrue { one == BigInteger.ONE }
         assertTrue { negativeOne == -BigInteger.ONE }
+
+        assertTrue {
+            maxInt.magnitude[0] == Int.MAX_VALUE.toLong().absoluteValue.toULong() &&
+                    maxInt.sign == Sign.POSITIVE
+        }
+        assertTrue {
+            minInt.magnitude[0] == Int.MIN_VALUE.toLong().absoluteValue.toULong() &&
+                    minInt.sign == Sign.NEGATIVE
+        }
     }
 
     @Test
@@ -52,6 +63,15 @@ class ConversionTest {
 
         assertTrue { one == BigInteger.ONE }
         assertTrue { negativeOne == -BigInteger.ONE }
+
+        assertTrue {
+            maxLong.magnitude[0] == Long.MAX_VALUE.absoluteValue.toULong() &&
+                    maxLong.sign == Sign.POSITIVE
+        }
+        assertTrue {
+            minLong.magnitude[0] == 0UL && minLong.magnitude[1] == 1UL
+                    minLong.sign == Sign.NEGATIVE
+        }
     }
 
     @Test
@@ -63,6 +83,15 @@ class ConversionTest {
 
         assertTrue { one == BigInteger.ONE }
         assertTrue { negativeOne == -BigInteger.ONE }
+
+        assertTrue {
+            maxShort.magnitude[0] == Short.MAX_VALUE.toLong().absoluteValue.toULong() &&
+                    maxShort.sign == Sign.POSITIVE
+        }
+        assertTrue {
+            minShort.magnitude[0] == Short.MIN_VALUE.toLong().absoluteValue.toULong() &&
+                    minShort.sign == Sign.NEGATIVE
+        }
     }
 
     @Test
@@ -74,6 +103,14 @@ class ConversionTest {
 
         assertTrue { one == BigInteger.ONE }
         assertTrue { negativeOne == -BigInteger.ONE }
+        assertTrue {
+            maxByte.magnitude[0] == Byte.MAX_VALUE.toLong().absoluteValue.toULong() &&
+                    maxByte.sign == Sign.POSITIVE
+        }
+        assertTrue {
+            minByte.magnitude[0] == Byte.MIN_VALUE.toLong().absoluteValue.toULong() &&
+                    minByte.sign == Sign.NEGATIVE
+        }
     }
 
     @Test

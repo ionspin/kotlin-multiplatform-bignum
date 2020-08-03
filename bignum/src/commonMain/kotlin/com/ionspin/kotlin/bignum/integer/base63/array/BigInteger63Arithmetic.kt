@@ -2173,12 +2173,12 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
 
     override fun fromLong(long: Long): ULongArray {
         if (long == Long.MIN_VALUE) {
-            return ulongArrayOf((Long.MAX_VALUE).toULong() + 1UL)
+            return ulongArrayOf(0UL, 1UL)
         }
         return ulongArrayOf((long.absoluteValue.toULong() and baseMask))
     }
 
-    override fun fromInt(int: Int): ULongArray = ulongArrayOf(int.absoluteValue.toULong())
+    override fun fromInt(int: Int): ULongArray = ulongArrayOf(int.toLong().absoluteValue.toULong())
 
     override fun fromShort(short: Short): ULongArray = ulongArrayOf(short.toInt().absoluteValue.toULong())
 
