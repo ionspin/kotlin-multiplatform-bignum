@@ -29,6 +29,7 @@ matrix:
       before_install:
         - curl "${GRAVIS}.install-jdk-travis.sh" --output ~/.install-jdk-travis.sh
         - source ~/.install-jdk-travis.sh
+        - git config --global core.autocrlf false
       script:
         - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then ./gradlew build; fi'
         - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then ./gradlew build publishMingwx64PublicationToSnapshotRepository; fi'
