@@ -39,16 +39,16 @@ enum class HostOs {
     LINUX, WINDOWS, MAC
 }
 
-val bignumDevelopmentEnvironmentOs: String? by project
+val bignumPrimaryDevelopmentOs: String? by project
 
-val chosenDevelopmentEnviroment: HostOs = if (bignumDevelopmentEnvironmentOs != null) {
-    println("Selected dev OS: $bignumDevelopmentEnvironmentOs")
-    when (bignumDevelopmentEnvironmentOs) {
+val primaryDevelopmentOs: HostOs = if (bignumPrimaryDevelopmentOs != null) {
+    println("Selected dev OS: $bignumPrimaryDevelopmentOs")
+    when (bignumPrimaryDevelopmentOs) {
         "linux" -> HostOs.LINUX
         "windows" -> HostOs.WINDOWS
         "mac" -> HostOs.MAC
         else -> throw org.gradle.api.GradleException("Invalid development enviromoment OS selecte: " +
-                "$bignumDevelopmentEnvironmentOs. Only linux, windows and mac are supported at the moment")
+                "$bignumPrimaryDevelopmentOs. Only linux, windows and mac are supported at the moment")
     }
 } else {
     HostOs.LINUX
@@ -90,7 +90,7 @@ kotlin {
             HostOs.WINDOWS -> mingwX64("native")
         }
     }
-    if (hostOs == chosenDevelopmentEnviroment) {
+    if (hostOs == primaryDevelopmentOs) {
         jvm()
 
         js {
@@ -228,7 +228,7 @@ kotlin {
             nativeTest
         }
 
-        if (hostOs == chosenDevelopmentEnviroment) {
+        if (hostOs == primaryDevelopmentOs) {
             val jvmMain by getting {
                 dependencies {
                     implementation(kotlin(Deps.Jvm.stdLib))
@@ -359,7 +359,7 @@ tasks {
             }
         }
     }
-    if (hostOsName == chosenDevelopmentEnviroment) {
+    if (hostOsName == primaryDevelopmentOs) {
         val jvmTest by getting(Test::class) {
             testLogging {
                 events("PASSED", "FAILED", "SKIPPED")

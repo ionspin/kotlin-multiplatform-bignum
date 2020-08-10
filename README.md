@@ -533,7 +533,7 @@ If you want to try building BigNum library yourself, those are the sources I wou
 ### Development environment
 If you are planning on contributing to the development of the library, you can set a local gradle variable
 in `gradle.properties` in your gradle home directory (i.e. on Linux ~/.gradle/gradle.properties) called
-`bignumDevelopmentEnvironmentOs` to `linux`, `windows` or `mac` so that the gradle builds JVM and JS targets on your 
+`bignumPrimaryDevelopmentOs` to `linux`, `windows` or `mac` so that the gradle builds JVM and JS targets on your 
 platform. The reason for this switch is that most of the test are run on JVM by comparing results to Java BigInteger/Decimal
 so they should be run on your main development OS to verify proper results, and can be skipped on other operating systems
 where you are developing that platform specific features.
