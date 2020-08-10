@@ -397,4 +397,25 @@ BigIntegerTest {
             b.compareTo(a) == 0
         }
     }
+
+    @Test
+    fun testComparisonsWithSigns() {
+        assertTrue {
+            val smaller = (-10).toBigInteger()
+            val bigger = (-5).toBigInteger()
+            smaller < bigger
+        }
+
+        assertTrue {
+            val smaller = (-10).toBigInteger()
+            val bigger = (5).toBigInteger()
+            smaller < bigger
+        }
+
+        assertTrue {
+            val smaller = (5).toBigInteger()
+            val bigger = (10).toBigInteger()
+            smaller < bigger
+        }
+    }
 }

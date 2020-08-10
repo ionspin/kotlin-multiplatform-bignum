@@ -422,7 +422,12 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
         if (this.isZero() && other.sign == Sign.POSITIVE) return -1
         if (this.isZero() && other.sign == Sign.NEGATIVE) return 1
         if (sign != other.sign) return if (sign == Sign.POSITIVE) 1 else -1
-        return arithmetic.compare(this.magnitude, other.magnitude)
+        val result = arithmetic.compare(this.magnitude, other.magnitude)
+        return if (this.sign == Sign.NEGATIVE && other.sign == Sign.NEGATIVE) {
+            result * -1
+        } else {
+            result
+        }
     }
 
     override fun isZero(): Boolean {
