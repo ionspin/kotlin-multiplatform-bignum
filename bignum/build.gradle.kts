@@ -35,11 +35,34 @@ val sonatypePassword: String? by project
 
 val sonatypeUsername: String? by project
 
+enum class HostOs {
+    LINUX, WINDOWS, MAC
+}
+
+val bignumPrimaryDevelopmentOs: String? by project
+
+val primaryDevelopmentOs: HostOs = if (bignumPrimaryDevelopmentOs != null) {
+    println("Selected dev OS: $bignumPrimaryDevelopmentOs")
+    when (bignumPrimaryDevelopmentOs) {
+        "linux" -> HostOs.LINUX
+        "windows" -> HostOs.WINDOWS
+        "mac" -> HostOs.MAC
+        else -> throw org.gradle.api.GradleException("Invalid development enviromoment OS selecte: " +
+                "$bignumPrimaryDevelopmentOs. Only linux, windows and mac are supported at the moment")
+    }
+} else {
+    HostOs.LINUX
+}
+
 val sonatypePasswordEnv: String? = System.getenv()["SONATYPE_PASSWORD"]
 val sonatypeUsernameEnv: String? = System.getenv()["SONATYPE_USERNAME"]
 
 repositories {
     mavenCentral()
+    google()
+    maven("https://kotlin.bintray.com/kotlinx")
+    maven("https://dl.bintray.com/kotlin/kotlin-eap")
+    maven("https://dl.bintray.com/kotlin/kotlin-dev")
     jcenter()
 }
 group = "com.ionspin.kotlin"
@@ -47,29 +70,29 @@ version = "0.1.6-1.4.0-rc-SNAPSHOT"
 
 val ideaActive = System.getProperty("idea.active") == "true"
 
-fun getHostOsName(): String {
+fun getHostOsName(): HostOs {
     val target = System.getProperty("os.name")
-    if (target == "Linux") return "linux"
-    if (target.startsWith("Windows")) return "windows"
-    if (target.startsWith("Mac")) return "macos"
-    return "unknown"
+    if (target == "Linux") return HostOs.LINUX
+    if (target.startsWith("Windows")) return HostOs.WINDOWS
+    if (target.startsWith("Mac")) return HostOs.MAC
+    throw GradleException("Unknown OS: $target")
 }
 
 kotlin {
 
-    val hostOsName = getHostOsName()
-    println("Host os name $hostOsName")
+    val hostOs = getHostOsName()
+    println("Host os name $hostOs")
 
     if (ideaActive) {
-        when (hostOsName) {
-            "linux" -> linuxX64("native")
-            "macos" -> macosX64("native")
-            "windows" -> mingwX64("native")
+        when (hostOs) {
+            HostOs.LINUX -> linuxX64("native")
+            HostOs.MAC -> macosX64("native")
+            HostOs.WINDOWS -> mingwX64("native")
         }
     }
-
-    if (hostOsName == "linux") {
+    if (hostOs == primaryDevelopmentOs) {
         jvm()
+
         js {
             compilations {
                 this.forEach {
@@ -93,6 +116,9 @@ kotlin {
                 }
             }
         }
+    }
+
+    if (hostOs == HostOs.LINUX) {
 
         linuxX64("linux") {
             binaries {
@@ -175,6 +201,7 @@ kotlin {
             dependencies {
                 implementation(kotlin(Deps.Common.test))
                 implementation(kotlin(Deps.Common.testAnnotation))
+                implementation(Deps.Common.coroutines)
             }
         }
 
@@ -192,22 +219,16 @@ kotlin {
         val nativeTest = if (ideaActive) {
             val nativeTest by getting {
                 dependsOn(commonTest)
-                dependencies {
-                    implementation(Deps.Native.coroutines)
-                }
             }
             nativeTest
         } else {
             val nativeTest by creating {
                 dependsOn(commonTest)
-                dependencies {
-                    implementation(Deps.Native.coroutines)
-                }
             }
             nativeTest
         }
 
-        if (hostOsName == "linux") {
+        if (hostOs == primaryDevelopmentOs) {
             val jvmMain by getting {
                 dependencies {
                     implementation(kotlin(Deps.Jvm.stdLib))
@@ -215,12 +236,12 @@ kotlin {
             }
             val jvmTest by getting {
                 dependencies {
-                    implementation(Deps.Jvm.coroutinesCore)
                     implementation(kotlin(Deps.Jvm.test))
                     implementation(kotlin(Deps.Jvm.testJUnit))
                     implementation(kotlin(Deps.Jvm.reflection))
                 }
             }
+
             val jsMain by getting {
                 dependencies {
                     implementation(kotlin(Deps.Js.stdLib))
@@ -229,9 +250,11 @@ kotlin {
             val jsTest by getting {
                 dependencies {
                     implementation(kotlin(Deps.Js.test))
-                    implementation(Deps.Js.coroutines)
                 }
             }
+        }
+
+        if (hostOs == HostOs.LINUX) {
 
             val linuxMain by getting {
                 dependsOn(nativeMain)
@@ -322,21 +345,42 @@ tasks {
     val hostOsName = getHostOsName()
 
     create<Jar>("javadocJar") {
-        dependsOn(dokka)
+        dependsOn(dokkaJavadoc)
         archiveClassifier.set("javadoc")
-        from(dokka.get().outputDirectory)
+        from(dokkaJavadoc.get().outputDirectory)
     }
 
-    dokka {
+    dokkaJavadoc {
         println("Dokka !")
+        dokkaSourceSets {
+            create("commonMain") {
+                displayName = "common"
+                platform = "common"
+            }
+        }
     }
-    if (hostOsName == "linux") {
+    if (hostOsName == primaryDevelopmentOs) {
         val jvmTest by getting(Test::class) {
             testLogging {
                 events("PASSED", "FAILED", "SKIPPED")
             }
         }
 
+        val jsNodeTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
+            testLogging {
+                events("PASSED", "FAILED", "SKIPPED")
+            }
+        }
+
+        val jsBrowserTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
+            testLogging {
+                events("PASSED", "FAILED", "SKIPPED")
+                showStandardStreams = true
+            }
+        }
+    }
+
+    if (hostOsName == HostOs.LINUX) {
         val linuxTest by getting(KotlinNativeTest::class) {
             testLogging {
                 events("PASSED", "FAILED", "SKIPPED")
