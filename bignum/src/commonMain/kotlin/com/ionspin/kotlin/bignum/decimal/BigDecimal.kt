@@ -1302,8 +1302,16 @@ class BigDecimal private constructor(
         return significand.ushortValue(exactRequired)
     }
 
+    /**
+     * Narrow to a float.
+     * @param exactRequired if false, precision can be lost. If true, the current absolute value
+     * must be between Float.MAX_VALUE and Float.MIN_VALUE, with 7 or less digits of precision.
+     * @throws ArithmeticException if exactRequired is true and any of the above conditions not met
+     */
     override fun floatValue(exactRequired: Boolean): Float {
-        if (exactRequired && (this.abs() > maximumFloat || this.abs() < leastSignificantFloat))
+        if (exactRequired && (this.abs() > maximumFloat
+                    || this.abs() < leastSignificantFloat)
+                    || this.precision > 7)
             throw ArithmeticException("Value cannot be narrowed to float")
 
         return if (exponent < 0 && exponent.absoluteValue < float10pow.size)
@@ -1316,8 +1324,16 @@ class BigDecimal private constructor(
         }
     }
 
+    /**
+     * Narrow to a double.
+     * @param exactRequired if false, precision can be lost. If true, the current absolute value
+     * must be between Double.MAX_VALUE and Double.MIN_VALUE, with 16 or less digits of precision.
+     * @throws ArithmeticException if exactRequired is true and any of the above conditions not met
+     */
     override fun doubleValue(exactRequired: Boolean): Double {
-        if (exactRequired && (this.abs() > maximumDouble || this.abs() < leastSignificantDouble))
+        if (exactRequired && (this.abs() > maximumDouble
+                    || this.abs() < leastSignificantDouble)
+                    || this.precision > 16)
             throw ArithmeticException("Value cannot be narrowed to double")
 
         /*
