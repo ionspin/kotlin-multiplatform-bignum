@@ -123,6 +123,9 @@ interface BigNumber<BigType> where BigType : BigNumber<BigType> {
 
     fun signum(): Int
 
+    val isNegative get() = signum() < 0
+    val isPositive get() = signum() > 0
+
     /**
      * Return the number of decimal digits representing this number
      */

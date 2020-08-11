@@ -231,4 +231,20 @@ class JvmBigDecimalNarrowingTest {
         }
         assertEquals(12.toULong(), f.ulongValue())
     }
+
+    @Test
+    fun signCheckTest() {
+        val x = BigDecimal.fromInt(123456)
+        assertTrue(!x.isNegative)
+        assertTrue(x.isPositive)
+        assertTrue(x.signum() > 0)
+        val x1 = x.negate()
+        assertTrue(x1.isNegative)
+        assertTrue(!x1.isPositive)
+        assertTrue(x1.signum() < 0)
+        val zero = BigDecimal.ZERO
+        assertTrue(!zero.isPositive)
+        assertTrue(!zero.isNegative)
+        assertTrue(zero.isZero())
+    }
 }

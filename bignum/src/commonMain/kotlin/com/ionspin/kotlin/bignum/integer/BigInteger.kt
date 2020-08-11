@@ -707,14 +707,14 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     }
 
     override fun intValue(exactRequired: Boolean): Int {
-        if (exactRequired && this.abs() > Int.MAX_VALUE.toUInt()) {
+        if (exactRequired && (this > Int.MAX_VALUE || this < Int.MIN_VALUE)) {
             throw ArithmeticException("Cannot convert to int and provide exact value")
         }
         return magnitude[0].toInt() * signum()
     }
 
     override fun longValue(exactRequired: Boolean): Long {
-        if (exactRequired && (this.abs() > Long.MAX_VALUE.toULong())) {
+        if (exactRequired && (this > Long.MAX_VALUE || this < Long.MIN_VALUE)) {
             throw ArithmeticException("Cannot convert to long and provide exact value")
         }
         return if (magnitude.size > 1) {
@@ -726,28 +726,28 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     }
 
     override fun byteValue(exactRequired: Boolean): Byte {
-        if (exactRequired && this.abs() > Byte.MAX_VALUE.toUInt()) {
+        if (exactRequired && (this > Byte.MAX_VALUE || this < Byte.MIN_VALUE)) {
             throw ArithmeticException("Cannot convert to byte and provide exact value")
         }
         return (magnitude[0].toByte() * signum()).toByte()
     }
 
     override fun shortValue(exactRequired: Boolean): Short {
-        if (exactRequired && this.abs() > Short.MAX_VALUE.toUInt()) {
+        if (exactRequired && (this > Short.MAX_VALUE || this < Short.MIN_VALUE)) {
             throw ArithmeticException("Cannot convert to short and provide exact value")
         }
         return (magnitude[0].toShort() * signum()).toShort()
     }
 
     override fun uintValue(exactRequired: Boolean): UInt {
-        if (exactRequired && this.abs() > UInt.MAX_VALUE) {
+        if (exactRequired && (this > UInt.MAX_VALUE || isNegative)) {
             throw ArithmeticException("Cannot convert to unsigned int and provide exact value")
         }
         return magnitude[0].toUInt()
     }
 
     override fun ulongValue(exactRequired: Boolean): ULong {
-        if (exactRequired && (this.abs() > ULong.MAX_VALUE)) {
+        if (exactRequired && (this > ULong.MAX_VALUE || isNegative)) {
             throw ArithmeticException("Cannot convert to unsigned long and provide exact value")
         }
         return if (magnitude.size > 1) {
@@ -759,14 +759,14 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     }
 
     override fun ubyteValue(exactRequired: Boolean): UByte {
-        if (exactRequired && this.abs() > UByte.MAX_VALUE.toUInt()) {
+        if (exactRequired && (this > UByte.MAX_VALUE.toUInt() || isNegative)) {
             throw ArithmeticException("Cannot convert to unsigned byte and provide exact value")
         }
         return magnitude[0].toUByte()
     }
 
     override fun ushortValue(exactRequired: Boolean): UShort {
-        if (exactRequired && this.abs() > UShort.MAX_VALUE.toUInt()) {
+        if (exactRequired && this > UShort.MAX_VALUE.toUInt() || isNegative) {
             throw ArithmeticException("Cannot convert to unsigned short and provide exact value")
         }
         return magnitude[0].toUShort()
