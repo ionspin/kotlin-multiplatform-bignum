@@ -6,7 +6,9 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 /**
- * nit tests
+ * Unit tests (JVM for easy debugging) on Narrowing functionality for BigDecimal.  Short, Int,
+ * Long are all tested around the edges using the respective MIN_VALUE and MAX_VALUE.  Float
+ * and Double are a little different, but test similar edges.
  */
 class JvmBigDecimalNarrowingTest {
 
