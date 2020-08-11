@@ -1271,35 +1271,59 @@ class BigDecimal private constructor(
      * the right of the decimal.
      */
     override fun intValue(exactRequired: Boolean): Int {
-        return significand.intValue(exactRequired)
+        checkWholeness(exactRequired)
+        return toBigInteger().intValue(exactRequired)
     }
 
     override fun longValue(exactRequired: Boolean): Long {
-        return significand.longValue(exactRequired)
+        checkWholeness(exactRequired)
+        return toBigInteger().longValue(exactRequired)
     }
 
     override fun byteValue(exactRequired: Boolean): Byte {
-        return significand.byteValue(exactRequired)
+        checkWholeness(exactRequired)
+        return toBigInteger().byteValue(exactRequired)
     }
 
     override fun shortValue(exactRequired: Boolean): Short {
-        return significand.shortValue(exactRequired)
+        checkWholeness(exactRequired)
+        return toBigInteger().shortValue(exactRequired)
     }
 
     override fun uintValue(exactRequired: Boolean): UInt {
-        return significand.uintValue(exactRequired)
+        checkWholeness(exactRequired)
+        return toBigInteger().uintValue(exactRequired)
     }
 
     override fun ulongValue(exactRequired: Boolean): ULong {
-        return significand.ulongValue(exactRequired)
+        checkWholeness(exactRequired)
+        return toBigInteger().ulongValue(exactRequired)
     }
 
     override fun ubyteValue(exactRequired: Boolean): UByte {
-        return significand.ubyteValue(exactRequired)
+        checkWholeness(exactRequired)
+        return toBigInteger().ubyteValue(exactRequired)
     }
 
     override fun ushortValue(exactRequired: Boolean): UShort {
-        return significand.ushortValue(exactRequired)
+        checkWholeness(exactRequired)
+        return toBigInteger().ushortValue(exactRequired)
+    }
+
+    /**
+     * @return true if "this" is a whole number, false if not
+     */
+    fun isWholeNumber():Boolean {
+        return abs().divrem(ONE).second.isZero()
+    }
+    /**
+     * @param exactRequired if not a whole number, throw an exception
+     * @return true if this is a whole number, false if not
+     * @throws ArithmeticException if any nonzero value to the right of the decimal
+     */
+    private fun checkWholeness(exactRequired: Boolean) {
+        if (exactRequired && !isWholeNumber())
+            throw ArithmeticException("Cannot convert to int and provide exact value")
     }
 
     /**
@@ -1311,7 +1335,7 @@ class BigDecimal private constructor(
     override fun floatValue(exactRequired: Boolean): Float {
         if (exactRequired && (this.abs() > maximumFloat
                     || this.abs() < leastSignificantFloat)
-                    || this.precision > 7)
+                    || this.precision > 8)
             throw ArithmeticException("Value cannot be narrowed to float")
 
         return if (exponent < 0 && exponent.absoluteValue < float10pow.size)
@@ -1333,7 +1357,7 @@ class BigDecimal private constructor(
     override fun doubleValue(exactRequired: Boolean): Double {
         if (exactRequired && (this.abs() > maximumDouble
                     || this.abs() < leastSignificantDouble)
-                    || this.precision > 16)
+                    || this.precision > 17)
             throw ArithmeticException("Value cannot be narrowed to double")
 
         /*

@@ -11,6 +11,7 @@ import kotlin.test.assertTrue
  * and Double are a little different, but test similar edges.
  */
 class JvmBigDecimalNarrowingTest {
+    val someFloatValue = 12.12F
 
     @Test
     fun divideRoundingTest() {
@@ -88,6 +89,27 @@ class JvmBigDecimalNarrowingTest {
     }
 
     @Test
+    fun byteValueTest() {
+        val i = BigDecimal.fromByte(Byte.MAX_VALUE)
+        assertEquals(Byte.MAX_VALUE, i.byteValue())
+        assertFailsWith<ArithmeticException> {
+            i.plus(BigDecimal.ONE).byteValue(true)
+        }
+
+        val iN = BigDecimal.fromByte(Byte.MIN_VALUE)
+        assertEquals(Byte.MIN_VALUE, iN.byteValue())
+        assertFailsWith<ArithmeticException> {
+            iN.minus(BigDecimal.ONE).byteValue(true)
+        }
+
+        val f = BigDecimal.fromFloat(someFloatValue)
+        assertFailsWith<ArithmeticException> {
+            f.byteValue(true)
+        }
+        assertEquals(12, f.byteValue())
+    }
+
+    @Test
     fun shortValueTest() {
         val i = BigDecimal.fromShort(Short.MAX_VALUE)
         assertEquals(Short.MAX_VALUE, i.shortValue())
@@ -100,6 +122,12 @@ class JvmBigDecimalNarrowingTest {
         assertFailsWith<ArithmeticException> {
             iN.minus(BigDecimal.ONE).shortValue(true)
         }
+
+        val f = BigDecimal.fromFloat(someFloatValue)
+        assertFailsWith<ArithmeticException> {
+            f.shortValue(true)
+        }
+        assertEquals(12, f.shortValue())
     }
 
     @Test
@@ -115,6 +143,12 @@ class JvmBigDecimalNarrowingTest {
         assertFailsWith<ArithmeticException> {
             iN.minus(BigDecimal.ONE).intValue(true)
         }
+
+        val f = BigDecimal.fromFloat(someFloatValue)
+        assertFailsWith<ArithmeticException> {
+            f.intValue(true)
+        }
+        assertEquals(12, f.intValue())
     }
 
     @Test
@@ -125,11 +159,76 @@ class JvmBigDecimalNarrowingTest {
             i.plus(BigDecimal.ONE).longValue(true)
         }
 
-        // kludge this for now because BigInteger longValue has error when MIN_VALUE is set
-        val iN = BigDecimal.fromLong(Long.MIN_VALUE + 1)
-        assertEquals(Long.MIN_VALUE+1, iN.longValue())
+        val iN = BigDecimal.fromLong(Long.MIN_VALUE)
+        assertEquals(Long.MIN_VALUE, iN.longValue())
         assertFailsWith<ArithmeticException> {
-            iN.minus(BigDecimal.ONE).minus(BigDecimal.ONE).longValue(true)
+            iN.minus(BigDecimal.ONE).longValue(true)
         }
+
+        val f = BigDecimal.fromFloat(someFloatValue)
+        assertFailsWith<ArithmeticException> {
+            f.longValue(true)
+        }
+        assertEquals(12L, f.longValue())
+    }
+
+    @Test
+    fun ubyteValueTest() {
+        val i = BigDecimal.fromUByte(UByte.MAX_VALUE)
+        assertEquals(UByte.MAX_VALUE, i.ubyteValue())
+        assertFailsWith<ArithmeticException> {
+            i.plus(BigDecimal.ONE).ubyteValue(true)
+        }
+
+        val f = BigDecimal.fromFloat(someFloatValue)
+        assertFailsWith<ArithmeticException> {
+            f.ubyteValue(true)
+        }
+        assertEquals(12.toUByte(), f.ubyteValue())
+    }
+
+    @Test
+    fun ushortValueTest() {
+        val i = BigDecimal.fromUShort(UShort.MAX_VALUE)
+        assertEquals(UShort.MAX_VALUE, i.ushortValue())
+        assertFailsWith<ArithmeticException> {
+            i.plus(BigDecimal.ONE).ushortValue(true)
+        }
+
+        val f = BigDecimal.fromFloat(someFloatValue)
+        assertFailsWith<ArithmeticException> {
+            f.ushortValue(true)
+        }
+        assertEquals(12.toUShort(), f.ushortValue())
+    }
+
+    @Test
+    fun uintValueTest() {
+        val i = BigDecimal.fromUInt(UInt.MAX_VALUE)
+        assertEquals(UInt.MAX_VALUE, i.uintValue())
+        assertFailsWith<ArithmeticException> {
+            i.plus(BigDecimal.ONE).uintValue(true)
+        }
+
+        val f = BigDecimal.fromFloat(someFloatValue)
+        assertFailsWith<ArithmeticException> {
+            f.uintValue(true)
+        }
+        assertEquals(12.toUInt(), f.uintValue())
+    }
+
+    @Test
+    fun ulongValueTest() {
+        val i = BigDecimal.fromULong(ULong.MAX_VALUE)
+        assertEquals(ULong.MAX_VALUE, i.ulongValue())
+        assertFailsWith<ArithmeticException> {
+            i.plus(BigDecimal.ONE).ulongValue(true)
+        }
+
+        val f = BigDecimal.fromFloat(someFloatValue)
+        assertFailsWith<ArithmeticException> {
+            f.ulongValue(true)
+        }
+        assertEquals(12.toULong(), f.ulongValue())
     }
 }
