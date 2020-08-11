@@ -244,7 +244,7 @@ BigIntegerTest {
             a.ubyteValue(exactRequired = true)
         }
         assertFailsWith(ArithmeticException::class) {
-            val a = Long.MAX_VALUE.toBigInteger() + 10
+            val a = ULong.MAX_VALUE.toBigInteger() + 10
             a.ulongValue(exactRequired = true)
         }
 
@@ -301,7 +301,7 @@ BigIntegerTest {
         }
         assertTrue {
             val a = Long.MAX_VALUE.toBigInteger() + 10
-            a.longValue(exactRequired = false) == 9L
+            a.longValue(exactRequired = false) == -9223372036854775799
         }
         assertTrue {
             val a = Long.MAX_VALUE.toBigInteger() + 10
@@ -318,7 +318,7 @@ BigIntegerTest {
             a.ubyteValue(exactRequired = false) == ubyte
         }
         assertTrue {
-            val a = Long.MAX_VALUE.toBigInteger() + 10
+            val a = ULong.MAX_VALUE.toBigInteger() + 10
             a.ulongValue(exactRequired = false) == 9UL
         }
     }
