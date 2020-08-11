@@ -77,6 +77,8 @@ enum class RoundingMode {
  */
 data class DecimalMode(val decimalPrecision: Long = 0, val roundingMode: RoundingMode = RoundingMode.NONE) {
 
+    val isPrecisionUnlimited = decimalPrecision == 0L
+
     init {
         if (decimalPrecision == 0L && roundingMode != RoundingMode.NONE) {
             throw ArithmeticException("Rounding mode with 0 digits precision.")

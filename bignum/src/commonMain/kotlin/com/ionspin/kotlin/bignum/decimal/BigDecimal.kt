@@ -60,6 +60,28 @@ class BigDecimal private constructor(
 
         var useToStringExpanded: Boolean = false
 
+        /**
+         * Powers of 10 which can be represented exactly in `double`. From java BigDecimal, hopefully
+         * significantly more efficient for most conversions than toStrings.
+         */
+        private val double10pow = doubleArrayOf(
+            1.0e0, 1.0e1, 1.0e2, 1.0e3, 1.0e4, 1.0e5,
+            1.0e6, 1.0e7, 1.0e8, 1.0e9, 1.0e10, 1.0e11,
+            1.0e12, 1.0e13, 1.0e14, 1.0e15, 1.0e16, 1.0e17,
+            1.0e18, 1.0e19, 1.0e20, 1.0e21, 1.0e22
+        )
+        private val maximumDouble = BigDecimal.fromDouble(Double.MAX_VALUE)
+        private val leastSignificantDouble = BigDecimal.fromDouble(Double.MIN_VALUE)
+        /**
+         * Powers of 10 which can be represented exactly in {@code
+         * float}.
+         */
+        private val float10pow = floatArrayOf(
+            1.0e0f, 1.0e1f, 1.0e2f, 1.0e3f, 1.0e4f, 1.0e5f,
+            1.0e6f, 1.0e7f, 1.0e8f, 1.0e9f, 1.0e10f)
+        private val maximumFloat = BigDecimal.fromFloat(Float.MAX_VALUE)
+        private val leastSignificantFloat = BigDecimal.fromFloat(Float.MIN_VALUE)
+
         private fun roundOrDont(significand: BigInteger, exponent: Long, decimalMode: DecimalMode): BigDecimal {
             return if (decimalMode.decimalPrecision != 0L && decimalMode.roundingMode != RoundingMode.NONE) {
                 roundSignificand(significand, exponent, decimalMode)
@@ -916,7 +938,7 @@ class BigDecimal private constructor(
         val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
         var newExponent = this.exponent - other.exponent - 1
 
-        val desiredPrecision = if (resolvedDecimalMode.decimalPrecision == 0L) {
+        val desiredPrecision = if (resolvedDecimalMode.isPrecisionUnlimited) {
             val precisionSum = max(6, this.precision + other.precision)
             if (precisionSum < this.precision) {
                 Long.MAX_VALUE
@@ -939,14 +961,20 @@ class BigDecimal private constructor(
             newExponent--
         }
         val exponentModifier = result.numberOfDecimalDigits() - resolvedDecimalMode.decimalPrecision
-        if (divRem.remainder != BigInteger.ZERO && resolvedDecimalMode.decimalPrecision == 0L && resolvedDecimalMode.roundingMode == RoundingMode.NONE) {
+
+        if (divRem.remainder != BigInteger.ZERO && resolvedDecimalMode.isPrecisionUnlimited) {
             throw ArithmeticException("Non-terminating result of division operation. Specify decimalPrecision")
         }
-        return BigDecimal(
-            roundDiscarded(result, divRem.remainder, resolvedDecimalMode),
-            newExponent + exponentModifier,
-            resolvedDecimalMode
-        )
+        return if (resolvedDecimalMode.isPrecisionUnlimited)
+            BigDecimal(
+                result,
+                newExponent,
+                resolvedDecimalMode)
+            else
+                BigDecimal(
+                roundDiscarded(result, divRem.remainder, resolvedDecimalMode),
+                newExponent + exponentModifier,
+                resolvedDecimalMode)
     }
 
     /**
@@ -1275,21 +1303,9 @@ class BigDecimal private constructor(
     }
 
     override fun floatValue(exactRequired: Boolean): Float {
-        val maxExponent = 1L shl 8
-        if (exactRequired) {
-            if (exponent.absoluteValue > maxExponent)
-                throw ArithmeticException("exponent cannot be Narrowed to float")
-            if (precision > 23)
-                throw ArithmeticException("Narrowing to float would lose precision")
-        }
+        if (exactRequired && (this.abs() > maximumFloat || this.abs() < leastSignificantFloat))
+            throw ArithmeticException("Value cannot be narrowed to float")
 
-        /**
-         * Powers of 10 which can be represented exactly in {@code
-         * float}.
-         */
-        val float10pow = floatArrayOf(
-            1.0e0f, 1.0e1f, 1.0e2f, 1.0e3f, 1.0e4f, 1.0e5f,
-            1.0e6f, 1.0e7f, 1.0e8f, 1.0e9f, 1.0e10f)
         return if (exponent < 0 && exponent.absoluteValue < float10pow.size)
             toBigInteger().longValue() * float10pow[exponent.absoluteValue.toInt()]
         else {
@@ -1301,23 +1317,9 @@ class BigDecimal private constructor(
     }
 
     override fun doubleValue(exactRequired: Boolean): Double {
-        if (exactRequired) {
-            if (exponent.absoluteValue > 1L shl 11)
-                throw ArithmeticException("exponent cannot be Narrowed to double")
-            if (precision > 52 || significand.numberOfWords > 1)
-                throw ArithmeticException("Narrowing to double would lose precision")
-        }
+        if (exactRequired && (this.abs() > maximumDouble || this.abs() < leastSignificantDouble))
+            throw ArithmeticException("Value cannot be narrowed to double")
 
-        /**
-         * Powers of 10 which can be represented exactly in `double`. From java BigDecimal, hopefully
-         * significantly more efficient for most conversions than toStrings.
-         */
-        val double10pow = doubleArrayOf(
-            1.0e0, 1.0e1, 1.0e2, 1.0e3, 1.0e4, 1.0e5,
-            1.0e6, 1.0e7, 1.0e8, 1.0e9, 1.0e10, 1.0e11,
-            1.0e12, 1.0e13, 1.0e14, 1.0e15, 1.0e16, 1.0e17,
-            1.0e18, 1.0e19, 1.0e20, 1.0e21, 1.0e22
-        )
         /*
          * Since the significand  can be exactly
          * represented as double value, and the exponent perform a single

@@ -3,8 +3,19 @@ package com.ionspin.kotlin.bignum.decimal
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 class JvmBigDecimalNarrowingTest {
+
+    @Test
+    fun divideRoundingTest() {
+        val dub = BigDecimal.fromDouble(Double.MIN_VALUE)
+        val dub2 = dub.divide(BigDecimal.TEN)
+        assertTrue(dub2 < dub)
+        val dub3 = dub.multiply(BigDecimal.TEN)
+        val realDub = dub3.doubleValue(true)
+        assertEquals(Double.MIN_VALUE, realDub)
+    }
 
     @Test
     fun doubleValueTest() {
@@ -31,9 +42,5 @@ class JvmBigDecimalNarrowingTest {
         assertFailsWith<ArithmeticException> {
             f.divide(BigDecimal.TEN).floatValue(true)
         }
-    }
-
-    companion object {
-        val decimalMode = DecimalMode()
     }
 }
