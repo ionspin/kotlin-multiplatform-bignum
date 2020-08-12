@@ -332,56 +332,56 @@ class ModularBigInteger private constructor(
         if (exactRequired && residue > Int.MAX_VALUE.toUInt()) {
             throw ArithmeticException("Cannot convert to int and provide exact value")
         }
-        return residue.magnitude[0].toInt()
+        return residue.intValue(exactRequired)
     }
 
     override fun longValue(exactRequired: Boolean): Long {
         if (exactRequired && (residue > Long.MAX_VALUE.toUInt())) {
             throw ArithmeticException("Cannot convert to long and provide exact value")
         }
-        return residue.magnitude[0].toLong()
+        return residue.longValue(exactRequired)
     }
 
     override fun byteValue(exactRequired: Boolean): Byte {
         if (exactRequired && residue > Byte.MAX_VALUE.toUInt()) {
             throw ArithmeticException("Cannot convert to byte and provide exact value")
         }
-        return residue.magnitude[0].toByte()
+        return residue.byteValue(exactRequired)
     }
 
     override fun shortValue(exactRequired: Boolean): Short {
         if (exactRequired && residue > Short.MAX_VALUE.toUInt()) {
             throw ArithmeticException("Cannot convert to short and provide exact value")
         }
-        return residue.magnitude[0].toShort()
+        return residue.shortValue(exactRequired)
     }
 
     override fun uintValue(exactRequired: Boolean): UInt {
         if (exactRequired && residue > UInt.MAX_VALUE.toUInt()) {
             throw ArithmeticException("Cannot convert to unsigned int and provide exact value")
         }
-        return residue.magnitude[0].toUInt()
+        return residue.uintValue(exactRequired)
     }
 
     override fun ulongValue(exactRequired: Boolean): ULong {
         if (exactRequired && (residue > ULong.MAX_VALUE.toUInt())) {
             throw ArithmeticException("Cannot convert to unsigned long and provide exact value")
         }
-        return residue.magnitude[0]
+        return residue.ulongValue(exactRequired)
     }
 
     override fun ubyteValue(exactRequired: Boolean): UByte {
         if (exactRequired && residue > UByte.MAX_VALUE.toUInt()) {
             throw ArithmeticException("Cannot convert to unsigned byte and provide exact value")
         }
-        return residue.magnitude[0].toUByte()
+        return residue.ubyteValue(exactRequired)
     }
 
     override fun ushortValue(exactRequired: Boolean): UShort {
         if (exactRequired && residue > UShort.MAX_VALUE.toUInt()) {
             throw ArithmeticException("Cannot convert to unsigned short and provide exact value")
         }
-        return residue.magnitude[0].toUShort()
+        return residue.ushortValue(exactRequired)
     }
 
     override fun floatValue(exactRequired: Boolean): Float {

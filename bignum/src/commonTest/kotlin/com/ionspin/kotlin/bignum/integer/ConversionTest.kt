@@ -229,5 +229,33 @@ class ConversionTest {
         assertTrue {
             1.toBigInteger().byteValue() == 1.toByte()
         }
+
+        assertTrue {
+            Long.MIN_VALUE.toBigInteger().longValue() == Long.MIN_VALUE
+        }
+        assertTrue {
+            ULong.MAX_VALUE.toBigInteger().ulongValue() == ULong.MAX_VALUE
+        }
+
+        assertTrue {
+            Int.MIN_VALUE.toBigInteger().intValue() == Int.MIN_VALUE
+        }
+        assertTrue {
+            UInt.MAX_VALUE.toBigInteger().uintValue() == UInt.MAX_VALUE
+        }
+
+        assertTrue {
+            Short.MIN_VALUE.toBigInteger().shortValue() == Short.MIN_VALUE
+        }
+        assertTrue {
+            UShort.MAX_VALUE.toBigInteger().ushortValue() == UShort.MAX_VALUE
+        }
+
+        assertTrue {
+            Byte.MIN_VALUE.toBigInteger().byteValue() == Byte.MIN_VALUE
+        }
+        assertTrue {
+            UByte.MAX_VALUE.toBigInteger().ubyteValue() == UByte.MAX_VALUE
+        }
     }
 }

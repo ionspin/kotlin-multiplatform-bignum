@@ -714,10 +714,15 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     }
 
     override fun longValue(exactRequired: Boolean): Long {
-        if (exactRequired && (this > Long.MAX_VALUE.toUInt())) {
+        if (exactRequired && (this > Long.MAX_VALUE.toULong())) {
             throw ArithmeticException("Cannot convert to long and provide exact value")
         }
-        return magnitude[0].toLong() * signum()
+        return if (magnitude.size > 1) {
+            val firstBit = magnitude[1] shl 63
+            (magnitude[0].toLong() or firstBit.toLong()) * signum()
+        } else {
+            return magnitude[0].toLong()
+        }
     }
 
     override fun byteValue(exactRequired: Boolean): Byte {
@@ -735,17 +740,22 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     }
 
     override fun uintValue(exactRequired: Boolean): UInt {
-        if (exactRequired && this > UInt.MAX_VALUE.toUInt()) {
+        if (exactRequired && this > UInt.MAX_VALUE) {
             throw ArithmeticException("Cannot convert to unsigned int and provide exact value")
         }
         return magnitude[0].toUInt()
     }
 
     override fun ulongValue(exactRequired: Boolean): ULong {
-        if (exactRequired && (this > ULong.MAX_VALUE.toUInt())) {
+        if (exactRequired && (this > ULong.MAX_VALUE)) {
             throw ArithmeticException("Cannot convert to unsigned long and provide exact value")
         }
-        return magnitude[0]
+        return if (magnitude.size > 1) {
+            val firstBit = magnitude[1] shl 63
+            magnitude[0] or firstBit
+        } else {
+            return magnitude[0]
+        }
     }
 
     override fun ubyteValue(exactRequired: Boolean): UByte {
