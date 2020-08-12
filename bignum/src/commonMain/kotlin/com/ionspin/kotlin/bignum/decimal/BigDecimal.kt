@@ -1313,7 +1313,7 @@ class BigDecimal private constructor(
     /**
      * @return true if "this" is a whole number, false if not
      */
-    fun isWholeNumber():Boolean {
+    fun isWholeNumber(): Boolean {
         return abs().divrem(ONE).second.isZero()
     }
     /**
@@ -1333,9 +1333,9 @@ class BigDecimal private constructor(
      * @throws ArithmeticException if exactRequired is true and any of the above conditions not met
      */
     override fun floatValue(exactRequired: Boolean): Float {
-        if (exactRequired && (this.abs() > maximumFloat
-                    || this.abs() < leastSignificantFloat)
-                    || this.precision > 8)
+        if (exactRequired && (this.abs() > maximumFloat ||
+                    this.abs() < leastSignificantFloat) ||
+                    this.precision > 8)
             throw ArithmeticException("Value cannot be narrowed to float")
 
         return if (exponent < 0 && exponent.absoluteValue < float10pow.size)
@@ -1343,7 +1343,7 @@ class BigDecimal private constructor(
         else {
             if (exponent >= 0 && exponent < float10pow.size) {
                 this.significand.longValue(true).toFloat() / float10pow[exponent.toInt()]
-            }else
+            } else
                 this.toString().toFloat()
         }
     }
@@ -1355,9 +1355,9 @@ class BigDecimal private constructor(
      * @throws ArithmeticException if exactRequired is true and any of the above conditions not met
      */
     override fun doubleValue(exactRequired: Boolean): Double {
-        if (exactRequired && (this.abs() > maximumDouble
-                    || this.abs() < leastSignificantDouble)
-                    || this.precision > 17)
+        if (exactRequired && (this.abs() > maximumDouble ||
+                    this.abs() < leastSignificantDouble) ||
+                    this.precision > 17)
             throw ArithmeticException("Value cannot be narrowed to double")
 
         /*
@@ -1371,7 +1371,7 @@ class BigDecimal private constructor(
         else {
             if (exponent >= 0 && exponent < double10pow.size) {
                 this.significand.longValue(true).toDouble() / double10pow[exponent.toInt()]
-            }else
+            } else
                 this.toString().toDouble()
         }
     }

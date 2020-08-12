@@ -1,9 +1,9 @@
 package com.ionspin.kotlin.bignum.decimal
 
-import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
+import org.junit.Test
 
 /**
  * Unit tests (JVM for easy debugging) on Narrowing functionality for BigDecimal.  Short, Int,
