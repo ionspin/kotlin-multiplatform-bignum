@@ -629,7 +629,13 @@ class BigDecimal private constructor(
             }
             if (floatingPointString.contains('E') || floatingPointString.contains('e')) {
                 // Sci notation
-                val split = floatingPointString.split('.')
+                val split = if (floatingPointString.contains('.').not()) {
+                    // As is case with JS Double.MIN_VALUE
+                    val splitAroundE = floatingPointString.split('E', 'e')
+                    listOf(splitAroundE[0], "0E" + splitAroundE[1])
+                } else {
+                    floatingPointString.split('.')
+                }
                 when (split.size) {
                     2 -> {
                         val signPresent = (floatingPointString[0] == '-' || floatingPointString[0] == '+')
