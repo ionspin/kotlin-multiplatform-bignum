@@ -104,6 +104,12 @@ class BigDecimalCreationTest {
             val b = BigDecimal.fromIntWithExponent(-123123, 2)
             a == b
         }
+
+        assertTrue {
+            val a = BigDecimal.parseStringWithMode("5E-324")
+            val b = BigDecimal.fromIntWithExponent(5, -324)
+            a == b
+        }
     }
 
     @Test
