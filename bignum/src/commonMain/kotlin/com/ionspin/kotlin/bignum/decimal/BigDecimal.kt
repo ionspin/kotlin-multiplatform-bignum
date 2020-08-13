@@ -19,6 +19,7 @@ package com.ionspin.kotlin.bignum.decimal
 
 import com.ionspin.kotlin.bignum.BigNumber
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
+import com.ionspin.kotlin.bignum.NarrowingOperations
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.ComparisonWorkaround
 import com.ionspin.kotlin.bignum.integer.Sign
@@ -46,6 +47,7 @@ class BigDecimal private constructor(
     val decimalMode: DecimalMode? = null
 ) : BigNumber<BigDecimal>,
     CommonBigNumberOperations<BigDecimal>,
+    NarrowingOperations<BigDecimal>,
     Comparable<Any> {
 
     val precision = significand.numberOfDecimalDigits()
@@ -57,6 +59,28 @@ class BigDecimal private constructor(
         override val TEN = BigDecimal(BigInteger.TEN)
 
         var useToStringExpanded: Boolean = false
+
+        /**
+         * Powers of 10 which can be represented exactly in `double`. From java BigDecimal, hopefully
+         * significantly more efficient for most conversions than toStrings.
+         */
+        private val double10pow = doubleArrayOf(
+            1.0e0, 1.0e1, 1.0e2, 1.0e3, 1.0e4, 1.0e5,
+            1.0e6, 1.0e7, 1.0e8, 1.0e9, 1.0e10, 1.0e11,
+            1.0e12, 1.0e13, 1.0e14, 1.0e15, 1.0e16, 1.0e17,
+            1.0e18, 1.0e19, 1.0e20, 1.0e21, 1.0e22
+        )
+        private val maximumDouble = BigDecimal.fromDouble(Double.MAX_VALUE)
+        private val leastSignificantDouble = BigDecimal.fromDouble(Double.MIN_VALUE)
+        /**
+         * Powers of 10 which can be represented exactly in {@code
+         * float}.
+         */
+        private val float10pow = floatArrayOf(
+            1.0e0f, 1.0e1f, 1.0e2f, 1.0e3f, 1.0e4f, 1.0e5f,
+            1.0e6f, 1.0e7f, 1.0e8f, 1.0e9f, 1.0e10f)
+        private val maximumFloat = BigDecimal.fromFloat(Float.MAX_VALUE)
+        private val leastSignificantFloat = BigDecimal.fromFloat(Float.MIN_VALUE)
 
         private fun roundOrDont(significand: BigInteger, exponent: Long, decimalMode: DecimalMode): BigDecimal {
             return if (decimalMode.decimalPrecision != 0L && decimalMode.roundingMode != RoundingMode.NONE) {
@@ -245,7 +269,7 @@ class BigDecimal private constructor(
          *
          * i.e. 7111 -> 7.111E+3
          *
-         * @param long Long value to conver
+         * @param bigInteger Long value to conver
          * @return BigDecimal representing input
          */
         fun fromBigInteger(bigInteger: BigInteger, decimalMode: DecimalMode? = null): BigDecimal {
@@ -272,7 +296,7 @@ class BigDecimal private constructor(
          *
          * i.e. 7111 -> 7.111E+3
          *
-         * @param long Long value to conver
+         * @param uLong Long value to conver
          * @return BigDecimal representing input
          */
         fun fromULong(uLong: ULong, decimalMode: DecimalMode? = null): BigDecimal {
@@ -298,7 +322,7 @@ class BigDecimal private constructor(
          *
          * i.e. 7111 -> 7.111E+3
          *
-         * @param int Int value to conver
+         * @param uInt Int value to conver
          * @return BigDecimal representing input
          */
         fun fromUInt(uInt: UInt, decimalMode: DecimalMode? = null): BigDecimal {
@@ -311,7 +335,7 @@ class BigDecimal private constructor(
          *
          * i.e. 7111 -> 7.111E+3
          *
-         * @param short Short value to conver
+         * @param uShort Short value to conver
          * @return BigDecimal representing input
          */
         fun fromUShort(uShort: UShort, decimalMode: DecimalMode? = null): BigDecimal {
@@ -337,7 +361,7 @@ class BigDecimal private constructor(
          *
          * i.e. 11 -> 1.1E+2
          *
-         * @param byte Byte value to conver
+         * @param uByte Byte value to conver
          * @return BigDecimal representing input
          */
         fun fromUByte(uByte: UByte, decimalMode: DecimalMode? = null): BigDecimal {
@@ -396,7 +420,7 @@ class BigDecimal private constructor(
          *
          * i.e. 7111 -> 7.111E+0
          *
-         * @param short Short value to conver
+         * @param byte Short value to convert
          * @return BigDecimal representing input
          */
         fun fromByteAsSignificand(byte: Byte, decimalMode: DecimalMode? = null) =
@@ -496,7 +520,7 @@ class BigDecimal private constructor(
          *
          * i.e. 7111 -> 7.111E+0
          *
-         * @param long Long value to conver
+         * @param bigInteger Long value to conver
          * @return BigDecimal representing input
          */
         override fun fromBigInteger(bigInteger: BigInteger): BigDecimal {
@@ -508,7 +532,7 @@ class BigDecimal private constructor(
          *
          * i.e. 7111 -> 7.111E+0
          *
-         * @param long Long value to conver
+         * @param uLong Long value to conver
          * @return BigDecimal representing input
          */
         override fun fromULong(uLong: ULong): BigDecimal {
@@ -520,7 +544,7 @@ class BigDecimal private constructor(
          *
          * i.e. 7111 -> 7.111E+0
          *
-         * @param int Int value to conver
+         * @param uInt Int value to conver
          * @return BigDecimal representing input
          */
         override fun fromUInt(uInt: UInt): BigDecimal {
@@ -532,7 +556,7 @@ class BigDecimal private constructor(
          *
          * i.e. 7111 -> 7.111E+0
          *
-         * @param short Short value to conver
+         * @param uShort Short value to conver
          * @return BigDecimal representing input
          */
         override fun fromUShort(uShort: UShort): BigDecimal {
@@ -544,7 +568,7 @@ class BigDecimal private constructor(
          *
          * i.e. 7111 -> 7.111E+0
          *
-         * @param short Short value to conver
+         * @param uByte Short value to conver
          * @return BigDecimal representing input
          */
         override fun fromUByte(uByte: UByte): BigDecimal {
@@ -592,7 +616,7 @@ class BigDecimal private constructor(
          *
          * i.e. 7111 -> 7.111E+0
          *
-         * @param short Short value to conver
+         * @param byte Short value to conver
          * @return BigDecimal representing input
          */
         override fun fromByte(byte: Byte): BigDecimal {
@@ -737,7 +761,7 @@ class BigDecimal private constructor(
                             val leftTruncated = left.substring(leftFirstNonZero, left.length)
                             val rightTruncated = right.substring(0, rightLastNonZero + 1)
                             var significand = BigInteger.parseString(leftTruncated + rightTruncated, 10)
-                            var exponent = if (leftTruncated.length >= 1 && leftTruncated[0] != '0') {
+                            val exponent = if (leftTruncated.length >= 1 && leftTruncated[0] != '0') {
                                 leftTruncated.length - 1
                             } else {
                                 (rightTruncated.indexOfFirst { it != '0' } + 1) * -1
@@ -920,7 +944,7 @@ class BigDecimal private constructor(
         val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
         var newExponent = this.exponent - other.exponent - 1
 
-        val desiredPrecision = if (resolvedDecimalMode.decimalPrecision == 0L) {
+        val desiredPrecision = if (resolvedDecimalMode.isPrecisionUnlimited) {
             val precisionSum = max(6, this.precision + other.precision)
             if (precisionSum < this.precision) {
                 Long.MAX_VALUE
@@ -937,20 +961,26 @@ class BigDecimal private constructor(
             else -> this.significand
         }
 
-        var divRem = thisPrepared divrem other.significand
-        var result = divRem.quotient
+        val divRem = thisPrepared divrem other.significand
+        val result = divRem.quotient
         if (result == BigInteger.ZERO) {
             newExponent--
         }
         val exponentModifier = result.numberOfDecimalDigits() - resolvedDecimalMode.decimalPrecision
-        if (divRem.remainder != BigInteger.ZERO && resolvedDecimalMode.decimalPrecision == 0L && resolvedDecimalMode.roundingMode == RoundingMode.NONE) {
+
+        if (divRem.remainder != BigInteger.ZERO && resolvedDecimalMode.isPrecisionUnlimited) {
             throw ArithmeticException("Non-terminating result of division operation. Specify decimalPrecision")
         }
-        return BigDecimal(
-            roundDiscarded(result, divRem.remainder, resolvedDecimalMode),
-            newExponent + exponentModifier,
-            resolvedDecimalMode
-        )
+        return if (resolvedDecimalMode.isPrecisionUnlimited)
+            BigDecimal(
+                result,
+                newExponent,
+                resolvedDecimalMode)
+            else
+                BigDecimal(
+                roundDiscarded(result, divRem.remainder, resolvedDecimalMode),
+                newExponent + exponentModifier,
+                resolvedDecimalMode)
     }
 
     /**
@@ -1096,7 +1126,7 @@ class BigDecimal private constructor(
      */
     override fun numberOfDecimalDigits(): Long {
         val numberOfDigits = when {
-            exponent > 0 && exponent < precision -> precision
+            exponent in 1 until precision -> precision
             exponent > 0 && exponent > precision -> exponent + 1 // Significand is already 10^1 when exponent is > 0
             exponent > 0 && exponent == precision -> precision + 1 // Same as above
             exponent < 0 -> exponent.absoluteValue + precision
@@ -1215,13 +1245,13 @@ class BigDecimal private constructor(
         return when {
             exponent > 0 -> {
                 for (i in 0 until exponent - 1) {
-                    result = result * this
+                    result *= this
                 }
                 result
             }
             exponent < 0 -> {
                 for (i in 0..exponent.absoluteValue) {
-                    result = result / this
+                    result /= this
                 }
                 result
             }
@@ -1236,6 +1266,121 @@ class BigDecimal private constructor(
      * @return Result of signum function for this BigDecimal (-1 negative, 0 zero, 1 positive)
      */
     override fun signum(): Int = significand.signum()
+
+    /**
+     * The next group of functions are implementations of the NarrowingOperations interface
+     */
+    /**
+     * Convert the current value to  Int.
+     * @param exactRequired True causes an ArithmeticException to be thrown if there is any loss of
+     * precision during the conversion, either side of the decimal. False truncates any precision to
+     * the right of the decimal.
+     */
+    override fun intValue(exactRequired: Boolean): Int {
+        checkWholeness(exactRequired)
+        return toBigInteger().intValue(exactRequired)
+    }
+
+    override fun longValue(exactRequired: Boolean): Long {
+        checkWholeness(exactRequired)
+        return toBigInteger().longValue(exactRequired)
+    }
+
+    override fun byteValue(exactRequired: Boolean): Byte {
+        checkWholeness(exactRequired)
+        return toBigInteger().byteValue(exactRequired)
+    }
+
+    override fun shortValue(exactRequired: Boolean): Short {
+        checkWholeness(exactRequired)
+        return toBigInteger().shortValue(exactRequired)
+    }
+
+    override fun uintValue(exactRequired: Boolean): UInt {
+        checkWholeness(exactRequired)
+        return toBigInteger().uintValue(exactRequired)
+    }
+
+    override fun ulongValue(exactRequired: Boolean): ULong {
+        checkWholeness(exactRequired)
+        return toBigInteger().ulongValue(exactRequired)
+    }
+
+    override fun ubyteValue(exactRequired: Boolean): UByte {
+        checkWholeness(exactRequired)
+        return toBigInteger().ubyteValue(exactRequired)
+    }
+
+    override fun ushortValue(exactRequired: Boolean): UShort {
+        checkWholeness(exactRequired)
+        return toBigInteger().ushortValue(exactRequired)
+    }
+
+    /**
+     * @return true if "this" is a whole number, false if not
+     */
+    fun isWholeNumber(): Boolean {
+        return abs().divrem(ONE).second.isZero()
+    }
+    /**
+     * @param exactRequired if not a whole number, throw an exception
+     * @return true if this is a whole number, false if not
+     * @throws ArithmeticException if any nonzero value to the right of the decimal
+     */
+    private fun checkWholeness(exactRequired: Boolean) {
+        if (exactRequired && !isWholeNumber())
+            throw ArithmeticException("Cannot convert to int and provide exact value")
+    }
+
+    /**
+     * Narrow to a float.
+     * @param exactRequired if false, precision can be lost. If true, the current absolute value
+     * must be between Float.MAX_VALUE and Float.MIN_VALUE, with 7 or less digits of precision.
+     * @throws ArithmeticException if exactRequired is true and any of the above conditions not met
+     */
+    override fun floatValue(exactRequired: Boolean): Float {
+        if (exactRequired && (this.abs() > maximumFloat ||
+                    this.abs() < leastSignificantFloat) ||
+                    this.precision > 8)
+            throw ArithmeticException("Value cannot be narrowed to float")
+
+        return if (exponent < 0 && exponent.absoluteValue < float10pow.size)
+            toBigInteger().longValue() * float10pow[exponent.absoluteValue.toInt()]
+        else {
+            if (exponent >= 0 && exponent < float10pow.size) {
+                this.significand.longValue(true).toFloat() / float10pow[exponent.toInt()]
+            } else
+                this.toString().toFloat()
+        }
+    }
+
+    /**
+     * Narrow to a double.
+     * @param exactRequired if false, precision can be lost. If true, the current absolute value
+     * must be between Double.MAX_VALUE and Double.MIN_VALUE, with 16 or less digits of precision.
+     * @throws ArithmeticException if exactRequired is true and any of the above conditions not met
+     */
+    override fun doubleValue(exactRequired: Boolean): Double {
+        if (exactRequired && (this.abs() > maximumDouble ||
+                    this.abs() < leastSignificantDouble) ||
+                    this.precision > 17)
+            throw ArithmeticException("Value cannot be narrowed to double")
+
+        /*
+         * Since the significand  can be exactly
+         * represented as double value, and the exponent perform a single
+         * double multiply or divide to compute the (properly
+         * rounded) result.  For large exponent values, use fallback string parse
+         */
+        return if (exponent < 0 && exponent.absoluteValue < double10pow.size)
+            toBigInteger().longValue() * double10pow[exponent.absoluteValue.toInt()]
+        else {
+            if (exponent >= 0 && exponent < double10pow.size) {
+                this.significand.longValue(true).toDouble() / double10pow[exponent.toInt()]
+            } else
+                this.toString().toDouble()
+        }
+    }
 
     /**
      * Round using specific [DecimalMode] and return rounded instance. This is applied only to significand.
@@ -1385,12 +1530,12 @@ class BigDecimal private constructor(
         }
         return when (other) {
             is BigDecimal -> compare(other)
-            is Long -> compare(BigDecimal.fromLong(other))
-            is Int -> compare(BigDecimal.fromInt(other))
-            is Short -> compare(BigDecimal.fromShort(other))
-            is Byte -> compare(BigDecimal.fromByte(other))
-            is Double -> compare(BigDecimal.fromDouble(other))
-            is Float -> compare(BigDecimal.fromFloat(other))
+            is Long -> compare(fromLong(other))
+            is Int -> compare(fromInt(other))
+            is Short -> compare(fromShort(other))
+            is Byte -> compare(fromByte(other))
+            is Double -> compare(fromDouble(other))
+            is Float -> compare(fromFloat(other))
             else -> throw RuntimeException("Invalid comparison type for BigDecimal: ${other::class.simpleName}")
         }
     }
@@ -1402,7 +1547,7 @@ class BigDecimal private constructor(
     private fun javascriptNumberComparison(number: Number): Int {
         val float = number.toFloat()
         return when {
-            float % 1 == 0f -> compare(BigDecimal.fromLong(number.toLong()))
+            float % 1 == 0f -> compare(fromLong(number.toLong()))
             else -> compare(number.toFloat().toBigDecimal())
         }
     }
@@ -1410,12 +1555,12 @@ class BigDecimal private constructor(
     override fun equals(other: Any?): Boolean {
         val comparison = when (other) {
             is BigDecimal -> compare(other)
-            is Long -> compare(BigDecimal.fromLong(other))
-            is Int -> compare(BigDecimal.fromInt(other))
-            is Short -> compare(BigDecimal.fromShort(other))
-            is Byte -> compare(BigDecimal.fromByte(other))
-            is Double -> compare(BigDecimal.fromDouble(other))
-            is Float -> compare(BigDecimal.fromFloat(other))
+            is Long -> compare(fromLong(other))
+            is Int -> compare(fromInt(other))
+            is Short -> compare(fromShort(other))
+            is Byte -> compare(fromByte(other))
+            is Double -> compare(fromDouble(other))
+            is Float -> compare(fromFloat(other))
             else -> -1
         }
         return comparison == 0
@@ -1430,7 +1575,7 @@ class BigDecimal private constructor(
      * i.e. 1.23E+9
      */
     override fun toString(): String {
-        if (BigDecimal.useToStringExpanded) {
+        if (useToStringExpanded) {
             return toStringExpanded()
         }
         val significandString = significand.toString(10)
@@ -1530,20 +1675,19 @@ class BigDecimal private constructor(
 
         val prefix = input.substring(0 until input.length - position)
         val suffix = input.substring(input.length - position until input.length)
-        val prepared = if (suffix.isNotEmpty()) {
-            (prefix + '.' + suffix).dropLastWhile { it == '0' }
+
+        return if (suffix.isNotEmpty()) {
+            ("$prefix.$suffix").dropLastWhile { it == '0' }
         } else {
             prefix
         }
-
-        return prepared
     }
 
     private fun placeADotInString(input: String, position: Int): String {
 
         val prefix = input.substring(0 until input.length - position)
         val suffix = input.substring(input.length - position until input.length)
-        val prepared = prefix + '.' + suffix
+        val prepared = "$prefix.$suffix"
 
         return prepared.dropLastWhile { it == '0' }
     }
