@@ -73,15 +73,39 @@ enum class RoundingMode {
 
 /**
  * Decimal precision signifies how many digits will significand have. If decimal precision is 0 and RoundingMode is NONE
- * infinite precision is used
+ * infinite precision is used.
+ * @param decimalPrecision max number of digits allowed. Default 0 is unlimited precision.
+ * @param roundingMode default RoundingMode.NONE is used with unlimited precision and no specified scale.
+ * Otherwise specify mode that is used for rounding when decimalPrecision is exceeded, or when scale is in use.
+ * @param scale is number of digits to the right of the decimal point. It is a subset of precision.
+ * When this is specified, a RoundingMode that is not RoundingMode.NONE is also required.
+ * Scale cannot be greater than precision - 1.
+ * If left to default = null, no scale will be used. Rounding and decimalPrecision apply.
+ * Negative scale numbers are not supported.
  */
-data class DecimalMode(val decimalPrecision: Long = 0, val roundingMode: RoundingMode = RoundingMode.NONE) {
+data class DecimalMode(
+    val decimalPrecision: Long = 0,
+    val roundingMode: RoundingMode = RoundingMode.NONE,
+    val scale: Long = -1
+) {
 
     val isPrecisionUnlimited = decimalPrecision == 0L
+    val usingScale = scale >= 0
 
     init {
         if (decimalPrecision == 0L && roundingMode != RoundingMode.NONE) {
             throw ArithmeticException("Rounding mode with 0 digits precision.")
+        }
+        if (scale < -1) {
+            throw ArithmeticException("Negative Scale is unsupported.")
+        }
+        if (usingScale && roundingMode == RoundingMode.NONE) {
+            throw ArithmeticException("Scale of $scale digits to the right of the decimal requires a RoundingMode that is not NONE.")
+        }
+        if (usingScale) {
+            if (!isPrecisionUnlimited && scale >= decimalPrecision) {
+                throw ArithmeticException("Scale of $scale digits to the right of the decimal must be less than precision $decimalPrecision.")
+            }
         }
     }
 
@@ -90,5 +114,13 @@ data class DecimalMode(val decimalPrecision: Long = 0, val roundingMode: Roundin
          * Default decimal mode, infinite precision, no rounding
          */
         val DEFAULT = DecimalMode()
+
+        /**
+         * Example mode useful for US currency support with unlimited dollars, and no fractions of cents.
+         * Note that prices, interest rate calculations, and lots of other usages of currency require
+         * fractions of cents for accuracy, which requires a larger scale.
+         * Arbitrarily chose really large precision
+         */
+        val US_CURRENCY = DecimalMode(30, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 2)
     }
 }
