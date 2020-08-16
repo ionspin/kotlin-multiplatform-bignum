@@ -1,10 +1,10 @@
 package com.ionspin.kotlin.bignum.decimal
 
+import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
-import org.junit.Test
 
 /**
  * Unit tests (JVM for easy debugging) on arithmetic operations using the "scale" functionality
@@ -107,5 +107,33 @@ class JvmBigDecimalScaleTest {
         wrk = wrk.scale(2)
         javaWrk = javaWrk.setScale(2)
         assertTrue(wrk.toPlainString().equals(javaWrk.toPlainString()))
+    }
+
+    @Test
+    fun scaleAndNegativeExponentTest() {
+        val r1 = BigDecimal.parseStringWithMode(".0125", DecimalMode(10, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3))
+        val r2 = BigDecimal.parseString(".012")
+        val r3 = BigDecimal.parseString(".013")
+        assertEquals(3, r1.scale)
+        assertEquals(0,r1.compare(r3))
+        assertEquals(1,r1.compare(r2))
+        val r4 = BigDecimal.parseStringWithMode(".0124", DecimalMode(10, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3))
+        assertEquals(-1, r4.compare(r3))
+        assertEquals(0, r4.compare(r2))
+
+        val r5 = BigDecimal.parseStringWithMode(".01234567890123245", DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 16))
+        val r6 = BigDecimal.parseString(".0123456789012324")
+        val r7 = BigDecimal.parseString(".0123456789012325")
+        assertEquals(16, r5.scale)
+        assertEquals(1,r5.compare(r6))
+        assertEquals(0,r5.compare(r7))
+
+        val rNearZero = BigDecimal.parseStringWithMode(".00005", DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 4))
+        val r8 = BigDecimal.parseString(".0001")
+        assertEquals(0,rNearZero.compare(r8))
+        var rZero = BigDecimal.parseStringWithMode(".00004", DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 4))
+        assertEquals(0,rZero.compare(BigDecimal.ZERO))
+        rZero = BigDecimal.parseStringWithMode(".00000004", DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 4))
+        assertEquals(0,rZero.compare(BigDecimal.ZERO))
     }
 }
