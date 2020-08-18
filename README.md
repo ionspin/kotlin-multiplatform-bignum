@@ -414,6 +414,20 @@ data class DecimalMode(val decimalPrecision : Long = 0, val roundingMode : Round
 * If two `BigDecimal`s have different `DecimalModes` with different RoundingModes an `ArithmeticException` will be thrown. 
 If the modes are same, but the precision is different, larger precision will be used.
 
+### Scale 
+
+Scale, or the number of digits to the right of the decimal, can also be specified.  Default is no
+scale, which puts no restriction on number of digits to the right of the decimal. When scale is
+specified, a `RoundingMode` other than `RoundingMode.NONE` is also required.
+When arithmetic operations have both operands unlimited precision and no scaling, the result is
+also unlimited precision and no scale. When an operation mixes an unlimited precision operand
+and a scaled operand, the result is unlimited precision. WHen both operands have scale,
+whether unlimited precision or limited precision, then these rules for scale of the result are used:
+
+* add, subtract - max of the two scales</li>
+* multiply - sum of the two scales</li>
+* divide - min of the two scales</li>
+
 ##### Infinite precision  
 
 Precision 0 and roundingMode none attempt to provide infinite precisions. Exception is division, where default precision is
