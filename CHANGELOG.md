@@ -1,7 +1,7 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
 ##### 0.2.0 - 18.8.2020 - Improvements, optimizations, bugfixes and Kotlin 1.4.0
-- Impeovement #122 Add "scale" support to BigDecimal
+- Improvement #122 Add "scale" support to BigDecimal
 - Fixed #118 Rounding issue on division
 - Improvement #116 Introduce local gradle varibale to enable JVM target on different platforms
 - Fixed #112 BigDecimal divideAndRemainder bad result

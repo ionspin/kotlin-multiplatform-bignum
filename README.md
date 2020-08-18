@@ -27,7 +27,7 @@ The library is still under heavy development, and relies on experimental kotlin 
 
 #### Gradle
 ```kotlin
-implementation("com.ionspin.kotlin:bignum:0.1.5")
+implementation("com.ionspin.kotlin:bignum:0.2.0")
 ```
 
 #### Gradle Metadata
@@ -48,30 +48,9 @@ repositories {
         url = uri("https://oss.sonatype.org/content/repositories/snapshots")
     }
 }
-implementation("com.ionspin.kotlin:bignum:0.1.6-SNAPSHOT ")
+implementation("com.ionspin.kotlin:bignum:0.2.1-SNAPSHOT ")
 
 ```
-
-Interim version built with 1.3.72
-```kotlin
-repositories {
-    maven {
-        url = uri("https://oss.sonatype.org/content/repositories/snapshots")
-    }
-}
-implementation("com.ionspin.kotlin:bignum:0.1.6-1.3.72-SNAPSHOT")
-```
-Latest snapshot with kotlin 1.4.0-rc
-```kotlin
-repositories {
-    maven {
-        url = uri("https://oss.sonatype.org/content/repositories/snapshots")
-    }
-}
-implementation("com.ionspin.kotlin:bignum:0.1.6-1.4.0-rc-SNAPSHOT")
-```
-
-**Stable version 0.1.6 will be released after Kotlin 1.4 is released** 
 
 ## Usage
 
