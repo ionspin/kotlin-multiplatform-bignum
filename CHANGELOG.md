@@ -1,6 +1,15 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
-##### 0.1.6-SNAPSHOT 
+##### 0.2.0 - 18.8.2020 - Improvements, optimizations, bugfixes and Kotlin 1.4.0
+- Improvement #122 Add "scale" support to BigDecimal
+- Fixed #118 Rounding issue on division
+- Improvement #116 Introduce local gradle varibale to enable JVM target on different platforms
+- Fixed #112 BigDecimal divideAndRemainder bad result
+- Fixed #111 - BigDecimal narrowing
+- Fixed #104 - BigInteger.toByteArray should prefer ByteArray over Array<Byte>
+- Fixed #103 - Removed coroutines
+- Fixed #90 - Incorrect Result From Negative Double
+- Fixed #88 - BigInteger.bitAt does not work correctly
 - Fixed #86 - Rounding fails when integer part is 9
 - Fixed #88 - BigInteger.bitAt() returns invalid value
 - Built with Kotlin 1.4-M3

@@ -27,7 +27,7 @@ The library is still under heavy development, and relies on experimental kotlin 
 
 #### Gradle
 ```kotlin
-implementation("com.ionspin.kotlin:bignum:0.1.5")
+implementation("com.ionspin.kotlin:bignum:0.2.0")
 ```
 
 #### Gradle Metadata
@@ -48,30 +48,9 @@ repositories {
         url = uri("https://oss.sonatype.org/content/repositories/snapshots")
     }
 }
-implementation("com.ionspin.kotlin:bignum:0.1.6-SNAPSHOT ")
+implementation("com.ionspin.kotlin:bignum:0.2.1-SNAPSHOT ")
 
 ```
-
-Interim version built with 1.3.72
-```kotlin
-repositories {
-    maven {
-        url = uri("https://oss.sonatype.org/content/repositories/snapshots")
-    }
-}
-implementation("com.ionspin.kotlin:bignum:0.1.6-1.3.72-SNAPSHOT")
-```
-Latest snapshot with kotlin 1.4.0-rc
-```kotlin
-repositories {
-    maven {
-        url = uri("https://oss.sonatype.org/content/repositories/snapshots")
-    }
-}
-implementation("com.ionspin.kotlin:bignum:0.1.6-1.4.0-rc-SNAPSHOT")
-```
-
-**Stable version 0.1.6 will be released after Kotlin 1.4 is released** 
 
 ## Usage
 
@@ -413,6 +392,20 @@ data class DecimalMode(val decimalPrecision : Long = 0, val roundingMode : Round
 
 * If two `BigDecimal`s have different `DecimalModes` with different RoundingModes an `ArithmeticException` will be thrown. 
 If the modes are same, but the precision is different, larger precision will be used.
+
+### Scale 
+
+Scale, or the number of digits to the right of the decimal, can also be specified.  Default is no
+scale, which puts no restriction on number of digits to the right of the decimal. When scale is
+specified, a `RoundingMode` other than `RoundingMode.NONE` is also required.
+When arithmetic operations have both operands unlimited precision and no scaling, the result is
+also unlimited precision and no scale. When an operation mixes an unlimited precision operand
+and a scaled operand, the result is unlimited precision. WHen both operands have scale,
+whether unlimited precision or limited precision, then these rules for scale of the result are used:
+
+* add, subtract - max of the two scales</li>
+* multiply - sum of the two scales</li>
+* divide - min of the two scales</li>
 
 ##### Infinite precision  
 
