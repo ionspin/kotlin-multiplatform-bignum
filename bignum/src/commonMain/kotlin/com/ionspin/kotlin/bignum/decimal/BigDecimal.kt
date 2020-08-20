@@ -1575,22 +1575,9 @@ class BigDecimal private constructor(
      * 0.0012345678 digitPosition 5, rounding mode HALF_TOWARDS_ZERO will produce 0.00123
      */
     fun roundToDigitPositionAfterDecimalPoint(digitPosition: Long, roundingMode: RoundingMode): BigDecimal {
-        /*
-        return applyScale(significand, exponent,
-            DecimalMode(decimalMode?.decimalPrecision ?: 0, roundingMode, digitPosition))
-
-         */
         if (digitPosition < 0) {
             throw ArithmeticException("This method doesn't support negative digit position")
         }
-        // if (exponent > 0) {
-        //     when {
-        //         precision <= exponent -> return this
-        //         precision > exponent ->
-        //             return this.roundSignificand(DecimalMode(exponent + digitPosition, roundingMode))
-        //         else -> return this
-        //     }
-        // }
         return when {
             exponent >= 0 -> roundToDigitPosition(exponent + digitPosition + 1, roundingMode)
             exponent < 0 -> roundToDigitPosition(digitPosition + 1, roundingMode)
