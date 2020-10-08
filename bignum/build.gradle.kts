@@ -352,12 +352,6 @@ tasks {
 
     dokkaJavadoc {
         println("Dokka !")
-        dokkaSourceSets {
-            create("commonMain") {
-                displayName = "common"
-                platform = "common"
-            }
-        }
     }
     if (hostOsName == primaryDevelopmentOs) {
         val jvmTest by getting(Test::class) {

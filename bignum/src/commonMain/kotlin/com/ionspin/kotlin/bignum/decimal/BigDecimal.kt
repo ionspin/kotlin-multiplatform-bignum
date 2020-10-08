@@ -89,7 +89,7 @@ class BigDecimal private constructor(
         override val ZERO = BigDecimal(BigInteger.ZERO)
         override val ONE = BigDecimal(BigInteger.ONE)
         override val TWO = BigDecimal(BigInteger.TWO)
-        override val TEN = BigDecimal(BigInteger.TEN)
+        override val TEN = BigDecimal(BigInteger.TEN, _exponent = 1)
 
         var useToStringExpanded: Boolean = false
 
@@ -1062,7 +1062,11 @@ class BigDecimal private constructor(
      */
     fun divide(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
         val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
-        var newExponent = this.exponent - other.exponent - 1
+        var newExponent = if (resolvedDecimalMode.isPrecisionUnlimited) {
+            this.exponent - other.exponent
+        } else {
+            this.exponent - other.exponent - 1
+        }
 
         val desiredPrecision = if (resolvedDecimalMode.isPrecisionUnlimited) {
             val precisionSum = max(6, this.precision + other.precision)
