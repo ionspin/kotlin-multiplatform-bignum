@@ -17,10 +17,10 @@
 
 object Versions {
     val kotlinCoroutines = "1.3.9"
-    val kotlin = "1.4.0"
-    val kotlinSerialization = "1.0.0-RC"
+    val kotlin = "1.4.10"
+    val kotlinSerialization = "1.0.0"
     val nodePlugin = "1.3.0"
-    val dokkaPlugin = "1.4.0-rc"
+    val dokkaPlugin = "1.4.10"
 }
 
 object Deps {

@@ -18,7 +18,7 @@ class JvmBigDecimalNarrowingTest {
         val dub = BigDecimal.fromDouble(Double.MIN_VALUE)
         val dub2 = dub.divide(BigDecimal.TEN)
         assertTrue(dub2 < dub)
-        val dub3 = dub.multiply(BigDecimal.TEN)
+        val dub3 = dub2.multiply(BigDecimal.TEN)
         val realDub = dub3.doubleValue(true)
         assertEquals(Double.MIN_VALUE, realDub)
 
