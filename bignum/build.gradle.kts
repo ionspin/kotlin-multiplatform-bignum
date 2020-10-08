@@ -66,7 +66,7 @@ repositories {
     jcenter()
 }
 group = "com.ionspin.kotlin"
-version = "0.2.1-SNAPSHOT"
+version = "0.2.2-SNAPSHOT"
 
 val ideaActive = System.getProperty("idea.active") == "true"
 
@@ -352,6 +352,12 @@ tasks {
 
     dokkaJavadoc {
         println("Dokka !")
+        dokkaSourceSets {
+            create("commonMain") {
+                displayName = "common"
+                platform = "common"
+            }
+        }
     }
     if (hostOsName == primaryDevelopmentOs) {
         val jvmTest by getting(Test::class) {

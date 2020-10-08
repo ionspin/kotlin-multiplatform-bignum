@@ -9,11 +9,9 @@ familiar.
 
 ## Notes & Roadmap
 
-This is very early version of the library, and has the base implementation of **integer** and **floating point** operations. 
-Modular arithmetic is planned for future releases, as well as improvements such as Karatsuba multiplication, 
-Toom-Cook, division using multiplication by reciprocal, and other.
+This is an implementation of pure kotlin arbitrary integer and floating-point arithmetic support.
 
-**The API will move fast and break often until v1.0**
+**The APIs might change until v1.0**
 
 Also, there is a plan to implement platform native versions.
 
@@ -21,25 +19,15 @@ Testing to verify that the library works properly is mostly done against Java Bi
 
 ## Should I use this in production?
 
-The library is still under heavy development, and relies on experimental kotlin features, like unsigned integer. 
+The library is still under development, but at the moment it is feature complete, further improvements will be optimizations
+and bug-fixing. 
 
 ## Integration
 
 #### Gradle
 ```kotlin
-implementation("com.ionspin.kotlin:bignum:0.2.0")
+implementation("com.ionspin.kotlin:bignum:0.2.1")
 ```
-
-#### Gradle Metadata
-BigNum library up to 0.1.0 was published with Gradle Metadata 0.4
-To use it you need to add 
-```
-enableFeaturePreview("GRADLE_METADATA")
-```
-to your `settings.gradle` file
-
-From version 0.1.3 BigNum library will be publishing Gradle Metadata 1.0.0 which will only be usable by Gradle >= 5.3.
-If you are using version 0.1.1 you don't need to modify your settings.gradle
 
 #### Snapshot builds
 ```kotlin
@@ -48,7 +36,7 @@ repositories {
         url = uri("https://oss.sonatype.org/content/repositories/snapshots")
     }
 }
-implementation("com.ionspin.kotlin:bignum:0.2.1-SNAPSHOT ")
+implementation("com.ionspin.kotlin:bignum:0.2.2-SNAPSHOT ")
 
 ```
 
