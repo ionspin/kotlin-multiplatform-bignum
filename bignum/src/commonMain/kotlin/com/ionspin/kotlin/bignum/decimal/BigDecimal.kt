@@ -1062,49 +1062,48 @@ class BigDecimal private constructor(
      */
     fun divide(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
         val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
-        var newExponent = if (resolvedDecimalMode.isPrecisionUnlimited) {
-            this.exponent - other.exponent
-        } else {
-            this.exponent - other.exponent - 1
-        }
+        if (resolvedDecimalMode.isPrecisionUnlimited) {
+            var newExponent = this.exponent - other.exponent
+            val power = (other.precision * 2 + 6)
+            val thisPrepared = this.significand * BigInteger.TEN.pow(power)
+            val divRem = thisPrepared divrem other.significand
+            val result = divRem.quotient
+            val expectedDiff = other.precision - 1
+            val exponentModifier = expectedDiff + (result.numberOfDecimalDigits() - thisPrepared.numberOfDecimalDigits())
 
-        val desiredPrecision = if (resolvedDecimalMode.isPrecisionUnlimited) {
-            val precisionSum = max(6, this.precision + other.precision)
-            if (precisionSum < this.precision) {
-                Long.MAX_VALUE
-            } else {
-                precisionSum
+            if (divRem.remainder != BigInteger.ZERO) {
+                throw ArithmeticException("Non-terminating result of division operation " +
+                        "(i.e. 1/3 = 0.3333... library needs to know when to stop and how to round up at that point). " +
+                        "Specify decimalPrecision inside your decimal mode.")
             }
+            return BigDecimal(
+                    result,
+                    newExponent + exponentModifier,
+                    resolvedDecimalMode)
         } else {
-            resolvedDecimalMode.decimalPrecision
-        }
-        val power = desiredPrecision - this.precision + other.precision
-        val thisPrepared = when {
-            power > 0 -> this.significand * 10.toBigInteger().pow(power)
-            power < 0 -> this.significand / 10.toBigInteger().pow(power.absoluteValue)
-            else -> this.significand
-        }
+            var newExponent = this.exponent - other.exponent - 1
 
-        val divRem = thisPrepared divrem other.significand
-        val result = divRem.quotient
-        if (result == BigInteger.ZERO) {
-            newExponent--
-        }
-        val exponentModifier = result.numberOfDecimalDigits() - resolvedDecimalMode.decimalPrecision
+            val desiredPrecision = resolvedDecimalMode.decimalPrecision
 
-        if (divRem.remainder != BigInteger.ZERO && resolvedDecimalMode.isPrecisionUnlimited) {
-            throw ArithmeticException("Non-terminating result of division operation. Specify decimalPrecision")
+            val power = desiredPrecision - this.precision + other.precision
+            val thisPrepared = when {
+                power > 0 -> this.significand * 10.toBigInteger().pow(power)
+                power < 0 -> this.significand / 10.toBigInteger().pow(power.absoluteValue)
+                else -> this.significand
+            }
+
+            val divRem = thisPrepared divrem other.significand
+            val result = divRem.quotient
+            if (result == BigInteger.ZERO) {
+                newExponent--
+            }
+            val exponentModifier = result.numberOfDecimalDigits() - resolvedDecimalMode.decimalPrecision
+
+            return BigDecimal(
+                    roundDiscarded(result, divRem.remainder, resolvedDecimalMode),
+                    newExponent + exponentModifier,
+                    resolvedDecimalMode)
         }
-        return if (resolvedDecimalMode.isPrecisionUnlimited)
-            BigDecimal(
-                result,
-                newExponent,
-                resolvedDecimalMode)
-            else
-                BigDecimal(
-                roundDiscarded(result, divRem.remainder, resolvedDecimalMode),
-                newExponent + exponentModifier,
-                resolvedDecimalMode)
     }
 
     /**

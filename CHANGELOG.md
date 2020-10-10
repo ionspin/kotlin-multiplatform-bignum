@@ -1,10 +1,14 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
+##### 0.2.2 - 10.10.2020 - Rework infinite precision division
+- Issue #127 - invalid division when using unlimited precision wasn't completely handled 
+in the previous release. With this release that division case was completely reworked and additional tests were added.
+
 ##### 0.2.1 - 8.10.2020 - Fix infinite precision division, kotlin version bump
 - Fixed #127 BigDecimal divide not working properly
 - Added tests to cover case from #127
 - Bumped kotlin to 1.4.10
-- Bumped Dokka to 1.4.10, serialization to 1.0.0 
+
 
 ##### 0.2.0 - 18.8.2020 - Improvements, optimizations, bugfixes and Kotlin 1.4.0
 - Improvement #122 Add "scale" support to BigDecimal
