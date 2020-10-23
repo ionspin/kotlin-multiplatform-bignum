@@ -541,7 +541,7 @@ class BigDecimal private constructor(
          */
         fun fromDouble(double: Double, decimalMode: DecimalMode? = null): BigDecimal {
             val doubleString = double.toString()
-            return if (doubleString.contains('.')) {
+            return if (doubleString.contains('.') && !doubleString.contains('E', true)) {
                 parseStringWithMode(doubleString.dropLastWhile { it == '0' }, decimalMode)
             } else {
                 parseStringWithMode(doubleString, decimalMode)
@@ -743,7 +743,7 @@ class BigDecimal private constructor(
             if (floatingPointString.isEmpty()) {
                 return ZERO
             }
-            if (floatingPointString.contains('E') || floatingPointString.contains('e')) {
+            if (floatingPointString.contains('E', true)) {
                 // Sci notation
                 val split = if (floatingPointString.contains('.').not()) {
                     // As is case with JS Double.MIN_VALUE
@@ -1063,7 +1063,7 @@ class BigDecimal private constructor(
     fun divide(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
         val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
         if (resolvedDecimalMode.isPrecisionUnlimited) {
-            var newExponent = this.exponent - other.exponent
+            val newExponent = this.exponent - other.exponent
             val power = (other.precision * 2 + 6)
             val thisPrepared = this.significand * BigInteger.TEN.pow(power)
             val divRem = thisPrepared divrem other.significand
@@ -1519,14 +1519,12 @@ class BigDecimal private constructor(
          * double multiply or divide to compute the (properly
          * rounded) result.  For large exponent values, use fallback string parse
          */
-        return if (exponent < 0 && exponent.absoluteValue < double10pow.size)
-            toBigInteger().longValue() * double10pow[exponent.absoluteValue.toInt()]
-        else {
-            if (exponent >= 0 && exponent < double10pow.size) {
-                this.significand.longValue(true).toDouble() / double10pow[exponent.toInt()]
+        val l = this.significand.longValue(exactRequired)
+        val divExponent = this.significand.numberOfDecimalDigits().toInt() - 1 - exponent.toInt()
+        return if (l.toDouble().toLong() == l && divExponent >= 0 && divExponent < double10pow.size) {
+                l.toDouble() / double10pow[divExponent]
             } else
                 this.toString().toDouble()
-        }
     }
 
     /**

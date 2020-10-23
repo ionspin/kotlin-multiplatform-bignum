@@ -28,6 +28,7 @@ import kotlin.test.assertFailsWith
  */
 
 class BigDecimalNarrowingTest {
+    private val testDouble = 0.000000000000999111999111
 
     @Test
     fun doubleValueTest() {
@@ -39,6 +40,17 @@ class BigDecimalNarrowingTest {
         assertEquals(Double.MIN_VALUE, dub.doubleValue(true))
         assertFailsWith<ArithmeticException> {
             dub.divide(BigDecimal.TEN).doubleValue(true)
+        }
+
+        /*
+         * Test a range of exponents on the testDouble value.  
+         */
+        var dubIn = testDouble
+        for (factor in 0..22) {
+            dubIn *= 10.0
+            val bd = BigDecimal.fromDouble(dubIn)
+            val dubOut = bd.doubleValue(true)
+            assertEquals(dubIn, dubOut)
         }
     }
 
