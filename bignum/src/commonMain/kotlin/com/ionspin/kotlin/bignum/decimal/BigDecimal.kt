@@ -1487,8 +1487,8 @@ class BigDecimal private constructor(
      */
     override fun floatValue(exactRequired: Boolean): Float {
         if (exactRequired && (this.abs() > maximumFloat ||
-                    this.abs() < leastSignificantFloat) ||
-                    this.precision > 8)
+                    this.abs() < leastSignificantFloat ||
+                    this.precision > 8))
             throw ArithmeticException("Value cannot be narrowed to float")
 
         return if (exponent < 0 && exponent.absoluteValue < float10pow.size)
@@ -1509,8 +1509,8 @@ class BigDecimal private constructor(
      */
     override fun doubleValue(exactRequired: Boolean): Double {
         if (exactRequired && (this.abs() > maximumDouble ||
-                    this.abs() < leastSignificantDouble) ||
-                    this.precision > 17)
+                    this.abs() < leastSignificantDouble ||
+                    this.precision > 17))
             throw ArithmeticException("Value cannot be narrowed to double")
 
         /*
