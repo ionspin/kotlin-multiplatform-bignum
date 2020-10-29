@@ -1504,7 +1504,6 @@ class BigDecimal private constructor(
      * @throws ArithmeticException if exactRequired is true and any of the above conditions not met
      */
     override fun floatValue(exactRequired: Boolean): Float {
-        println("This abs: ${this.abs()}")
         if (exactRequired && (this.abs() > maximumFloat ||
                     this.abs() < leastSignificantFloat ||
                     this.precision > 8)
