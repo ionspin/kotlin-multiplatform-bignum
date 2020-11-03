@@ -1,1 +1,1 @@
-./gradlew build
+./gradlew build publishMingwx64PublicationToSnapshotRepository
