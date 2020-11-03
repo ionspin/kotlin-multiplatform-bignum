@@ -1,0 +1,81 @@
+stages:
+  - prepare
+  - build
+  - deploy
+
+workflow:
+  rules:
+    - if: $CI_EXTERNAL_PULL_REQUEST_IID
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+simpleCheck:
+  stage: prepare
+  script: echo PREPARE
+  tags:
+    - linuxX64
+# ---- Linux builds ----
+
+buildLinux:
+  stage: build
+  when: manual
+  allow_failure: false
+  script:
+    - ./linuxBuild.sh
+  tags:
+    - linuxX64
+linuxPublishToSnapshot:
+  stage: deploy
+  script:
+    - ./linuxBuildAndPublish.sh
+  only:
+    - master
+  tags:
+    - linuxX64
+
+
+# ---- Mac builds ----
+
+buildMac:
+  stage: build
+  when: manual
+  allow_failure: false
+  script:
+    - ./macBuild.sh
+  tags:
+    - macos
+
+macPublishToSnapshot:
+  stage: deploy
+  script:
+    - ./macBuild.sh
+    - ./macBuildAndPublish.sh
+  only:
+    - master
+  tags:
+    - macos
+
+# ---- Windows builds ----
+
+buildWindows:
+  stage: build
+  when: manual
+  allow_failure: false
+  script:
+    - $env:CHERE_INVOKING = 'yes'
+    - C:\msys64\usr\bin\bash -lc "./windowsBuild.sh"
+  tags:
+    - windowsX64
+
+windowsPublishToSnapshot:
+  stage: deploy
+  script:
+    - $env:CHERE_INVOKING = 'yes'
+    - C:\msys64\usr\bin\bash -lc "./windowsBuildAndPublish.sh"
+  only:
+    - master
+  tags:
+    - windowsX64
