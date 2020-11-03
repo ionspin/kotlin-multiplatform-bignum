@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/ionspin/kotlin-multiplatform-bignum.svg?token=HyeUGwxzSsjXNj8mianH&branch=master)](https://travis-ci.com/ionspin/kotlin-multiplatform-bignum)
+[![pipeline status](https://gitlab.com/ionspin-github-ci/kotlin-multiplatform-bignum-ci/badges/master/pipeline.svg)](https://gitlab.com/ionspin-github-ci/kotlin-multiplatform-bignum-ci/-/commits/master)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/kotlin-multiplatform-bignum/community#)
 [![Maven Central](https://img.shields.io/maven-central/v/com.ionspin.kotlin/bignum.svg)](https://repo1.maven.org/maven2/com/ionspin/kotlin/bignum/)
 # Kotlin MP BigNum library 
