@@ -1,5 +1,10 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
+##### 0.2.3 - SNAPSHOT
+- Fixed #130 Conversion to double off by power of 10
+- Fixed #132 BigDecimal narrow functions toFloat() and toDouble, with exactRequired = false sometimes wrongly fail
+- Fixed floatValue and doubleValue narrowing functions (pull request #135)
+
 ##### 0.2.2 - 10.10.2020 - Rework infinite precision division
 - Issue #127 - invalid division when using unlimited precision wasn't completely handled 
 in the previous release. With this release that division case was completely reworked and additional tests were added.

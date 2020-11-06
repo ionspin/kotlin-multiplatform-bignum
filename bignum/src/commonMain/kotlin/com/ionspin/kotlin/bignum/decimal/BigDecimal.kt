@@ -20,8 +20,11 @@ package com.ionspin.kotlin.bignum.decimal
 import com.ionspin.kotlin.bignum.BigNumber
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.NarrowingOperations
-import com.ionspin.kotlin.bignum.integer.*
+import com.ionspin.kotlin.bignum.integer.BigInteger
+import com.ionspin.kotlin.bignum.integer.ComparisonWorkaround
+import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.chosenArithmetic
+import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
@@ -1504,45 +1507,51 @@ class BigDecimal private constructor(
     override fun floatValue(exactRequired: Boolean): Float {
         if (exactRequired) {
             var exactPossible = false
-            //IEEE 754 float
-            //Exponent can be between -126 and 127
-            if (exponent >= -126L || exponent <= 127L) {
+            // IEEE 754 float
+            // Exponent can be between -126 and 127
+            if (exponent >= -126L && exponent <= 127L) {
                 exactPossible = true
-            }//
-            //Significand conversion
-            //First find out where the decimal point will be
-            val integerPart = if (exponent >= 0) {
-                significand / BigInteger.TEN.pow(precision - exponent - 1)
-            } else {
-                BigInteger.ZERO
-            }
-            val integerPartBitLength = chosenArithmetic.bitLength(integerPart.magnitude)
-
-            val fractionPart = (significand divrem BigInteger.TEN.pow(precision - exponent - 1)).remainder
-            var fractionConvertTemp = BigDecimal(fractionPart, -1) // this will represent the integer xxxx as 0.xxxx
-            val bitList = mutableListOf<Int>()
-            var counter = 0
-            while (fractionConvertTemp != ZERO && counter <= 23) {
-                val multiplied = fractionConvertTemp * 2
-                val bit = if (multiplied >= ONE) { 1 } else { 0 }
-                bitList.add(bit)
-                fractionConvertTemp = if (bit == 1) {
-                    (multiplied divrem TEN).second
+            } //
+            // Significand conversion
+            // Is there a decimal point at all
+            if (precision - exponent - 1 > 0) {
+                // First find out where the decimal point will be
+                val integerPart = if (exponent >= 0) {
+                    significand / BigInteger.TEN.pow(precision - exponent - 1)
                 } else {
-                    multiplied
+                    BigInteger.ZERO
                 }
-                counter++
-            }
-            val totalBits = integerPartBitLength + bitList.size
-            if (totalBits > 23) {
-                exactPossible = false
+                val integerPartBitLength = chosenArithmetic.bitLength(integerPart.magnitude)
+
+                val fractionPart = (significand divrem BigInteger.TEN.pow(precision - exponent - 1)).remainder
+                var fractionConvertTemp = BigDecimal(fractionPart, -1) // this will represent the integer xxxx as 0.xxxx
+                val bitList = mutableListOf<Int>()
+                var counter = 0
+                while (fractionConvertTemp != ZERO && counter <= 23) {
+                    val multiplied = fractionConvertTemp * 2
+                    val bit = if (multiplied >= ONE) {
+                        1
+                    } else {
+                        0
+                    }
+                    bitList.add(bit)
+                    fractionConvertTemp = if (bit == 1) {
+                        (multiplied divrem TEN).second
+                    } else {
+                        multiplied
+                    }
+                    counter++
+                }
+                val totalBits = integerPartBitLength + bitList.size
+                if (totalBits > 23) {
+                    exactPossible = false
+                }
             }
 
             if (!exactPossible) {
                 throw ArithmeticException("Value cannot be narrowed to float")
             }
         }
-
 
         /*
          * For large exponent values, use fallback string parse
@@ -1565,38 +1574,45 @@ class BigDecimal private constructor(
     override fun doubleValue(exactRequired: Boolean): Double {
         if (exactRequired) {
             var exactPossible = false
-            //IEEE 754 double precision
-            //Exponent can be between -1022 and 1023
-            if (exponent >= -1022 || exponent <= 1023L) {
+            // IEEE 754 double precision
+            // Exponent can be between -1022 and 1023
+            if (exponent >= -1022 && exponent <= 1023L) {
                 exactPossible = true
-            }//
-            //Significand conversion
-            //First find out where the decimal point will be
-            val integerPart = if (exponent >= 0) {
-                significand / BigInteger.TEN.pow(precision - exponent - 1)
-            } else {
-                BigInteger.ZERO
-            }
-            val integerPartBitLength = chosenArithmetic.bitLength(integerPart.magnitude)
-
-            val fractionPart = (significand divrem BigInteger.TEN.pow(precision - exponent - 1)).remainder
-            var fractionConvertTemp = BigDecimal(fractionPart, -1) // this will represent the integer xxxx as 0.xxxx
-            val bitList = mutableListOf<Int>()
-            var counter = 0
-            while (fractionConvertTemp != ZERO && counter <= 53) {
-                val multiplied = fractionConvertTemp * 2
-                val bit = if (multiplied >= ONE) { 1 } else { 0 }
-                bitList.add(bit)
-                fractionConvertTemp = if (bit == 1) {
-                    (multiplied divrem TEN).second
+            } //
+            // Significand conversion
+            // Is there a decimal point at all
+            if (precision - exponent - 1 > 0) {
+                // First find out where the decimal point will be
+                val integerPart = if (exponent >= 0) {
+                    significand / BigInteger.TEN.pow(precision - exponent - 1)
                 } else {
-                    multiplied
+                    BigInteger.ZERO
                 }
-                counter++
-            }
-            val totalBits = integerPartBitLength + bitList.size
-            if (totalBits > 53) {
-                exactPossible = false
+                val integerPartBitLength = chosenArithmetic.bitLength(integerPart.magnitude)
+
+                val fractionPart = (significand divrem BigInteger.TEN.pow(precision - exponent - 1)).remainder
+                var fractionConvertTemp = BigDecimal(fractionPart, -1) // this will represent the integer xxxx as 0.xxxx
+                val bitList = mutableListOf<Int>()
+                var counter = 0
+                while (fractionConvertTemp != ZERO && counter <= 53) {
+                    val multiplied = fractionConvertTemp * 2
+                    val bit = if (multiplied >= ONE) {
+                        1
+                    } else {
+                        0
+                    }
+                    bitList.add(bit)
+                    fractionConvertTemp = if (bit == 1) {
+                        (multiplied divrem TEN).second
+                    } else {
+                        multiplied
+                    }
+                    counter++
+                }
+                val totalBits = integerPartBitLength + bitList.size
+                if (totalBits > 53) {
+                    exactPossible = false
+                }
             }
 
             if (!exactPossible) {
@@ -1605,10 +1621,7 @@ class BigDecimal private constructor(
         }
 
         /*
-         * Since the significand  can be exactly
-         * represented as double value, and the exponent perform a single
-         * double multiply or divide to compute the (properly
-         * rounded) result.  For large exponent values, use fallback string parse
+         *  For large exponent values, use fallback string parse
          */
         val divExponent = precision - 1 - exponent
         val l = this.significand.longValue(exactRequired)

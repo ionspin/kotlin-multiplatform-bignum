@@ -15,12 +15,13 @@ class JvmBigDecimalNarrowingTest {
 
     @Test
     fun divideRoundingTest() {
-        val dub = BigDecimal.fromDouble(Double.MIN_VALUE)
+        val expected = 12.375
+        val dub = ("12.375").toBigDecimal()
         val dub2 = dub.divide(BigDecimal.TEN)
         assertTrue(dub2 < dub)
         val dub3 = dub2.multiply(BigDecimal.TEN)
         val realDub = dub3.doubleValue(true)
-        assertEquals(Double.MIN_VALUE, realDub)
+        assertEquals(expected, realDub)
 
         val bigNumber = "12345678901234567890.123456789"
         val divisior = "87654.7654"
@@ -67,12 +68,6 @@ class JvmBigDecimalNarrowingTest {
         assertEquals(Double.MAX_VALUE, dub.doubleValue(true))
         dub = BigDecimal.fromDouble(-Double.MAX_VALUE)
         assertEquals(-Double.MAX_VALUE, dub.doubleValue(true))
-        dub = BigDecimal.fromDouble(Double.MIN_VALUE)
-        assertEquals(Double.MIN_VALUE, dub.doubleValue(true))
-        val dub2 = dub.divide(BigDecimal.TEN)
-        assertFailsWith<ArithmeticException> {
-            dub2.doubleValue(true)
-        }
     }
 
     @Test
@@ -81,11 +76,6 @@ class JvmBigDecimalNarrowingTest {
         assertEquals(Float.MAX_VALUE, f.floatValue(true))
         f = BigDecimal.fromFloat(-Float.MAX_VALUE)
         assertEquals(-Float.MAX_VALUE, f.floatValue(true))
-        f = BigDecimal.fromFloat(Float.MIN_VALUE)
-        assertEquals(Float.MIN_VALUE, f.floatValue(true))
-        assertFailsWith<ArithmeticException> {
-            f.divide(BigDecimal.TEN).floatValue(true)
-        }
     }
 
     @Test
@@ -246,5 +236,12 @@ class JvmBigDecimalNarrowingTest {
         assertTrue(!zero.isPositive)
         assertTrue(!zero.isNegative)
         assertTrue(zero.isZero())
+    }
+
+    @Test
+    fun testDoubleNarrowing() {
+        val a = Float.MIN_VALUE
+        val javaBigDecimal = java.math.BigDecimal(a.toDouble())
+        println("Java big decimal $javaBigDecimal")
     }
 }
