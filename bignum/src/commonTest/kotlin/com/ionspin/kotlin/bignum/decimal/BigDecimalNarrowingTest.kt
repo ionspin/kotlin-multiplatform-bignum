@@ -20,6 +20,7 @@ package com.ionspin.kotlin.bignum.decimal
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 /**
  * Created by Ugljesa Jovanovic
@@ -78,4 +79,54 @@ class BigDecimalNarrowingTest {
             assertEquals(floatIn, floatOut)
         }
     }
+
+    @Test
+    fun specificFloatNarrowingTest() {
+        assertTrue {
+            val bigDecimal = "12.375".toBigDecimal()
+            val floatExpected = 12.375f // we know this can be represented
+            val narrowed = bigDecimal.floatValue(true)
+            narrowed == floatExpected
+        }
+        assertFailsWith<ArithmeticException> {
+            val tooLargePositiveExponent = "1E128".toBigDecimal()
+            tooLargePositiveExponent.floatValue(exactRequired = true)
+        }
+
+        assertFailsWith<ArithmeticException> {
+            val tooLargeNegativeExponent = "1E-127".toBigDecimal()
+            tooLargeNegativeExponent.floatValue(exactRequired = true)
+        }
+
+        assertFailsWith<ArithmeticException> {
+            val notRepresentableByIEEE754 = "0.1".toBigDecimal()
+            val narrowed = notRepresentableByIEEE754.floatValue(true)
+        }
+    }
+
+    @Test
+    fun specificDoubleNarrowingTest() {
+        assertTrue {
+            val bigDecimal = "12.375".toBigDecimal()
+            val doubleExpected = 12.375 // we know this can be represented
+            val narrowed = bigDecimal.doubleValue(true)
+            narrowed == doubleExpected
+        }
+        assertFailsWith<ArithmeticException> {
+            val tooLargePositiveExponent = "1E1024".toBigDecimal()
+            tooLargePositiveExponent.doubleValue(exactRequired = true)
+        }
+
+        assertFailsWith<ArithmeticException> {
+            val tooLargeNegativeExponent = "1E-1023".toBigDecimal()
+            tooLargeNegativeExponent.doubleValue(exactRequired = true)
+        }
+
+        assertFailsWith<ArithmeticException> {
+            val notRepresentableByIEEE754 = "0.1".toBigDecimal()
+            val narrowed = notRepresentableByIEEE754.doubleValue(true)
+        }
+    }
+
+
 }

@@ -20,10 +20,8 @@ package com.ionspin.kotlin.bignum.decimal
 import com.ionspin.kotlin.bignum.BigNumber
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.NarrowingOperations
-import com.ionspin.kotlin.bignum.integer.BigInteger
-import com.ionspin.kotlin.bignum.integer.ComparisonWorkaround
-import com.ionspin.kotlin.bignum.integer.Sign
-import com.ionspin.kotlin.bignum.integer.toBigInteger
+import com.ionspin.kotlin.bignum.integer.*
+import com.ionspin.kotlin.bignum.integer.chosenArithmetic
 import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
@@ -1504,21 +1502,54 @@ class BigDecimal private constructor(
      * @throws ArithmeticException if exactRequired is true and any of the above conditions not met
      */
     override fun floatValue(exactRequired: Boolean): Float {
-        if (exactRequired && (this.abs() > maximumFloat ||
-                    this.abs() < leastSignificantFloat ||
-                    this.precision > 8)
-        )
-            throw ArithmeticException("Value cannot be narrowed to float")
+        if (exactRequired) {
+            var exactPossible = false
+            //IEEE 754 float
+            //Exponent can be between -126 and 127
+            if (exponent >= -126L || exponent <= 127L) {
+                exactPossible = true
+            }//
+            //Significand conversion
+            //First find out where the decimal point will be
+            val integerPart = if (exponent >= 0) {
+                significand / BigInteger.TEN.pow(precision - exponent - 1)
+            } else {
+                BigInteger.ZERO
+            }
+            val integerPartBitLength = chosenArithmetic.bitLength(integerPart.magnitude)
+
+            val fractionPart = (significand divrem BigInteger.TEN.pow(precision - exponent - 1)).remainder
+            var fractionConvertTemp = BigDecimal(fractionPart, -1) // this will represent the integer xxxx as 0.xxxx
+            val bitList = mutableListOf<Int>()
+            var counter = 0
+            while (fractionConvertTemp != ZERO && counter <= 23) {
+                val multiplied = fractionConvertTemp * 2
+                val bit = if (multiplied >= ONE) { 1 } else { 0 }
+                bitList.add(bit)
+                fractionConvertTemp = if (bit == 1) {
+                    (multiplied divrem TEN).second
+                } else {
+                    multiplied
+                }
+                counter++
+            }
+            val totalBits = integerPartBitLength + bitList.size
+            if (totalBits > 23) {
+                exactPossible = false
+            }
+
+            if (!exactPossible) {
+                throw ArithmeticException("Value cannot be narrowed to float")
+            }
+        }
+
 
         /*
-         * Since the significand  can be exactly
-         * represented as float value, and the exponent perform a single
-         * double multiply or divide to compute the (properly
-         * rounded) result.  For large exponent values, use fallback string parse
+         * For large exponent values, use fallback string parse
          */
         val divExponent = precision - 1 - exponent
         val f = this.significand.longValue(exactRequired)
-        return if (f.toFloat().toLong() == f && divExponent >= 0 && divExponent < float10pow.size) {
+        return if (divExponent >= 0 && divExponent < float10pow.size) {
             f / float10pow[divExponent.toInt()]
         } else {
             this.toString().toFloat()
@@ -1532,11 +1563,46 @@ class BigDecimal private constructor(
      * @throws ArithmeticException if exactRequired is true and any of the above conditions not met
      */
     override fun doubleValue(exactRequired: Boolean): Double {
-        if (exactRequired && (this.abs() > maximumDouble ||
-                    this.abs() < leastSignificantDouble ||
-                    this.precision > 17)
-        )
-            throw ArithmeticException("Value cannot be narrowed to double")
+        if (exactRequired) {
+            var exactPossible = false
+            //IEEE 754 double precision
+            //Exponent can be between -1022 and 1023
+            if (exponent >= -1022 || exponent <= 1023L) {
+                exactPossible = true
+            }//
+            //Significand conversion
+            //First find out where the decimal point will be
+            val integerPart = if (exponent >= 0) {
+                significand / BigInteger.TEN.pow(precision - exponent - 1)
+            } else {
+                BigInteger.ZERO
+            }
+            val integerPartBitLength = chosenArithmetic.bitLength(integerPart.magnitude)
+
+            val fractionPart = (significand divrem BigInteger.TEN.pow(precision - exponent - 1)).remainder
+            var fractionConvertTemp = BigDecimal(fractionPart, -1) // this will represent the integer xxxx as 0.xxxx
+            val bitList = mutableListOf<Int>()
+            var counter = 0
+            while (fractionConvertTemp != ZERO && counter <= 53) {
+                val multiplied = fractionConvertTemp * 2
+                val bit = if (multiplied >= ONE) { 1 } else { 0 }
+                bitList.add(bit)
+                fractionConvertTemp = if (bit == 1) {
+                    (multiplied divrem TEN).second
+                } else {
+                    multiplied
+                }
+                counter++
+            }
+            val totalBits = integerPartBitLength + bitList.size
+            if (totalBits > 53) {
+                exactPossible = false
+            }
+
+            if (!exactPossible) {
+                throw ArithmeticException("Value cannot be narrowed to float")
+            }
+        }
 
         /*
          * Since the significand  can be exactly
