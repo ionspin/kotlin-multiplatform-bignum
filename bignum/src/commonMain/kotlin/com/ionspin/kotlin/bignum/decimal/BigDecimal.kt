@@ -1508,8 +1508,9 @@ class BigDecimal private constructor(
         if (exactRequired) {
             var exactPossible = true
             // IEEE 754 float
-            // Exponent can be between -126 and 127
-            if (exponent < -126L || exponent > 127L) {
+            // Exponent can be between -126 and 127 in base 2 or -38 and 38 in base 10 (2^-126 ~ 10^-38), but subnormal
+            // can go to -45, which we don't check here TODO check if subnormal number can fit?
+            if (exponent < -38L || exponent > 38L) {
                 exactPossible = false
             }
             // For significand we can have a maximum of 24 bits (23 + 1 implicit)
@@ -1586,8 +1587,9 @@ class BigDecimal private constructor(
         if (exactRequired) {
             var exactPossible = true
             // IEEE 754 double precision
-            // Exponent can be between -1022 and 1023
-            if (exponent < -1022 || exponent > 1023L) {
+            // Exponent can be between -1022 and 1023 in base 2 or -308 and 308 in base 10, but subnormal numbers
+            // can go to -324, which we don't check here TODO check if subnormal number can fit?
+            if (exponent < -308 || exponent > 308L) {
                 exactPossible = false
             }
             // For significand we can have a maximum of 53 (52 + 1 implicit)
