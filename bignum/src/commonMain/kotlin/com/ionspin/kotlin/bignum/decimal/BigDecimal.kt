@@ -1547,7 +1547,6 @@ class BigDecimal private constructor(
                 }
                 val bitSum = integerPartBitLength + bitList.size
                 bitSum
-
             } else {
                 // There is no fractional part so we need check if the distance between first non zero bit and
                 // last non zero bit is is less than or equal to 24

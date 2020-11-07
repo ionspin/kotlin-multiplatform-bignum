@@ -135,7 +135,6 @@ class BigDecimalNarrowingTest {
             val narrowed = notRepresentableByIEEE754.doubleValue(true)
         }
 
-
         assertTrue {
             // 56 bits representatble in 53 bits 11111111111111111111111111111111111111111111111111111000 = 72057594037927928
             val representableDoubleBigDecimal = "72057594037927928".toBigDecimal()

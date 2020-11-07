@@ -244,5 +244,4 @@ class JvmBigDecimalNarrowingTest {
         assertTrue(!zero.isNegative)
         assertTrue(zero.isZero())
     }
-
 }
