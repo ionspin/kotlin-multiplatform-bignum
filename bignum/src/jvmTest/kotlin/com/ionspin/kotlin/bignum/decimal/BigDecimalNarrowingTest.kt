@@ -64,18 +64,25 @@ class JvmBigDecimalNarrowingTest {
 
     @Test
     fun doubleValueTest() {
+        // Same situation as with min value, max value cannot be expressed either, it's actually
+        // 179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368
+        // So we don't ask for exact value in this case
         var dub = BigDecimal.fromDouble(Double.MAX_VALUE)
-        assertEquals(Double.MAX_VALUE, dub.doubleValue(true))
+        assertEquals(Double.MAX_VALUE, dub.doubleValue(false))
         dub = BigDecimal.fromDouble(-Double.MAX_VALUE)
-        assertEquals(-Double.MAX_VALUE, dub.doubleValue(true))
+        assertEquals(-Double.MAX_VALUE, dub.doubleValue(false))
     }
 
     @Test
     fun floatValueTest() {
+
+        // Same situation as with min value, max value cannot be expressed either, it's actually
+        // 340282346638528859811704183484516925440
+        // So we don't ask for exact value in this case
         var f = BigDecimal.fromFloat(Float.MAX_VALUE)
-        assertEquals(Float.MAX_VALUE, f.floatValue(true))
+        assertEquals(Float.MAX_VALUE, f.floatValue(false))
         f = BigDecimal.fromFloat(-Float.MAX_VALUE)
-        assertEquals(-Float.MAX_VALUE, f.floatValue(true))
+        assertEquals(-Float.MAX_VALUE, f.floatValue(false))
     }
 
     @Test
@@ -238,10 +245,4 @@ class JvmBigDecimalNarrowingTest {
         assertTrue(zero.isZero())
     }
 
-    @Test
-    fun testDoubleNarrowing() {
-        val a = Float.MIN_VALUE
-        val javaBigDecimal = java.math.BigDecimal(a.toDouble())
-        println("Java big decimal $javaBigDecimal")
-    }
 }

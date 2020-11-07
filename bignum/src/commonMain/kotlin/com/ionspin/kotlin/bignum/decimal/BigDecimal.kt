@@ -1506,15 +1506,17 @@ class BigDecimal private constructor(
      */
     override fun floatValue(exactRequired: Boolean): Float {
         if (exactRequired) {
-            var exactPossible = false
+            var exactPossible = true
             // IEEE 754 float
             // Exponent can be between -126 and 127
-            if (exponent >= -126L && exponent <= 127L) {
-                exactPossible = true
-            } //
-            // Significand conversion
-            // Is there a decimal point at all
-            if (precision - exponent - 1 > 0) {
+            if (exponent < -126L || exponent > 127L) {
+                exactPossible = false
+            }
+            // For significand we can have a maximum of 24 bits (23 + 1 implicit)
+            // If there is no decimal point at all we can count the bits after modifying for exponent,
+            // but if there is we need to convert the fractional part to binary32 representation first.
+            // Bit count:
+            val totalBits = if (precision - exponent - 1 > 0) {
                 // First find out where the decimal point will be
                 val integerPart = if (exponent >= 0) {
                     significand / BigInteger.TEN.pow(precision - exponent - 1)
@@ -1527,7 +1529,7 @@ class BigDecimal private constructor(
                 var fractionConvertTemp = BigDecimal(fractionPart, -1) // this will represent the integer xxxx as 0.xxxx
                 val bitList = mutableListOf<Int>()
                 var counter = 0
-                while (fractionConvertTemp != ZERO && counter <= 23) {
+                while (fractionConvertTemp != ZERO && counter <= 24) {
                     val multiplied = fractionConvertTemp * 2
                     val bit = if (multiplied >= ONE) {
                         1
@@ -1542,10 +1544,19 @@ class BigDecimal private constructor(
                     }
                     counter++
                 }
-                val totalBits = integerPartBitLength + bitList.size
-                if (totalBits > 23) {
-                    exactPossible = false
-                }
+                val bitSum = integerPartBitLength + bitList.size
+                bitSum
+
+            } else {
+                // There is no fractional part so we need check if the distance between first non zero bit and
+                // last non zero bit is is less than or equal to 24
+                val trailingZeroBits = chosenArithmetic.trailingZeroBits(significand.magnitude)
+                val bitSum = chosenArithmetic.bitLength(significand.magnitude)
+                bitSum - trailingZeroBits
+            }
+
+            if (totalBits > 24) {
+                exactPossible = false
             }
 
             if (!exactPossible) {
@@ -1573,15 +1584,17 @@ class BigDecimal private constructor(
      */
     override fun doubleValue(exactRequired: Boolean): Double {
         if (exactRequired) {
-            var exactPossible = false
+            var exactPossible = true
             // IEEE 754 double precision
             // Exponent can be between -1022 and 1023
-            if (exponent >= -1022 && exponent <= 1023L) {
-                exactPossible = true
-            } //
-            // Significand conversion
-            // Is there a decimal point at all
-            if (precision - exponent - 1 > 0) {
+            if (exponent < -1022 || exponent > 1023L) {
+                exactPossible = false
+            }
+            // For significand we can have a maximum of 53 (52 + 1 implicit)
+            // If there is no decimal point at all we can directly count the bits in significand and use them,
+            // but if there is we need to convert the fractional part to binary32 representation first.
+            // Bit count:
+            val totalBits = if (precision - exponent - 1 > 0) {
                 // First find out where the decimal point will be
                 val integerPart = if (exponent >= 0) {
                     significand / BigInteger.TEN.pow(precision - exponent - 1)
@@ -1609,10 +1622,20 @@ class BigDecimal private constructor(
                     }
                     counter++
                 }
-                val totalBits = integerPartBitLength + bitList.size
-                if (totalBits > 53) {
-                    exactPossible = false
-                }
+                val bitSum = integerPartBitLength + bitList.size
+                bitSum
+            } else {
+                // There is no fractional part so we need check if the distance between first non zero bit and
+                // last non zero bit is is less than or equal to 24
+                // We can reuse the trailing zero bits to count number of zeroes from the right, because we know
+                // that in big integer first non-zero is always the leftmost bit
+                val trailingZeroBits = chosenArithmetic.trailingZeroBits(significand.magnitude)
+                val bitSum = chosenArithmetic.bitLength(significand.magnitude)
+                bitSum - trailingZeroBits
+            }
+
+            if (totalBits > 53) {
+                exactPossible = false
             }
 
             if (!exactPossible) {
