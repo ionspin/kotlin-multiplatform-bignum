@@ -4,6 +4,7 @@
 - Fixed #130 Conversion to double off by power of 10
 - Fixed #132 BigDecimal narrow functions toFloat() and toDouble, with exactRequired = false sometimes wrongly fail
 - Fixed floatValue and doubleValue narrowing functions (pull request #135)
+- Fixed invalid string parsing of big decimals 
 
 ##### 0.2.2 - 10.10.2020 - Rework infinite precision division
 - Issue #127 - invalid division when using unlimited precision wasn't completely handled 

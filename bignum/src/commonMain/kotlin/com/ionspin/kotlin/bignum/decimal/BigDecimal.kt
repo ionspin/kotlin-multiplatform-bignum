@@ -819,7 +819,9 @@ class BigDecimal private constructor(
                         if (sign == Sign.NEGATIVE) {
                             significand = significand.negate()
                         }
-                        return BigDecimal(significand, exponent, decimalMode)
+                        // i.e. 375E-37 = 3.75*10^2*10^-37 =4.75 * 10^-35
+                        val exponentModifiedByFloatingPointPosition = exponent + leftTruncated.length - 1
+                        return BigDecimal(significand, exponentModifiedByFloatingPointPosition, decimalMode)
                     }
                     else -> throw ArithmeticException("Invalid (or unsupported) floating point number format: $floatingPointString")
                 }
@@ -1509,8 +1511,9 @@ class BigDecimal private constructor(
             var exactPossible = true
             // IEEE 754 float
             // Exponent can be between -126 and 127 in base 2 or -38 and 38 in base 10 (2^-126 ~ 10^-38), but subnormal
-            // can go to -45, which we don't check here TODO check if subnormal number can fit?
-            if (exponent < -38L || exponent > 38L) {
+            // can go to -45, and since we check the significand part in a base 2 algorithm we should be covering subnormal
+            // values correctly as well
+            if (exponent < -45L || exponent > 38L) {
                 exactPossible = false
             }
             // For significand we can have a maximum of 24 bits (23 + 1 implicit)
@@ -1587,8 +1590,9 @@ class BigDecimal private constructor(
             var exactPossible = true
             // IEEE 754 double precision
             // Exponent can be between -1022 and 1023 in base 2 or -308 and 308 in base 10, but subnormal numbers
-            // can go to -324, which we don't check here TODO check if subnormal number can fit?
-            if (exponent < -308 || exponent > 308L) {
+            // can go to -324, and since we check the significand part in a base 2 algorithm we should be covering subnormal
+            // values correctly as well
+            if (exponent < -324 || exponent > 308L) {
                 exactPossible = false
             }
             // For significand we can have a maximum of 53 (52 + 1 implicit)

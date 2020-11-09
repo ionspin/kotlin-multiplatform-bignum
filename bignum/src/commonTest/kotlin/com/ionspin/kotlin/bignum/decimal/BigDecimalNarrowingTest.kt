@@ -83,13 +83,29 @@ class BigDecimalNarrowingTest {
             val narrowed = bigDecimal.floatValue(true)
             narrowed == floatExpected
         }
+
+        assertTrue {
+            val bigDecimal = "375E35".toBigDecimal()
+            val floatExpected = 375E35f // we know this can be represented
+            val narrowed = bigDecimal.floatValue(true)
+            narrowed == floatExpected
+        }
+
+        assertTrue {
+            val bigDecimal = "3.75E-42".toBigDecimal()
+            val floatExpected = 3.75E-42f // we know this can be represented
+            println("Expected float value: $floatExpected")
+            val narrowed = bigDecimal.floatValue(true)
+            narrowed == floatExpected
+        }
+
         assertFailsWith<ArithmeticException> {
-            val tooLargePositiveExponent = "1E128".toBigDecimal()
+            val tooLargePositiveExponent = "1E39".toBigDecimal()
             tooLargePositiveExponent.floatValue(exactRequired = true)
         }
 
         assertFailsWith<ArithmeticException> {
-            val tooLargeNegativeExponent = "1E-127".toBigDecimal()
+            val tooLargeNegativeExponent = "1E-46".toBigDecimal()
             tooLargeNegativeExponent.floatValue(exactRequired = true)
         }
 
@@ -120,13 +136,26 @@ class BigDecimalNarrowingTest {
             val narrowed = bigDecimal.doubleValue(true)
             narrowed == doubleExpected
         }
+        assertTrue {
+            val bigDecimal = "375E305".toBigDecimal()
+            val floatExpected = 375E305 // we know this can be represented
+            val narrowed = bigDecimal.doubleValue(true)
+            narrowed == floatExpected
+        }
+
+        assertTrue {
+            val bigDecimal = "375E-326".toBigDecimal()
+            val floatExpected = 375E-326 // we know this can be represented
+            val narrowed = bigDecimal.doubleValue(true)
+            narrowed == floatExpected
+        }
         assertFailsWith<ArithmeticException> {
-            val tooLargePositiveExponent = "1E1024".toBigDecimal()
+            val tooLargePositiveExponent = "1E309".toBigDecimal()
             tooLargePositiveExponent.doubleValue(exactRequired = true)
         }
 
         assertFailsWith<ArithmeticException> {
-            val tooLargeNegativeExponent = "1E-1023".toBigDecimal()
+            val tooLargeNegativeExponent = "1E-325".toBigDecimal()
             tooLargeNegativeExponent.doubleValue(exactRequired = true)
         }
 
