@@ -92,6 +92,22 @@ class BigDecimalNarrowingTest {
         }
 
         assertTrue {
+            val bigDecimal = "0.375E-22".toBigDecimal()
+            val floatExpected = 0.375E-22f // we know this can be represented
+            println("Expected float value: $floatExpected")
+            val narrowed = bigDecimal.floatValue(true)
+            narrowed == floatExpected
+        }
+
+        assertTrue {
+            val bigDecimal = "0.00375E-22".toBigDecimal()
+            val floatExpected = 0.00375E-22f // we know this can be represented
+            println("Expected float value: $floatExpected")
+            val narrowed = bigDecimal.floatValue(true)
+            narrowed == floatExpected
+        }
+
+        assertTrue {
             val bigDecimal = "3.75E-42".toBigDecimal()
             val floatExpected = 3.75E-42f // we know this can be represented
             println("Expected float value: $floatExpected")

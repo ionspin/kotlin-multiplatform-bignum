@@ -819,8 +819,14 @@ class BigDecimal private constructor(
                         if (sign == Sign.NEGATIVE) {
                             significand = significand.negate()
                         }
-                        // i.e. 375E-37 = 3.75*10^2*10^-37 =4.75 * 10^-35
-                        val exponentModifiedByFloatingPointPosition = exponent + leftTruncated.length - 1
+                        // here we need to cover mixed scientific and expanded notationtions, such as 0.00375E-20 = 3.75E-22
+                        val exponentModifiedByFloatingPointPosition = if (leftTruncated != "0") {
+                            // i.e. 375E-37 = 3.75*10^2*10^-37 =4.75 * 10^-35
+                            exponent + leftTruncated.length - 1
+                        } else {
+                            // i.e. 0.375E-20 = 3.75 * 10^E-23
+                            exponent - (rightTruncated.length - significand.numberOfDecimalDigits()) - 1
+                        }
                         return BigDecimal(significand, exponentModifiedByFloatingPointPosition, decimalMode)
                     }
                     else -> throw ArithmeticException("Invalid (or unsupported) floating point number format: $floatingPointString")
