@@ -1,2 +1,2 @@
-./gradlew build publishMingwx64PublicationToSnapshotRepository
+./gradlew build publishMingwX64PublicationToSnapshotRepository publishMingwX86PublicationToSnapshotRepositorl
 exit 0
