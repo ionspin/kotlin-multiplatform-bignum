@@ -23,6 +23,7 @@ import com.ionspin.kotlin.bignum.NarrowingOperations
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.ComparisonWorkaround
 import com.ionspin.kotlin.bignum.integer.Sign
+import com.ionspin.kotlin.bignum.integer.chosenArithmetic
 import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlin.math.absoluteValue
 import kotlin.math.max
@@ -74,6 +75,7 @@ class BigDecimal private constructor(
 
     val significand: BigInteger
     val exponent: Long
+
     init {
         if (decimalMode != null && decimalMode.usingScale) {
             val wrk = applyScale(_significand, _exponent, decimalMode)
@@ -105,13 +107,15 @@ class BigDecimal private constructor(
         )
         private val maximumDouble = fromDouble(Double.MAX_VALUE)
         private val leastSignificantDouble = fromDouble(Double.MIN_VALUE)
+
         /**
          * Powers of 10 which can be represented exactly in {@code
          * float}.
          */
         private val float10pow = floatArrayOf(
             1.0e0f, 1.0e1f, 1.0e2f, 1.0e3f, 1.0e4f, 1.0e5f,
-            1.0e6f, 1.0e7f, 1.0e8f, 1.0e9f, 1.0e10f)
+            1.0e6f, 1.0e7f, 1.0e8f, 1.0e9f, 1.0e10f
+        )
         private val maximumFloat = fromFloat(Float.MAX_VALUE)
         private val leastSignificantFloat = fromFloat(Float.MIN_VALUE)
 
@@ -151,7 +155,7 @@ class BigDecimal private constructor(
                     BigInteger.ZERO
                 } else {
                     (discarded / (discarded.numberOfDecimalDigits())).abs() +
-                        (significand divrem BigInteger.TEN.pow(toDiscard)).remainder * BigInteger.TEN.pow(
+                            (significand divrem BigInteger.TEN.pow(toDiscard)).remainder * BigInteger.TEN.pow(
                         toDiscard
                     )
                 }
@@ -279,11 +283,12 @@ class BigDecimal private constructor(
                 }
                 desiredPrecision < significandDigits -> {
                     val divRem = significand divrem BigInteger.TEN.pow(significandDigits - desiredPrecision)
-                    val resolvedRemainder = if (divRem.remainder.numberOfDecimalDigits() < significandDigits - desiredPrecision) {
-                        BigInteger.ZERO
-                    } else {
-                        divRem.remainder
-                    }
+                    val resolvedRemainder =
+                        if (divRem.remainder.numberOfDecimalDigits() < significandDigits - desiredPrecision) {
+                            BigInteger.ZERO
+                        } else {
+                            divRem.remainder
+                        }
                     val newSignificand = roundDiscarded(divRem.quotient, resolvedRemainder, decimalMode)
                     val exponentModifier = newSignificand.numberOfDecimalDigits() - divRem.quotient.numberOfDecimalDigits()
                     BigDecimal(newSignificand, exponent + exponentModifier, decimalMode)
@@ -312,10 +317,12 @@ class BigDecimal private constructor(
             val workMode = when {
                 exponent >= 0 -> DecimalMode(
                     exponent + decimalMode.scale + 1,
-                    decimalMode.roundingMode)
+                    decimalMode.roundingMode
+                )
                 exponent < 0 -> DecimalMode(
                     decimalMode.scale + 1,
-                    decimalMode.roundingMode)
+                    decimalMode.roundingMode
+                )
                 else -> throw RuntimeException("Unexpected state")
             }
             if (decimalMode.scale == 0L) {
@@ -525,7 +532,7 @@ class BigDecimal private constructor(
          */
         fun fromFloat(float: Float, decimalMode: DecimalMode? = null): BigDecimal {
             val floatString = float.toString()
-            return if (floatString.contains('.')) {
+            return if (floatString.contains('.') && !floatString.contains('E', true)) {
                 parseStringWithMode(floatString.dropLastWhile { it == '0' }, decimalMode)
             } else {
                 parseStringWithMode(floatString, decimalMode)
@@ -813,7 +820,15 @@ class BigDecimal private constructor(
                         if (sign == Sign.NEGATIVE) {
                             significand = significand.negate()
                         }
-                        return BigDecimal(significand, exponent, decimalMode)
+                        // here we need to cover mixed scientific and expanded notationtions, such as 0.00375E-20 = 3.75E-22
+                        val exponentModifiedByFloatingPointPosition = if (leftTruncated != "0") {
+                            // i.e. 375E-37 = 3.75*10^2*10^-37 =4.75 * 10^-35
+                            exponent + leftTruncated.length - 1
+                        } else {
+                            // i.e. 0.375E-20 = 3.75 * 10^E-23
+                            exponent - (rightTruncated.length - significand.numberOfDecimalDigits()) - 1
+                        }
+                        return BigDecimal(significand, exponentModifiedByFloatingPointPosition, decimalMode)
                     }
                     else -> throw ArithmeticException("Invalid (or unsupported) floating point number format: $floatingPointString")
                 }
@@ -933,10 +948,13 @@ class BigDecimal private constructor(
     }
 
     fun removeScale(): BigDecimal {
-        return BigDecimal(significand, exponent, DecimalMode(
-            decimalMode?.decimalPrecision ?: 0,
-            decimalMode?.roundingMode ?: RoundingMode.NONE,
-            -1))
+        return BigDecimal(
+            significand, exponent, DecimalMode(
+                decimalMode?.decimalPrecision ?: 0,
+                decimalMode?.roundingMode ?: RoundingMode.NONE,
+                -1
+            )
+        )
     }
 
     override fun getCreator(): BigNumber.Creator<BigDecimal> = BigDecimal
@@ -1070,17 +1088,21 @@ class BigDecimal private constructor(
             val divRem = thisPrepared divrem other.significand
             val result = divRem.quotient
             val expectedDiff = other.precision - 1
-            val exponentModifier = expectedDiff + (result.numberOfDecimalDigits() - thisPrepared.numberOfDecimalDigits())
+            val exponentModifier =
+                expectedDiff + (result.numberOfDecimalDigits() - thisPrepared.numberOfDecimalDigits())
 
             if (divRem.remainder != BigInteger.ZERO) {
-                throw ArithmeticException("Non-terminating result of division operation " +
-                        "(i.e. 1/3 = 0.3333... library needs to know when to stop and how to round up at that point). " +
-                        "Specify decimalPrecision inside your decimal mode.")
+                throw ArithmeticException(
+                    "Non-terminating result of division operation " +
+                            "(i.e. 1/3 = 0.3333... library needs to know when to stop and how to round up at that point). " +
+                            "Specify decimalPrecision inside your decimal mode."
+                )
             }
             return BigDecimal(
-                    result,
-                    newExponent + exponentModifier,
-                    resolvedDecimalMode)
+                result,
+                newExponent + exponentModifier,
+                resolvedDecimalMode
+            )
         } else {
             var newExponent = this.exponent - other.exponent - 1
 
@@ -1101,9 +1123,10 @@ class BigDecimal private constructor(
             val exponentModifier = result.numberOfDecimalDigits() - resolvedDecimalMode.decimalPrecision
 
             return BigDecimal(
-                    roundDiscarded(result, divRem.remainder, resolvedDecimalMode),
-                    newExponent + exponentModifier,
-                    resolvedDecimalMode)
+                roundDiscarded(result, divRem.remainder, resolvedDecimalMode),
+                newExponent + exponentModifier,
+                resolvedDecimalMode
+            )
         }
     }
 
@@ -1254,7 +1277,8 @@ class BigDecimal private constructor(
             exponent > 0 && exponent > precision -> exponent + 1 // Significand is already 10^1 when exponent is > 0
             exponent > 0 && exponent == precision -> precision + 1 // Same as above
             exponent < 0 -> exponent.absoluteValue + precision
-            exponent == 0L -> significand.toString().dropLastWhile { it == '0' }.length.toLong() // I.e. precision is 3, exponent is 0,
+            exponent == 0L -> significand.toString()
+                .dropLastWhile { it == '0' }.length.toLong() // I.e. precision is 3, exponent is 0,
             // but significand is 100, which is equivalent to 1, so the result should be 1
             // TODO find a better way than this lazy conversion to string
             else -> throw RuntimeException("Invalid case when getting number of decimal digits")
@@ -1310,10 +1334,12 @@ class BigDecimal private constructor(
         return if (decimalMode == null ||
             decimalMode.isPrecisionUnlimited ||
             other.decimalMode == null ||
-            other.decimalMode.isPrecisionUnlimited)
+            other.decimalMode.isPrecisionUnlimited
+        )
             DecimalMode.DEFAULT
         else {
-            DecimalMode(max(decimalMode.decimalPrecision, other.decimalMode.decimalPrecision),
+            DecimalMode(
+                max(decimalMode.decimalPrecision, other.decimalMode.decimalPrecision),
                 decimalMode.roundingMode,
                 if (decimalMode.usingScale && other.decimalMode.usingScale)
                     when (op) {
@@ -1470,6 +1496,7 @@ class BigDecimal private constructor(
     fun isWholeNumber(): Boolean {
         return abs().divrem(ONE).second.isZero()
     }
+
     /**
      * @param exactRequired if not a whole number, throw an exception
      * @return true if this is a whole number, false if not
@@ -1487,18 +1514,75 @@ class BigDecimal private constructor(
      * @throws ArithmeticException if exactRequired is true and any of the above conditions not met
      */
     override fun floatValue(exactRequired: Boolean): Float {
-        if (exactRequired && (this.abs() > maximumFloat ||
-                    this.abs() < leastSignificantFloat ||
-                    this.precision > 8))
-            throw ArithmeticException("Value cannot be narrowed to float")
+        if (exactRequired) {
+            var exactPossible = true
+            // IEEE 754 float
+            // Exponent can be between -126 and 127 in base 2 or -38 and 38 in base 10 (2^-126 ~ 10^-38), but subnormal
+            // can go to -45, and since we check the significand part in a base 2 algorithm we should be covering subnormal
+            // values correctly as well
+            if (exponent < -45L || exponent > 38L) {
+                exactPossible = false
+            }
+            // For significand we can have a maximum of 24 bits (23 + 1 implicit)
+            // If there is no decimal point at all we can count the bits after modifying for exponent,
+            // but if there is we need to convert the fractional part to binary32 representation first.
+            // Bit count:
+            val totalBits = if (precision - exponent - 1 > 0) {
+                // First find out where the decimal point will be
+                val integerPart = if (exponent >= 0) {
+                    significand / BigInteger.TEN.pow(precision - exponent - 1)
+                } else {
+                    BigInteger.ZERO
+                }
+                val integerPartBitLength = chosenArithmetic.bitLength(integerPart.magnitude)
 
-        return if (exponent < 0 && exponent.absoluteValue < float10pow.size)
-            toBigInteger().longValue() * float10pow[exponent.absoluteValue.toInt()]
-        else {
-            if (exponent >= 0 && exponent < float10pow.size) {
-                this.significand.longValue(true).toFloat() / float10pow[exponent.toInt()]
-            } else
-                this.toString().toFloat()
+                val fractionPart = (significand divrem BigInteger.TEN.pow(precision - exponent - 1)).remainder
+                var fractionConvertTemp = BigDecimal(fractionPart, -1) // this will represent the integer xxxx as 0.xxxx
+                val bitList = mutableListOf<Int>()
+                var counter = 0
+                while (fractionConvertTemp != ZERO && counter <= 24) {
+                    val multiplied = fractionConvertTemp * 2
+                    val bit = if (multiplied >= ONE) {
+                        1
+                    } else {
+                        0
+                    }
+                    bitList.add(bit)
+                    fractionConvertTemp = if (bit == 1) {
+                        (multiplied divrem TEN).second
+                    } else {
+                        multiplied
+                    }
+                    counter++
+                }
+                val bitSum = integerPartBitLength + bitList.size
+                bitSum
+            } else {
+                // There is no fractional part so we need check if the distance between first non zero bit and
+                // last non zero bit is is less than or equal to 24
+                val trailingZeroBits = chosenArithmetic.trailingZeroBits(significand.magnitude)
+                val bitSum = chosenArithmetic.bitLength(significand.magnitude)
+                bitSum - trailingZeroBits
+            }
+
+            if (totalBits > 24) {
+                exactPossible = false
+            }
+
+            if (!exactPossible) {
+                throw ArithmeticException("Value cannot be narrowed to float")
+            }
+        }
+
+        /*
+         * For large exponent values, use fallback string parse
+         */
+        val divExponent = precision - 1 - exponent
+        val f = this.significand.longValue(exactRequired)
+        return if (divExponent >= 0 && divExponent < float10pow.size) {
+            f / float10pow[divExponent.toInt()]
+        } else {
+            this.toString().toFloat()
         }
     }
 
@@ -1509,23 +1593,78 @@ class BigDecimal private constructor(
      * @throws ArithmeticException if exactRequired is true and any of the above conditions not met
      */
     override fun doubleValue(exactRequired: Boolean): Double {
-        if (exactRequired && (this.abs() > maximumDouble ||
-                    this.abs() < leastSignificantDouble ||
-                    this.precision > 17))
-            throw ArithmeticException("Value cannot be narrowed to double")
+        if (exactRequired) {
+            var exactPossible = true
+            // IEEE 754 double precision
+            // Exponent can be between -1022 and 1023 in base 2 or -308 and 308 in base 10, but subnormal numbers
+            // can go to -324, and since we check the significand part in a base 2 algorithm we should be covering subnormal
+            // values correctly as well
+            if (exponent < -324 || exponent > 308L) {
+                exactPossible = false
+            }
+            // For significand we can have a maximum of 53 (52 + 1 implicit)
+            // If there is no decimal point at all we can directly count the bits in significand and use them,
+            // but if there is we need to convert the fractional part to binary32 representation first.
+            // Bit count:
+            val totalBits = if (precision - exponent - 1 > 0) {
+                // First find out where the decimal point will be
+                val integerPart = if (exponent >= 0) {
+                    significand / BigInteger.TEN.pow(precision - exponent - 1)
+                } else {
+                    BigInteger.ZERO
+                }
+                val integerPartBitLength = chosenArithmetic.bitLength(integerPart.magnitude)
+
+                val fractionPart = (significand divrem BigInteger.TEN.pow(precision - exponent - 1)).remainder
+                var fractionConvertTemp = BigDecimal(fractionPart, -1) // this will represent the integer xxxx as 0.xxxx
+                val bitList = mutableListOf<Int>()
+                var counter = 0
+                while (fractionConvertTemp != ZERO && counter <= 53) {
+                    val multiplied = fractionConvertTemp * 2
+                    val bit = if (multiplied >= ONE) {
+                        1
+                    } else {
+                        0
+                    }
+                    bitList.add(bit)
+                    fractionConvertTemp = if (bit == 1) {
+                        (multiplied divrem TEN).second
+                    } else {
+                        multiplied
+                    }
+                    counter++
+                }
+                val bitSum = integerPartBitLength + bitList.size
+                bitSum
+            } else {
+                // There is no fractional part so we need check if the distance between first non zero bit and
+                // last non zero bit is is less than or equal to 24
+                // We can reuse the trailing zero bits to count number of zeroes from the right, because we know
+                // that in big integer first non-zero is always the leftmost bit
+                val trailingZeroBits = chosenArithmetic.trailingZeroBits(significand.magnitude)
+                val bitSum = chosenArithmetic.bitLength(significand.magnitude)
+                bitSum - trailingZeroBits
+            }
+
+            if (totalBits > 53) {
+                exactPossible = false
+            }
+
+            if (!exactPossible) {
+                throw ArithmeticException("Value cannot be narrowed to float")
+            }
+        }
 
         /*
-         * Since the significand  can be exactly
-         * represented as double value, and the exponent perform a single
-         * double multiply or divide to compute the (properly
-         * rounded) result.  For large exponent values, use fallback string parse
+         *  For large exponent values, use fallback string parse
          */
+        val divExponent = precision - 1 - exponent
         val l = this.significand.longValue(exactRequired)
-        val divExponent = this.significand.numberOfDecimalDigits().toInt() - 1 - exponent.toInt()
         return if (l.toDouble().toLong() == l && divExponent >= 0 && divExponent < double10pow.size) {
-                l.toDouble() / double10pow[divExponent]
-            } else
-                this.toString().toDouble()
+            l / double10pow[divExponent.toInt()]
+        } else {
+            this.toString().toDouble()
+        }
     }
 
     /**
@@ -1731,23 +1870,29 @@ class BigDecimal private constructor(
 
         return when {
             exponent > 0 -> {
-                "${placeADotInString(
-                    significandString,
-                    significandString.length - modifier
-                )}${expand}E+$exponent"
+                "${
+                    placeADotInString(
+                        significandString,
+                        significandString.length - modifier
+                    )
+                }${expand}E+$exponent"
             }
             exponent < 0 -> {
 
-                "${placeADotInString(
-                    significandString,
-                    significandString.length - modifier
-                )}${expand}E$exponent"
+                "${
+                    placeADotInString(
+                        significandString,
+                        significandString.length - modifier
+                    )
+                }${expand}E$exponent"
             }
             exponent == 0L -> {
-                "${placeADotInString(
-                    significandString,
-                    significandString.length - modifier
-                )}$expand"
+                "${
+                    placeADotInString(
+                        significandString,
+                        significandString.length - modifier
+                    )
+                }$expand"
             }
             else -> throw RuntimeException("Invalid state, please report a bug (Integer compareTo invalid)")
         }

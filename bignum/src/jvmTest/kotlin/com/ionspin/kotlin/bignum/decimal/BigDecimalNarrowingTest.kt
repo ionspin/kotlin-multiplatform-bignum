@@ -15,12 +15,13 @@ class JvmBigDecimalNarrowingTest {
 
     @Test
     fun divideRoundingTest() {
-        val dub = BigDecimal.fromDouble(Double.MIN_VALUE)
+        val expected = 12.375
+        val dub = ("12.375").toBigDecimal()
         val dub2 = dub.divide(BigDecimal.TEN)
         assertTrue(dub2 < dub)
         val dub3 = dub2.multiply(BigDecimal.TEN)
         val realDub = dub3.doubleValue(true)
-        assertEquals(Double.MIN_VALUE, realDub)
+        assertEquals(expected, realDub)
 
         val bigNumber = "12345678901234567890.123456789"
         val divisior = "87654.7654"
@@ -63,29 +64,25 @@ class JvmBigDecimalNarrowingTest {
 
     @Test
     fun doubleValueTest() {
+        // Same situation as with min value, max value cannot be expressed either, it's actually
+        // 179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368
+        // So we don't ask for exact value in this case
         var dub = BigDecimal.fromDouble(Double.MAX_VALUE)
-        assertEquals(Double.MAX_VALUE, dub.doubleValue(true))
+        assertEquals(Double.MAX_VALUE, dub.doubleValue(false))
         dub = BigDecimal.fromDouble(-Double.MAX_VALUE)
-        assertEquals(-Double.MAX_VALUE, dub.doubleValue(true))
-        dub = BigDecimal.fromDouble(Double.MIN_VALUE)
-        assertEquals(Double.MIN_VALUE, dub.doubleValue(true))
-        val dub2 = dub.divide(BigDecimal.TEN)
-        assertFailsWith<ArithmeticException> {
-            dub2.doubleValue(true)
-        }
+        assertEquals(-Double.MAX_VALUE, dub.doubleValue(false))
     }
 
     @Test
     fun floatValueTest() {
+
+        // Same situation as with min value, max value cannot be expressed either, it's actually
+        // 340282346638528859811704183484516925440
+        // So we don't ask for exact value in this case
         var f = BigDecimal.fromFloat(Float.MAX_VALUE)
-        assertEquals(Float.MAX_VALUE, f.floatValue(true))
+        assertEquals(Float.MAX_VALUE, f.floatValue(false))
         f = BigDecimal.fromFloat(-Float.MAX_VALUE)
-        assertEquals(-Float.MAX_VALUE, f.floatValue(true))
-        f = BigDecimal.fromFloat(Float.MIN_VALUE)
-        assertEquals(Float.MIN_VALUE, f.floatValue(true))
-        assertFailsWith<ArithmeticException> {
-            f.divide(BigDecimal.TEN).floatValue(true)
-        }
+        assertEquals(-Float.MAX_VALUE, f.floatValue(false))
     }
 
     @Test
