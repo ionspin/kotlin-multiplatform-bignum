@@ -285,7 +285,8 @@ class BigDecimal private constructor(
                         divRem.remainder
                     }
                     val newSignificand = roundDiscarded(divRem.quotient, resolvedRemainder, decimalMode)
-                    BigDecimal(newSignificand, exponent, decimalMode)
+                    val exponentModifier = newSignificand.numberOfDecimalDigits() - divRem.quotient.numberOfDecimalDigits()
+                    BigDecimal(newSignificand, exponent + exponentModifier, decimalMode)
                 }
                 else -> {
                     BigDecimal(significand, exponent, decimalMode)
@@ -1819,10 +1820,10 @@ class BigDecimal private constructor(
     private fun placeADotInStringExpanded(input: String, position: Int): String {
 
         val prefix = input.substring(0 until input.length - position)
-        val suffix = input.substring(input.length - position until input.length)
+        val suffix = input.substring(input.length - position until input.length).dropLastWhile { it == '0' }
 
         return if (suffix.isNotEmpty()) {
-            ("$prefix.$suffix").dropLastWhile { it == '0' }
+            ("$prefix.$suffix")
         } else {
             prefix
         }
