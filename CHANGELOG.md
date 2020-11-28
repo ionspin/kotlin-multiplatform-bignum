@@ -1,6 +1,12 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
-##### 0.2.3 - SNAPSHOT
+##### 0.2.4 - SNAPSHOT
+
+##### 0.2.3 - 28.11.2020
+- Bump to Kotlin 1.4.20
+- Fix for invalid exponent rounding and string representation (#139)
+- Returned mingwx86 target (#137)
+- Fixed #134 
 - Fixed #130 Conversion to double off by power of 10
 - Fixed #132 BigDecimal narrow functions toFloat() and toDouble, with exactRequired = false sometimes wrongly fail
 - Fixed floatValue and doubleValue narrowing functions (pull request #135)
