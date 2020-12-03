@@ -34,10 +34,12 @@ class BigDecimalRoundingTests {
         val b = BigDecimal.fromIntWithExponent(1, -3)
         val c = BigDecimal.fromIntWithExponent(12345, 3)
         val d = BigDecimal.fromIntAsSignificand(10000)
-        assertTrue { a.numberOfDecimalDigits() == 4L }
-        assertTrue { b.numberOfDecimalDigits() == 4L }
-        assertTrue { c.numberOfDecimalDigits() == 5L }
-        assertTrue { d.numberOfDecimalDigits() == 1L }
+        assertTrue {
+            a.numberOfDecimalDigits() == 4L &&
+                    b.numberOfDecimalDigits() == 4L &&
+                    c.numberOfDecimalDigits() == 5L &&
+                    d.numberOfDecimalDigits() == 1L
+        }
     }
 
     @Test

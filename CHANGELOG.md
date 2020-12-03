@@ -1,7 +1,7 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
 ##### 0.2.4 - SNAPSHOT
-
+- Added (back) support for legacy js target (#138)
 ##### 0.2.3 - 28.11.2020
 - Bump to Kotlin 1.4.20
 - Fix for invalid exponent rounding and string representation (#139)
