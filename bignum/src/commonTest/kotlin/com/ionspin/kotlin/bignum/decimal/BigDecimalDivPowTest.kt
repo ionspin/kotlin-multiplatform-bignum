@@ -30,20 +30,22 @@ class BigDecimalDivPowTest {
 
     @Test
     fun testIntegerDivision() {
-        val dividend = 4.123.toBigDecimal()
-        val divisor = 2.toBigDecimal()
-        val (quotient, remainder) = dividend divrem divisor
         assertTrue {
+            val dividend = 4.123.toBigDecimal()
+            val divisor = 2.toBigDecimal()
+            val (quotient, remainder) = dividend divrem divisor
+
             quotient == 2.toBigDecimal() && remainder == 0.123.toBigDecimal()
         }
     }
 
     @Test
     fun testSpecificIntegerDivision() {
-        val dividend = Short.MIN_VALUE.toBigDecimal()
-        val divisor = 1.toBigDecimal()
-        val (quotient, remainder) = dividend divrem divisor
         assertTrue {
+            val dividend = Short.MIN_VALUE.toBigDecimal()
+            val divisor = 1.toBigDecimal()
+            val (quotient, remainder) = dividend divrem divisor
+
             quotient == Short.MIN_VALUE.toBigDecimal() && remainder == 0.toBigDecimal()
         }
     }

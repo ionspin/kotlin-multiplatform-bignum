@@ -1273,7 +1273,7 @@ class BigDecimal private constructor(
      */
     override fun numberOfDecimalDigits(): Long {
         val numberOfDigits = when {
-            exponent in 1 until precision -> precision
+            exponent in 1L until precision -> precision
             exponent > 0 && exponent > precision -> exponent + 1 // Significand is already 10^1 when exponent is > 0
             exponent > 0 && exponent == precision -> precision + 1 // Same as above
             exponent < 0 -> exponent.absoluteValue + precision
