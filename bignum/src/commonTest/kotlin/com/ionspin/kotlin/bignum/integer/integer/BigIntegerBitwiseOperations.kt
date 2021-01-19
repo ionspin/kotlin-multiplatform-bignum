@@ -29,7 +29,7 @@ import kotlin.test.assertTrue
 class BigIntegerBitwiseOperations {
 
     @Test
-    fun `xor with zero`() {
+    fun xorWithZero() {
         val operand = BigInteger.parseString("11110000", 2)
         val mask = BigInteger.ZERO
         val xorResult = operand xor mask
