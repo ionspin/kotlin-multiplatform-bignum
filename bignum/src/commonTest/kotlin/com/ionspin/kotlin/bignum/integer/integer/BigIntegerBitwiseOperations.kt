@@ -17,9 +17,27 @@
 
 package com.ionspin.kotlin.bignum.integer.integer
 
+import com.ionspin.kotlin.bignum.integer.BigInteger
+import kotlin.test.Test
+import kotlin.test.assertTrue
+
 /**
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
  * on 01-Nov-2019
  */
-class BigIntegerBitwiseOperations
+class BigIntegerBitwiseOperations {
+
+    @Test
+    fun xorWithZero() {
+        val operand = BigInteger.parseString("11110000", 2)
+        val mask = BigInteger.ZERO
+        val xorResult = operand xor mask
+        println("Xor result: ${xorResult.toString(2)}")
+
+        val expectedResult = operand
+
+        assertTrue { xorResult == expectedResult }
+        assertTrue { mask xor operand == expectedResult }
+    }
+}
