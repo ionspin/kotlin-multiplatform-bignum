@@ -47,6 +47,12 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     constructor(short: Short) : this(arithmetic.fromShort(short), determinSignFromNumber(short))
     constructor(byte: Byte) : this(arithmetic.fromByte(byte), determinSignFromNumber(byte))
 
+    init {
+        require((sign == Sign.ZERO) xor isResultZero(wordArray).not()) {
+            "sign should be Sign.ZERO iff magnitude has a value of 0"
+        }
+    }
+
     override fun getCreator(): BigNumber.Creator<BigInteger> {
         return BigInteger
     }
