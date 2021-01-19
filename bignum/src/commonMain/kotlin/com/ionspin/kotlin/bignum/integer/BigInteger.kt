@@ -560,7 +560,13 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     }
 
     override infix fun xor(other: BigInteger): BigInteger {
-        return BigInteger(arithmetic.xor(this.magnitude, other.magnitude), sign)
+        val resultMagnitude = arithmetic.xor(this.magnitude, other.magnitude)
+        val resultSign = when {
+            this.isNegative xor other.isNegative -> Sign.NEGATIVE
+            isResultZero(resultMagnitude) -> Sign.ZERO
+            else -> Sign.POSITIVE
+        }
+        return BigInteger(resultMagnitude, resultSign)
     }
 
     /**
