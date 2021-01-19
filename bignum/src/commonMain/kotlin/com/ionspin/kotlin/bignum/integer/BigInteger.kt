@@ -36,7 +36,7 @@ import kotlin.math.log10
  * Based on unsigned arrays, currently limited to [Int.MAX_VALUE] words.
  */
 
-class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : BigNumber<BigInteger>,
+class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign) : BigNumber<BigInteger>,
     CommonBigNumberOperations<BigInteger>,
     NarrowingOperations<BigInteger>,
     BitwiseCapable<BigInteger>, Comparable<Any>,
@@ -48,8 +48,10 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     constructor(byte: Byte) : this(arithmetic.fromByte(byte), determinSignFromNumber(byte))
 
     init {
-        require((sign == Sign.ZERO) xor isResultZero(wordArray).not()) {
-            "sign should be Sign.ZERO iff magnitude has a value of 0"
+        if (requestedSign == Sign.ZERO) {
+            require(isResultZero(wordArray)) {
+                "sign should be Sign.ZERO iff magnitude has a value of 0"
+            }
         }
     }
 
@@ -220,6 +222,12 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     }
 
     internal val magnitude: WordArray = BigInteger63Arithmetic.removeLeadingZeros(wordArray)
+
+    internal val sign: Sign = if (isResultZero(magnitude)) {
+        Sign.ZERO
+    } else {
+        requestedSign
+    }
 
     private fun isResultZero(resultMagnitude: WordArray): Boolean {
         return arithmetic.compare(resultMagnitude, arithmetic.ZERO) == 0
@@ -442,11 +450,11 @@ class BigInteger internal constructor(wordArray: WordArray, val sign: Sign) : Bi
     }
 
     override fun negate(): BigInteger {
-        return BigInteger(wordArray = this.magnitude, sign = sign.not())
+        return BigInteger(wordArray = this.magnitude, requestedSign = sign.not())
     }
 
     override fun abs(): BigInteger {
-        return BigInteger(wordArray = this.magnitude, sign = Sign.POSITIVE)
+        return BigInteger(wordArray = this.magnitude, requestedSign = Sign.POSITIVE)
     }
 
     fun pow(exponent: BigInteger): BigInteger {
