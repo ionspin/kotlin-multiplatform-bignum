@@ -20,7 +20,6 @@ package com.ionspin.kotlin.bignum.integer.integer
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 /**
  * Created by Ugljesa Jovanovic
@@ -38,8 +37,8 @@ class BigIntegerBitwiseOperations {
 
         val expectedResult = operand
 
-        assertTrue { xorResult == expectedResult }
-        assertTrue { mask xor operand == expectedResult }
+        assertEquals(expectedResult, xorResult)
+        assertEquals(expectedResult, mask xor operand)
     }
 
     @Test
