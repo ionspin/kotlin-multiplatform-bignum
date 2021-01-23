@@ -19,6 +19,7 @@ package com.ionspin.kotlin.bignum.integer.integer
 
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 /**
@@ -39,5 +40,16 @@ class BigIntegerBitwiseOperations {
 
         assertTrue { xorResult == expectedResult }
         assertTrue { mask xor operand == expectedResult }
+    }
+
+    @Test
+    fun xorBiggerThanLongMaxWithZero() {
+        val operand =  BigInteger.parseString("9223372036854775808", 10)
+        val mask = BigInteger.ZERO
+
+        val expectedResult = operand
+
+        assertEquals(expectedResult, operand xor mask)
+        assertEquals(expectedResult, mask xor operand)
     }
 }
