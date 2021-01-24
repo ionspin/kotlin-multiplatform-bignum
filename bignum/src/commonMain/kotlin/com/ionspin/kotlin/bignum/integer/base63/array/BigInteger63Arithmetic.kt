@@ -1973,6 +1973,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
     }
 
     override fun xor(operand: ULongArray, mask: ULongArray): ULongArray {
+        if (operand.size < mask.size) return xor(mask, operand)
         return removeLeadingZeros(
             ULongArray(operand.size) {
                 if (it < mask.size) {
