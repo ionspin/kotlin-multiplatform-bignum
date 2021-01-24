@@ -43,7 +43,7 @@ class BigIntegerBitwiseOperations {
 
     @Test
     fun xorBiggerThanLongMaxWithZero() {
-        val operand =  BigInteger.parseString("9223372036854775808", 10)
+        val operand = BigInteger.parseString("9223372036854775808", 10)
         val mask = BigInteger.ZERO
 
         val expectedResult = operand
