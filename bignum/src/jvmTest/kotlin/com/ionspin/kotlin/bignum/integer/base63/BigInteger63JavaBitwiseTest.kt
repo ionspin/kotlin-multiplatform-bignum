@@ -147,10 +147,9 @@ class BigInteger63JavaBitwiseTest {
         for (i in 1..Int.MAX_VALUE step 3001) {
             jobList.add(
                 GlobalScope.launch {
-                    var a = ulongArrayOf(random.nextULong() shr 1, random.nextULong() shr 1)
-                    a = BigInteger63Arithmetic.multiply(a, a)
-
-                    shiftRightSingleTest(random.nextInt(BigInteger63Arithmetic.bitLength(a)), a)
+                    val a = ULongArray(2) { random.nextULong() shr 1 }
+                    val b = ULongArray(1) { random.nextULong() shr 1 }
+                    singleXorTest(a, b)
                 }
             )
         }
