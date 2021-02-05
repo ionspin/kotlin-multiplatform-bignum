@@ -85,6 +85,12 @@ class BigDecimalReadmeTest {
             println("BigDecimal: $bigDecimal")
             bigDecimal.toString() == "1.0E+1"
         }
+
+        assertTrue {
+            val bigDecimal = "0.00".toBigDecimal()
+            println("BigDecimal: $bigDecimal")
+            bigDecimal.toString() == "0.0"
+        }
     }
 
     @Test
