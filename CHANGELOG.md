@@ -1,6 +1,13 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
-##### 0.2.4 - SNAPSHOT
+##### 0.2.5 - SNAPSHOT
+
+##### 0.2.4 - 5.2.2021
+- Bump to kotlin 1.4.30
+- Fix invalid to string when big decimal is zero (#148)
+- Fix xor test which was previously testing bit shifting instead of xor (#147)
+- Fix biginteger xor operands magnitude array length mismatch (#144)
+- Fix biginteger bitwise operations sign (#142)
 - Added (back) support for legacy js target (#138)
 ##### 0.2.3 - 28.11.2020
 - Bump to Kotlin 1.4.20
