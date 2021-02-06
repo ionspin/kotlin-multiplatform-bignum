@@ -327,6 +327,13 @@ kotlin {
             dependsOn(nativeTest)
         }
 
+        val watchosX86Main by getting {
+            dependsOn(nativeMain)
+        }
+        val watchosX86Test by getting {
+            dependsOn(nativeTest)
+        }
+
         val mingwX64Main by getting {
             dependsOn(nativeMain)
         }
