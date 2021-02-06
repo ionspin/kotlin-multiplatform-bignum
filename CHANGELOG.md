@@ -1,6 +1,13 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
-##### 0.2.5 - SNAPSHOT
+##### 0.2.8 - SNAPSHOT
+
+##### 0.2.7 - 6.2.2021
+Same as 0.2.4 just a successful upload and release to Maven central
+
+##### 0.2.5 - 0.2.6 - 5.2.2021
+Failed uploads to maven central, don't use these versions.
+https://status.maven.org/incidents/z70skgbq8vgc
 
 ##### 0.2.4 - 5.2.2021
 - Bump to kotlin 1.4.30
