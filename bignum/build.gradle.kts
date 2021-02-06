@@ -182,6 +182,13 @@ kotlin {
         }
     }
 
+    watchosX86() {
+        binaries {
+            framework {
+            }
+        }
+    }
+
     mingwX64() {
         binaries {
             staticLib {
