@@ -4,12 +4,14 @@
 
 package com.ionspin.kotlin.bignum.integer.base63
 
+import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.util.fromTwosComplementByteArray
 import com.ionspin.kotlin.bignum.integer.util.hexColumsPrint
 import com.ionspin.kotlin.bignum.integer.util.toTwosComplementByteArray
 import java.math.BigInteger
 import kotlin.random.Random
 import kotlin.test.assertTrue
+import org.junit.Assert
 import org.junit.Test
 
 /**
@@ -806,5 +808,15 @@ class ByteArrayConversionTest {
                 number.asUByteArray()
                     .joinToString(separator = "U, 0x", prefix = "0x", postfix = "U") { it.toString(16) }
             })") { bigIntArray.contentEquals(javaBigIntArray) }
+    }
+
+    @Test
+    fun reportedIssueTest() {
+        val bytes = byteArrayOf(-128, 0, 0, 0, 0, 0, 0, 0)
+        val javaBig = BigInteger(1, bytes)
+        val kotlinBig = IonSpinBigInteger.fromByteArray(bytes, Sign.POSITIVE)
+        val javaBackToByteArray = javaBig.toByteArray().dropWhile { it == 0.toByte() }.toByteArray() // Java adds a leading zero byte
+        val bignumBackToByteArray = kotlinBig.toByteArray()
+        Assert.assertArrayEquals(javaBackToByteArray, bignumBackToByteArray)
     }
 }
