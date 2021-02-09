@@ -2204,7 +2204,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
                 ulongArray[ulongArray.size - 1] or
                     (trimmedSource[ulongsCount * 8 + i].toULong() shl ((ulongRest - 1) * 8 - i * 8))
         }
-        val result = convertFrom64BitRepresentation(ulongArray.dropLastWhile { it.toUInt() == 0U }.toULongArray())
+        val result = convertFrom64BitRepresentation(ulongArray.dropLastWhile { it == 0UL }.toULongArray())
         return result
     }
 
