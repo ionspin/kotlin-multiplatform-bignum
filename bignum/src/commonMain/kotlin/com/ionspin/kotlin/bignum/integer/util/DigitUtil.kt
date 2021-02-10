@@ -23,7 +23,7 @@ package com.ionspin.kotlin.bignum.integer.util
  * on 18-Mar-2019
  */
 fun Char.toDigit(base: Int = 10): Int {
-    //Check if number belongs to est used in base
+    // Check if number belongs to est used in base
 
     val digit = when (this) {
         in '0'..'9' -> (this - 48).toInt()
