@@ -22,8 +22,10 @@ package com.ionspin.kotlin.bignum.integer.util
  * ugljesa.jovanovic@ionspin.com
  * on 18-Mar-2019
  */
-fun Char.toDigit(): Int {
-    return when (this) {
+fun Char.toDigit(base: Int = 10): Int {
+    //Check if number belongs to est used in base
+
+    val digit = when (this) {
         in '0'..'9' -> (this - 48).toInt()
         in 'a'..'z' -> this - 'a' + 10
         in 'A'..'Z' -> this - 'A' + 10
@@ -32,4 +34,8 @@ fun Char.toDigit(): Int {
         '.' -> throw NumberFormatException("Invalid digit for radix $this (Possibly a decimal value, which is not supported by BigInteger parser")
         else -> throw NumberFormatException("Invalid digit for radix $this")
     }
+    if (digit < 0 || digit >= base) {
+        throw NumberFormatException("$this is not a valid digit for number system with base $base")
+    }
+    return digit
 }

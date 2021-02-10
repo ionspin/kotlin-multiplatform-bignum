@@ -18,6 +18,7 @@
 package com.ionspin.kotlin.bignum.integer
 
 import kotlin.test.Test
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 /**
@@ -218,6 +219,22 @@ class BigIntegerReadmeTest {
             val bigint = 12.toByte().toBigInteger()
             val expected = BigInteger.parseString("12", 10)
             bigint == expected
+        }
+
+        assertFailsWith(NumberFormatException::class) {
+            val parsed = BigInteger.parseString("a", 10)
+        }
+
+        assertFailsWith(NumberFormatException::class) {
+            val parsed = BigInteger.parseString("Z", 35)
+        }
+
+        assertFailsWith(NumberFormatException::class) {
+            val parsed = BigInteger.parseString("A", 37)
+        }
+
+        assertFailsWith(NumberFormatException::class) {
+            val parsed = BigInteger.parseString("A", 1)
         }
     }
 

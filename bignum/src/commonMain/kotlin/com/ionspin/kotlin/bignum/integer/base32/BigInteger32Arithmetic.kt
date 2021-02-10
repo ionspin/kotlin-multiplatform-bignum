@@ -1052,7 +1052,7 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
     override fun parseForBase(number: String, base: Int): UIntArray {
         var parsed = ZERO
         number.forEach { char ->
-            parsed = (parsed * base.toUInt()) + char.toDigit().toUInt()
+            parsed = (parsed * base.toUInt()) + char.toDigit(base).toUInt()
         }
         return parsed
     }
