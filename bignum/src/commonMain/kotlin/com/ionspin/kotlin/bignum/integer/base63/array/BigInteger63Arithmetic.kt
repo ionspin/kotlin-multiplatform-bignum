@@ -1925,7 +1925,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
     override fun parseForBase(number: String, base: Int): ULongArray {
         var parsed = ZERO
         number.toLowerCase().forEach { char ->
-            parsed = (parsed * base.toULong()) + (char.toDigit()).toULong()
+            parsed = (parsed * base.toULong()) + (char.toDigit(base)).toULong()
         }
         return removeLeadingZeros(
             parsed

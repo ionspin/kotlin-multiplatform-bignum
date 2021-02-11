@@ -74,6 +74,9 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
         val LOG_10_OF_2 = log10(2.0)
 
         override fun parseString(string: String, base: Int): BigInteger {
+            if (base < 2 || base > 36) {
+                throw NumberFormatException("Unsupported base: $base. Supported base range is from 2 to 36")
+            }
             val decimal = string.contains('.')
             if (decimal) {
                 val bigDecimal = BigDecimal.parseString(string)
