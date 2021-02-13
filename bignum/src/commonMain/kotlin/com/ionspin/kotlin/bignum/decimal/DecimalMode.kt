@@ -45,11 +45,11 @@ enum class RoundingMode {
      */
     NONE,
     /**
-     * Round towards nearest integer, using towards zero as tie breaker when significant digit being rounded is 5
+     * Round towards nearest integer, using away from zero as tie breaker when significant digit being rounded is 5
      */
     ROUND_HALF_AWAY_FROM_ZERO,
     /**
-     * Round towards nearest integer, using away from zero as tie breaker when significant digit being rounded is 5
+     * Round towards nearest integer, using towards zero as tie breaker when significant digit being rounded is 5
      */
     ROUND_HALF_TOWARDS_ZERO,
     /**
