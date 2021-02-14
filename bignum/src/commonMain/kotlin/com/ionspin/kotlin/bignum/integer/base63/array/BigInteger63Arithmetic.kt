@@ -2222,8 +2222,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         for (i in 0 until as64Bit.size) {
             as64Bit[i].toBigEndianUByteArray().copyInto(result, i * 8, 0, 8)
         }
-        result.dropWhile { it.toUInt() == 0U }.toUByteArray()
-        return result
+        return result.dropWhile { it.toUInt() == 0U }.toUByteArray()
     }
 
     override fun toByteArray(
