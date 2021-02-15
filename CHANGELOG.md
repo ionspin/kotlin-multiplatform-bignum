@@ -1,11 +1,14 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
-##### 0.2.8 - SNAPSHOT
+##### 0.2.9 - SNAPSHOT
+
+##### 0.2.8 - 15.2.2021
 
 - Fixed support for watchosX64/watchos86 (#150)
 - Fixed parsing characters outside of radix range (#152)
 - Fixed invalid byte array intialization (#153)
 - Fixed rounding KDoc (#156)
+
 ##### 0.2.7 - 6.2.2021
 Same as 0.2.4 just a successful upload and release to Maven central
 
