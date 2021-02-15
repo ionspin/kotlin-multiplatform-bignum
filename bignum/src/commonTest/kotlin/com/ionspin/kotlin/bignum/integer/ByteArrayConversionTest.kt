@@ -59,7 +59,7 @@ class ByteArrayConversionTest {
     fun toUByteArray() {
         assertTrue {
             val expected = ubyteArrayOf(
-                0x00U, 0x11U, 0x22U, 0x33U, 0x44U, 0x55U, 0x66U, 0x77U,
+                0x11U, 0x22U, 0x33U, 0x44U, 0x55U, 0x66U, 0x77U,
                 0x88U, 0x99U, 0xAAU, 0xBBU, 0xCCU, 0xDDU, 0xEEU, 0xFFU
             )
             val bigIntOriginal = BigInteger.parseString("00112233445566778899AABBCCDDEEFF", 16)
