@@ -18,7 +18,6 @@
 package com.ionspin.kotlin.bignum.integer
 
 import com.ionspin.kotlin.bignum.integer.base63.array.BigInteger63Arithmetic
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -30,7 +29,6 @@ import kotlin.test.assertTrue
 
 class ByteArrayConversionTest {
 
-    @Ignore // Travis can't run this test on JS for some reason but they pass locally.
     @Test
     fun testToAndFromByteArray() {
         assertTrue {
