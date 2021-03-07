@@ -63,4 +63,52 @@ class ReportedIssueReplicationTest {
             b == (-0.01).toBigDecimal()
         }
     }
+
+    @Test
+    fun decimalModeTest() {
+        assertTrue {
+            val mode = DecimalMode(4, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3)
+            val a = 500.toBigDecimal()
+            val b = 3.toBigDecimal()
+            val result = a.divide(b, mode)
+            val expected = "1.667E+2".toBigDecimal()
+            println(result)
+            result == expected
+        }
+
+        assertTrue {
+            val mode = DecimalMode(4, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3)
+            val a = 500.toBigDecimal(decimalMode = mode)
+            val b = 3.toBigDecimal(decimalMode = mode)
+            val result = a.divide(b, mode)
+            val expected = "1.667E+2".toBigDecimal()
+            println(result)
+            result == expected
+        }
+    }
+
+    /**
+     * This reproduction use case was reported via email and until it was fixed expected and unexpected results differed,
+     * now that the issue is fixed the wording is a bit misleading, but both unexpected and expected
+     * results need to be the same for the test to pass.
+     */
+    @Test
+    fun decimalModeIssue() {
+        val DECIMAL_MODE = DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 6)
+        val bigDecimalWithoutMode = BigDecimal.parseString("1.2345E+2")
+        val bigDecimalWithModeAddedLater = BigDecimal.fromBigDecimal(bigDecimalWithoutMode, DECIMAL_MODE)
+        val bigDecimalWithModeAtParseTime = BigDecimal.parseStringWithMode("1.2345E+2", DECIMAL_MODE)
+        val divisorWithMode = "1.21".toBigDecimal(0, DECIMAL_MODE)
+        val divisorWithoutMode = "1.21".toBigDecimal()
+        val expectedResult1 = bigDecimalWithoutMode.divide(divisorWithoutMode, DECIMAL_MODE)
+        println("Expected result 1 (withoutMode / withoutMode) $expectedResult1")
+        val unexpectedResult1 = bigDecimalWithoutMode.divide(divisorWithMode, DECIMAL_MODE)
+        println("Unexpected result 1 (withoutMode / withMode) $unexpectedResult1")
+        assertTrue { expectedResult1 == unexpectedResult1 }
+        val unexpectedResult2 = bigDecimalWithModeAddedLater.divide(divisorWithMode, DECIMAL_MODE)
+        println("Unexpected result 2 (withModeAddedLater / withMode) $unexpectedResult2")
+        val expectedResult2 = bigDecimalWithModeAtParseTime.divide(divisorWithMode, DECIMAL_MODE)
+        println("Expected result 2 (withMode / withMode) $expectedResult2")
+        assertTrue { expectedResult2 == unexpectedResult2 }
+    }
 }
