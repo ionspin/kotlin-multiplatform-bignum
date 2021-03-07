@@ -16,7 +16,8 @@
  */
 
 object Versions {
-    val kotlinCoroutines = "1.3.9"
+    val kotlinCoroutines = "1.4.2"
+    val kotlinCoroutinesMT = "1.4.3-native-mt"
     val kotlin = "1.4.30"
     val kotlinSerialization = "1.0.0"
     val nodePlugin = "1.3.0"
@@ -30,6 +31,7 @@ object Deps {
         val test = "test-common"
         val testAnnotation = "test-annotations-common"
         val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinCoroutines}"
+        val coroutinesMT = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinCoroutinesMT}"
         val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:${Versions.kotlinSerialization}"
     }
 
