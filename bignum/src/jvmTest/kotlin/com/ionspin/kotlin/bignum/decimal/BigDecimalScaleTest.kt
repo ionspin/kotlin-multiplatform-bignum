@@ -26,10 +26,6 @@ class JvmBigDecimalScaleTest {
             DecimalMode(12, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, -2)
         }
         assertTrue(e.message?.startsWith("Negative Scale") ?: false)
-        e = assertFailsWith {
-            DecimalMode(12, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 12)
-        }
-        assertTrue(e.message?.contains("must be less than precision") ?: false)
     }
 
     /**
@@ -88,7 +84,12 @@ class JvmBigDecimalScaleTest {
         addWrk = bigAmount.minus(halfCent).minus(halfCent)
         assertEquals(3, addWrk.scale)
         add = addWrk.scale(2)
-        assertEquals(bigAmountStr2, add.toPlainString())
+        assertEquals(bigAmountStr, add.toPlainString()) // ...115 HALF_AWAY_FROM_ZERO <- goes to 120
+        // Lets test for HALF_TOWARDS_ZERO
+        val bigAmountRoundedTowardsZero = bigAmount.copy(decimalMode = bigAmount.decimalMode!!.copy(roundingMode = RoundingMode.ROUND_HALF_TOWARDS_ZERO))
+        addWrk = bigAmountRoundedTowardsZero.minus(halfCent)
+        add = addWrk.scale(2)
+        assertEquals(bigAmountStr2, add.toPlainString()) // ...115 HALF_TOWARDS_FROM_ZERO <- goes to 111
         assertEquals(2, add.scale)
 
         /*

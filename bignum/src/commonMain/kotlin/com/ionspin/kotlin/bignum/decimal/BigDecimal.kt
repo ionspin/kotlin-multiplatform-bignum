@@ -59,33 +59,46 @@ import kotlin.math.min
 class BigDecimal private constructor(
     _significand: BigInteger,
     _exponent: Long = 0L,
-    val decimalMode: DecimalMode? = null
+    _decimalMode: DecimalMode? = null
 ) : BigNumber<BigDecimal>,
     CommonBigNumberOperations<BigDecimal>,
     NarrowingOperations<BigDecimal>,
     Comparable<Any> {
 
-    val precision = _significand.numberOfDecimalDigits()
+    val precision: Long
+
+    val significand: BigInteger
+    val exponent: Long
+    val decimalMode: DecimalMode?
+
+    init {
+        if (_decimalMode != null && _decimalMode.usingScale) {
+            val wrk = applyScale(_significand, _exponent, _decimalMode)
+            if (wrk.isZero().not()) {
+                significand = wrk.significand
+                exponent = wrk.exponent
+                val newPrecision = significand.numberOfDecimalDigits()
+                precision = newPrecision
+                decimalMode = _decimalMode.copy(decimalPrecision = newPrecision)
+            } else {
+                significand = wrk.significand
+                exponent = wrk.exponent.times(_decimalMode.decimalPrecision + _decimalMode.scale)
+                precision = _decimalMode.decimalPrecision + _decimalMode.scale
+                decimalMode = _decimalMode.copy(decimalPrecision = precision)
+            }
+        } else {
+            significand = _significand
+            precision = _significand.numberOfDecimalDigits()
+            exponent = _exponent
+            decimalMode = _decimalMode
+        }
+    }
 
     /**
      * [precisionLimit] is zero if precision unlimited. Otherwise returns [DecimalMode.decimalPrecision].
      */
     val precisionLimit = decimalMode?.decimalPrecision ?: 0
     val roundingMode = decimalMode?.roundingMode ?: RoundingMode.NONE
-
-    val significand: BigInteger
-    val exponent: Long
-
-    init {
-        if (decimalMode != null && decimalMode.usingScale) {
-            val wrk = applyScale(_significand, _exponent, decimalMode)
-            significand = wrk.significand
-            exponent = wrk.exponent
-        } else {
-            significand = _significand
-            exponent = _exponent
-        }
-    }
 
     companion object : BigNumber.Creator<BigDecimal> {
         override val ZERO = BigDecimal(BigInteger.ZERO)
@@ -937,13 +950,15 @@ class BigDecimal private constructor(
     fun scale(scale: Long): BigDecimal {
         if (scale < 0)
             throw ArithmeticException("Negative Scale is unsupported.")
-        val mode = if (decimalMode == null)
-            if (scale == -1L)
+        val mode = if (decimalMode == null) {
+            if (scale == -1L) {
                 DecimalMode.DEFAULT
-            else
+            } else {
                 DecimalMode(0, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, scale)
-        else
-            DecimalMode(decimalMode.decimalPrecision, decimalMode.roundingMode, scale)
+            }
+        } else {
+            DecimalMode(decimalMode.decimalPrecision - decimalMode.scale, decimalMode.roundingMode, scale)
+        }
         return BigDecimal(significand, exponent, mode)
     }
 
@@ -1793,7 +1808,8 @@ class BigDecimal private constructor(
      * Compare to other BigDecimal
      */
     fun compare(other: BigDecimal): Int {
-        if (exponent == other.exponent && precision == other.precision) {
+        if (this.decimalMode != null && this.decimalMode == other.decimalMode) {
+//        if (exponent == other.exponent && precision == other.precision) {
             return significand.compare(other.significand)
         }
         val (preparedFirst, preparedSecond) = bringSignificandToSameExponent(this, other)
