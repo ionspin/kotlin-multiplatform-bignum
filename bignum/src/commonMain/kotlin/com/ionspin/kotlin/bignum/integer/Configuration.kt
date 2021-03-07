@@ -18,6 +18,8 @@
 package com.ionspin.kotlin.bignum.integer
 
 import com.ionspin.kotlin.bignum.integer.base63.array.BigInteger63Arithmetic
+import kotlin.native.concurrent.SharedImmutable
+
 // import com.ionspin.kotlin.bignum.integer.base63.BigInteger63LinkedListArithmetic
 
 /**
@@ -31,6 +33,7 @@ typealias WordArray = ULongArray
 
 typealias Word = ULong
 
+@SharedImmutable
 internal val chosenArithmetic: BigIntegerArithmetic =
     BigInteger63Arithmetic
 // internal val chosenArithmetic: BigIntegerArithmetic<WordArray, Word> = BigInteger63LinkedListArithmetic
