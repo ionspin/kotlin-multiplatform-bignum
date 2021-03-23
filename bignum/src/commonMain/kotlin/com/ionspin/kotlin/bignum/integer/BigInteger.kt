@@ -679,7 +679,7 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
     }
 
     override fun hashCode(): Int {
-        return magnitude.hashCode() + sign.hashCode()
+        return magnitude.fold(0) { acc, uLong -> acc + uLong.hashCode() } + sign.hashCode()
     }
 
     override fun toString(): String {

@@ -13,6 +13,8 @@ This is an implementation of pure kotlin arbitrary integer and floating-point ar
 
 **The APIs might change until v1.0**
 
+Version 0.3.0 will bring API changes to BigDecimal API see changelog for full list.
+
 Also, there is a plan to implement platform native versions.
 
 Testing to verify that the library works properly is mostly done against Java BigInteger and BigDecimal implementations.
@@ -36,7 +38,7 @@ repositories {
         url = uri("https://oss.sonatype.org/content/repositories/snapshots")
     }
 }
-implementation("com.ionspin.kotlin:bignum:0.2.9-SNAPSHOT ")
+implementation("com.ionspin.kotlin:bignum:0.3.0-SNAPSHOT ")
 
 ```
 

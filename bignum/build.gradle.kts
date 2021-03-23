@@ -403,7 +403,6 @@ tasks {
         val jsIrBrowserTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
             testLogging {
                 events("PASSED", "FAILED", "SKIPPED")
-                showStandardStreams = true
             }
         }
 
@@ -416,7 +415,6 @@ tasks {
         val jsLegacyBrowserTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
             testLogging {
                 events("PASSED", "FAILED", "SKIPPED")
-                showStandardStreams = true
             }
         }
     }

@@ -1,7 +1,13 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
-##### 0.2.9 - SNAPSHOT
-
+##### 0.3.0 - SNAPSHOT
+- **API CHANGE** BigInteger uses a sum of magnitude elements as part of hash code instead of array hash code as it wasn't stable on JS
+- **API CHANGE** BigDecimal hashCode doesn't include decimal mode anymore, so it respects contract that hash code equals another hash code
+  when equals returns true.
+- **API CHANGE** BigDecimal equals doesn't consider decimal mode anymore. Two big decimals are now equal only if they represent the same number.
+- Fixed decimal mode precision/scale mismatch in BigDecimal #161
+  - **NOTE: API CHANGE** final precision is now desiredPrecision + scale
+- Add @SharedImmutable to BigInteger to support native multithreading #159
 ##### 0.2.8 - 15.2.2021
 
 - Fixed support for watchosX64/watchos86 (#150)
