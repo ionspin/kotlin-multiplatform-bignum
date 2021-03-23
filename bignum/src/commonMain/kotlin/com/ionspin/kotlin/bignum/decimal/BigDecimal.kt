@@ -1302,7 +1302,7 @@ class BigDecimal private constructor(
      * Used to squeeze significands into minimal precision i.e. 12340000 to 1234 because both numbers still represent
      * the same number i.e. 1.234
      */
-    private fun removeTrailingZeroes(bigDecimal: BigDecimal) : BigDecimal {
+    private fun removeTrailingZeroes(bigDecimal: BigDecimal): BigDecimal {
 
         var significand = bigDecimal.significand
         var divisionResult = BigInteger.QuotientAndRemainder(bigDecimal.significand, BigInteger.ZERO)
@@ -1313,8 +1313,6 @@ class BigDecimal private constructor(
             }
         } while (divisionResult.remainder == BigInteger.ZERO)
         return BigDecimal(significand, bigDecimal.exponent, bigDecimal.decimalMode)
-
-
     }
 
     override fun toString(base: Int): String {

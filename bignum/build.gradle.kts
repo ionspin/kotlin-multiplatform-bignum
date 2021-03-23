@@ -410,7 +410,6 @@ tasks {
             testLogging {
                 events("PASSED", "FAILED", "SKIPPED")
             }
-
         }
 
         val jsLegacyBrowserTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
