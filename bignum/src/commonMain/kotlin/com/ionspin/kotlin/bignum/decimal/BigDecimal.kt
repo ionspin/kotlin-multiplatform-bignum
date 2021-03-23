@@ -1303,7 +1303,7 @@ class BigDecimal private constructor(
      * the same number i.e. 1.234
      */
     private fun removeTrailingZeroes(bigDecimal: BigDecimal): BigDecimal {
-
+        if (bigDecimal == ZERO) return this
         var significand = bigDecimal.significand
         var divisionResult = BigInteger.QuotientAndRemainder(bigDecimal.significand, BigInteger.ZERO)
         do {
@@ -1875,6 +1875,9 @@ class BigDecimal private constructor(
     }
 
     override fun hashCode(): Int {
+        if (this == ZERO) {
+            return 0
+        }
         return removeTrailingZeroes(this).significand.hashCode() + exponent.hashCode()
     }
 

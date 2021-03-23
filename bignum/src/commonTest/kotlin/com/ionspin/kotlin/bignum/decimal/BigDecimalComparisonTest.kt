@@ -53,8 +53,14 @@ class BigDecimalComparisonTest {
         val a = BigDecimal.fromIntWithExponent(2000000, 4)
         val b = BigDecimal.fromIntWithExponent(2000, 4)
         assertTrue { a == b }
-        println(a.hashCode())
-        println(b.hashCode())
+        assertTrue { a.hashCode() == b.hashCode() }
+    }
+
+    @Test
+    fun testHashCodeContract2() {
+        val a = BigDecimal.fromIntWithExponent(0, 4)
+        val b = BigDecimal.fromIntWithExponent(0, 41)
+        assertTrue { a == b }
         assertTrue { a.hashCode() == b.hashCode() }
     }
 
