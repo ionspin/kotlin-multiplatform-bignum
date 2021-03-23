@@ -63,20 +63,20 @@ class BigDecimalDivisionTest {
 
         assertTrue {
             val a = 10.toBigDecimal()
-            val b = 20000000000000000.toBigDecimal(exponent = 0) // This is equal to 2.0000000000000000
+            val b = 20000000000000000.toBigDecimalUsingSignificandAndExponent(exponent = 0) // This is equal to 2.0000000000000000
             val result = a / b
             result == 5.toBigDecimal()
         }
 
         assertTrue {
-            val a = 10000000000000000.toBigDecimal(exponent = 1) // This is equal to 10.000000000000000
-            val b = 20000000000000000.toBigDecimal(exponent = 0) // This is equal to 2.0000000000000000
+            val a = 10000000000000000.toBigDecimalUsingSignificandAndExponent(exponent = 1) // This is equal to 10.000000000000000
+            val b = 20000000000000000.toBigDecimalUsingSignificandAndExponent(exponent = 0) // This is equal to 2.0000000000000000
             val result = a / b
             result == 5.toBigDecimal()
         }
 
         assertTrue {
-            val a = 10000000000000000.toBigDecimal(exponent = 1) // This is equal to 10.000000000000000
+            val a = 10000000000000000.toBigDecimalUsingSignificandAndExponent(exponent = 1) // This is equal to 10.000000000000000
             val b = 2.toBigDecimal() // This is equal to 2.0000000000000000
             val result = a / b
             result == 5.toBigDecimal()
