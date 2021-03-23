@@ -33,4 +33,36 @@ class BigDecimalComparisonTest {
         val b = BigDecimal.fromIntWithExponent(2, 0)
         assertTrue { a == b }
     }
+
+    @Test
+    fun testDifferentPrecisionComparison2() {
+        val a = BigDecimal.fromIntWithExponent(2000000, 4)
+        val b = BigDecimal.fromIntWithExponent(2000, 4)
+        assertTrue { a == b }
+    }
+
+    @Test
+    fun testDifferentPrecisionComparisonSamePrecision() {
+        val a = BigDecimal.fromIntWithExponent(2000, 4)
+        val b = BigDecimal.fromIntWithExponent(2000, 4)
+        assertTrue { a == b }
+    }
+
+    @Test
+    fun testHashCodeContract() {
+        val a = BigDecimal.fromIntWithExponent(2000000, 4)
+        val b = BigDecimal.fromIntWithExponent(2000, 4)
+        assertTrue { a == b }
+        println(a.hashCode())
+        println(b.hashCode())
+        assertTrue { a.hashCode() == b.hashCode() }
+    }
+
+    @Test
+    fun testHashCodeContractLong() {
+        val a = BigDecimal.fromLongWithExponent(123400000000, -192)
+        val b = BigDecimal.fromIntWithExponent(1234, -192)
+        assertTrue { a == b }
+        assertTrue { a.hashCode() == b.hashCode() }
+    }
 }

@@ -1292,13 +1292,29 @@ class BigDecimal private constructor(
             exponent > 0 && exponent > precision -> exponent + 1 // Significand is already 10^1 when exponent is > 0
             exponent > 0 && exponent == precision -> precision + 1 // Same as above
             exponent < 0 -> exponent.absoluteValue + precision
-            exponent == 0L -> significand.toString()
-                .dropLastWhile { it == '0' }.length.toLong() // I.e. precision is 3, exponent is 0,
-            // but significand is 100, which is equivalent to 1, so the result should be 1
-            // TODO find a better way than this lazy conversion to string
+            exponent == 0L -> removeTrailingZeroes(this).precision
             else -> throw RuntimeException("Invalid case when getting number of decimal digits")
         }
         return numberOfDigits
+    }
+
+    /**
+     * Used to squeeze significands into minimal precision i.e. 12340000 to 1234 because both numbers still represent
+     * the same number i.e. 1.234
+     */
+    private fun removeTrailingZeroes(bigDecimal: BigDecimal) : BigDecimal {
+
+        var significand = bigDecimal.significand
+        var divisionResult = BigInteger.QuotientAndRemainder(bigDecimal.significand, BigInteger.ZERO)
+        do {
+            divisionResult = divisionResult.quotient.divrem(BigInteger.TEN)
+            if (divisionResult.remainder == BigInteger.ZERO) {
+                significand = divisionResult.quotient
+            }
+        } while (divisionResult.remainder == BigInteger.ZERO)
+        return BigDecimal(significand, bigDecimal.exponent, bigDecimal.decimalMode)
+
+
     }
 
     override fun toString(base: Int): String {
@@ -1808,12 +1824,12 @@ class BigDecimal private constructor(
      * Compare to other BigDecimal
      */
     fun compare(other: BigDecimal): Int {
-        if (this.decimalMode != null && this.decimalMode == other.decimalMode) {
-//        if (exponent == other.exponent && precision == other.precision) {
-            return significand.compare(other.significand)
+        return if (this.exponent == other.exponent && this.precision == other.precision) {
+            significand.compare(other.significand)
+        } else {
+            val (preparedFirst, preparedSecond) = bringSignificandToSameExponent(this, other)
+            preparedFirst.compare(preparedSecond)
         }
-        val (preparedFirst, preparedSecond) = bringSignificandToSameExponent(this, other)
-        return preparedFirst.compare(preparedSecond)
     }
 
     override fun compareTo(other: Any): Int {
@@ -1861,7 +1877,7 @@ class BigDecimal private constructor(
     }
 
     override fun hashCode(): Int {
-        return significand.hashCode() + exponent.hashCode() + decimalMode.hashCode()
+        return removeTrailingZeroes(this).significand.hashCode() + exponent.hashCode()
     }
 
     /**
