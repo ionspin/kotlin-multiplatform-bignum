@@ -1,6 +1,9 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
 ##### 0.3.0 - SNAPSHOT
+Development roadmap for version 0.3.0 states 'API statbilization' so:
+- **API CHANGE** Extensions functions used to create BigDecimal from primitive types have been split into 'toBigDecimal(exponentModifier...)'
+  and 'toBigDecimalUsingSignificandAndExponent(exponent...)' to bring more clarity to the API and solve #164
 - **API CHANGE** BigInteger uses a sum of magnitude elements as part of hash code instead of array hash code as it wasn't stable on JS
 - **API CHANGE** BigDecimal hashCode doesn't include decimal mode anymore, so it respects contract that hash code equals another hash code
   when equals returns true.

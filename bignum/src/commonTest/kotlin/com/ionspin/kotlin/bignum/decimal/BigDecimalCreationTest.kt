@@ -17,6 +17,7 @@
 
 package com.ionspin.kotlin.bignum.decimal
 
+import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -33,37 +34,43 @@ class BigDecimalCreationTest {
         assertTrue {
             val a = BigDecimal.parseStringWithMode("1.23")
             val b = BigDecimal.fromIntWithExponent(123, 0)
-            a == b
+            val c = 123.toBigDecimalUsingSignificandAndExponent(0)
+            a == b && a == c
         }
 
         assertTrue {
             val a = BigDecimal.parseStringWithMode("-1.23")
             val b = BigDecimal.fromIntWithExponent(-123, 0)
-            a == b
+            val c = (-123).toBigDecimalUsingSignificandAndExponent(0)
+            a == b && a == c
         }
 
         assertTrue {
             val a = BigDecimal.parseStringWithMode("0.0123")
             val b = BigDecimal.fromIntWithExponent(123, -2)
-            a == b
+            val c = 123.toBigDecimalUsingSignificandAndExponent(-2)
+            a == b && a == c
         }
 
         assertTrue {
             val a = BigDecimal.parseStringWithMode("-0.0123")
             val b = BigDecimal.fromIntWithExponent(-123, -2)
-            a == b
+            val c = (-123).toBigDecimalUsingSignificandAndExponent(-2)
+            a == b && a == c
         }
 
         assertTrue {
             val a = BigDecimal.parseStringWithMode("123.123")
             val b = BigDecimal.fromIntWithExponent(123123, 2)
-            a == b
+            val c = 123123.toBigDecimalUsingSignificandAndExponent(2)
+            a == b && a == c
         }
 
         assertTrue {
             val a = BigDecimal.parseStringWithMode("-123.123")
             val b = BigDecimal.fromIntWithExponent(-123123, 2)
-            a == b
+            val c = (-123123).toBigDecimalUsingSignificandAndExponent(2)
+            a == b && a == c
         }
     }
 
@@ -109,6 +116,116 @@ class BigDecimalCreationTest {
             val a = BigDecimal.parseStringWithMode("5E-324")
             val b = BigDecimal.fromIntWithExponent(5, -324)
             a == b
+        }
+    }
+
+    @Test
+    fun testFromPrimitive() {
+        val expected = BigDecimal.fromBigInteger(123.toBigInteger())
+        assertTrue {
+            val created = 123L.toBigDecimal()
+            expected == created
+        }
+        assertTrue {
+            val created = 123.toBigDecimal()
+            expected == created
+        }
+        assertTrue {
+            val created = 123.toShort().toBigDecimal()
+            expected == created
+        }
+        assertTrue {
+            val created = 123.toByte().toBigDecimal()
+            expected == created
+        }
+        assertTrue {
+            val created = "123".toByte().toBigDecimal()
+            expected == created
+        }
+        assertTrue {
+            val created = 123.0.toBigDecimal()
+            expected == created
+        }
+        assertTrue {
+            val created = 123f.toBigDecimal()
+            expected == created
+        }
+        // Using as significand
+        assertTrue {
+            val created = 123L.toBigDecimalUsingSignificandAndExponent(2)
+            expected == created
+        }
+        assertTrue {
+            val created = 123.toBigDecimalUsingSignificandAndExponent(2)
+            expected == created
+        }
+        assertTrue {
+            val created = 123.toShort().toBigDecimalUsingSignificandAndExponent(2)
+            expected == created
+        }
+        assertTrue {
+            val created = 123.toByte().toBigDecimalUsingSignificandAndExponent(2)
+            expected == created
+        }
+
+        val expectedModified = BigDecimal.fromBigInteger(123000.toBigInteger())
+        assertTrue {
+            val created = 123L.toBigDecimal(exponentModifier = 3)
+            expectedModified == created
+        }
+        assertTrue {
+            val created = 123.toBigDecimal(exponentModifier = 3)
+            expectedModified == created
+        }
+        assertTrue {
+            val created = 123.toShort().toBigDecimal(exponentModifier = 3)
+            expectedModified == created
+        }
+        assertTrue {
+            val created = 123.toByte().toBigDecimal(exponentModifier = 3)
+            expectedModified == created
+        }
+        assertTrue {
+            val created = "123".toByte().toBigDecimal(exponentModifier = 3)
+            expectedModified == created
+        }
+        assertTrue {
+            val created = 123.0.toBigDecimal(exponentModifier = 3)
+            expectedModified == created
+        }
+        assertTrue {
+            val created = 123f.toBigDecimal(exponentModifier = 3)
+            expectedModified == created
+        }
+
+        val expectedModified2 = BigDecimal.parseString("000.123")
+        assertTrue {
+            val created = 123L.toBigDecimal(exponentModifier = -3)
+            expectedModified2 == created
+        }
+        assertTrue {
+            val created = 123.toBigDecimal(exponentModifier = -3)
+            expectedModified2 == created
+        }
+        assertTrue {
+            val created = 123.toShort().toBigDecimal(exponentModifier = -3)
+            expectedModified2 == created
+        }
+        assertTrue {
+            val created = 123.toByte().toBigDecimal(exponentModifier = -3)
+            expectedModified2 == created
+        }
+        assertTrue {
+            val created = "123".toByte().toBigDecimal(exponentModifier = -3)
+            expectedModified2 == created
+        }
+        assertTrue {
+            val created = 123.0.toBigDecimal(exponentModifier = -3)
+            expectedModified2 == created
+        }
+        assertTrue {
+            val created = 123f.toBigDecimal(exponentModifier = -3)
+            expectedModified2 == created
         }
     }
 

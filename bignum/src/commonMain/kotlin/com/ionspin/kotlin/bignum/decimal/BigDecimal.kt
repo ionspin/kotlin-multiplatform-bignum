@@ -1185,10 +1185,24 @@ class BigDecimal private constructor(
      * the decimal point to the right, negative values move the decimal point to the left.
      */
     fun moveDecimalPoint(places: Int): BigDecimal {
+        if (places == 0) {
+            return this
+        }
         return copy(exponent = exponent + places)
     }
 
-    // TODO in 0.3.0
+    /**
+     * Moves the decimal point by creating a new instance with a different exponent. Positive values move
+     * the decimal point to the right, negative values move the decimal point to the left.
+     */
+    fun moveDecimalPoint(places: Long): BigDecimal {
+        if (places == 0L) {
+            return this
+        }
+        return copy(exponent = exponent + places)
+    }
+
+    // TODO in 0.3.x
 //    override fun pow(exponent: BigDecimal): BigDecimal {
 //        if (exponent.signum() < 0) {
 //            throw RuntimeException("BigDecimal exponentiation with negative numbers is not supported. Exponent: ${exponent}")
@@ -1209,7 +1223,7 @@ class BigDecimal private constructor(
         return pow(exponent.toLong())
     }
 
-    // TODO in 0.3.0
+    // TODO in 0.3.x
 //    /**
 //     * Natural logarithm of this BigDecimal
 //     */

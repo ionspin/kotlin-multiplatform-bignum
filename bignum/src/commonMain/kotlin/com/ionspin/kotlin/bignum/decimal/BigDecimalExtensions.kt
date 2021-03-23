@@ -23,48 +23,109 @@ package com.ionspin.kotlin.bignum.decimal
  * on 10-Mar-2019
  */
 
-fun Long.toBigDecimal(exponent: Long? = null, decimalMode: DecimalMode? = null): BigDecimal {
-    return if (exponent != null) {
-        BigDecimal.fromLongWithExponent(this, exponent, decimalMode)
-    } else {
-        BigDecimal.fromLong(this, decimalMode)
-    }
+/**
+ * Create BigDecimal from BigInteger significand and supplied exponent.
+ * Example:
+ *      1234L.toBigDecimalUsingSignificandAndExponent(2) produces 1.234E2
+ *
+ */
+fun Long.toBigDecimalUsingSignificandAndExponent(exponent: Long, decimalMode: DecimalMode? = null): BigDecimal {
+    return BigDecimal.fromLongWithExponent(this, exponent, decimalMode)
 }
 
-fun Int.toBigDecimal(exponent: Long? = null, decimalMode: DecimalMode? = null): BigDecimal {
-    return if (exponent != null) {
-        BigDecimal.fromIntWithExponent(this, exponent, decimalMode)
-    } else {
-        BigDecimal.fromInt(this, decimalMode)
-    }
+/**
+ * Converts a number to big decimal, optionally modifies the exponent and provides decimal mode.
+ * Example:
+ *      1234L.toBigDecimal() produces 1.234E3
+ *      1234L.toBigDecimal(exponentModifier = 2) produces 1.234E5 (original exponent was 3 and modifier adds 2)
+ */
+fun Long.toBigDecimal(exponentModifier: Long? = null, decimalMode: DecimalMode? = null): BigDecimal {
+    return BigDecimal.fromLong(this, decimalMode).moveDecimalPoint(exponentModifier ?: 0)
 }
 
-fun Short.toBigDecimal(exponent: Long? = null, decimalMode: DecimalMode? = null): BigDecimal {
-    return if (exponent != null) {
-        BigDecimal.fromShortWithExponent(this, exponent, decimalMode)
-    } else {
-        BigDecimal.fromShort(this, decimalMode)
-    }
+/**
+ * Create BigDecimal from BigInteger significand and supplied exponent.
+ * Example:
+ *      1234L.toBigDecimalUsingSignificandAndExponent(2) produces 1.234E2
+ *
+ */
+fun Int.toBigDecimalUsingSignificandAndExponent(exponent: Long, decimalMode: DecimalMode? = null): BigDecimal {
+    return BigDecimal.fromIntWithExponent(this, exponent, decimalMode)
 }
 
-fun Byte.toBigDecimal(exponent: Long? = null, decimalMode: DecimalMode? = null): BigDecimal {
-    return if (exponent != null) {
-        BigDecimal.fromByteWithExponent(this, exponent, decimalMode)
-    } else {
-        BigDecimal.fromByte(this, decimalMode)
-    }
+/**
+ * Converts a number to big decimal, optionally modifies the exponent and provides decimal mode.
+ * Example:
+ *      1234.toBigDecimal() produces 1.234E3
+ *      1234.toBigDecimal(exponentModifier = 2) produces 1.234E5 (original exponent was 3 and modifier adds 2)
+ */
+fun Int.toBigDecimal(exponentModifier: Long? = null, decimalMode: DecimalMode? = null): BigDecimal {
+    return BigDecimal.fromInt(this, decimalMode).moveDecimalPoint(exponentModifier ?: 0)
 }
 
-fun String.toBigDecimal(exponent: Long? = null, decimalMode: DecimalMode? = null): BigDecimal {
-    return BigDecimal.parseStringWithMode(this, decimalMode)
+/**
+ * Create BigDecimal from BigInteger significand and supplied exponent.
+ * Example:
+ *      123.toShort().toBigDecimalUsingSignificandAndExponent(2) produces 1.23E2
+ *
+ */
+fun Short.toBigDecimalUsingSignificandAndExponent(exponent: Long, decimalMode: DecimalMode? = null): BigDecimal {
+    return BigDecimal.fromShortWithExponent(this, exponent, decimalMode)
+}
+/**
+ * Converts a number to big decimal, optionally modifies the exponent and provides decimal mode.
+ * Example:
+ *      123.toShort().toBigDecimal() produces 1.23E2
+ *      123.toShort().toBigDecimal(exponentModifier = 2) produces 1.23E4 (original exponent was 2 and modifier adds 2)
+ */
+fun Short.toBigDecimal(exponentModifier: Long? = null, decimalMode: DecimalMode? = null): BigDecimal {
+    return BigDecimal.fromShort(this, decimalMode).moveDecimalPoint(exponentModifier ?: 0)
 }
 
-fun Float.toBigDecimal(decimalMode: DecimalMode? = null): BigDecimal {
-    return BigDecimal.fromFloat(this, decimalMode)
+/**
+ * Create BigDecimal from BigInteger significand and supplied exponent.
+ * Example:
+ *      12.toByte().toBigDecimalUsingSignificandAndExponent(2) produces 1.2E2
+ *
+ */
+fun Byte.toBigDecimalUsingSignificandAndExponent(exponent: Long, decimalMode: DecimalMode? = null): BigDecimal {
+    return BigDecimal.fromByteWithExponent(this, exponent, decimalMode)
 }
-
-fun Double.toBigDecimal(decimalMode: DecimalMode? = null): BigDecimal {
-    return BigDecimal.fromDouble(this, decimalMode)
+/**
+ * Converts a number to big decimal, optionally modifies the exponent and provides decimal mode.
+ * Example:
+ *      12.toByte().toBigDecimal() produces 1.2E1
+ *      12.toByte().toBigDecimal(exponentModifier = 2) produces 1.2E3 (original exponent was 1 and modifier adds 2)
+ */
+fun Byte.toBigDecimal(exponentModifier: Long? = null, decimalMode: DecimalMode? = null): BigDecimal {
+    return BigDecimal.fromByte(this, decimalMode).moveDecimalPoint(exponentModifier ?: 0)
+}
+/**
+ * Converts a number to big decimal, optionally modifies the exponent and provides decimal mode.
+ * Example:
+ *      "1234".toBigDecimal() produces 1.234E3
+ *      "1234".toBigDecimal(exponentModifier = 2) produces 1.234E5 (original exponent was 3 and modifier adds 2)
+ */
+fun String.toBigDecimal(exponentModifier: Long? = null, decimalMode: DecimalMode? = null): BigDecimal {
+    return BigDecimal.parseStringWithMode(this, decimalMode).moveDecimalPoint(exponentModifier ?: 0)
+}
+/**
+ * Converts a number to big decimal, optionally modifies the exponent and provides decimal mode.
+ * Example:
+ *      1234F.toBigDecimal() produces 1.234E3
+ *      1234F.toBigDecimal(exponentModifier = 2) produces 1.234E5 (original exponent was 3 and modifier adds 2)
+ */
+fun Float.toBigDecimal(exponentModifier: Long? = null, decimalMode: DecimalMode? = null): BigDecimal {
+    return BigDecimal.fromFloat(this, decimalMode).moveDecimalPoint(exponentModifier ?: 0)
+}
+/**
+ * Converts a number to big decimal, optionally modifies the exponent and provides decimal mode.
+ * Example:
+ *      1234.0.toBigDecimal() produces 1.234E3
+ *      1234.0.toBigDecimal(exponentModifier = 2) produces 1.234E5 (original exponent was 3 and modifier adds 2)
+ */
+fun Double.toBigDecimal(exponentModifier: Long? = null, decimalMode: DecimalMode? = null): BigDecimal {
+    return BigDecimal.fromDouble(this, decimalMode).moveDecimalPoint(exponentModifier ?: 0)
 }
 
 //
