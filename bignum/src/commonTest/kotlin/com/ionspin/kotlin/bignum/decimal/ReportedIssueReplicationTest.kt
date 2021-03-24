@@ -18,6 +18,8 @@
 package com.ionspin.kotlin.bignum.decimal
 
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /**
@@ -110,5 +112,39 @@ class ReportedIssueReplicationTest {
         val expectedResult2 = bigDecimalWithModeAtParseTime.divide(divisorWithMode, DECIMAL_MODE)
         println("Expected result 2 (withMode / withMode) $expectedResult2")
         assertTrue { expectedResult2 == unexpectedResult2 }
+    }
+
+    @Test
+    fun testHashCode() {
+        val DECIMAL_MODE = DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 6)
+        val matchingScaleLastDigitNonZero = "1.23456701E+2"
+        val matchingScaleLastDigitZero = "1.23456700E+2"
+        val smallerScale = "1.23456E+2"
+        val largerScale = "1.23456701234E+2"
+        val msnz = matchingScaleLastDigitNonZero.toBigDecimal()
+        val msnzdm = matchingScaleLastDigitNonZero.toBigDecimal(decimalMode = DECIMAL_MODE)
+        val ms0 = matchingScaleLastDigitZero.toBigDecimal()
+        val ms0dm = matchingScaleLastDigitZero.toBigDecimal(decimalMode = DECIMAL_MODE)
+        val ss = smallerScale.toBigDecimal()
+        val ssdm = smallerScale.toBigDecimal(decimalMode = DECIMAL_MODE)
+        val lsdm = largerScale.toBigDecimal(decimalMode = DECIMAL_MODE)
+        assertEquals(msnz, msnzdm) // ok
+        assertEquals(msnz.hashCode(), msnzdm.hashCode()) // ok
+        assertEquals(ms0, ms0dm) // ok
+        assertEquals(ms0.hashCode(), ms0dm.hashCode()) // hashcodes differ
+        assertEquals(ss, ssdm) // ok
+        assertEquals(ss.hashCode(), ssdm.hashCode()) // hashcodes differ
+        assertEquals(msnz, lsdm) // ok
+        assertEquals(msnz.hashCode(), lsdm.hashCode()) // ok
+    }
+
+    @Test
+    fun testNegativeDouble() {
+        val bigDecimal = BigDecimal.parseString("-1234.1234")
+        assertTrue(bigDecimal.isNegative) // ok
+        val doubleFromString = bigDecimal.toPlainString().toDouble() // ok
+        val asDoubleValue = bigDecimal.doubleValue() // looses the sign
+        assertTrue(doubleFromString < 0)
+        assertFalse(asDoubleValue > 0) // Double is positive...
     }
 }
