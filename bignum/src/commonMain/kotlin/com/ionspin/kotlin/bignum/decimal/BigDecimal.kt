@@ -1326,7 +1326,7 @@ class BigDecimal private constructor(
                 significand = divisionResult.quotient
             }
         } while (divisionResult.remainder == BigInteger.ZERO)
-        return BigDecimal(significand, bigDecimal.exponent, bigDecimal.decimalMode)
+        return BigDecimal(significand, bigDecimal.exponent)
     }
 
     override fun toString(base: Int): String {
@@ -1704,9 +1704,9 @@ class BigDecimal private constructor(
         val divExponent = precision - 1 - exponent
         val l = this.significand.longValue(exactRequired)
         return if (l.toDouble().toLong() == l && divExponent >= 0 && divExponent < double10pow.size) {
-            l / double10pow[divExponent.toInt()]
+            (l / double10pow[divExponent.toInt()]) * signum()
         } else {
-            this.toString().toDouble()
+            toString().toDouble()
         }
     }
 
