@@ -60,15 +60,14 @@ enum class RoundingMode {
      * Round towards nearest integer, using towards negative infinity as tie breaker when significant digit being rounded is 5
      */
     ROUND_HALF_FLOOR,
-    // For future releases
-//    /**
-//     * Round towards nearest even integer
-//     */
-//    ROUND_HALF_TO_EVEN,
-//    /**
-//     * Round towards neares odd integer
-//     */
-//    ROUND_HALF_TO_ODD
+    /**
+     * Round towards nearest even integer
+     */
+    ROUND_HALF_TO_EVEN,
+    /**
+     * Round towards neares odd integer
+     */
+    ROUND_HALF_TO_ODD
 }
 
 /**
