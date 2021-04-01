@@ -1,6 +1,7 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
 ##### 0.3.0 - SNAPSHOT
+- Fixed #168 - Fix invalid rounding results
 Development roadmap for version 0.3.0 states 'API statbilization' so:
 - **API CHANGE** Extensions functions used to create BigDecimal from primitive types have been split into 'toBigDecimal(exponentModifier...)'
   and 'toBigDecimalUsingSignificandAndExponent(exponent...)' to bring more clarity to the API and solve #164
