@@ -421,6 +421,9 @@ class BigDecimal private constructor(
                 desiredPrecision < significandDigits -> {
                     val divRem = significand divrem BigInteger.TEN.pow(significandDigits - desiredPrecision)
                     val resolvedRemainder = divRem.remainder
+                    if (divRem.remainder == BigInteger.ZERO) {
+                        return BigDecimal(significand, exponent, decimalMode)
+                    }
                     // Check if remainder was .0XXX if so handle it
                     if (significand.numberOfDecimalDigits() == divRem.quotient.numberOfDecimalDigits() + divRem.remainder.numberOfDecimalDigits()) {
                         val newSignificand = roundDiscarded(divRem.quotient, resolvedRemainder, decimalMode)

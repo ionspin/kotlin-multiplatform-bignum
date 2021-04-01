@@ -765,4 +765,15 @@ class BigDecimalRoundingTest {
             java.math.RoundingMode.UNNECESSARY -> RoundingMode.NONE
         }
     }
+
+    @Test
+    fun testZeroRemainder() {
+        val modes = java.math.RoundingMode.values().filterNot { it == java.math.RoundingMode.UNNECESSARY }
+        for (mode in modes) {
+            val a = "1.1000000000"
+            val bignum = a.toBigDecimal(decimalMode = DecimalMode(20, mode.toBigNumRoundingMode(), 3))
+            val jvm = java.math.BigDecimal(a).setScale(3, mode)
+            assertEquals(bignum.toPlainString(), jvm.stripTrailingZeros().toPlainString())
+        }
+    }
 }
