@@ -17,8 +17,15 @@
 
 package com.ionspin.kotlin.bignum.decimal
 
+import kotlin.random.Random
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.newFixedThreadPoolContext
+import kotlinx.coroutines.runBlocking
 
 /**
  * Created by Ugljesa Jovanovic
@@ -696,6 +703,66 @@ class BigDecimalRoundingTest {
             val rounded = unrounded.roundSignificand(DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
             val expected = BigDecimal.fromIntAsSignificand(-2)
             rounded == expected
+        }
+    }
+
+    @Test
+    fun randomTestDoubleDivisionAndRounding() {
+        val dispatcher = newFixedThreadPoolContext(32, "Division and rounds")
+        val scope = CoroutineScope(dispatcher)
+        val seed = 1
+        val random = Random(seed)
+        val jobList: MutableList<Job> = mutableListOf()
+        val modes = java.math.RoundingMode.values().filterNot { it == java.math.RoundingMode.UNNECESSARY }
+        for (i in 1..1_000_000) {
+            jobList.add(
+                scope.launch {
+                    testDivisionAndRounding(random.nextDouble(), random.nextDouble(), random.nextInt(100), modes.random())
+                }
+            )
+        }
+        runBlocking {
+            jobList.forEach { it.join() }
+        }
+    }
+
+    fun testDivisionAndRounding(a: Double, b: Double, scale: Int, jvmRoundingMode: java.math.RoundingMode) {
+        val bigNumA = a.toBigDecimal()
+        val bigNumB = b.toBigDecimal()
+        val bigNumRoundingMode = jvmRoundingMode.toBigNumRoundingMode()
+        val jvmA = bigNumA.toJavaBigDecimal()
+        val jvmB = bigNumB.toJavaBigDecimal()
+        val jvmResult = jvmA.divide(jvmB, scale, jvmRoundingMode)
+        val bigNumResult = bigNumA.divide(bigNumB, DecimalMode(scale + 100L, bigNumRoundingMode, scale.toLong()))
+        assertEquals(bigNumResult.toPlainString(), jvmResult.stripTrailingZeros().toPlainString())
+    }
+
+    fun RoundingMode.toJvmRoundingMode(): java.math.RoundingMode {
+        return when (this) {
+            RoundingMode.AWAY_FROM_ZERO -> java.math.RoundingMode.UP
+            RoundingMode.TOWARDS_ZERO -> java.math.RoundingMode.DOWN
+            RoundingMode.CEILING -> java.math.RoundingMode.CEILING
+            RoundingMode.FLOOR -> java.math.RoundingMode.FLOOR
+            RoundingMode.ROUND_HALF_AWAY_FROM_ZERO -> java.math.RoundingMode.HALF_UP
+            RoundingMode.ROUND_HALF_TOWARDS_ZERO -> java.math.RoundingMode.HALF_DOWN
+            RoundingMode.ROUND_HALF_TO_EVEN -> java.math.RoundingMode.HALF_EVEN
+            RoundingMode.NONE -> java.math.RoundingMode.UNNECESSARY
+            RoundingMode.ROUND_HALF_CEILING -> TODO()
+            RoundingMode.ROUND_HALF_FLOOR -> TODO()
+            RoundingMode.ROUND_HALF_TO_ODD -> TODO()
+        }
+    }
+
+    fun java.math.RoundingMode.toBigNumRoundingMode(): RoundingMode {
+        return when (this) {
+            java.math.RoundingMode.UP -> RoundingMode.AWAY_FROM_ZERO
+            java.math.RoundingMode.DOWN -> RoundingMode.TOWARDS_ZERO
+            java.math.RoundingMode.CEILING -> RoundingMode.CEILING
+            java.math.RoundingMode.FLOOR -> RoundingMode.FLOOR
+            java.math.RoundingMode.HALF_UP -> RoundingMode.ROUND_HALF_AWAY_FROM_ZERO
+            java.math.RoundingMode.HALF_DOWN -> RoundingMode.ROUND_HALF_TOWARDS_ZERO
+            java.math.RoundingMode.HALF_EVEN -> RoundingMode.ROUND_HALF_TO_EVEN
+            java.math.RoundingMode.UNNECESSARY -> RoundingMode.NONE
         }
     }
 }

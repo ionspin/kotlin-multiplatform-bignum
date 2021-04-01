@@ -30,6 +30,9 @@ fun BigDecimal.toJavaBigDecimal(): java.math.BigDecimal {
     if (this.precision > Int.MAX_VALUE) {
         throw RuntimeException("Numbers with more digits than Int.MAX_VALUE cannot be converted to java BigDecimal")
     }
+    if (this == BigDecimal.ZERO) {
+        return java.math.BigDecimal.ZERO
+    }
     return if (exponent > 0) {
         java.math.BigDecimal(
             this.significand.toJavaBigInteger(),
