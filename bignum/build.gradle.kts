@@ -17,8 +17,6 @@
 
 @file:Suppress("UnstableApiUsage")
 
-import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
-
 plugins {
     kotlin(PluginsDeps.multiplatform)
     id(PluginsDeps.mavenPublish)
@@ -127,21 +125,23 @@ kotlin {
             }
         }
 
-        linuxArm32Hfp() {
-            binaries {
-                staticLib {
+        if (ideaActive.not()) {
+            linuxArm32Hfp() {
+                binaries {
+                    staticLib {
+                    }
                 }
             }
-        }
 
-        linuxArm64() {
-            binaries {
-                staticLib {
+            linuxArm64() {
+                binaries {
+                    staticLib {
+                    }
                 }
             }
         }
     }
-
+//
     iosX64("ios") {
         binaries {
             framework {
@@ -174,10 +174,11 @@ kotlin {
             }
         }
     }
-
-    watchos() {
-        binaries {
-            framework {
+    if (ideaActive.not()) {
+        watchos() {
+            binaries {
+                framework {
+                }
             }
         }
     }
@@ -195,9 +196,11 @@ kotlin {
             }
         }
     }
-    mingwX86() {
-        binaries {
-            staticLib {
+    if (ideaActive.not()) {
+        mingwX86() {
+            binaries {
+                staticLib {
+                }
             }
         }
     }
@@ -276,20 +279,23 @@ kotlin {
                 dependsOn(nativeTest)
             }
 
-            val linuxArm32HfpMain by getting {
-                dependsOn(nativeMain)
-            }
+            if (ideaActive.not()) {
 
-            val linuxArm32HfpTest by getting {
-                dependsOn(nativeTest)
-            }
+                val linuxArm32HfpMain by getting {
+                    dependsOn(nativeMain)
+                }
 
-            val linuxArm64Main by getting {
-                dependsOn(nativeMain)
-            }
+                val linuxArm32HfpTest by getting {
+                    dependsOn(nativeTest)
+                }
 
-            val linuxArm64Test by getting {
-                dependsOn(nativeTest)
+                val linuxArm64Main by getting {
+                    dependsOn(nativeMain)
+                }
+
+                val linuxArm64Test by getting {
+                    dependsOn(nativeTest)
+                }
             }
         }
 
@@ -327,16 +333,20 @@ kotlin {
         val tvosTest by getting {
             dependsOn(nativeTest)
         }
-        val watchosMain by getting {
-            dependsOn(nativeMain)
-        }
-        val watchosTest by getting {
-            dependsOn(nativeTest)
+        if (ideaActive.not()) {
+            val watchosMain by getting {
+                dependsOn(nativeMain)
+            }
+
+            val watchosTest by getting {
+                dependsOn(nativeTest)
+            }
         }
 
         val watchosX86Main by getting {
             dependsOn(nativeMain)
         }
+
         val watchosX86Test by getting {
             dependsOn(nativeTest)
         }
@@ -349,6 +359,7 @@ kotlin {
             dependsOn(nativeTest)
         }
 
+    if (ideaActive.not()) {
         val mingwX86Main by getting {
             dependsOn(nativeMain)
         }
@@ -356,6 +367,7 @@ kotlin {
         val mingwX86Test by getting {
             dependsOn(nativeTest)
         }
+    }
 
         all {
             languageSettings.enableLanguageFeature("InlineClasses")
@@ -394,39 +406,39 @@ tasks {
             }
         }
 
-        val jsIrNodeTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
-            testLogging {
-                events("PASSED", "FAILED", "SKIPPED")
-            }
-        }
-
-        val jsIrBrowserTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
-            testLogging {
-                events("PASSED", "FAILED", "SKIPPED")
-            }
-        }
-
-        val jsLegacyNodeTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
-            testLogging {
-                events("PASSED", "FAILED", "SKIPPED")
-            }
-        }
-
-        val jsLegacyBrowserTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
-            testLogging {
-                events("PASSED", "FAILED", "SKIPPED")
-            }
-        }
+//        val jsIrNodeTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
+//            testLogging {
+//                events("PASSED", "FAILED", "SKIPPED")
+//            }
+//        }
+//
+//        val jsIrBrowserTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
+//            testLogging {
+//                events("PASSED", "FAILED", "SKIPPED")
+//            }
+//        }
+//
+//        val jsLegacyNodeTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
+//            testLogging {
+//                events("PASSED", "FAILED", "SKIPPED")
+//            }
+//        }
+//
+//        val jsLegacyBrowserTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
+//            testLogging {
+//                events("PASSED", "FAILED", "SKIPPED")
+//            }
+//        }
     }
-
-    if (hostOsName == HostOs.LINUX) {
-        val linuxTest by getting(KotlinNativeTest::class) {
-            testLogging {
-                events("PASSED", "FAILED", "SKIPPED")
-                // showStandardStreams = true
-            }
-        }
-    }
+//
+//    if (hostOsName == HostOs.LINUX) {
+//        val linuxTest by getting(KotlinNativeTest::class) {
+//            testLogging {
+//                events("PASSED", "FAILED", "SKIPPED")
+//                // showStandardStreams = true
+//            }
+//        }
+//    }
 }
 
 spotless {
