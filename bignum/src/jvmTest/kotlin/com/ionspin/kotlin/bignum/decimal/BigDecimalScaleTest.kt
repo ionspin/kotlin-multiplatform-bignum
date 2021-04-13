@@ -84,7 +84,7 @@ class JvmBigDecimalScaleTest {
         addWrk = bigAmount.minus(halfCent).minus(halfCent)
         assertEquals(3, addWrk.scale)
         add = addWrk.scale(2)
-        assertEquals(bigAmountStr, add.toPlainString()) // ...115 HALF_AWAY_FROM_ZERO <- goes to 120
+        assertEquals(bigAmountStr2, add.toPlainString())
         // Lets test for HALF_TOWARDS_ZERO
         val bigAmountRoundedTowardsZero = bigAmount.copy(decimalMode = bigAmount.decimalMode!!.copy(roundingMode = RoundingMode.ROUND_HALF_TOWARDS_ZERO))
         addWrk = bigAmountRoundedTowardsZero.minus(halfCent)

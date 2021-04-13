@@ -412,7 +412,11 @@ class BigDecimal private constructor(
                 return BigDecimal(BigInteger.ZERO, exponent, decimalMode)
             }
             val significandDigits = significand.numberOfDecimalDigits()
-            val desiredPrecision = decimalMode.decimalPrecision
+            val desiredPrecision = if (decimalMode.usingScale) {
+                decimalMode.decimalPrecision + decimalMode.scale
+            } else {
+                decimalMode.decimalPrecision
+            }
             return when {
                 desiredPrecision > significandDigits -> {
                     val extendedSignificand = significand * BigInteger.TEN.pow(desiredPrecision - significandDigits)
@@ -1103,8 +1107,6 @@ class BigDecimal private constructor(
      * @return BigDecimal containing result of the operation
      */
     fun add(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
-        if (other.isNegative) return subtract(other.negate(), decimalMode)
-        if (this.isNegative) return other.subtract(this.negate(), decimalMode)
         val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
         val (first, second, _) = bringSignificandToSameExponent(this, other)
         // Temporary way to detect a carry happened, proper solution is to add
@@ -1126,7 +1128,7 @@ class BigDecimal private constructor(
             roundOrDont(
                 newSignificand,
                 newExponent,
-                resolvedDecimalMode.copy(decimalPrecision = resolvedDecimalMode.decimalPrecision + carryDetected)
+                resolvedDecimalMode.copy(decimalPrecision = newSignificandNumOfDigit)
             )
         } else {
             roundOrDont(
@@ -1173,11 +1175,19 @@ class BigDecimal private constructor(
         val borrowDetected = newSignificandNumOfDigit - largerOperand
 
         val newExponent = max(this.exponent, other.exponent) + borrowDetected
-        return roundOrDont(
-            newSignificand,
-            newExponent,
-            resolvedDecimalMode
-        )
+        if (usingScale) {
+            return roundOrDont(
+                newSignificand,
+                newExponent,
+                resolvedDecimalMode.copy(decimalPrecision = newSignificandNumOfDigit)
+            )
+        } else {
+            return roundOrDont(
+                newSignificand,
+                newExponent,
+                resolvedDecimalMode
+            )
+        }
     }
 
     /**
@@ -1210,14 +1220,14 @@ class BigDecimal private constructor(
         val moveExponent = newSignificandNumOfDigit - (firstNumOfDigits + secondNumOfDigits)
 
         val newExponent = this.exponent + other.exponent + moveExponent + 1
-        if (resolvedDecimalMode.usingScale) {
-            return roundOrDont(
+        return if (resolvedDecimalMode.usingScale) {
+            roundOrDont(
                 newSignificand,
                 newExponent,
-                resolvedDecimalMode.copy(decimalPrecision = resolvedDecimalMode.decimalPrecision + moveExponent + 1)
+                resolvedDecimalMode.copy(decimalPrecision = newSignificandNumOfDigit)
             )
         } else {
-            return roundOrDont(
+            roundOrDont(
                 newSignificand,
                 newExponent,
                 resolvedDecimalMode
@@ -1278,11 +1288,19 @@ class BigDecimal private constructor(
             }
             val exponentModifier = result.numberOfDecimalDigits() - resolvedDecimalMode.decimalPrecision
 
-            return BigDecimal(
-                roundDiscarded(result, divRem.remainder, resolvedDecimalMode),
-                newExponent + exponentModifier,
-                resolvedDecimalMode
-            )
+            return if (usingScale) {
+                BigDecimal(
+                    roundDiscarded(result, divRem.remainder, resolvedDecimalMode),
+                    newExponent + exponentModifier,
+                    resolvedDecimalMode.copy(decimalPrecision = result.numberOfDecimalDigits())
+                )
+            } else {
+                BigDecimal(
+                    roundDiscarded(result, divRem.remainder, resolvedDecimalMode),
+                    newExponent + exponentModifier,
+                    resolvedDecimalMode
+                )
+            }
         }
     }
 
