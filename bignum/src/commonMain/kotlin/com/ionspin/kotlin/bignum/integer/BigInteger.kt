@@ -516,6 +516,9 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
     }
 
     override fun numberOfDecimalDigits(): Long {
+        if (isZero()) {
+            return 1
+        }
         val bitLenght = arithmetic.bitLength(magnitude)
         val minDigit = ceil((bitLenght - 1) * LOG_10_OF_2)
 //        val maxDigit = floor(bitLenght * LOG_10_OF_2) + 1

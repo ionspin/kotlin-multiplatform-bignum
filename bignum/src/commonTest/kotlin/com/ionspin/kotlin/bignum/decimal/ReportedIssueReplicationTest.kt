@@ -257,5 +257,12 @@ class ReportedIssueReplicationTest {
             val result = a.divide(b, DecimalMode(3, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 1))
             result == 10.1.toBigDecimal() && result.precision == 3L
         }
+
+        assertTrue {
+            val a = 1.toBigDecimal(decimalMode = DecimalMode(3, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 4))
+            val b = (-1).toBigDecimal(decimalMode = DecimalMode(3, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 4))
+            val result = a + b
+            result == BigDecimal.ZERO
+        }
     }
 }
