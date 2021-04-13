@@ -412,7 +412,11 @@ class BigDecimal private constructor(
                 return BigDecimal(BigInteger.ZERO, exponent, decimalMode)
             }
             val significandDigits = significand.numberOfDecimalDigits()
-            val desiredPrecision = decimalMode.decimalPrecision
+            val desiredPrecision = if (decimalMode.usingScale) {
+                decimalMode.decimalPrecision + decimalMode.scale
+            } else {
+                decimalMode.decimalPrecision
+            }
             return when {
                 desiredPrecision > significandDigits -> {
                     val extendedSignificand = significand * BigInteger.TEN.pow(desiredPrecision - significandDigits)
@@ -422,7 +426,7 @@ class BigDecimal private constructor(
                     val divRem = significand divrem BigInteger.TEN.pow(significandDigits - desiredPrecision)
                     val resolvedRemainder = divRem.remainder
                     if (divRem.remainder == BigInteger.ZERO) {
-                        return BigDecimal(significand, exponent, decimalMode)
+                        return BigDecimal(divRem.quotient, exponent, decimalMode)
                     }
                     // Check if remainder was .0XXX if so handle it
                     if (significand.numberOfDecimalDigits() == divRem.quotient.numberOfDecimalDigits() + divRem.remainder.numberOfDecimalDigits()) {
@@ -1124,7 +1128,7 @@ class BigDecimal private constructor(
             roundOrDont(
                 newSignificand,
                 newExponent,
-                resolvedDecimalMode.copy(decimalPrecision = resolvedDecimalMode.decimalPrecision + carryDetected)
+                resolvedDecimalMode.copy(decimalPrecision = newSignificandNumOfDigit)
             )
         } else {
             roundOrDont(
@@ -1171,11 +1175,19 @@ class BigDecimal private constructor(
         val borrowDetected = newSignificandNumOfDigit - largerOperand
 
         val newExponent = max(this.exponent, other.exponent) + borrowDetected
-        return roundOrDont(
-            newSignificand,
-            newExponent,
-            resolvedDecimalMode
-        )
+        if (usingScale) {
+            return roundOrDont(
+                newSignificand,
+                newExponent,
+                resolvedDecimalMode.copy(decimalPrecision = newSignificandNumOfDigit)
+            )
+        } else {
+            return roundOrDont(
+                newSignificand,
+                newExponent,
+                resolvedDecimalMode
+            )
+        }
     }
 
     /**
@@ -1208,14 +1220,14 @@ class BigDecimal private constructor(
         val moveExponent = newSignificandNumOfDigit - (firstNumOfDigits + secondNumOfDigits)
 
         val newExponent = this.exponent + other.exponent + moveExponent + 1
-        if (resolvedDecimalMode.usingScale) {
-            return roundOrDont(
+        return if (resolvedDecimalMode.usingScale) {
+            roundOrDont(
                 newSignificand,
                 newExponent,
-                resolvedDecimalMode.copy(decimalPrecision = resolvedDecimalMode.decimalPrecision + moveExponent + 1)
+                resolvedDecimalMode.copy(decimalPrecision = newSignificandNumOfDigit)
             )
         } else {
-            return roundOrDont(
+            roundOrDont(
                 newSignificand,
                 newExponent,
                 resolvedDecimalMode
@@ -1276,11 +1288,19 @@ class BigDecimal private constructor(
             }
             val exponentModifier = result.numberOfDecimalDigits() - resolvedDecimalMode.decimalPrecision
 
-            return BigDecimal(
-                roundDiscarded(result, divRem.remainder, resolvedDecimalMode),
-                newExponent + exponentModifier,
-                resolvedDecimalMode
-            )
+            return if (usingScale) {
+                BigDecimal(
+                    roundDiscarded(result, divRem.remainder, resolvedDecimalMode),
+                    newExponent + exponentModifier,
+                    resolvedDecimalMode.copy(decimalPrecision = result.numberOfDecimalDigits())
+                )
+            } else {
+                BigDecimal(
+                    roundDiscarded(result, divRem.remainder, resolvedDecimalMode),
+                    newExponent + exponentModifier,
+                    resolvedDecimalMode
+                )
+            }
         }
     }
 

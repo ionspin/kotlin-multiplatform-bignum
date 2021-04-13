@@ -149,7 +149,7 @@ class ReportedIssueReplicationTest {
     }
 
     @Test
-    fun test2() {
+    fun precisionLossOnCarryTest() {
         val bd = BigDecimal.parseStringWithMode("8.099172", DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 6))
         println(bd)
         val bd2 = BigDecimal.parseStringWithMode("8.", DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 6))
@@ -183,6 +183,79 @@ class ReportedIssueReplicationTest {
             val b = 5.0.toBigDecimal(decimalMode = DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3))
             val result = a / b
             result.toStringExpanded() == "2.001"
+        }
+    }
+
+    @Test
+    fun precisionLossOnCarry2() {
+        assertTrue {
+            val a = 5000.0.toBigDecimal(decimalMode = DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3))
+            val b = (-4999.9).toBigDecimal(decimalMode = DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3))
+            val result = a + b
+            result == 0.1.toBigDecimal()
+        }
+
+        assertTrue {
+            val a = (-5000.0).toBigDecimal(decimalMode = DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3))
+            val b = 4999.9.toBigDecimal(decimalMode = DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3))
+            val result = a + b
+            result == (-0.1).toBigDecimal()
+        }
+
+        assertTrue {
+            val a = (-5000.0).toBigDecimal(decimalMode = DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3))
+            val b = 4999.9.toBigDecimal(decimalMode = DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3))
+            val result = a + b
+            result == (-0.1).toBigDecimal()
+        }
+
+        assertTrue {
+            val a = 10.toBigDecimal(decimalMode = DecimalMode(2, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 0))
+            val b = (-1).toBigDecimal(decimalMode = DecimalMode(2, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 0))
+            val result = a.add(b, DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 0))
+            result == 9.toBigDecimal() && result.precision == 1L
+        }
+
+        assertTrue {
+            val a = 100.toBigDecimal(decimalMode = DecimalMode(3, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 0))
+            val b = (-99).toBigDecimal(decimalMode = DecimalMode(3, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 0))
+            val result = a.add(b, DecimalMode(2, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 0))
+            result == 1.toBigDecimal() && result.precision == 1L
+        }
+
+        assertTrue {
+            val a = 10.toBigDecimal(decimalMode = DecimalMode(2, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 0))
+            val b = (0.1).toBigDecimal(decimalMode = DecimalMode(2, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 1))
+            val result = a.multiply(b, DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 0))
+            result == 1.toBigDecimal() && result.precision == 1L
+        }
+
+        assertTrue {
+            val a = 100.toBigDecimal(decimalMode = DecimalMode(3, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 0))
+            val b = (0.01).toBigDecimal(decimalMode = DecimalMode(3, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 2))
+            val result = a.multiply(b, DecimalMode(2, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 0))
+            result == 1.toBigDecimal() && result.precision == 1L
+        }
+
+        assertTrue {
+            val a = 10.toBigDecimal(decimalMode = DecimalMode(2, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 0))
+            val b = (0.1).toBigDecimal(decimalMode = DecimalMode(2, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 1))
+            val result = a.multiply(b, DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 0))
+            result == 1.toBigDecimal() && result.precision == 1L
+        }
+
+        assertTrue {
+            val a = 100.0001.toBigDecimal(decimalMode = DecimalMode(3, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 4))
+            val b = 1000.toBigDecimal(decimalMode = DecimalMode(3, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 2))
+            val result = a.multiply(b, DecimalMode(8, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 1))
+            result == 100000.1.toBigDecimal() && result.precision == 7L
+        }
+
+        assertTrue {
+            val a = 1.01.toBigDecimal(decimalMode = DecimalMode(3, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 4))
+            val b = 0.1.toBigDecimal(decimalMode = DecimalMode(3, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 2))
+            val result = a.divide(b, DecimalMode(3, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 1))
+            result == 10.1.toBigDecimal() && result.precision == 3L
         }
     }
 }
