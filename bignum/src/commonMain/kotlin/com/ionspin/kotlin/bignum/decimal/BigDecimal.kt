@@ -422,7 +422,7 @@ class BigDecimal private constructor(
                     val divRem = significand divrem BigInteger.TEN.pow(significandDigits - desiredPrecision)
                     val resolvedRemainder = divRem.remainder
                     if (divRem.remainder == BigInteger.ZERO) {
-                        return BigDecimal(significand, exponent, decimalMode)
+                        return BigDecimal(divRem.quotient, exponent, decimalMode)
                     }
                     // Check if remainder was .0XXX if so handle it
                     if (significand.numberOfDecimalDigits() == divRem.quotient.numberOfDecimalDigits() + divRem.remainder.numberOfDecimalDigits()) {
@@ -1103,6 +1103,8 @@ class BigDecimal private constructor(
      * @return BigDecimal containing result of the operation
      */
     fun add(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
+        if (other.isNegative) return subtract(other.negate(), decimalMode)
+        if (this.isNegative) return other.subtract(this.negate(), decimalMode)
         val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
         val (first, second, _) = bringSignificandToSameExponent(this, other)
         // Temporary way to detect a carry happened, proper solution is to add
