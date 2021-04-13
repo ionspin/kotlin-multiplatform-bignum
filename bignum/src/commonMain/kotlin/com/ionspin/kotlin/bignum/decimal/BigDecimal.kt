@@ -657,9 +657,9 @@ class BigDecimal private constructor(
         fun fromFloat(float: Float, decimalMode: DecimalMode? = null): BigDecimal {
             val floatString = float.toString()
             return if (floatString.contains('.') && !floatString.contains('E', true)) {
-                parseStringWithMode(floatString.dropLastWhile { it == '0' }, decimalMode)
+                parseStringWithMode(floatString.dropLastWhile { it == '0' }, decimalMode).roundSignificand(decimalMode)
             } else {
-                parseStringWithMode(floatString, decimalMode)
+                parseStringWithMode(floatString, decimalMode).roundSignificand(decimalMode)
             }
         }
 
@@ -674,9 +674,9 @@ class BigDecimal private constructor(
         fun fromDouble(double: Double, decimalMode: DecimalMode? = null): BigDecimal {
             val doubleString = double.toString()
             return if (doubleString.contains('.') && !doubleString.contains('E', true)) {
-                parseStringWithMode(doubleString.dropLastWhile { it == '0' }, decimalMode)
+                parseStringWithMode(doubleString.dropLastWhile { it == '0' }, decimalMode).roundSignificand(decimalMode)
             } else {
-                parseStringWithMode(doubleString, decimalMode)
+                parseStringWithMode(doubleString, decimalMode).roundSignificand(decimalMode).roundSignificand(decimalMode)
             }
         }
 
@@ -1120,7 +1120,19 @@ class BigDecimal private constructor(
         val carryDetected = newSignificandNumOfDigit - largerOperand
         val newExponent = max(this.exponent, other.exponent) + carryDetected
 
-        return roundOrDont(newSignificand, newExponent, resolvedDecimalMode)
+        return if (resolvedDecimalMode.usingScale) {
+            roundOrDont(
+                newSignificand,
+                newExponent,
+                resolvedDecimalMode.copy(decimalPrecision = resolvedDecimalMode.decimalPrecision + carryDetected)
+            )
+        } else {
+            roundOrDont(
+                newSignificand,
+                newExponent,
+                resolvedDecimalMode
+            )
+        }
     }
 
     /**
@@ -1159,7 +1171,11 @@ class BigDecimal private constructor(
         val borrowDetected = newSignificandNumOfDigit - largerOperand
 
         val newExponent = max(this.exponent, other.exponent) + borrowDetected
-        return roundOrDont(newSignificand, newExponent, resolvedDecimalMode)
+        return roundOrDont(
+            newSignificand,
+            newExponent,
+            resolvedDecimalMode
+        )
     }
 
     /**
@@ -1169,7 +1185,7 @@ class BigDecimal private constructor(
      * @return BigDecimal containing result of the operation
      */
     override fun multiply(other: BigDecimal): BigDecimal {
-        return multiply(other, computeMode(other, ScaleOps.Add))
+        return multiply(other, computeMode(other, ScaleOps.Max))
     }
 
     /**
@@ -1192,11 +1208,23 @@ class BigDecimal private constructor(
         val moveExponent = newSignificandNumOfDigit - (firstNumOfDigits + secondNumOfDigits)
 
         val newExponent = this.exponent + other.exponent + moveExponent + 1
-        return roundOrDont(newSignificand, newExponent, resolvedDecimalMode)
+        if (resolvedDecimalMode.usingScale) {
+            return roundOrDont(
+                newSignificand,
+                newExponent,
+                resolvedDecimalMode.copy(decimalPrecision = resolvedDecimalMode.decimalPrecision + moveExponent + 1)
+            )
+        } else {
+            return roundOrDont(
+                newSignificand,
+                newExponent,
+                resolvedDecimalMode
+            )
+        }
     }
 
     override fun divide(other: BigDecimal): BigDecimal {
-        return divide(other, computeMode(other, ScaleOps.Min))
+        return divide(other, computeMode(other, ScaleOps.Max))
     }
 
     /**
@@ -1515,11 +1543,11 @@ class BigDecimal private constructor(
     }
 
     override operator fun times(other: BigDecimal): BigDecimal {
-        return this.multiply(other, computeMode(other, ScaleOps.Add))
+        return this.multiply(other, computeMode(other, ScaleOps.Max))
     }
 
     override operator fun div(other: BigDecimal): BigDecimal {
-        return this.divide(other, computeMode(other, ScaleOps.Min))
+        return this.divide(other, computeMode(other, ScaleOps.Max))
     }
 
     override operator fun rem(other: BigDecimal): BigDecimal {

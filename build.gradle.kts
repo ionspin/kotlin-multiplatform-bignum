@@ -29,7 +29,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}")
+//        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}")
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:${Versions.dokkaPlugin}")
     }
 }
@@ -49,12 +49,11 @@ allprojects {
     }
 }
 
-group = "com.ionspin.kotlin"
-
-
-apply {
-    plugin("kotlin")
+plugins {
+    kotlin("multiplatform") version Versions.kotlin apply false
 }
+
+group = "com.ionspin.kotlin"
 
 
 

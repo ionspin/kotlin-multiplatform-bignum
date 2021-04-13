@@ -147,4 +147,42 @@ class ReportedIssueReplicationTest {
         assertTrue(doubleFromString < 0)
         assertFalse(asDoubleValue > 0) // Double is positive...
     }
+
+    @Test
+    fun test2() {
+        val bd = BigDecimal.parseStringWithMode("8.099172", DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 6))
+        println(bd)
+        val bd2 = BigDecimal.parseStringWithMode("8.", DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 6))
+        println(bd2)
+        val sum = bd2.plus(bd)
+        assertEquals("16.099172", sum.toStringExpanded())
+
+        assertTrue {
+            val a = 8.099172.toBigDecimal(decimalMode = DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 6))
+            val b = 8.toBigDecimal()
+            val result = a + b
+            result.toStringExpanded() == "16.099172"
+        }
+
+        assertTrue {
+            val a = 10.123.toBigDecimal(decimalMode = DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3))
+            val b = 1.0001.toBigDecimal(decimalMode = DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 4))
+            val result = a.subtract(b, DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3))
+            result.toStringExpanded() == "9.123"
+        }
+
+        assertTrue {
+            val a = 2.001.toBigDecimal(decimalMode = DecimalMode(4, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3))
+            val b = 5.0.toBigDecimal(decimalMode = DecimalMode(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 0))
+            val result = a * b
+            result.toStringExpanded() == "10.005"
+        }
+
+        assertTrue {
+            val a = 10.005.toBigDecimal(decimalMode = DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3))
+            val b = 5.0.toBigDecimal(decimalMode = DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3))
+            val result = a / b
+            result.toStringExpanded() == "2.001"
+        }
+    }
 }

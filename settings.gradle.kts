@@ -24,7 +24,6 @@ pluginManagement {
         }
     }
 }
-enableFeaturePreview("GRADLE_METADATA")
 rootProject.name = "KotlinBigInteger"
 include("bignum")
 
