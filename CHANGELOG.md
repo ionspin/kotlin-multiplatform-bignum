@@ -1,6 +1,11 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
-##### 0.3.0 - SNAPSHOT
+##### 0.3.1-SNAPSHOT
+
+
+##### 0.3.0 - 17.4.2021
+- Fixed losing scale when there is a carry in addition in BigDecimal.
+- Fixed BigInteger `numberOfDecimalDigits` which would return 0 for 0 instead of 1.
 - Fixed #168 - Fix invalid rounding results
 Development roadmap for version 0.3.0 states 'API statbilization' so:
 - **API CHANGE** Extensions functions used to create BigDecimal from primitive types have been split into 'toBigDecimal(exponentModifier...)'

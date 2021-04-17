@@ -13,7 +13,7 @@ This is an implementation of pure kotlin arbitrary integer and floating-point ar
 
 **The APIs might change until v1.0**
 
-Version 0.3.0 will bring API changes to BigDecimal API see changelog for full list.
+Version 0.3.0 brings API changes to BigDecimal API see changelog for full list.
 
 Also, there is a plan to implement platform native versions.
 
@@ -28,7 +28,7 @@ and bug-fixing.
 
 #### Gradle
 ```kotlin
-implementation("com.ionspin.kotlin:bignum:0.2.8")
+implementation("com.ionspin.kotlin:bignum:0.3.0")
 ```
 
 #### Snapshot builds
@@ -38,7 +38,7 @@ repositories {
         url = uri("https://oss.sonatype.org/content/repositories/snapshots")
     }
 }
-implementation("com.ionspin.kotlin:bignum:0.3.0-SNAPSHOT ")
+implementation("com.ionspin.kotlin:bignum:0.3.1-SNAPSHOT")
 
 ```
 
@@ -364,10 +364,10 @@ Standard arithmetic operations that are present:
 Operations are executed with existing significands and then rounded down afterwards. Decimal mode parameter controls the precision and rounding mode
 
 ### DecimalMode
-This is a counterpart to the Java BigDecimal MathContext. 
+This is a counterpart to the Java BigDecimal MathContext and scale at the same time. Decimal mode API is under revision and will be improved during 0.3.0-0.4.0 library lifecycle
 
 ```kotlin
-data class DecimalMode(val decimalPrecision : Long = 0, val roundingMode : RoundingMode = RoundingMode.NONE)
+data class DecimalMode(val decimalPrecision : Long = 0, val roundingMode : RoundingMode = RoundingMode.NONE, val scale: Long = -1)
 ``` 
 
 `decimalPrecision` defines how many digits should significand have
