@@ -265,4 +265,26 @@ class ReportedIssueReplicationTest {
             result == BigDecimal.ZERO
         }
     }
+
+    @Test
+    fun additionAndSubstractionWithZeroAndNegativeExponent() {
+        val zeroBigDecimal = BigDecimal.ZERO
+        val bigDecimalWithNegativeExponent = 0.5.toBigDecimal()
+
+        assertTrue {
+            zeroBigDecimal + bigDecimalWithNegativeExponent == bigDecimalWithNegativeExponent
+        }
+
+        assertTrue {
+            bigDecimalWithNegativeExponent + zeroBigDecimal == bigDecimalWithNegativeExponent
+        }
+
+        assertTrue {
+            zeroBigDecimal - bigDecimalWithNegativeExponent == -bigDecimalWithNegativeExponent
+        }
+
+        assertTrue {
+            bigDecimalWithNegativeExponent - zeroBigDecimal == bigDecimalWithNegativeExponent
+        }
+    }
 }
