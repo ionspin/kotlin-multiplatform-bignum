@@ -1108,6 +1108,12 @@ class BigDecimal private constructor(
      */
     fun add(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
         val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
+        if (this == ZERO) {
+            return roundOrDont(other.significand, other.exponent, resolvedDecimalMode)
+        }
+        if (other == ZERO) {
+            return roundOrDont(this.significand, this.exponent, resolvedDecimalMode)
+        }
         val (first, second, _) = bringSignificandToSameExponent(this, other)
         // Temporary way to detect a carry happened, proper solution is to add
         // methods that return information about carry in arithmetic classes, this way it's going
@@ -1158,6 +1164,14 @@ class BigDecimal private constructor(
      */
     fun subtract(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
         val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
+
+        if (this == ZERO) {
+            return roundOrDont(other.significand.negate(), other.exponent, resolvedDecimalMode)
+        }
+        if (other == ZERO) {
+            return roundOrDont(this.significand, this.exponent, resolvedDecimalMode)
+        }
+
         val (first, second, _) = bringSignificandToSameExponent(this, other)
 
         val firstNumOfDigits = first.numberOfDecimalDigits()
