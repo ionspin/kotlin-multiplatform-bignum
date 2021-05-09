@@ -1913,10 +1913,16 @@ class BigDecimal private constructor(
         if (digitPosition == 0L) {
             throw ArithmeticException("Rounding to 0 position is not supported")
         }
-        return if (this.exponent >= 0) {
+        val rounded = if (this.exponent >= 0) {
             roundSignificand(DecimalMode(digitPosition, roundingMode))
         } else {
             (this + this.signum()).roundSignificand(DecimalMode(digitPosition, roundingMode)) - this.signum()
+        }
+
+        return if (decimalMode == null) {
+            BigDecimal(rounded.significand, rounded.exponent)
+        } else {
+            BigDecimal(rounded.significand, rounded.exponent, decimalMode)
         }
     }
 
@@ -1935,10 +1941,15 @@ class BigDecimal private constructor(
         if (digitPosition < 0) {
             throw ArithmeticException("This method doesn't support negative digit position")
         }
-        return when {
+        val rounded = when {
             exponent >= 0 -> roundToDigitPosition(exponent + digitPosition + 1, roundingMode)
             exponent < 0 -> roundToDigitPosition(digitPosition + 1, roundingMode)
             else -> throw RuntimeException("Unexpected state")
+        }
+        return if (decimalMode == null) {
+            BigDecimal(rounded.significand, rounded.exponent)
+        } else {
+            BigDecimal(rounded.significand, rounded.exponent, decimalMode)
         }
     }
 
