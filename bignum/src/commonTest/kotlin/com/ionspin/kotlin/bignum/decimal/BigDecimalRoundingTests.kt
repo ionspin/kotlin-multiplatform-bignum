@@ -18,6 +18,7 @@
 package com.ionspin.kotlin.bignum.decimal
 
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 /**
@@ -224,5 +225,25 @@ class BigDecimalRoundingTests {
                 .roundToDigitPositionAfterDecimalPoint(2, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
             rounded.toStringExpanded() == "9.54"
         }
+    }
+
+    @Test
+    fun testDecimalModeWhenRoundingAfterDigitPositionAfterDecimalPoint() {
+        val a = 0.333333.toBigDecimal(decimalMode = DecimalMode(4, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)).roundToDigitPositionAfterDecimalPoint(2, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
+        val b = 1.toBigDecimal()
+        assertEquals(a, 0.33.toBigDecimal())
+        assertEquals(a.decimalMode?.decimalPrecision, 4)
+        val res = a * b
+        assertEquals(res, 0.33.toBigDecimal())
+    }
+
+    @Test
+    fun testDecimalModeWhenRoundingAfterDigitPosition() {
+        val a = 0.333333.toBigDecimal(decimalMode = DecimalMode(4, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)).roundToDigitPosition(3, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
+        val b = 1.toBigDecimal()
+        assertEquals(a, 0.33.toBigDecimal())
+        assertEquals(a.decimalMode?.decimalPrecision, 4)
+        val res = a * b
+        assertEquals(res, 0.33.toBigDecimal())
     }
 }
