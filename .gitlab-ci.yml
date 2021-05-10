@@ -11,6 +11,7 @@ workflow:
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
+  CHROME_BIN: "chromium"
 
 simpleCheck:
   stage: prepare

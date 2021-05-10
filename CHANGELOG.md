@@ -2,6 +2,7 @@
 (All dates are DD.MM.YYYY)
 ##### 0.3.1-SNAPSHOT
 - Fix for #176, a case of unclear API. Methods `roundToDigitPositionAfterDecimalPoint` and `roundToDigitPosition` would set decimal precision to the number of digits present in the result after the rounding was completed. Now they only set decimal precision if it's explicitly set, otherwise it stays unlimited.
+- Bump to 1.5.0
 
 
 ##### 0.3.0 - 17.4.2021

@@ -93,7 +93,7 @@ data class DecimalMode(
     val usingScale = scale >= 0
 
     init {
-        if (decimalPrecision == 0L && roundingMode != RoundingMode.NONE) {
+        if (usingScale.not() && decimalPrecision == 0L && roundingMode != RoundingMode.NONE) {
             throw ArithmeticException("Rounding mode with 0 digits precision.")
         }
         if (scale < -1) {

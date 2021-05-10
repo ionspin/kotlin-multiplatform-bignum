@@ -21,7 +21,6 @@ plugins {
     kotlin(PluginsDeps.multiplatform)
     id(PluginsDeps.mavenPublish)
     id(PluginsDeps.signing)
-    id(PluginsDeps.node) version Versions.nodePlugin
     id(PluginsDeps.dokka)
     id(PluginsDeps.spotless) version PluginsDeps.Versions.spotlessVersion
 }
@@ -108,7 +107,7 @@ kotlin {
                 browser() {
                     testTask {
                         useKarma {
-                            usePhantomJS()
+                            useChromeHeadless()
                         }
                     }
                 }
