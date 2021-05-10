@@ -28,7 +28,7 @@ and bug-fixing.
 
 #### Gradle
 ```kotlin
-implementation("com.ionspin.kotlin:bignum:0.3.0")
+implementation("com.ionspin.kotlin:bignum:0.3.1")
 ```
 
 #### Snapshot builds
@@ -38,9 +38,34 @@ repositories {
         url = uri("https://oss.sonatype.org/content/repositories/snapshots")
     }
 }
-implementation("com.ionspin.kotlin:bignum:0.3.1-SNAPSHOT")
+implementation("com.ionspin.kotlin:bignum:0.3.2-SNAPSHOT")
 
 ```
+
+#### 1.4.32 Kotlin based release
+
+Because there is a problem using unsigned integers when an importing project is using Kotlin 1.4.32 and the library is based on kotlin 1.5.0 I'm providing a version 
+of the library built with Kotlin 1.4.32 as well for the time being.
+
+**Stable:**
+
+```kotlin
+implementation("com.ionspin.kotlin:bignum:0.3.1-1.4.32")
+```
+
+**Snapshot**
+
+```kotlin
+repositories {
+    maven {
+        url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+    }
+}
+implementation("com.ionspin.kotlin:bignum:0.3.2-1.4.32-SNAPSHOT")
+
+```
+
+
 
 ## Usage
 
