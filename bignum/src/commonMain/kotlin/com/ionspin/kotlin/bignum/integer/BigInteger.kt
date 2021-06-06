@@ -459,18 +459,23 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
     }
 
     fun pow(exponent: BigInteger): BigInteger {
+        if (exponent < ZERO)
+            throw ArithmeticException("Negative exponent not supported with BigInteger")
+
         if (exponent <= Long.MAX_VALUE) {
             return pow(exponent.magnitude[0].toLong())
         }
-        // TODO this is not efficient
-        var counter = exponent
-        var result = ONE
-        while (counter > 0) {
-            counter--
-            result *= this
-        }
 
-        return result
+        return exponentiationBySquaring(ONE, this, exponent)
+    }
+
+    private tailrec fun exponentiationBySquaring(y: BigInteger, x: BigInteger, n: BigInteger): BigInteger {
+        return when {
+            n == ZERO -> y
+            n == ONE -> x * y
+            n.mod(TWO) == ZERO -> exponentiationBySquaring(y, x * x, n / 2)
+            else -> exponentiationBySquaring(x * y, x * x, (n - 1) / 2)
+        }
     }
 
     override fun pow(exponent: Long): BigInteger {
