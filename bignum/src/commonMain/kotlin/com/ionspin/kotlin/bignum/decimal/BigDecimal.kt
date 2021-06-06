@@ -25,6 +25,8 @@ import com.ionspin.kotlin.bignum.integer.ComparisonWorkaround
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.chosenArithmetic
 import com.ionspin.kotlin.bignum.integer.toBigInteger
+import com.ionspin.kotlin.bignum.serializer.BigDecimalSerializer
+import kotlinx.serialization.Serializable
 import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
@@ -56,6 +58,7 @@ import kotlin.math.min
  * on 23-Mar-2019
  */
 
+@Serializable(BigDecimalSerializer::class)
 class BigDecimal private constructor(
     _significand: BigInteger,
     _exponent: Long = 0L,

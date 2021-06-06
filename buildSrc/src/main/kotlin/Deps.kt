@@ -19,7 +19,7 @@ object Versions {
     val kotlinCoroutines = "1.4.2"
     val kotlinCoroutinesMT = "1.4.3-native-mt"
     val kotlin = "1.5.0"
-    val kotlinSerialization = "1.0.0"
+    val kotlinSerialization = "1.2.1"
     val nodePlugin = "1.3.0"
     val dokkaPlugin = "1.4.0-rc"
 }
@@ -32,14 +32,14 @@ object Deps {
         val testAnnotation = "test-annotations-common"
         val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinCoroutines}"
         val coroutinesMT = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinCoroutinesMT}"
-        val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:${Versions.kotlinSerialization}"
+        val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.kotlinSerialization}"
+        val serializationJson = "org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinSerialization}"
     }
 
     object Js {
         val stdLib = "stdlib-js"
         val test = "test-js"
         val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinCoroutines}"
-        val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:${Versions.kotlinSerialization}"
     }
 
     object Jvm {
@@ -48,7 +48,6 @@ object Deps {
         val testJUnit = "test-junit"
         val reflection = "reflect"
         val coroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinCoroutines}"
-        val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Versions.kotlinSerialization}"
         val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.kotlinCoroutines}"
     }
 
@@ -68,7 +67,7 @@ object PluginsDeps {
         val spotlessVersion = "5.1.0"
     }
 
-    val kotlinSerializationPlugin = "kotlinx-serialization"
+    val serialization = "plugin.serialization"
     val multiplatform = "multiplatform"
     val node = "com.github.node-gradle.node"
     val mavenPublish = "maven-publish"

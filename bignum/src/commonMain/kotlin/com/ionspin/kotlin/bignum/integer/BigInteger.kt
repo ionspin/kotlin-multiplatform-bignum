@@ -17,15 +17,12 @@
 
 package com.ionspin.kotlin.bignum.integer
 
-import com.ionspin.kotlin.bignum.BigNumber
-import com.ionspin.kotlin.bignum.BitwiseCapable
-import com.ionspin.kotlin.bignum.ByteArrayDeserializable
-import com.ionspin.kotlin.bignum.ByteArraySerializable
-import com.ionspin.kotlin.bignum.CommonBigNumberOperations
-import com.ionspin.kotlin.bignum.NarrowingOperations
+import com.ionspin.kotlin.bignum.*
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.integer.base63.array.BigInteger63Arithmetic
 import com.ionspin.kotlin.bignum.modular.ModularBigInteger
+import com.ionspin.kotlin.bignum.serializer.BigIntegerSerializer
+import kotlinx.serialization.Serializable
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.log10
@@ -36,6 +33,7 @@ import kotlin.math.log10
  * Based on unsigned arrays, currently limited to [Int.MAX_VALUE] words.
  */
 
+@Serializable(BigIntegerSerializer::class)
 class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign) : BigNumber<BigInteger>,
     CommonBigNumberOperations<BigInteger>,
     NarrowingOperations<BigInteger>,

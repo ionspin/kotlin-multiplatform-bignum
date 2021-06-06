@@ -19,6 +19,7 @@
 
 plugins {
     kotlin(PluginsDeps.multiplatform)
+    kotlin(PluginsDeps.serialization)
     id(PluginsDeps.mavenPublish)
     id(PluginsDeps.signing)
     id(PluginsDeps.dokka)
@@ -210,13 +211,16 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(kotlin(Deps.Common.stdLib))
+                compileOnly(Deps.Common.serialization)
             }
         }
+
         val commonTest by getting {
             dependencies {
                 implementation(kotlin(Deps.Common.test))
                 implementation(kotlin(Deps.Common.testAnnotation))
                 implementation(Deps.Common.coroutinesMT)
+                implementation(Deps.Common.serializationJson)
             }
         }
 
