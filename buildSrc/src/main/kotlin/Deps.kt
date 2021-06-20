@@ -17,12 +17,14 @@
 
 object Versions {
     val kotlinCoroutines = "1.4.2"
-    val kotlinCoroutinesMT = "1.4.3-native-mt"
-    val kotlin = "1.5.0"
-    val kotlinSerialization = "1.0.0"
+    val kotlinCoroutinesMT = "1.5.0-native-mt"
+    val kotlin = "1.5.10"
+    val kotlinSerialization = "1.2.1"
     val nodePlugin = "1.3.0"
     val dokkaPlugin = "1.4.0-rc"
 }
+
+val projectVersion = "0.3.2-SNAPSHOT"
 
 object Deps {
 
@@ -32,7 +34,8 @@ object Deps {
         val testAnnotation = "test-annotations-common"
         val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinCoroutines}"
         val coroutinesMT = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinCoroutinesMT}"
-        val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:${Versions.kotlinSerialization}"
+        val kotlinxSerialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinSerialization}"
+        val bignum = "com.ionspin.kotlin:bignum:$projectVersion"
     }
 
     object Js {
@@ -65,15 +68,17 @@ object Deps {
 
 object PluginsDeps {
     object Versions {
-        val spotlessVersion = "5.1.0"
+        val spotlessVersion = "5.14.0"
+        val kotlinxSerialization = "1.5.0"
     }
 
-    val kotlinSerializationPlugin = "kotlinx-serialization"
+
     val multiplatform = "multiplatform"
     val node = "com.github.node-gradle.node"
     val mavenPublish = "maven-publish"
     val signing = "signing"
     val dokka = "org.jetbrains.dokka"
     val spotless = "com.diffplug.spotless"
+    val kotlinxSerialization = "plugin.serialization"
 }
 
