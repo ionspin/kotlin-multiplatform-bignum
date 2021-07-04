@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
+
 plugins {
     kotlin(PluginsDeps.multiplatform)
     kotlin(PluginsDeps.kotlinxSerialization) version PluginsDeps.Versions.kotlinxSerialization
@@ -65,25 +67,37 @@ signing {
 
 kotlin {
     jvm()
-    js() {
+    js(IR) {
+        /* IR only for now as legacy fails with the following exception:
+        TypeError: tmp$.serializer is not a function
+            at <global>.compiledSerializerImpl(/tmp/_karma_webpack_695475/commons.js:72072)
+            at <global>.serializerOrNull(/tmp/_karma_webpack_695475/commons.js:72052)
+            at <global>.serializerByKTypeImpl(/tmp/_karma_webpack_695475/commons.js:71975)
+            at <global>.serializer(/tmp/_karma_webpack_695475/commons.js:71947)
+            at com.ionspin.kotlin.bignum.serialization.kotlinx.HumanReadableSerializationTest.testSerialization(/tmp/_karma_webpack_695475/commons.js:88247)
+            at <global>.<unknown>(/tmp/_karma_webpack_695475/commons.js:88269)
+            at Context.<anonymous>(/tmp/_karma_webpack_695475/commons.js:57)
+         */
         nodejs()
         browser()
     }
     linuxX64()
-    linuxArm32Hfp()
-    linuxArm64()
+//    linuxArm32Hfp() Not supported by kotlinx serialization
+//    linuxArm64() Not supported by kotlinx serialization
     iosX64()
     iosArm64()
     iosArm32()
     macosX64()
     tvos()
     watchos()
+//    mingwX86() Not supported by kotlinx serialization
+    mingwX64()
 
     sourceSets {
         val commonMain by getting {
             dependencies {
                 implementation(kotlin(Deps.Common.stdLib))
-                implementation(Deps.Common.bignum)
+                implementation(project(Deps.Project.bignum))
                 implementation(Deps.Common.kotlinxSerialization)
             }
         }
@@ -94,6 +108,22 @@ kotlin {
                 implementation(Deps.Common.coroutinesMT)
             }
         }
+
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin(Deps.Jvm.test))
+                implementation(kotlin(Deps.Jvm.testJUnit))
+                implementation(kotlin(Deps.Jvm.reflection))
+            }
+        }
+
+        val jsTest by getting {
+            dependencies {
+                implementation(kotlin(Deps.Js.test))
+            }
+        }
+
+
     }
 }
 
@@ -116,6 +146,45 @@ tasks {
             create("commonMain") {
                 displayName = "common"
                 platform = "common"
+            }
+        }
+    }
+
+    val jvmTest by getting(Test::class) {
+        testLogging {
+            events("PASSED", "FAILED", "SKIPPED")
+        }
+    }
+
+        val jsNodeTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
+            testLogging {
+                events("PASSED", "FAILED", "SKIPPED")
+            }
+        }
+
+        val jsBrowserTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
+            testLogging {
+                events("PASSED", "FAILED", "SKIPPED")
+            }
+        }
+
+//        val jsLegacyNodeTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
+//            testLogging {
+//                events("PASSED", "FAILED", "SKIPPED")
+//            }
+//        }
+//
+//        val jsLegacyBrowserTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
+//            testLogging {
+//                events("PASSED", "FAILED", "SKIPPED")
+//            }
+//        }
+
+    if (hostOsName == HostOs.LINUX) {
+        val linuxX64Test by getting(KotlinNativeTest::class) {
+            testLogging {
+                events("PASSED", "FAILED", "SKIPPED")
+                // showStandardStreams = true
             }
         }
     }

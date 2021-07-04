@@ -64,6 +64,10 @@ object Deps {
         val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-runtime-native:${Versions.kotlinSerialization}"
         val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinCoroutines}"
     }
+
+    object Project {
+        val bignum = ":bignum"
+    }
 }
 
 object PluginsDeps {
