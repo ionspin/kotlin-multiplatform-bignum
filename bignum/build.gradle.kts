@@ -57,10 +57,6 @@ val sonatypeUsernameEnv: String? = System.getenv()["SONATYPE_USERNAME"]
 repositories {
     mavenCentral()
     google()
-    maven("https://kotlin.bintray.com/kotlinx")
-    maven("https://dl.bintray.com/kotlin/kotlin-eap")
-    maven("https://dl.bintray.com/kotlin/kotlin-dev")
-    jcenter()
 }
 group = "com.ionspin.kotlin"
 version = projectVersion
