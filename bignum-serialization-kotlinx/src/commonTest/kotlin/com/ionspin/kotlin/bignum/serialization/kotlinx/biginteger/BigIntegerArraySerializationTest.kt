@@ -21,7 +21,7 @@ class ArraySerializationTest {
         run {
             val testBigInteger = BigInteger.parseString("1000000000000000000000000000002000000000000000000000000000003")
             val json = Json {
-                serializersModule = arrayBigIntegerSerializer
+                serializersModule = bigIntegerArraySerializerModule
             }
             val serialized = json.encodeToString(testBigInteger)
             println(serialized)
@@ -31,7 +31,7 @@ class ArraySerializationTest {
         run {
             val testBigInteger = BigInteger.parseString("-1000000000000000000000000000002000000000000000000000000000003")
             val json = Json {
-                serializersModule = arrayBigIntegerSerializer
+                serializersModule = bigIntegerArraySerializerModule
             }
             val serialized = json.encodeToString(testBigInteger)
             println(serialized)
@@ -42,15 +42,15 @@ class ArraySerializationTest {
     }
 
     @Serializable
-    data class BigIntSerializtionTest(@Contextual val a : BigInteger, @Contextual val b : BigInteger)
+    data class BigIntegerArraySerializtionTestData(@Contextual val a : BigInteger, @Contextual val b : BigInteger)
 
     @Test
     fun testSomething() {
         val a = BigInteger.parseString("-1000000000000000000000000000002000000000000000000000000000003")
         val b = BigInteger.parseString("1000000000000000000000000000002000000000000000000000000000003")
-        val testObject = BigIntSerializtionTest(a, b)
+        val testObject = BigIntegerArraySerializtionTestData(a, b)
         val json = Json {
-            serializersModule = arrayBigIntegerSerializer
+            serializersModule = bigIntegerArraySerializerModule
         }
         val serialized = json.encodeToString(testObject)
         println(serialized)

@@ -66,6 +66,6 @@ object BigIntegerArraySerializer : KSerializer<BigInteger> {
 
 }
 
-val arrayBigIntegerSerializer = SerializersModule {
+val bigIntegerArraySerializerModule = SerializersModule {
     contextual(BigInteger::class, BigIntegerArraySerializer)
 }

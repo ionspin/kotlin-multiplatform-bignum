@@ -101,7 +101,7 @@ object DecimalModeSerializer : KSerializer<DecimalMode> {
 
 }
 
-val bigDecimalArraySerializer = SerializersModule {
+val bigDecimalArraySerializerModule = SerializersModule {
     contextual(BigDecimal::class, BigDecimalArraySerializer)
     contextual(DecimalMode::class, DecimalModeSerializer)
 }

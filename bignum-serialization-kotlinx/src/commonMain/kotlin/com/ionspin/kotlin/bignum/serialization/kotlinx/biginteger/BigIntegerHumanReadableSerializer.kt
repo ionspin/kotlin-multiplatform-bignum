@@ -18,7 +18,7 @@ import kotlinx.serialization.modules.SerializersModule
  * Serializes big integer into base 10 human readable format.
  */
 @Serializer(forClass = BigInteger::class)
-object HumanReadableSerializer : KSerializer<BigInteger> {
+object BigIntegerHumanReadableSerializer : KSerializer<BigInteger> {
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("BigInteger", PrimitiveKind.STRING)
 
@@ -33,6 +33,6 @@ object HumanReadableSerializer : KSerializer<BigInteger> {
 
 }
 
-val humanReadableBigIntegerSerializer = SerializersModule {
-    contextual(BigInteger::class, HumanReadableSerializer)
+val bigIntegerhumanReadableSerializerModule = SerializersModule {
+    contextual(BigInteger::class, BigIntegerHumanReadableSerializer)
 }
