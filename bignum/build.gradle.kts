@@ -388,7 +388,6 @@ tasks {
     dokkaHtml {
         println("Dokka !")
         dokkaSourceSets {
-
         }
     }
     if (hostOsName == primaryDevelopmentOs) {
