@@ -135,18 +135,15 @@ tasks {
     val hostOsName = getHostOsName()
 
     create<Jar>("javadocJar") {
-        dependsOn(dokkaJavadoc)
+        dependsOn(dokkaHtml)
         archiveClassifier.set("javadoc")
-        from(dokkaJavadoc.get().outputDirectory)
+        from(dokkaHtml.get().outputDirectory)
     }
 
-    dokkaJavadoc {
+    dokkaHtml {
         println("Dokka !")
         dokkaSourceSets {
-            create("commonMain") {
-                displayName = "common"
-                platform = "common"
-            }
+
         }
     }
 

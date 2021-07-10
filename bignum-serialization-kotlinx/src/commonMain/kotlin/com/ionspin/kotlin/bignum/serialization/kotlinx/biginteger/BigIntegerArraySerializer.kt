@@ -11,6 +11,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.descriptors.element
 import kotlinx.serialization.descriptors.listSerialDescriptor
+import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.encoding.decodeStructure
@@ -28,7 +29,7 @@ import kotlinx.serialization.modules.SerializersModule
 object BigIntegerArraySerializer : KSerializer<BigInteger> {
 
 
-    private val bigIntegerSerializer = ArraySerializer(Long.serializer())
+    private val longArraySerializer = ArraySerializer(Long.serializer())
 
     override val descriptor: SerialDescriptor = buildClassSerialDescriptor("BigIntegerArray") {
         element("magnitude", listSerialDescriptor(ULong.serializer().descriptor))
@@ -39,7 +40,7 @@ object BigIntegerArraySerializer : KSerializer<BigInteger> {
     override fun serialize(encoder: Encoder, value: BigInteger) {
         val array = value.getBackingArrayCopy()
         encoder.encodeStructure(descriptor) {
-            encodeSerializableElement(descriptor, 0, bigIntegerSerializer, array.asLongArray().toTypedArray())
+            encodeSerializableElement(descriptor, 0, longArraySerializer, array.asLongArray().toTypedArray())
             encodeStringElement(descriptor, 1, value.getSign().name)
         }
 
@@ -47,8 +48,16 @@ object BigIntegerArraySerializer : KSerializer<BigInteger> {
 
     override fun deserialize(decoder: Decoder): BigInteger {
         return decoder.decodeStructure(descriptor) {
-            val array = decodeSerializableElement(descriptor, 0, bigIntegerSerializer)
-            val signString = decodeStringElement(descriptor, 1)
+            var array = emptyArray<Long>()
+            var signString = ""
+            while (true) {
+                when (val index = decodeElementIndex(descriptor)) {
+                    0 -> array = decodeSerializableElement(descriptor, 0, longArraySerializer)
+                    1 -> signString = decodeStringElement(descriptor, 1)
+                    CompositeDecoder.DECODE_DONE -> break
+                    else -> error("Unexpected index: $index")
+                }
+            }
             BigInteger.createFromWordArray(array.toLongArray().asULongArray(), Sign.valueOf(signString))
 
         }

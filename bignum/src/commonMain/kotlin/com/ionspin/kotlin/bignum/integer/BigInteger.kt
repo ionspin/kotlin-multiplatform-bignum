@@ -63,11 +63,11 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
         return this
     }
 
-    fun getBackingArrayCopy() : WordArray {
+    fun getBackingArrayCopy(): WordArray {
         return magnitude.copyOf()
     }
 
-    fun getSign() : Sign {
+    fun getSign(): Sign {
         return sign
     }
 
@@ -81,7 +81,7 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
 
         val LOG_10_OF_2 = log10(2.0)
 
-        fun createFromWordArray(wordArray: WordArray, requestedSign: Sign) : BigInteger {
+        fun createFromWordArray(wordArray: WordArray, requestedSign: Sign): BigInteger {
             return BigInteger(wordArray, requestedSign)
         }
 
