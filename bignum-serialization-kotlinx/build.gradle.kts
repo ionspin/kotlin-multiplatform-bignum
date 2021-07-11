@@ -66,9 +66,12 @@ signing {
 }
 
 kotlin {
-    jvm()
-    js(IR) {
-        /* IR only for now as legacy fails with the following exception:
+
+    val hostOs = getHostOsName()
+    if (hostOs == primaryDevelopmentOs) {
+        jvm()
+        js(IR) {
+            /* IR only for now as legacy fails with the following exception:
         TypeError: tmp$.serializer is not a function
             at <global>.compiledSerializerImpl(/tmp/_karma_webpack_695475/commons.js:72072)
             at <global>.serializerOrNull(/tmp/_karma_webpack_695475/commons.js:72052)
@@ -78,12 +81,15 @@ kotlin {
             at <global>.<unknown>(/tmp/_karma_webpack_695475/commons.js:88269)
             at Context.<anonymous>(/tmp/_karma_webpack_695475/commons.js:57)
          */
-        nodejs()
-        browser()
+            nodejs()
+            browser()
+        }
     }
-    linuxX64()
+    if (hostOs == HostOs.LINUX) {
+        linuxX64()
 //    linuxArm32Hfp() Not supported by kotlinx serialization
 //    linuxArm64() Not supported by kotlinx serialization
+    }
     iosX64()
     iosArm64()
     iosArm32()
@@ -109,17 +115,19 @@ kotlin {
             }
         }
 
-        val jvmTest by getting {
-            dependencies {
-                implementation(kotlin(Deps.Jvm.test))
-                implementation(kotlin(Deps.Jvm.testJUnit))
-                implementation(kotlin(Deps.Jvm.reflection))
+        if (hostOs == primaryDevelopmentOs) {
+            val jvmTest by getting {
+                dependencies {
+                    implementation(kotlin(Deps.Jvm.test))
+                    implementation(kotlin(Deps.Jvm.testJUnit))
+                    implementation(kotlin(Deps.Jvm.reflection))
+                }
             }
-        }
 
-        val jsTest by getting {
-            dependencies {
-                implementation(kotlin(Deps.Js.test))
+            val jsTest by getting {
+                dependencies {
+                    implementation(kotlin(Deps.Js.test))
+                }
             }
         }
 
