@@ -65,6 +65,12 @@ implementation("com.ionspin.kotlin:bignum:0.3.2-1.4.32-SNAPSHOT")
 
 ```
 
+## Serialization
+
+Serializers for KotlinX Serializtion library are provided, see more here [kotlinx serialization support](bignum-serialization-kotlinx/README.md)
+
+Note that because kotlinx doesnt support linux arm targets as well as MinGW x86, serialization support library doesnt either.
+Additionally because of a bug when building serialization support library only JS IR variant is provided.
 
 
 ## Usage
