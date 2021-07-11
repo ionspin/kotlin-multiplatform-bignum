@@ -1,5 +1,10 @@
 # Support for kotlinx-serialization
 
+Supports BigInteger and BigDecimal serialization using KotlinX Serialization library. 
+
+Note that because KotlinX Serialization doesn't support linux arm targets as well as MinGW x86, serialization support library doesn't either.
+Additionally, because of a bug when building serialization support library only JS IR variant is provided.
+
 ## Integration
 
 #### Gradle
