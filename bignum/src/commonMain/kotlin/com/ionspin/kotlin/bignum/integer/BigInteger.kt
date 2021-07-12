@@ -63,6 +63,14 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
         return this
     }
 
+    fun getBackingArrayCopy(): WordArray {
+        return magnitude.copyOf()
+    }
+
+    fun getSign(): Sign {
+        return sign
+    }
+
     companion object : BigNumber.Creator<BigInteger>, BigNumber.Util<BigInteger>, ByteArrayDeserializable<BigInteger> {
         private val arithmetic: BigIntegerArithmetic = chosenArithmetic
 
@@ -72,6 +80,10 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
         override val TEN = BigInteger(arithmetic.TEN, Sign.POSITIVE)
 
         val LOG_10_OF_2 = log10(2.0)
+
+        fun createFromWordArray(wordArray: WordArray, requestedSign: Sign): BigInteger {
+            return BigInteger(wordArray, requestedSign)
+        }
 
         override fun parseString(string: String, base: Int): BigInteger {
             if (base < 2 || base > 36) {

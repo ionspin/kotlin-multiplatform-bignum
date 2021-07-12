@@ -59,7 +59,7 @@ repositories {
     google()
 }
 group = "com.ionspin.kotlin"
-version = "0.3.2-SNAPSHOT"
+version = projectVersion
 
 val ideaActive = System.getProperty("idea.active") == "true"
 

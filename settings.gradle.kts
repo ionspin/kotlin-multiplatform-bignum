@@ -26,4 +26,5 @@ pluginManagement {
 }
 rootProject.name = "KotlinBigInteger"
 include("bignum")
+include("bignum-serialization-kotlinx")
 
