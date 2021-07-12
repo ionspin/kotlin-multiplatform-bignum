@@ -140,7 +140,7 @@ tasks {
 //    build.dependsOn("spotlessCheck")
 //    build.dependsOn("spotlessKotlinCheck")
 
-    val hostOsName = getHostOsName()
+    val hostOs = getHostOsName()
 
     create<Jar>("javadocJar") {
         dependsOn(dokkaHtml)
@@ -154,12 +154,12 @@ tasks {
 
         }
     }
-
-    val jvmTest by getting(Test::class) {
-        testLogging {
-            events("PASSED", "FAILED", "SKIPPED")
+    if (hostOs == primaryDevelopmentOs) {
+        val jvmTest by getting(Test::class) {
+            testLogging {
+                events("PASSED", "FAILED", "SKIPPED")
+            }
         }
-    }
 
         val jsNodeTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
             testLogging {
@@ -172,6 +172,7 @@ tasks {
                 events("PASSED", "FAILED", "SKIPPED")
             }
         }
+    }
 
 //        val jsLegacyNodeTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
 //            testLogging {
@@ -185,7 +186,7 @@ tasks {
 //            }
 //        }
 
-    if (hostOsName == HostOs.LINUX) {
+    if (hostOs == HostOs.LINUX) {
         val linuxX64Test by getting(KotlinNativeTest::class) {
             testLogging {
                 events("PASSED", "FAILED", "SKIPPED")
