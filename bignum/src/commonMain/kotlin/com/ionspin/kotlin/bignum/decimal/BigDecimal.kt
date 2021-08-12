@@ -1592,7 +1592,7 @@ class BigDecimal private constructor(
      * Returns a new negated instance
      */
     override fun unaryMinus(): BigDecimal {
-        return BigDecimal(significand.negate(), exponent)
+        return BigDecimal(significand.negate(), exponent, decimalMode)
     }
 
     override fun secureOverwrite() {
