@@ -4,6 +4,7 @@
 ##### 0.3.2-SNAPSHOT
 - Added kotlinx serialization support library
 - Enabled gradle dependencies verification (bootstrapped)
+- Fix for losing decimal mode when using unary minus (#184)
 
 
 ##### 0.3.1
