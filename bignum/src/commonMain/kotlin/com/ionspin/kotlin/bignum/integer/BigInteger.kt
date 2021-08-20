@@ -764,7 +764,7 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
             val firstBit = magnitude[1] shl 63
             (magnitude[0].toLong() or firstBit.toLong()) * signum()
         } else {
-            return magnitude[0].toLong()
+            return magnitude[0].toLong() * signum()
         }
     }
 

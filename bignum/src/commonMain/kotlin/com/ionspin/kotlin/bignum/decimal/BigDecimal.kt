@@ -1877,7 +1877,7 @@ class BigDecimal private constructor(
         val divExponent = precision - 1 - exponent
         val l = this.significand.longValue(exactRequired)
         return if (l.toDouble().toLong() == l && divExponent >= 0 && divExponent < double10pow.size) {
-            (l / double10pow[divExponent.toInt()]) * signum()
+            (l / double10pow[divExponent.toInt()])
         } else {
             toString().toDouble()
         }

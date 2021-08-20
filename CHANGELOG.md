@@ -5,9 +5,10 @@
 - Added kotlinx serialization support library
 - Enabled gradle dependencies verification (bootstrapped)
 - Fix for losing decimal mode when using unary minus (#184)
+- Fix for losing sign when narrowing to long from big integer (#186)
 
 
-##### 0.3.1
+##### 0.3.1 - 10.5.2021
 - Fix for #176, a case of unclear API. Methods `roundToDigitPositionAfterDecimalPoint` and `roundToDigitPosition` would set decimal precision to the number of digits present in the result after the rounding was completed. Now they only set decimal precision if it's explicitly set, otherwise it stays unlimited.
 - Bump to 1.5.0
 
