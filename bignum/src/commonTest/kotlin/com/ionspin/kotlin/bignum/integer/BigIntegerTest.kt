@@ -253,8 +253,17 @@ BigIntegerTest {
             a.intValue(exactRequired = true) == 2
         }
         assertTrue {
+            val a = (-2).toBigInteger()
+            a.intValue(exactRequired = true) == -2
+        }
+        assertTrue {
             val a = 2.toBigInteger()
             val short: Short = 2
+            a.shortValue(exactRequired = true) == short
+        }
+        assertTrue {
+            val a = (-2).toBigInteger()
+            val short: Short = -2
             a.shortValue(exactRequired = true) == short
         }
         assertTrue {
@@ -263,8 +272,17 @@ BigIntegerTest {
             a.byteValue(exactRequired = true) == byte
         }
         assertTrue {
+            val a = (-2).toBigInteger()
+            val byte: Byte = -2
+            a.byteValue(exactRequired = true) == byte
+        }
+        assertTrue {
             val a = 2.toBigInteger()
             a.longValue(exactRequired = true) == 2L
+        }
+        assertTrue {
+            val a = (-2).toBigInteger()
+            a.longValue(exactRequired = true) == -2L
         }
         assertTrue {
             val a = 2.toBigInteger()
