@@ -1,7 +1,10 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
 
-##### 0.3.2-SNAPSHOT
+
+##### 0.3.3-SNAPSHOT
+
+##### 0.3.2 - 5.9.2021
 - Added kotlinx serialization support library
 - Enabled gradle dependencies verification (bootstrapped)
 - Fix for losing decimal mode when using unary minus (#184)
