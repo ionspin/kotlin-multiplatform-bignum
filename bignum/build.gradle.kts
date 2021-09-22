@@ -156,7 +156,22 @@ kotlin {
             }
         }
     }
+
+    iosSimulatorArm64() {
+        binaries {
+            framework {
+            }
+        }
+    }
+
     macosX64() {
+        binaries {
+            framework {
+            }
+        }
+    }
+
+    macosArm64() {
         binaries {
             framework {
             }
@@ -169,8 +184,23 @@ kotlin {
             }
         }
     }
+
+    tvosSimulatorArm64() {
+        binaries {
+            framework {
+            }
+        }
+    }
+
     if (ideaActive.not()) {
         watchos() {
+            binaries {
+                framework {
+                }
+            }
+        }
+
+        watchosSimulatorArm64() {
             binaries {
                 framework {
                 }
