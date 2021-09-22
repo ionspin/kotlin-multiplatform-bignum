@@ -19,7 +19,7 @@ object Versions {
     val kotlinCoroutines = "1.5.2"
     val kotlinCoroutinesMT = "1.5.2-native-mt"
     val kotlin = "1.5.31"
-    val kotlinSerialization = "1.2.1"
+    val kotlinSerialization = "1.3.0-RC"
     val nodePlugin = "1.3.0"
     val dokkaPlugin = "1.5.0"
 }
