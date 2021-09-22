@@ -93,9 +93,13 @@ kotlin {
     iosX64()
     iosArm64()
     iosArm32()
+    iosSimulatorArm64()
     macosX64()
+    macosArm64()
     tvos()
+    tvosSimulatorArm64()
     watchos()
+    watchosSimulatorArm64()
 //    mingwX86() Not supported by kotlinx serialization
     mingwX64()
 
