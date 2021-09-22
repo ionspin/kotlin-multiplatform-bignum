@@ -358,6 +358,25 @@ kotlin {
         val tvosTest by getting {
             dependsOn(nativeTest)
         }
+
+        val iosSimulatorArm64Main by sourceSets.getting
+        val iosSimulatorArm64Test by sourceSets.getting
+
+        iosSimulatorArm64Main.dependsOn(nativeMain)
+        iosSimulatorArm64Test.dependsOn(nativeTest)
+
+        val macosArm64Main by sourceSets.getting
+        val macosArm64Test by sourceSets.getting
+
+        macosArm64Main.dependsOn(nativeMain)
+        macosArm64Test.dependsOn(nativeTest)
+
+        val tvosSimulatorArm64Main by sourceSets.getting
+        val tvosSimulatorArm64Test by sourceSets.getting
+
+        tvosSimulatorArm64Main.dependsOn(nativeMain)
+        tvosSimulatorArm64Test.dependsOn(nativeTest)
+
         if (ideaActive.not()) {
             val watchosMain by getting {
                 dependsOn(nativeMain)
@@ -366,6 +385,12 @@ kotlin {
             val watchosTest by getting {
                 dependsOn(nativeTest)
             }
+
+            val watchosSimulatorArm64Main by sourceSets.getting
+            val watchosSimulatorArm64Test by sourceSets.getting
+
+            watchosSimulatorArm64Main.dependsOn(nativeMain)
+            watchosSimulatorArm64Test.dependsOn(nativeTest)
         }
 
         val watchosX86Main by getting {
