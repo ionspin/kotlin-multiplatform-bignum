@@ -90,7 +90,6 @@ kotlin {
             compilations {
                 this.forEach {
                     it.compileKotlinTask.kotlinOptions.sourceMap = true
-                    it.compileKotlinTask.kotlinOptions.moduleKind = "commonjs"
                     it.compileKotlinTask.kotlinOptions.metaInfo = true
 
                     if (it.name == "main") {
