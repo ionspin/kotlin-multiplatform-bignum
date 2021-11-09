@@ -3,6 +3,7 @@
 
 
 ##### 0.3.3-SNAPSHOT
+- Add support for apple silicon (#188 #194)
 
 ##### 0.3.2 - 5.9.2021
 - Added kotlinx serialization support library

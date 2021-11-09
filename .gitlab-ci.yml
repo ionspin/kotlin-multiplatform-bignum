@@ -33,7 +33,7 @@ linuxPublishToSnapshot:
   script:
     - ./linuxBuildAndPublish.sh
   only:
-    - master
+    - main
   tags:
     - linuxX64
 
@@ -55,7 +55,7 @@ macPublishToSnapshot:
     - ./macBuild.sh
     - ./macBuildAndPublish.sh
   only:
-    - master
+    - main
   tags:
     - macos
 
@@ -77,6 +77,6 @@ windowsPublishToSnapshot:
     - $env:CHERE_INVOKING = 'yes'
     - C:\msys64\usr\bin\bash -lc "./windowsBuildAndPublish.sh"
   only:
-    - master
+    - main
   tags:
     - windowsX64
