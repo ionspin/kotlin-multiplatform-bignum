@@ -1,4 +1,4 @@
-[![pipeline status](https://gitlab.com/ionspin-github-ci/kotlin-multiplatform-bignum-ci/badges/master/pipeline.svg)](https://gitlab.com/ionspin-github-ci/kotlin-multiplatform-bignum-ci/-/commits/master)
+[![pipeline status](https://gitlab.com/ionspin-github-ci/kotlin-multiplatform-bignum-ci/badges/main/pipeline.svg)](https://gitlab.com/ionspin-github-ci/kotlin-multiplatform-bignum-ci/-/commits/main)
 [![Maven Central](https://img.shields.io/maven-central/v/com.ionspin.kotlin/bignum.svg)](https://repo1.maven.org/maven2/com/ionspin/kotlin/bignum/)
 # Kotlin MP BigNum library 
 
@@ -27,7 +27,7 @@ and bug-fixing.
 
 #### Gradle
 ```kotlin
-implementation("com.ionspin.kotlin:bignum:0.3.2")
+implementation("com.ionspin.kotlin:bignum:0.3.3")
 ```
 
 #### Snapshot builds
@@ -37,7 +37,7 @@ repositories {
         url = uri("https://oss.sonatype.org/content/repositories/snapshots")
     }
 }
-implementation("com.ionspin.kotlin:bignum:0.3.3-SNAPSHOT")
+implementation("com.ionspin.kotlin:bignum:0.3.4-SNAPSHOT")
 
 ```
 
