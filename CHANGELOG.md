@@ -1,8 +1,10 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
 
+##### 0.3.4-SNAPSHOT - current main
+- Fix for invalid decimal precision when dividend has exponent -1 (#195)
 
-##### 0.3.3-SNAPSHOT
+##### 0.3.3 - 9.11.2021
 - Add support for apple silicon (#188 #194)
 
 ##### 0.3.2 - 5.9.2021
