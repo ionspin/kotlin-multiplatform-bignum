@@ -1,6 +1,7 @@
 package com.ionspin.kotlin.bignum.decimal
 
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
@@ -103,6 +104,57 @@ class BigDecimalDivisionTest {
         val b = 3.toBigDecimal()
         assertFailsWith<ArithmeticException> {
             val result = a / b
+        }
+    }
+
+    @Test
+    fun testDivideAndRemainder() {
+        run {
+            val a = 0.14.toBigDecimal()
+            val b = BigDecimal.ONE
+            val (quotient, remainder) = a.divideAndRemainder(b)
+            assertEquals(BigDecimal.ZERO, quotient)
+            assertEquals(a, remainder)
+        }
+
+        run {
+            val a = 1.14.toBigDecimal()
+            val b = BigDecimal.ONE
+            val (quotient, remainder) = a.divideAndRemainder(b)
+            assertEquals(BigDecimal.ONE, quotient)
+            assertEquals(0.14.toBigDecimal(), remainder)
+        }
+
+        run {
+            val a = 1.toBigDecimal()
+            val b = BigDecimal.ONE
+            val (quotient, remainder) = a.divideAndRemainder(b)
+            assertEquals(BigDecimal.ONE, quotient)
+            assertEquals(BigDecimal.ZERO, remainder)
+        }
+
+        run {
+            val a = 1.toBigDecimal()
+            val b = BigDecimal.TWO
+            val (quotient, remainder) = a.divideAndRemainder(b)
+            assertEquals(BigDecimal.ZERO, quotient)
+            assertEquals(BigDecimal.ONE, remainder)
+        }
+
+        run {
+            val a = 1.toBigDecimal()
+            val b = BigDecimal.TWO.negate()
+            val (quotient, remainder) = a.divideAndRemainder(b)
+            assertEquals(BigDecimal.ZERO, quotient)
+            assertEquals(BigDecimal.ONE, remainder)
+        }
+
+        run {
+            val a = -1.toBigDecimal()
+            val b = BigDecimal.TWO.negate()
+            val (quotient, remainder) = a.divideAndRemainder(b)
+            assertEquals(BigDecimal.ZERO, quotient)
+            assertEquals(BigDecimal.ONE.negate(), remainder)
         }
     }
 }
