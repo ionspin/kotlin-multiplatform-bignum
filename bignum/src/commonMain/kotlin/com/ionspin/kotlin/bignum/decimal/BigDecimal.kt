@@ -1328,9 +1328,15 @@ class BigDecimal private constructor(
 
     /**
      * Quotient and remainder of **integer** division on this bigDecimal. If there is no rounding mode defined in decimal mode
-     * #RoundingMode.FLOOR will be used
+     * #RoundingMode.FLOOR will be used. Uses truncating division to determine quotient, which means that the sign of remainder will be same as sign of dividend
      */
     override fun divideAndRemainder(other: BigDecimal): Pair<BigDecimal, BigDecimal> {
+        if (exponent < 0) {
+            return Pair(ZERO, this)
+        }
+        if (other.abs() > this.abs()) {
+            return Pair(ZERO, this)
+        }
         val resolvedRoundingMode = this.decimalMode ?: DecimalMode(exponent + 1, RoundingMode.FLOOR)
         val quotient = divide(other, resolvedRoundingMode)
         val quotientInfinitePrecision = quotient.copy(decimalMode = DecimalMode.DEFAULT)
