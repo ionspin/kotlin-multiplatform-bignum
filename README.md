@@ -406,8 +406,7 @@ whether unlimited precision or limited precision, then these rules for scale of 
 
 ##### Infinite precision  
 
-Precision 0 and roundingMode none attempt to provide infinite precisions. Exception is division, where default precision 
-is the sum of precisions of operands (or 6, if the sum is below 6). If result of the operation cannot fit inside precision and RoundingMode is NONE, `ArithmeticException` 
+Precision 0 and roundingMode none attempt to provide infinite precisions. Exception is division (and exponentiation with negative parameter), where default precision is the sum of precisions of operands (or 6, if the sum is below 6). If result of the operation cannot fit inside precision and RoundingMode is NONE, `ArithmeticException` 
 will be thrown.
 
 Example from the tests:

@@ -1634,7 +1634,9 @@ class BigDecimal private constructor(
     }
 
     /**
-     * Exponentiate this BigDecimal by some exponent
+     * Exponentiate this BigDecimal by some exponent. Note that while exponentiation with positive numbers can have
+     * infinite precision, exponentiation with negative numbers is division and as such has the same limitation
+     * as division.
      */
     override fun pow(exponent: Long): BigDecimal {
         var result = this
@@ -1646,9 +1648,18 @@ class BigDecimal private constructor(
                 result
             }
             exponent < 0 -> {
-                for (i in 0..exponent.absoluteValue) {
+                if (exponent == Long.MIN_VALUE) {
+                    for (i in 0..Long.MAX_VALUE) {
+                        result /= this
+                    }
+                    // And another division beacuse min value is -9223372036854775808L and max value is 9223372036854775807L
                     result /= this
+                } else {
+                    for (i in 0..exponent.absoluteValue) {
+                        result /= this
+                    }
                 }
+
                 result
             }
             else -> {
