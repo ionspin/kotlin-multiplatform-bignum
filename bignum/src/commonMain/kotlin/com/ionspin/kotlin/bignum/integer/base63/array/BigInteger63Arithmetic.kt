@@ -352,7 +352,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
             when (it) {
                 in 0 until (realOperandSize - 1 - wordsToDiscard) -> {
                     ((operand[it + wordsToDiscard] shr shiftBits)) or
-                        ((operand[it + wordsToDiscard + 1] shl (basePowerOfTwo - shiftBits) and baseMask))
+                            ((operand[it + wordsToDiscard + 1] shl (basePowerOfTwo - shiftBits) and baseMask))
                 }
                 realOperandSize - 1 - wordsToDiscard -> {
                     (operand[it + wordsToDiscard] shr shiftBits)
@@ -512,7 +512,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         } else {
             Sextuple(second.size, first.size, second, first, secondStart, firstStart)
         }
-        val possibleOverflow = possibleAdditionOverflow(largerLength, smallerLength, largerData, smallerData, largerStart, smallerStart)
+        val possibleOverflow =
+            possibleAdditionOverflow(largerLength, smallerLength, largerData, smallerData, largerStart, smallerStart)
         val result = if (possibleOverflow) {
             ULongArray(largerLength + 1) { 0u }
         } else {
@@ -540,7 +541,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
 
         // if two consecutive bits on same positions in both operands are 0, they cannot overflow
         val possibleOverflow = ((firstMostSignificant and 0x6000000000000000UL) != 0UL) ||
-            ((secondMostSignificant and 0x6000000000000000UL) != 0UL)
+                ((secondMostSignificant and 0x6000000000000000UL) != 0UL)
         return possibleOverflow
     }
 
@@ -951,10 +952,10 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         val rb3 = (r3 shl (bShiftAmount * 3))
         val rb4 = (r4 shl (bShiftAmount * 4))
         val rb = rb0 +
-            rb1 +
-            rb2 +
-            rb3 +
-            rb4
+                rb1 +
+                rb2 +
+                rb3 +
+                rb4
 
         return rb.unsignedValue
     }
@@ -992,7 +993,13 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         )
     }
 
-    fun baseMultiplyIntoArray(result: ULongArray, resultStart: Int, resultEnd: Int, first: ULongArray, second: ULong): ULongArray {
+    fun baseMultiplyIntoArray(
+        result: ULongArray,
+        resultStart: Int,
+        resultEnd: Int,
+        first: ULongArray,
+        second: ULong
+    ): ULongArray {
         TODO()
     }
 
@@ -1526,14 +1533,14 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
                     in 1 until requiredLength - 1 -> {
                         result[i] =
                             (operand[position - 1].toULong() shr (32 - shiftAmount)) or
-                                (operand[position].toULong() shl shiftAmount) or
-                                ((operand[position + 1].toULong() shl (32 + shiftAmount)) and highMask)
+                                    (operand[position].toULong() shl shiftAmount) or
+                                    ((operand[position + 1].toULong() shl (32 + shiftAmount)) and highMask)
                     }
                     requiredLength - 1 -> {
                         if (position < operand.size) {
                             result[i] =
                                 (operand[position - 1].toULong() shr (32 - shiftAmount)) or
-                                    (operand[position].toULong() shl shiftAmount)
+                                        (operand[position].toULong() shl shiftAmount)
                         } else {
                             result[i] =
                                 (operand[position - 1].toULong() shr (32 - shiftAmount))
@@ -1584,7 +1591,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
                 in 1 until requiredLength - 1 -> {
                     result[i] = if (shiftAmount > 0) {
                         ((operand[position - 1] shr (64 - shiftAmount)) or
-                            (operand[position] shl shiftAmount)) and baseMask
+                                (operand[position] shl shiftAmount)) and baseMask
                     } else {
                         (operand[position] shl shiftAmount) and baseMask
                     }
@@ -1593,7 +1600,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
                     if (position < operand.size) {
                         result[i] = if (shiftAmount > 0) {
                             ((operand[position - 1] shr (64 - shiftAmount)) or
-                                (operand[position] shl shiftAmount)) and baseMask
+                                    (operand[position] shl shiftAmount)) and baseMask
                         } else {
                             (operand[position] shl shiftAmount) and baseMask
                         }
@@ -2202,7 +2209,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         for (i in 0 until ulongRest) {
             ulongArray[ulongArray.size - 1] =
                 ulongArray[ulongArray.size - 1] or
-                    (trimmedSource[ulongsCount * 8 + i].toULong() shl ((ulongRest - 1) * 8 - i * 8))
+                        (trimmedSource[ulongsCount * 8 + i].toULong() shl ((ulongRest - 1) * 8 - i * 8))
         }
         val result = convertFrom64BitRepresentation(ulongArray.dropLastWhile { it == 0UL }.toULongArray())
         return result

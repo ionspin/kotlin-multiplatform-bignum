@@ -142,6 +142,7 @@ interface BigIntegerArithmetic {
 
     fun toUByteArray(operand: ULongArray): UByteArray
     fun toByteArray(operand: ULongArray): ByteArray
+
 }
 
 /**

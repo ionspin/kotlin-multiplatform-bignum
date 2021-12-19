@@ -89,6 +89,12 @@ data class DecimalMode(
     val scale: Long = -1
 ) {
 
+    init {
+        if (decimalPrecision < 0) {
+            throw ArithmeticException("Negative decimal precision is not allowed.")
+        }
+    }
+
     val isPrecisionUnlimited = decimalPrecision == 0L
     val usingScale = scale >= 0
 
