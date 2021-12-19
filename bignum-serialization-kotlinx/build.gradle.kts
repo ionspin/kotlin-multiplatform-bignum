@@ -115,7 +115,7 @@ kotlin {
             dependencies {
                 implementation(kotlin(Deps.Common.test))
                 implementation(kotlin(Deps.Common.testAnnotation))
-                implementation(Deps.Common.coroutinesMT)
+                implementation(Deps.Common.coroutines)
             }
         }
 
