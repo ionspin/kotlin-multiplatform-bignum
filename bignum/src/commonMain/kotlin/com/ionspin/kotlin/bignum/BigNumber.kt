@@ -148,16 +148,16 @@ interface BigNumber<BigType> where BigType : BigNumber<BigType> {
 }
 
 internal interface NarrowingOperations<BigType> where BigType : BigNumber<BigType> {
-    fun intValue(exactRequired: Boolean = false): Int
-    fun longValue(exactRequired: Boolean = false): Long
-    fun byteValue(exactRequired: Boolean = false): Byte
-    fun shortValue(exactRequired: Boolean = false): Short
-    fun uintValue(exactRequired: Boolean = false): UInt
-    fun ulongValue(exactRequired: Boolean = false): ULong
-    fun ubyteValue(exactRequired: Boolean = false): UByte
-    fun ushortValue(exactRequired: Boolean = false): UShort
-    fun floatValue(exactRequired: Boolean = false): Float
-    fun doubleValue(exactRequired: Boolean = false): Double
+    fun intValue(exactRequired: Boolean = true): Int
+    fun longValue(exactRequired: Boolean = true): Long
+    fun byteValue(exactRequired: Boolean = true): Byte
+    fun shortValue(exactRequired: Boolean = true): Short
+    fun uintValue(exactRequired: Boolean = true): UInt
+    fun ulongValue(exactRequired: Boolean = true): ULong
+    fun ubyteValue(exactRequired: Boolean = true): UByte
+    fun ushortValue(exactRequired: Boolean = true): UShort
+    fun floatValue(exactRequired: Boolean = true): Float
+    fun doubleValue(exactRequired: Boolean = true): Double
 }
 
 internal interface CommonBigNumberOperations<BigType> where BigType : BigNumber<BigType> {

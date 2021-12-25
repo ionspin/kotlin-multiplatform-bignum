@@ -103,7 +103,7 @@ class JvmBigDecimalNarrowingTest {
         assertFailsWith<ArithmeticException> {
             f.byteValue(true)
         }
-        assertEquals(12, f.byteValue())
+        assertEquals(12, f.byteValue(false))
     }
 
     @Test
@@ -124,7 +124,7 @@ class JvmBigDecimalNarrowingTest {
         assertFailsWith<ArithmeticException> {
             f.shortValue(true)
         }
-        assertEquals(12, f.shortValue())
+        assertEquals(12, f.shortValue(false))
     }
 
     @Test
@@ -145,7 +145,7 @@ class JvmBigDecimalNarrowingTest {
         assertFailsWith<ArithmeticException> {
             f.intValue(true)
         }
-        assertEquals(12, f.intValue())
+        assertEquals(12, f.intValue(false))
     }
 
     @Test
@@ -166,7 +166,7 @@ class JvmBigDecimalNarrowingTest {
         assertFailsWith<ArithmeticException> {
             f.longValue(true)
         }
-        assertEquals(12L, f.longValue())
+        assertEquals(12L, f.longValue(false))
     }
 
     @Test
@@ -181,7 +181,7 @@ class JvmBigDecimalNarrowingTest {
         assertFailsWith<ArithmeticException> {
             f.ubyteValue(true)
         }
-        assertEquals(12.toUByte(), f.ubyteValue())
+        assertEquals(12.toUByte(), f.ubyteValue(false))
     }
 
     @Test
@@ -196,7 +196,7 @@ class JvmBigDecimalNarrowingTest {
         assertFailsWith<ArithmeticException> {
             f.ushortValue(true)
         }
-        assertEquals(12.toUShort(), f.ushortValue())
+        assertEquals(12.toUShort(), f.ushortValue(false))
     }
 
     @Test
@@ -211,7 +211,7 @@ class JvmBigDecimalNarrowingTest {
         assertFailsWith<ArithmeticException> {
             f.uintValue(true)
         }
-        assertEquals(12.toUInt(), f.uintValue())
+        assertEquals(12.toUInt(), f.uintValue(false))
     }
 
     @Test
@@ -226,7 +226,7 @@ class JvmBigDecimalNarrowingTest {
         assertFailsWith<ArithmeticException> {
             f.ulongValue(true)
         }
-        assertEquals(12.toULong(), f.ulongValue())
+        assertEquals(12.toULong(), f.ulongValue(false))
     }
 
     @Test

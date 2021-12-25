@@ -21,7 +21,8 @@ import com.ionspin.kotlin.bignum.BigNumber
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.NarrowingOperations
 import com.ionspin.kotlin.bignum.integer.BigInteger
-import com.ionspin.kotlin.bignum.integer.ComparisonWorkaround
+import com.ionspin.kotlin.bignum.integer.Platform
+import com.ionspin.kotlin.bignum.integer.RuntimePlatform
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.chosenArithmetic
 import com.ionspin.kotlin.bignum.integer.toBigInteger
@@ -1678,7 +1679,7 @@ class BigDecimal private constructor(
      * The next group of functions are implementations of the NarrowingOperations interface
      */
     /**
-     * Convert the current value to  Int.
+     * Convert the current value to Int.
      * @param exactRequired True causes an ArithmeticException to be thrown if there is any loss of
      * precision during the conversion, either side of the decimal. False truncates any precision to
      * the right of the decimal.
@@ -1688,36 +1689,78 @@ class BigDecimal private constructor(
         return toBigInteger().intValue(exactRequired)
     }
 
+    /**
+     * Convert the current value to Long.
+     * @param exactRequired True causes an ArithmeticException to be thrown if there is any loss of
+     * precision during the conversion, either side of the decimal. False truncates any precision to
+     * the right of the decimal.
+     */
     override fun longValue(exactRequired: Boolean): Long {
         checkWholeness(exactRequired)
         return toBigInteger().longValue(exactRequired)
     }
 
+    /**
+     * Convert the current value to Byte.
+     * @param exactRequired True causes an ArithmeticException to be thrown if there is any loss of
+     * precision during the conversion, either side of the decimal. False truncates any precision to
+     * the right of the decimal.
+     */
     override fun byteValue(exactRequired: Boolean): Byte {
         checkWholeness(exactRequired)
         return toBigInteger().byteValue(exactRequired)
     }
 
+    /**
+     * Convert the current value to Short.
+     * @param exactRequired True causes an ArithmeticException to be thrown if there is any loss of
+     * precision during the conversion, either side of the decimal. False truncates any precision to
+     * the right of the decimal.
+     */
     override fun shortValue(exactRequired: Boolean): Short {
         checkWholeness(exactRequired)
         return toBigInteger().shortValue(exactRequired)
     }
 
+    /**
+     * Convert the current value to UInt.
+     * @param exactRequired True causes an ArithmeticException to be thrown if there is any loss of
+     * precision during the conversion, either side of the decimal. False truncates any precision to
+     * the right of the decimal.
+     */
     override fun uintValue(exactRequired: Boolean): UInt {
         checkWholeness(exactRequired)
         return toBigInteger().uintValue(exactRequired)
     }
 
+    /**
+     * Convert the current value to ULong.
+     * @param exactRequired True causes an ArithmeticException to be thrown if there is any loss of
+     * precision during the conversion, either side of the decimal. False truncates any precision to
+     * the right of the decimal.
+     */
     override fun ulongValue(exactRequired: Boolean): ULong {
         checkWholeness(exactRequired)
         return toBigInteger().ulongValue(exactRequired)
     }
 
+    /**
+     * Convert the current value to UByte.
+     * @param exactRequired True causes an ArithmeticException to be thrown if there is any loss of
+     * precision during the conversion, either side of the decimal. False truncates any precision to
+     * the right of the decimal.
+     */
     override fun ubyteValue(exactRequired: Boolean): UByte {
         checkWholeness(exactRequired)
         return toBigInteger().ubyteValue(exactRequired)
     }
 
+    /**
+     * Convert the current value to UShort.
+     * @param exactRequired True causes an ArithmeticException to be thrown if there is any loss of
+     * precision during the conversion, either side of the decimal. False truncates any precision to
+     * the right of the decimal.
+     */
     override fun ushortValue(exactRequired: Boolean): UShort {
         checkWholeness(exactRequired)
         return toBigInteger().ushortValue(exactRequired)
@@ -2047,7 +2090,7 @@ class BigDecimal private constructor(
 
     override fun compareTo(other: Any): Int {
         if (other is Number) {
-            if (ComparisonWorkaround.isSpecialHandlingForFloatNeeded(other)) {
+            if (RuntimePlatform.currentPlatform() == Platform.JS) {
                 return javascriptNumberComparison(other)
             }
         }
@@ -2068,10 +2111,11 @@ class BigDecimal private constructor(
      * to check if it's a decimal or integer number before comparing.
      */
     private fun javascriptNumberComparison(number: Number): Int {
-        val float = number.toFloat()
+        val double = number.toDouble()
         return when {
-            float % 1 == 0f -> compare(fromLong(number.toLong()))
-            else -> compare(number.toFloat().toBigDecimal())
+            double > Long.MAX_VALUE -> { compare(parseString(double.toString())) } // This whole block can be removed after 1.6.20 and https://github.com/JetBrains/kotlin/pull/4364
+            double % 1 == 0.0 -> compare(fromLong(number.toLong()))
+            else -> compare(number.toDouble().toBigDecimal())
         }
     }
 

@@ -137,7 +137,6 @@ class ConversionTest {
             Long.MAX_VALUE.toString(), Long.MIN_VALUE.toString(),
             Long.MAX_VALUE.toString() + "123", Long.MIN_VALUE.toString() + "123"
         )
-
         stringTestCases.forEach {
             assertTrue {
                 val bigInt = BigInteger.parseString(it)

@@ -143,7 +143,7 @@ class ReportedIssueReplicationTest {
         val bigDecimal = BigDecimal.parseString("-1234.1234")
         assertTrue(bigDecimal.isNegative) // ok
         val doubleFromString = bigDecimal.toPlainString().toDouble() // ok
-        val asDoubleValue = bigDecimal.doubleValue() // looses the sign
+        val asDoubleValue = bigDecimal.doubleValue(false) // loses the sign
         assertTrue(doubleFromString < 0)
         assertFalse(asDoubleValue > 0) // Double is positive...
     }
