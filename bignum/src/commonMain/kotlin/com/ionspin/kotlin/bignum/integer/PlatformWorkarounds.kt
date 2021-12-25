@@ -22,9 +22,13 @@ package com.ionspin.kotlin.bignum.integer
  * ugljesa.jovanovic@ionspin.com
  * on 02-Jun-2019
  */
-expect object ComparisonWorkaround {
+enum class Platform {
+    JVM, NATIVE, JS
+}
+
+expect object RuntimePlatform {
     /**
      * We need to know if we are running on a platform that doesn't know how to tell decimal and integer apart.
      */
-    fun isSpecialHandlingForFloatNeeded(number: Number): Boolean
+    fun currentPlatform(): Platform
 }

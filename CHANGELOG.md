@@ -3,6 +3,9 @@
 
 ##### 0.3.4-SNAPSHOT - current main
 - Fix for invalid decimal precision when dividend has exponent -1 (#195)
+- **API CHANGE** Narrowing function (longValue, intValue, doubleValue...) are now defaulting to `exactRequired` which means they
+will throw ArithmeticException if the conversion cannot be done without loss.
+- Use temporary javascript comparison workaround to handle precision loss. This is fixed in kotlin 1.6.20 and the workaround will be removed once that is released.
 
 ##### 0.3.3 - 9.11.2021
 - Add support for apple silicon (#188 #194)

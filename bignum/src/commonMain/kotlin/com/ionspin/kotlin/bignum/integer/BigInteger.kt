@@ -618,7 +618,7 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
 
     override fun compareTo(other: Any): Int {
         if (other is Number) {
-            if (ComparisonWorkaround.isSpecialHandlingForFloatNeeded(other)) {
+            if (RuntimePlatform.currentPlatform() == Platform.JS) {
                 return javascriptNumberComparison(other)
             }
         }
@@ -643,9 +643,10 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
      * to check if it's a decimal or integer number before comparing.
      */
     private fun javascriptNumberComparison(number: Number): Int {
-        val float = number.toFloat()
+        val double = number.toDouble()
         return when {
-            float % 1 == 0f -> compare(fromLong(number.toLong()))
+            double > Long.MAX_VALUE -> { compare(parseString(double.toString())) } // This whole block can be removed after 1.6.20 and https://github.com/JetBrains/kotlin/pull/4364
+            double % 1 == 0.0 -> compare(fromLong(number.toLong()))
             else -> compareFloatAndBigInt(number.toFloat()) { compare(it) }
         }
     }
@@ -824,7 +825,12 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
 
     override fun doubleValue(exactRequired: Boolean): Double {
         if (exactRequired && this.abs() > Double.MAX_VALUE) {
-            throw ArithmeticException("Cannot convert to float and provide exact value")
+            println(this.abs())
+            println(Double.MAX_VALUE)
+            if (this.abs() > Double.MAX_VALUE) {
+                println("huh")
+            }
+            throw ArithmeticException("Cannot convert to double and provide exact value")
         }
         return this.toString().toDouble()
     }

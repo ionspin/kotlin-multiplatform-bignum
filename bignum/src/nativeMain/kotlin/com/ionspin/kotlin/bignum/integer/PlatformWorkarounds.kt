@@ -22,8 +22,8 @@ package com.ionspin.kotlin.bignum.integer
  * ugljesa.jovanovic@ionspin.com
  * on 02-Jun-2019
  */
-actual object ComparisonWorkaround {
-    actual fun isSpecialHandlingForFloatNeeded(number: Number): Boolean {
-        return false
+actual object RuntimePlatform {
+    actual fun currentPlatform(): Platform {
+        return Platform.NATIVE
     }
 }

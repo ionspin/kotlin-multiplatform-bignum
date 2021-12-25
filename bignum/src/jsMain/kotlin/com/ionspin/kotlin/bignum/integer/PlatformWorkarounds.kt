@@ -22,9 +22,9 @@ package com.ionspin.kotlin.bignum.integer
  * ugljesa.jovanovic@ionspin.com
  * on 02-Jun-2019
  */
-actual object ComparisonWorkaround {
+actual object RuntimePlatform {
 
-    actual fun isSpecialHandlingForFloatNeeded(number: Number): Boolean {
-        return true
+    actual fun currentPlatform(): Platform {
+        return Platform.JS
     }
 }
