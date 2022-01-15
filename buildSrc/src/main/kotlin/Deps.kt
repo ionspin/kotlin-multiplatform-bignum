@@ -22,7 +22,7 @@ object Versions {
     val dokkaPlugin = "1.5.0"
 }
 
-val projectVersion = "0.3.4-SNAPSHOT"
+val projectVersion = "0.3.5-SNAPSHOT"
 
 object Deps {
 
