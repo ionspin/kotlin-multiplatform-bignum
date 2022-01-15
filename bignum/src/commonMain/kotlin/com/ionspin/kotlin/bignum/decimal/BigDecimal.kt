@@ -1640,6 +1640,9 @@ class BigDecimal private constructor(
      * as division.
      */
     override fun pow(exponent: Long): BigDecimal {
+        if (this == ZERO && exponent < 0) {
+            throw ArithmeticException("Negative exponentiation of zero is not defined.")
+        }
         var result = this
         return when {
             exponent > 0 -> {

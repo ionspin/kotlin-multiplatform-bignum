@@ -60,7 +60,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
     const val karatsubaThreshold = 120
     const val toomCookThreshold = 15_000
 
-    const val debugOperandSize = true
+    const val debugEnabled = false
 
     override fun numberOfLeadingZerosInAWord(value: ULong): Int {
         var x = value
@@ -235,7 +235,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         if (bigInteger.size == correctedSize) {
             return bigInteger
         }
-        if (bigInteger.size - correctedSize > 1000) {
+        if (debugEnabled && (bigInteger.size - correctedSize > 1000)) {
             println("RLZ original array : ${bigInteger.size} contains: ${bigInteger.size - correctedSize - 1} zeros")
         }
 
@@ -2239,7 +2239,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
     }
 
     private fun debugOperandsCheck(first: ULongArray, second: ULongArray) {
-        if (debugOperandSize && (first.isEmpty() || second.isEmpty())) {
+        if (debugEnabled && (first.isEmpty() || second.isEmpty())) {
             throw RuntimeException("Empty operands")
         }
     }
