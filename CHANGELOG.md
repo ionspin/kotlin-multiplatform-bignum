@@ -2,6 +2,8 @@
 (All dates are DD.MM.YYYY)
 
 ##### 0.3.4-SNAPSHOT - current main
+- Throw a specific exception when exponentiation of zero with negative exponent is attempted (#206)
+- Remove zero counting debug log (#210)
 - Fix for invalid decimal precision when dividend has exponent -1 (#195)
 - **API CHANGE** Narrowing function (longValue, intValue, doubleValue...) are now defaulting to `exactRequired` which means they
 will throw ArithmeticException if the conversion cannot be done without loss.

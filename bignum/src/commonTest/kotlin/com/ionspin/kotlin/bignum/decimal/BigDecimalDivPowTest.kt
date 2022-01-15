@@ -18,6 +18,7 @@
 package com.ionspin.kotlin.bignum.decimal
 
 import kotlin.test.Test
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 /**
@@ -80,6 +81,11 @@ class BigDecimalDivPowTest {
             val a = 4.toBigDecimal(decimalMode = DecimalMode(decimalPrecision = 10, roundingMode = RoundingMode.FLOOR))
             val result = a.pow(-2)
             result.compareTo(1f / 16) == 0
+        }
+
+        assertFailsWith(ArithmeticException::class) {
+            val a = 0.toBigDecimal()
+            val result = a.pow(-1)
         }
     }
 }
