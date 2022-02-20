@@ -1443,7 +1443,7 @@ class BigDecimal private constructor(
      */
     fun floor(): BigDecimal {
         if (exponent < 0) {
-            return when(significand.sign){
+            return when (significand.sign) {
                 Sign.POSITIVE -> ZERO
                 Sign.NEGATIVE -> ONE.negate()
                 Sign.ZERO -> ZERO
@@ -1461,12 +1461,11 @@ class BigDecimal private constructor(
             return ZERO
         }
         if (exponent < 0) {
-            return when(significand.sign) {
+            return when (significand.sign) {
                 Sign.POSITIVE -> ONE
                 Sign.NEGATIVE -> ZERO
                 Sign.ZERO -> ZERO
             }
-
         }
         return roundSignificand(DecimalMode(exponent + 1, RoundingMode.CEILING))
     }

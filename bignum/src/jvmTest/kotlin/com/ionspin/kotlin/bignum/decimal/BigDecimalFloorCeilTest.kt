@@ -53,7 +53,6 @@ class BigDecimalFloorCeilTest {
         }
     }
 
-
     @Test
     fun testFloorWithNegativeExponent() {
         assertTrue {
