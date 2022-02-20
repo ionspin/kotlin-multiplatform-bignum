@@ -54,11 +54,30 @@ class BigDecimalFloorCeilTest {
     }
 
     @Test
+    fun testFloorWithNegativeExponent() {
+        assertTrue {
+            val a = 0.123456.toBigDecimal()
+            val floor = a.floor()
+            floor == 0.toBigDecimal()
+        }
+    }
+
+    @Test
     fun ceilFloor() {
         assertTrue {
             val a = 12345.6789.toBigDecimal()
             val ceil = a.ceil()
             ceil == 12346.toBigDecimal()
+        }
+    }
+
+    @Test
+    fun testCeilWithNegativeExponent() {
+        assertTrue {
+            val a = 0.123456.toBigDecimal()
+            val ceil = a.ceil()
+
+            ceil == 1.toBigDecimal()
         }
     }
 }

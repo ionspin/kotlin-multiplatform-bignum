@@ -1439,16 +1439,34 @@ class BigDecimal private constructor(
 //        val exponent =
 //    }
     /**
-     * Return the this truncated by using floor rounding
+     * Return this truncated by using floor rounding
      */
     fun floor(): BigDecimal {
+        if (exponent < 0) {
+            return when (significand.sign) {
+                Sign.POSITIVE -> ZERO
+                Sign.NEGATIVE -> ONE.negate()
+                Sign.ZERO -> ZERO
+            }
+            return ZERO
+        }
         return roundSignificand(DecimalMode(exponent + 1, RoundingMode.FLOOR))
     }
 
     /**
-     * Return the this truncated by using ceil rounding
+     * Return this truncated by using ceil rounding
      */
     fun ceil(): BigDecimal {
+        if (isZero()) {
+            return ZERO
+        }
+        if (exponent < 0) {
+            return when (significand.sign) {
+                Sign.POSITIVE -> ONE
+                Sign.NEGATIVE -> ZERO
+                Sign.ZERO -> ZERO
+            }
+        }
         return roundSignificand(DecimalMode(exponent + 1, RoundingMode.CEILING))
     }
 
