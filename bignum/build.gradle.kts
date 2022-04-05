@@ -111,7 +111,7 @@ kotlin {
     }
 
     if (hostOs == HostOs.LINUX) {
-        linuxX64()
+        linuxX64("linux")
         if (ideaActive.not()) {
             linuxMipsel32()
             linuxMips32()
@@ -230,6 +230,54 @@ kotlin {
                 }
 
                 val linuxArm64Test by getting {
+                    dependsOn(nativeTest)
+                }
+
+                val linuxMipsel32Main by getting {
+                    dependsOn(nativeMain)
+                }
+
+                val linuxMipsel32Test by getting {
+                    dependsOn(nativeTest)
+                }
+
+                val linuxMips32Main by getting {
+                    dependsOn(nativeMain)
+                }
+
+                val linuxMips32Test by getting {
+                    dependsOn(nativeTest)
+                }
+
+                val androidNativeX64Main by getting {
+                    dependsOn(nativeMain)
+                }
+
+                val androidNativeX64Test by getting {
+                    dependsOn(nativeTest)
+                }
+
+                val androidNativeX86Main by getting {
+                    dependsOn(nativeMain)
+                }
+
+                val androidNativeX86Test by getting {
+                    dependsOn(nativeTest)
+                }
+
+                val androidNativeArm32Main by getting {
+                    dependsOn(nativeMain)
+                }
+
+                val androidNativeArm32Test by getting {
+                    dependsOn(nativeTest)
+                }
+
+                val androidNativeArm64Main by getting {
+                    dependsOn(nativeMain)
+                }
+
+                val androidNativeArm64Test by getting {
                     dependsOn(nativeTest)
                 }
             }
