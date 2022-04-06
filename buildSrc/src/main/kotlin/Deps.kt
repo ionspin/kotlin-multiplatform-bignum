@@ -16,10 +16,10 @@
  */
 
 object Versions {
-    val kotlinCoroutines = "1.5.2-native-mt"
-    val kotlin = "1.6.10"
-    val kotlinSerialization = "1.3.1"
-    val dokkaPlugin = "1.5.0"
+    val kotlinCoroutines = "1.6.1"
+    val kotlin = "1.6.20"
+    val kotlinSerialization = "1.3.2"
+    val dokkaPlugin = "1.6.10"
 }
 
 val projectVersion = "0.3.5-SNAPSHOT"
@@ -31,6 +31,7 @@ object Deps {
         val test = "test-common"
         val testAnnotation = "test-annotations-common"
         val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinCoroutines}"
+        val testCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.kotlinCoroutines}"
         val kotlinxSerialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinSerialization}"
         val bignum = "com.ionspin.kotlin:bignum:$projectVersion"
     }

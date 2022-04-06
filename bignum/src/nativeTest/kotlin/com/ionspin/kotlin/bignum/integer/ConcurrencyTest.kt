@@ -3,11 +3,10 @@ package com.ionspin.kotlin.bignum.integer
 import kotlin.test.Test
 import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.newSingleThreadContext
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import platform.posix.pthread_self
 
 /**
@@ -22,7 +21,7 @@ class ConcurrencyTest {
      * Sanity test that we are in multi-threaded coroutines env (...-native-mt)
      */
     @Test
-    fun testDifferentThreads() = runBlocking(Dispatchers.Default) {
+    fun testDifferentThreads() = runTest {
         val differentThreadScope = CoroutineScope(newSingleThreadContext("DifferentThread"))
         val testTid = pthread_self()
         println("Test thread id $testTid")
@@ -37,7 +36,7 @@ class ConcurrencyTest {
     }
 
     @Test
-    fun testSharedAccess() = runBlocking(Dispatchers.Default) {
+    fun testSharedAccess() = runTest {
         val differentThreadScope = CoroutineScope(newSingleThreadContext("DifferentThread"))
         val originalBigInt = ULong.MAX_VALUE.toBigInteger()
         val ubyteArray = originalBigInt.toUByteArray()
