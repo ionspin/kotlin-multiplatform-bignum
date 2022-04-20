@@ -2278,7 +2278,7 @@ class BigDecimal private constructor(
     private fun placeADotInStringExpanded(input: String, position: Int): String {
 
         val prefix = input.substring(0 until input.length - position)
-        val suffix = input.substring(input.length - position until input.length).dropLastWhile { it == '0' }
+        val suffix = input.substring(input.length - position until input.length)
 
         return if (suffix.isNotEmpty()) {
             ("$prefix.$suffix")
