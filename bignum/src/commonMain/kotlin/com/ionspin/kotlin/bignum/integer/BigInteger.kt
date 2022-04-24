@@ -472,6 +472,21 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
         return BigInteger(wordArray = this.magnitude, requestedSign = Sign.POSITIVE)
     }
 
+    fun factorial(): BigInteger {
+        var result = ONE
+        var element = ONE
+        val abs = this.abs()
+        while (element <= abs) {
+            result *= element
+            element = element.inc()
+        }
+        return if (this.isNegative) {
+            -result
+        } else {
+            result
+        }
+    }
+
     fun pow(exponent: BigInteger): BigInteger {
         if (exponent < ZERO)
             throw ArithmeticException("Negative exponent not supported with BigInteger")
