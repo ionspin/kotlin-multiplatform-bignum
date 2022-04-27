@@ -1522,8 +1522,12 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
                     result[1] =
                         (operand[1].toULong() shr 31) or (operand[2].toULong() shl 1) or (operand[3].toULong() shl 33)
                 } else {
-                    result[1] =
-                        (operand[1].toULong() shr 31) or (operand[2].toULong() shl 1)
+                    if (operand.size > 2) {
+                        result[1] =
+                            (operand[1].toULong() shr 31) or (operand[2].toULong() shl 1)
+                    } else {
+                        result[1] = (operand[1].toULong() shr 31)
+                    }
                 }
             } else {
                 when (i) {
