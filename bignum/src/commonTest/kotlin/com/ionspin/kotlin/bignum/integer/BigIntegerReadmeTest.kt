@@ -95,10 +95,9 @@ class BigIntegerReadmeTest {
     fun `Test_readme_remainder_sample_2`() {
         val a = BigInteger.parseString("40223423789827791298722074994617538382438097461777180133170684331165292089790704903067467860892991215732837372700266699497738234157333700417919496666318783")
         val b = BigInteger.parseString("115792089237316195423570985008687907853269984665640564039457584007913129639319")
-        val r = a%b
+        val r = a % b
         assertTrue { r == BigInteger.fromInt(9) }
     }
-
 
     @Test
     fun `Test_readme_division_and_remainder_sample`() {
