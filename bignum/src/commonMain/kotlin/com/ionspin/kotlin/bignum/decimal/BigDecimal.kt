@@ -1957,6 +1957,9 @@ class BigDecimal private constructor(
          */
         val divExponent = precision - 1 - exponent
         val l = this.significand.longValue(exactRequired)
+        if (this.significand > Long.MAX_VALUE || this.significand < Long.MIN_VALUE) {
+            return toString().toDouble()
+        }
         return if (l.toDouble().toLong() == l && divExponent >= 0 && divExponent < double10pow.size) {
             (l / double10pow[divExponent.toInt()])
         } else {
