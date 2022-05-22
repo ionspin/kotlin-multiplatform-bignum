@@ -1262,7 +1262,7 @@ class BigDecimal private constructor(
      */
     fun divide(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
         val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
-        if (resolvedDecimalMode.isPrecisionUnlimited) {
+        if (resolvedDecimalMode.isPrecisionUnlimited && resolvedDecimalMode.usingScale.not()) {
             val newExponent = this.exponent - other.exponent
             val power = (other.precision * 2 + 6)
             val thisPrepared = this.significand * BigInteger.TEN.pow(power)
