@@ -293,7 +293,7 @@ class ReportedIssueReplicationTest {
         val result = "29514.9598393574297189".toBigDecimal()
         val doubleValue = result.doubleValue(false)
         println("$doubleValue")
-        val required : Double = 29514.9598393574297189
+        val required: Double = 29514.9598393574297189
         assertEquals(29514.9598393574297189, doubleValue)
     }
 }
