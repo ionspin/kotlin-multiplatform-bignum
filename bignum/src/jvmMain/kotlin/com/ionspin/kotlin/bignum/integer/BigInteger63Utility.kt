@@ -31,7 +31,7 @@ internal fun ULongArray.toJavaBigInteger(): BigInteger {
     }
 }
 
-internal fun com.ionspin.kotlin.bignum.integer.BigInteger.toJavaBigInteger(): BigInteger {
+fun com.ionspin.kotlin.bignum.integer.BigInteger.toJavaBigInteger(): BigInteger {
     return (this.magnitude.toULongArray().toJavaBigInteger() * this.sign.toInt().toBigInteger())
 }
 
