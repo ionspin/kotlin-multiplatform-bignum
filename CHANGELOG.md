@@ -9,6 +9,7 @@
 will throw ArithmeticException if the conversion cannot be done without loss.
 - Use temporary javascript comparison workaround to handle precision loss. This is fixed in kotlin 1.6.20 and the workaround will be removed once that is released.
 - Provide big integer/big decimal to their java counterpart conversion methods. They are slow as they rely on string conversion. #230
+- Update to Kotlin 1.6.21
 
 ##### 0.3.3 - 9.11.2021
 - Add support for apple silicon (#188 #194)
