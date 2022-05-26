@@ -20,6 +20,11 @@ package com.ionspin.kotlin.bignum.decimal
 import com.ionspin.kotlin.bignum.BigNumber
 import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.NarrowingOperations
+import com.ionspin.kotlin.bignum.decimal.util.CosineCalculator
+import com.ionspin.kotlin.bignum.decimal.util.ExponentialCalculator
+import com.ionspin.kotlin.bignum.decimal.util.HyperbolicCosineCalculator
+import com.ionspin.kotlin.bignum.decimal.util.HyperbolicSineCalculator
+import com.ionspin.kotlin.bignum.decimal.util.SineCalculator
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.Platform
 import com.ionspin.kotlin.bignum.integer.RuntimePlatform
@@ -1695,6 +1700,73 @@ class BigDecimal private constructor(
      * @return Result of signum function for this BigDecimal (-1 negative, 0 zero, 1 positive)
      */
     override fun signum(): Int = significand.signum()
+
+    /**
+     * Exponential function (e^x)
+     * @param decimalMode the decimal mode to use. Precision and rounding mode must be specified.
+     * @return Result of exponential function for this BigDecimal.
+     */
+    fun exp(decimalMode: DecimalMode): BigDecimal {
+        return ExponentialCalculator.calculate(this, decimalMode)
+    }
+
+    /**
+     * Sine function
+     * @param decimalMode the decimal mode to use. Precision and rounding mode must be specified.
+     * @return Result of sine function for this BigDecimal.
+     */
+    fun sin(decimalMode: DecimalMode): BigDecimal {
+        return SineCalculator.calculate(this, decimalMode)
+    }
+
+    /**
+     * Cosine function
+     * @param decimalMode the decimal mode to use. Precision and rounding mode must be specified.
+     * @return Result of cosine function for this BigDecimal.
+     */
+    fun cos(decimalMode: DecimalMode): BigDecimal {
+        return CosineCalculator.calculate(this, decimalMode)
+    }
+
+    /**
+     * Tangent function
+     * @param decimalMode the decimal mode to use. Precision and rounding mode must be specified.
+     * @return Result of tangent function for this BigDecimal.
+     */
+    fun tan(decimalMode: DecimalMode): BigDecimal {
+        val higherPrecisionMode = decimalMode.copy(decimalPrecision = decimalMode.decimalPrecision + 3)
+        return sin(higherPrecisionMode)
+            .divide(cos(higherPrecisionMode), decimalMode)
+    }
+
+    /**
+     * Hyperbolic sine function
+     * @param decimalMode the decimal mode to use. Precision and rounding mode must be specified.
+     * @return Result of hyperbolic sine function for this BigDecimal.
+     */
+    fun sinh(decimalMode: DecimalMode): BigDecimal {
+        return HyperbolicSineCalculator.calculate(this, decimalMode)
+    }
+
+    /**
+     * Hyperbolic cosine function
+     * @param decimalMode the decimal mode to use. Precision and rounding mode must be specified.
+     * @return Result of hyperbolic cosine function for this BigDecimal.
+     */
+    fun cosh(decimalMode: DecimalMode): BigDecimal {
+        return HyperbolicCosineCalculator.calculate(this, decimalMode)
+    }
+
+    /**
+     * Hyperbolic tangent function
+     * @param decimalMode the decimal mode to use. Precision and rounding mode must be specified.
+     * @return Result of hyperbolic tangent function for this BigDecimal.
+     */
+    fun tanh(decimalMode: DecimalMode): BigDecimal {
+        val higherPrecisionMode = decimalMode.copy(decimalPrecision = decimalMode.decimalPrecision + 3)
+        return sinh(higherPrecisionMode)
+            .divide(cosh(higherPrecisionMode), decimalMode)
+    }
 
     /**
      * The next group of functions are implementations of the NarrowingOperations interface
