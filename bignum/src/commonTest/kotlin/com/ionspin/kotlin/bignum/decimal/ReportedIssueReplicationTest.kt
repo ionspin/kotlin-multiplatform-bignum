@@ -301,4 +301,14 @@ class ReportedIssueReplicationTest {
     fun testToPlainStringScale() {
         assertEquals("1.000000", 1000000.toBigDecimal().moveDecimalPoint(-6).scale(6).toPlainString())
     }
+
+    @Test
+    fun testIsWhole() {
+        val bigDecimalWhole = "1.1234567826".toBigDecimal(
+            decimalMode = DecimalMode(18, RoundingMode.ROUND_HALF_CEILING, 18)
+        ).moveDecimalPoint(9)
+
+        assertEquals("1123456782.600000000000000000", bigDecimalWhole.toPlainString())
+        assertEquals(false, bigDecimalWhole.isWholeNumber())
+    }
 }

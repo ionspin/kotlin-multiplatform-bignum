@@ -1339,7 +1339,7 @@ class BigDecimal private constructor(
         if (other.abs() > this.abs()) {
             return Pair(ZERO, this)
         }
-        val resolvedRoundingMode = this.decimalMode ?: DecimalMode(exponent + 1, RoundingMode.FLOOR)
+        val resolvedRoundingMode = this.decimalMode?.copy(decimalPrecision = exponent + 1) ?: DecimalMode(exponent + 1, RoundingMode.FLOOR)
         val quotient = divide(other, resolvedRoundingMode)
         val quotientInfinitePrecision = quotient.copy(decimalMode = DecimalMode.DEFAULT)
         val remainder = this - (quotientInfinitePrecision * other)
@@ -1792,7 +1792,9 @@ class BigDecimal private constructor(
      * @return true if "this" is a whole number, false if not
      */
     fun isWholeNumber(): Boolean {
-        return abs().divrem(ONE).second.isZero()
+        val res = abs().divrem(ONE)
+        val isWholeNumber = res.second.isZero()
+        return isWholeNumber
     }
 
     /**
@@ -2219,10 +2221,10 @@ class BigDecimal private constructor(
      * Convenience method matching Java BigDecimal, same functionality as toStringExpanded
      */
     fun toPlainString(): String {
-        //TODO this is a naive and inefficient implementation, it would be better to consider scale before the
+        // TODO this is a naive and inefficient implementation, it would be better to consider scale before the
         // string is expanded.
         val expandedString = toStringExpanded()
-        val finalString = if (usingScale) {
+        val finalString = if (usingScale && scale > 0) {
             val split = expandedString.split(".")
             if (split.size == 1) {
                 expandedString + "." + '0' * scale

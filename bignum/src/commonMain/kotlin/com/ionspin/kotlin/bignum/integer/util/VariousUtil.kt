@@ -19,7 +19,7 @@ fun UByteArray.hexColumsPrint(chunk: Int = 16) {
     printout.forEach { println(it.joinToString(separator = " ") { it.toUpperCase() }) }
 }
 
-infix operator fun Char.times(count : Int) : String {
+infix operator fun Char.times(count: Int): String {
     val stringBuilder = StringBuilder()
     for (i in 0 until count) {
         stringBuilder.append(this)
@@ -27,7 +27,7 @@ infix operator fun Char.times(count : Int) : String {
     return stringBuilder.toString()
 }
 
-infix operator fun Char.times(count : Long) : String {
+infix operator fun Char.times(count: Long): String {
     val stringBuilder = StringBuilder()
     for (i in 0 until count) {
         stringBuilder.append(this)
