@@ -296,4 +296,9 @@ class ReportedIssueReplicationTest {
         val required: Double = 29514.9598393574297189
         assertEquals(29514.9598393574297189, doubleValue)
     }
+
+    @Test
+    fun testToPlainStringScale() {
+        assertEquals("1.000000", 1000000.toBigDecimal().moveDecimalPoint(-6).scale(6).toPlainString())
+    }
 }

@@ -26,6 +26,7 @@ import com.ionspin.kotlin.bignum.integer.RuntimePlatform
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.chosenArithmetic
 import com.ionspin.kotlin.bignum.integer.toBigInteger
+import com.ionspin.kotlin.bignum.integer.util.times
 import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
@@ -2218,7 +2219,25 @@ class BigDecimal private constructor(
      * Convenience method matching Java BigDecimal, same functionality as toStringExpanded
      */
     fun toPlainString(): String {
-        return toStringExpanded()
+        //TODO this is a naive and inefficient implementation, it would be better to consider scale before the
+        // string is expanded.
+        val expandedString = toStringExpanded()
+        val finalString = if (usingScale) {
+            val split = expandedString.split(".")
+            if (split.size == 1) {
+                expandedString + "." + '0' * scale
+            } else {
+                val missingZeroCount = scale - split[1].length
+                if (missingZeroCount > 0) {
+                    expandedString + '0' * missingZeroCount
+                } else {
+                    expandedString
+                }
+            }
+        } else {
+            expandedString
+        }
+        return finalString
     }
 
     /**
