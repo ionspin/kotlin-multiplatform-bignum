@@ -1,1 +1,2 @@
 ./gradlew publishMingwX64PublicationToMavenRepository publishMingwX86PublicationToMavenRepository
+./gradlew --stop
