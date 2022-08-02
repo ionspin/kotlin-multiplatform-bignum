@@ -296,4 +296,30 @@ class ReportedIssueReplicationTest {
         val required: Double = 29514.9598393574297189
         assertEquals(29514.9598393574297189, doubleValue)
     }
+
+    @Test
+    fun testToPlainStringScale() {
+        assertEquals("1.000000", 1000000.toBigDecimal().moveDecimalPoint(-6).scale(6).toPlainString())
+    }
+
+    @Test
+    fun testIsWhole() {
+        val bigDecimalWhole = "1.1234567826".toBigDecimal(
+            decimalMode = DecimalMode(18, RoundingMode.ROUND_HALF_CEILING, 18)
+        ).moveDecimalPoint(9)
+
+        assertEquals("1123456782.600000000000000000", bigDecimalWhole.toPlainString())
+        assertEquals(false, bigDecimalWhole.isWholeNumber())
+    }
+
+    @Test
+    fun testMoveDecimalPoint() {
+        val bigDecimal = "1.123456780".toBigDecimal()
+        val eightPlaces = bigDecimal.moveDecimalPoint(8)
+        assertEquals(112345678L, eightPlaces.longValue())
+        val tenPlaces = bigDecimal.moveDecimalPoint(10)
+        assertEquals(11234567800L, tenPlaces.longValue())
+        val ninePlaces = bigDecimal.moveDecimalPoint(9)
+        assertEquals(1123456780L, ninePlaces.longValue())
+    }
 }
