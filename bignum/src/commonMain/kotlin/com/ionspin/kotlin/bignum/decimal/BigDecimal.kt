@@ -1487,7 +1487,7 @@ class BigDecimal private constructor(
                 significand / 10.toBigInteger().pow(precisionExponentDiff.absoluteValue - 1)
             }
             else -> {
-                significand
+                significand * 10
             }
         }
     }

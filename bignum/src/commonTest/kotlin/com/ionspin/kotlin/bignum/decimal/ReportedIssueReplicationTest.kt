@@ -311,4 +311,15 @@ class ReportedIssueReplicationTest {
         assertEquals("1123456782.600000000000000000", bigDecimalWhole.toPlainString())
         assertEquals(false, bigDecimalWhole.isWholeNumber())
     }
+
+    @Test
+    fun testMoveDecimalPoint() {
+        val bigDecimal = "1.123456780".toBigDecimal()
+        val eightPlaces = bigDecimal.moveDecimalPoint(8)
+        assertEquals(112345678L, eightPlaces.longValue())
+        val tenPlaces = bigDecimal.moveDecimalPoint(10)
+        assertEquals(11234567800L, tenPlaces.longValue())
+        val ninePlaces = bigDecimal.moveDecimalPoint(9)
+        assertEquals(1123456780L, ninePlaces.longValue())
+    }
 }
