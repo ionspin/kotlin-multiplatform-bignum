@@ -2,6 +2,9 @@
 (All dates are DD.MM.YYYY)
 
 ##### 0.3.7-SNAPSHOT - current snapshot
+- Fic for #239, toPlainString which was supposed to return same result as JVM was truncating zeroes when scale was used. 
+- Fix for #238, wrong exponent in resolved decimal precision was used in divideAndRemainder
+- Fix for #237, when precision and exponent are same invalid value was returned
 - Fix for #231, exception incorrectly thrown when using scale (the library was only checking for unlimited precision instead of that and presence of scale)
 
 ##### 0.3.6 - 22.5.2022
