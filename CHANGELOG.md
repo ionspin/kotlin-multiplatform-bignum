@@ -1,8 +1,11 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
 
-##### 0.3.7-SNAPSHOT - current snapshot
-- Fic for #239, toPlainString which was supposed to return same result as JVM was truncating zeroes when scale was used. 
+##### 0.3.8-SNAPSHOT - current snapshot
+
+##### 0.3.7 - 6.8.2022
+- Bump to Kotlin 1.7.10
+- Fix for #239, toPlainString which was supposed to return same result as JVM was truncating zeroes when scale was used. 
 - Fix for #238, wrong exponent in resolved decimal precision was used in divideAndRemainder
 - Fix for #237, when precision and exponent are same invalid value was returned
 - Fix for #231, exception incorrectly thrown when using scale (the library was only checking for unlimited precision instead of that and presence of scale)
