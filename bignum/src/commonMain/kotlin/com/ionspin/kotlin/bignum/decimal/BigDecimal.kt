@@ -31,6 +31,7 @@ import com.ionspin.kotlin.bignum.integer.RuntimePlatform
 import com.ionspin.kotlin.bignum.integer.Sign
 import com.ionspin.kotlin.bignum.integer.chosenArithmetic
 import com.ionspin.kotlin.bignum.integer.toBigInteger
+import com.ionspin.kotlin.bignum.integer.util.times
 import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
@@ -1267,7 +1268,7 @@ class BigDecimal private constructor(
      */
     fun divide(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
         val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
-        if (resolvedDecimalMode.isPrecisionUnlimited) {
+        if (resolvedDecimalMode.isPrecisionUnlimited && resolvedDecimalMode.usingScale.not()) {
             val newExponent = this.exponent - other.exponent
             val power = (other.precision * 2 + 6)
             val thisPrepared = this.significand * BigInteger.TEN.pow(power)
@@ -1343,7 +1344,7 @@ class BigDecimal private constructor(
         if (other.abs() > this.abs()) {
             return Pair(ZERO, this)
         }
-        val resolvedRoundingMode = this.decimalMode ?: DecimalMode(exponent + 1, RoundingMode.FLOOR)
+        val resolvedRoundingMode = this.decimalMode?.copy(decimalPrecision = exponent + 1) ?: DecimalMode(exponent + 1, RoundingMode.FLOOR)
         val quotient = divide(other, resolvedRoundingMode)
         val quotientInfinitePrecision = quotient.copy(decimalMode = DecimalMode.DEFAULT)
         val remainder = this - (quotientInfinitePrecision * other)
@@ -1491,7 +1492,7 @@ class BigDecimal private constructor(
                 significand / 10.toBigInteger().pow(precisionExponentDiff.absoluteValue - 1)
             }
             else -> {
-                significand
+                significand * 10
             }
         }
     }
@@ -1863,7 +1864,9 @@ class BigDecimal private constructor(
      * @return true if "this" is a whole number, false if not
      */
     fun isWholeNumber(): Boolean {
-        return abs().divrem(ONE).second.isZero()
+        val res = abs().divrem(ONE)
+        val isWholeNumber = res.second.isZero()
+        return isWholeNumber
     }
 
     /**
@@ -2029,6 +2032,9 @@ class BigDecimal private constructor(
          */
         val divExponent = precision - 1 - exponent
         val l = this.significand.longValue(exactRequired)
+        if (this.significand > Long.MAX_VALUE || this.significand < Long.MIN_VALUE) {
+            return toString().toDouble()
+        }
         return if (l.toDouble().toLong() == l && divExponent >= 0 && divExponent < double10pow.size) {
             (l / double10pow[divExponent.toInt()])
         } else {
@@ -2287,7 +2293,25 @@ class BigDecimal private constructor(
      * Convenience method matching Java BigDecimal, same functionality as toStringExpanded
      */
     fun toPlainString(): String {
-        return toStringExpanded()
+        // TODO this is a naive and inefficient implementation, it would be better to consider scale before the
+        // string is expanded.
+        val expandedString = toStringExpanded()
+        val finalString = if (usingScale && scale > 0) {
+            val split = expandedString.split(".")
+            if (split.size == 1) {
+                expandedString + "." + '0' * scale
+            } else {
+                val missingZeroCount = scale - split[1].length
+                if (missingZeroCount > 0) {
+                    expandedString + '0' * missingZeroCount
+                } else {
+                    expandedString
+                }
+            }
+        } else {
+            expandedString
+        }
+        return finalString
     }
 
     /**

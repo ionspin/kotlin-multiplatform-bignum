@@ -25,7 +25,7 @@ import java.math.BigInteger
  * on 09-Mar-2019
  */
 
-fun ULongArray.toJavaBigInteger(): BigInteger {
+internal fun ULongArray.toJavaBigInteger(): BigInteger {
     return this.foldIndexed(BigInteger.valueOf(0)) { index, acc, digit ->
         acc.or(BigInteger(digit.toString(), 10).shiftLeft((index) * 63))
     }
@@ -35,6 +35,6 @@ fun com.ionspin.kotlin.bignum.integer.BigInteger.toJavaBigInteger(): BigInteger 
     return (this.magnitude.toULongArray().toJavaBigInteger() * this.sign.toInt().toBigInteger())
 }
 
-fun ULong.toJavaBigInteger(): BigInteger {
+internal fun ULong.toJavaBigInteger(): BigInteger {
     return BigInteger(this.toString(10), 10)
 }

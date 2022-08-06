@@ -16,13 +16,13 @@
  */
 
 object Versions {
-    val kotlinCoroutines = "1.6.1"
-    val kotlin = "1.6.20"
-    val kotlinSerialization = "1.3.2"
-    val dokkaPlugin = "1.6.10"
+    val kotlinCoroutines = "1.6.3"
+    val kotlin = "1.7.10"
+    val kotlinSerialization = "1.3.3"
+    val dokkaPlugin = "1.7.10"
 }
 
-val projectVersion = "0.3.5-SNAPSHOT"
+val projectVersion = "0.3.8-SNAPSHOT"
 
 object Deps {
 

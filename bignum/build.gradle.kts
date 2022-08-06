@@ -96,7 +96,7 @@ kotlin {
                         it.compileKotlinTask.kotlinOptions.main = "call"
                     }
                     println("Compilation name ${it.name} set")
-                    println("Destination dir ${it.compileKotlinTask.destinationDir}")
+                    println("Destination dir ${it.compileKotlinTask.destinationDirectory}")
                 }
                 nodejs()
                 browser() {
@@ -380,8 +380,8 @@ kotlin {
 
         all {
             languageSettings.enableLanguageFeature("InlineClasses")
-            languageSettings.useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
-            languageSettings.useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
+            languageSettings.optIn("kotlin.ExperimentalUnsignedTypes")
+            languageSettings.optIn("kotlin.ExperimentalStdlibApi")
         }
     }
 }

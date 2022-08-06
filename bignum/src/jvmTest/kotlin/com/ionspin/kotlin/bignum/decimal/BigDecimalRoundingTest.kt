@@ -734,7 +734,7 @@ class BigDecimalRoundingTest {
         val jvmB = bigNumB.toJavaBigDecimal()
         val jvmResult = jvmA.divide(jvmB, scale, jvmRoundingMode)
         val bigNumResult = bigNumA.divide(bigNumB, DecimalMode(scale + 100L, bigNumRoundingMode, scale.toLong()))
-        assertEquals(bigNumResult.toPlainString(), jvmResult.stripTrailingZeros().toPlainString())
+        assertEquals(bigNumResult.toPlainString(), jvmResult.toPlainString())
     }
 
     fun RoundingMode.toJvmRoundingMode(): java.math.RoundingMode {
@@ -773,7 +773,7 @@ class BigDecimalRoundingTest {
             val a = "1.1000000000"
             val bignum = a.toBigDecimal(decimalMode = DecimalMode(20, mode.toBigNumRoundingMode(), 3))
             val jvm = java.math.BigDecimal(a).setScale(3, mode)
-            assertEquals(bignum.toPlainString(), jvm.stripTrailingZeros().toPlainString())
+            assertEquals(bignum.toPlainString(), jvm.toPlainString())
         }
     }
 }
