@@ -21,6 +21,7 @@ import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.test.fail
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -722,7 +723,12 @@ class BigDecimalRoundingTest {
             )
         }
         runBlocking {
-            jobList.forEach { it.join() }
+            jobList.forEach {
+                if (it.isCancelled) {
+                    fail("Some of the tests failed")
+                }
+                it.join()
+            }
         }
     }
 

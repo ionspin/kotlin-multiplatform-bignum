@@ -21,6 +21,7 @@ import com.ionspin.kotlin.bignum.integer.base63.BigInteger63LinkedListArithmetic
 import kotlin.random.Random
 import kotlin.random.nextULong
 import kotlin.test.assertTrue
+import kotlin.test.fail
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -104,7 +105,12 @@ class BigInteger63ListJavaDivisionTest() {
             )
         }
         runBlocking {
-            jobList.forEach { it.join() }
+            jobList.forEach {
+                if (it.isCancelled) {
+                    fail("Some of the tests failed")
+                }
+                it.join()
+            }
         }
     }
 
@@ -201,7 +207,12 @@ class BigInteger63ListJavaDivisionTest() {
 //
 //        }
 //        runBlocking {
-//            jobList.forEach { it.join() }
+//            jobList.forEach {
+//                if (it.isCancelled) {
+//                    fail("Some of the tests failed")
+//                }
+//                it.join()
+//            }
 //        }
 //    }
 
@@ -267,7 +278,12 @@ class BigInteger63ListJavaDivisionTest() {
 //
 //        }
 //        runBlocking {
-//            jobList.forEach { it.join() }
+//            jobList.forEach {
+//                if (it.isCancelled) {
+//                    fail("Some of the tests failed")
+//                }
+//                it.join()
+//            }
 //        }
 //
 //    }
@@ -298,7 +314,12 @@ class BigInteger63ListJavaDivisionTest() {
 //
 //        }
 //        runBlocking {
-//            jobList.forEach { it.join() }
+//            jobList.forEach {
+//                if (it.isCancelled) {
+//                    fail("Some of the tests failed")
+//                }
+//                it.join()
+//            }
 //        }
 //
 //    }
@@ -385,7 +406,12 @@ class BigInteger63ListJavaDivisionTest() {
 //            jobList.add(job)
 //        }
 //        runBlocking {
-//            jobList.forEach { it.join() }
+//            jobList.forEach {
+//                if (it.isCancelled) {
+//                    fail("Some of the tests failed")
+//                }
+//                it.join()
+//            }
 //        }
 //        val generationEndTime = System.currentTimeMillis()
 //        println("Done generating samples, took ${generationEndTime - generationStartTime} ms. Generated samples ${sampleList.size}")

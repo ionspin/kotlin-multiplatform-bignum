@@ -322,4 +322,14 @@ class ReportedIssueReplicationTest {
         val ninePlaces = bigDecimal.moveDecimalPoint(9)
         assertEquals(1123456780L, ninePlaces.longValue())
     }
+
+    @Test
+    fun showBigDecimalWithHigherPrecision() {
+        val bigDecimal = "345.67".toBigDecimal(decimalMode = DecimalMode(scale = 5, roundingMode = RoundingMode.CEILING))
+        println("Significand: ${bigDecimal.significand}")
+        println("Exponent: ${bigDecimal.exponent}")
+        println("Precision ${bigDecimal.precision}")
+        println("Is using scale? ${bigDecimal.usingScale} Scale ${bigDecimal.scale}")
+        println("DecimalMode ${bigDecimal.decimalMode}")
+    }
 }

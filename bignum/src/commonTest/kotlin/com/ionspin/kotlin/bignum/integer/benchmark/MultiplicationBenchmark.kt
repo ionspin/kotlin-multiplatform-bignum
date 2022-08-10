@@ -26,6 +26,7 @@ import kotlin.random.nextULong
 import kotlin.test.BeforeTest
 import kotlin.test.Ignore
 import kotlin.test.Test
+import kotlin.test.fail
 import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
@@ -75,7 +76,12 @@ class MultiplicationBenchmark {
                 timeSpent += runMultiplication(a, b)
             }
         }
-        jobList.forEach { it.join() }
+        jobList.forEach {
+                if (it.isCancelled) {
+                    fail("Some of the tests failed")
+                }
+                it.join()
+            }
 
         println("Total ${timeSpent / 1_000_000} ms (${timeSpent / 1_000_000_000} s) over $numberOfSamples")
         println("Average run ${timeSpent / numberOfSamples} NanoSeconds ${timeSpent / numberOfSamples / 1_000_000} MilliSeconds")
@@ -108,7 +114,12 @@ class MultiplicationBenchmark {
                 timeSpent += runMultiplication(a, b)
             }
         }
-        jobList.forEach { it.join() }
+        jobList.forEach {
+                if (it.isCancelled) {
+                    fail("Some of the tests failed")
+                }
+                it.join()
+            }
 
         println("Total ${timeSpent / 1_000_000} ms (${timeSpent / 1_000_000_000} s) over $numberOfSamples")
         println("Average run ${timeSpent / numberOfSamples} NanoSeconds ${timeSpent / numberOfSamples / 1_000_000} MilliSeconds")
@@ -142,7 +153,12 @@ class MultiplicationBenchmark {
                 timeSpent += runMultiplication(a, b)
             }
         }
-        jobList.forEach { it.join() }
+        jobList.forEach {
+                if (it.isCancelled) {
+                    fail("Some of the tests failed")
+                }
+                it.join()
+            }
 
         println("Total ${timeSpent / 1_000_000} ms (${timeSpent / 1_000_000_000} s) over $numberOfSamples")
         println("Average run ${timeSpent / numberOfSamples} NanoSeconds ${timeSpent / numberOfSamples / 1_000_000_000} MilliSeconds")

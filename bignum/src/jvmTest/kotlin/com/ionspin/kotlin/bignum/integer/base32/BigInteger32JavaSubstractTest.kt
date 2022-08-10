@@ -23,6 +23,7 @@ import java.time.LocalDateTime
 import kotlin.random.Random
 import kotlin.random.nextUInt
 import kotlin.test.assertTrue
+import kotlin.test.fail
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -70,7 +71,12 @@ class BigInteger32JavaSubtractTest {
             )
         }
         runBlocking {
-            jobList.forEach { it.join() }
+            jobList.forEach {
+                if (it.isCancelled) {
+                    fail("Some of the tests failed")
+                }
+                it.join()
+            }
         }
     }
 
