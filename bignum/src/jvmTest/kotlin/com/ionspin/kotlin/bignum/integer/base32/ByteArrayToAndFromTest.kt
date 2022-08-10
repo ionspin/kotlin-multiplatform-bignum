@@ -156,7 +156,12 @@
 //             jobList.add(job)
 //         }
 //         runBlocking {
-//             jobList.forEach { it.join() }
+//             jobList.forEach {
+//                if (it.isCancelled) {
+//                    fail("Some of the tests failed")
+//                }
+//                it.join()
+//            }
 //         }
 //     }
 //
@@ -178,7 +183,12 @@
 //             jobList.add(job)
 //         }
 //         runBlocking {
-//             jobList.forEach { it.join() }
+//             jobList.forEach {
+//                if (it.isCancelled) {
+//                    fail("Some of the tests failed")
+//                }
+//                it.join()
+//            }
 //         }
 //     }
 //

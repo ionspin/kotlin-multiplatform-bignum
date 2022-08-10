@@ -23,6 +23,7 @@ import java.time.LocalDateTime
 import kotlin.random.Random
 import kotlin.random.nextUInt
 import kotlin.test.assertTrue
+import kotlin.test.fail
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -95,7 +96,12 @@ class BigInteger32JavaMultiplyTest {
             )
         }
         runBlocking {
-            jobList.forEach { it.join() }
+            jobList.forEach {
+                if (it.isCancelled) {
+                    fail("Some of the tests failed")
+                }
+                it.join()
+            }
         }
     }
 
