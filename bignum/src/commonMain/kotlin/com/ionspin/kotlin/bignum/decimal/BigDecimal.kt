@@ -35,7 +35,7 @@ import kotlin.math.min
  * Implementation of floating-point arbitrary precision arithmetic.
  *
  * Each object of this class represents an immutable large floating point number. The underlying implementation
- * uses [BigInteger] to represent sign and significand, and another [BigInteger] to represent the exponent.
+ * uses [BigInteger] to represent sign and significand, and [Long] to represent the exponent.
  *
  * [DecimalMode] defines the precision and desired [RoundingMode] when using instances of this class in arithmetic operations,
  * but if [DecimalMode] is supplied to the operation it will override instances [DecimalMode]
@@ -46,13 +46,13 @@ import kotlin.math.min
  *
  * When arithmetic operations have both operands unlimited precision and no scaling, the result is
  * also unlimited precision and no scale. When an operation mixes an unlimited precision operand
- * and a scaled operand, the result is unlimited precision. WHen both operands have scale,
+ * and a scaled operand, the result is unlimited precision. When both operands have scale,
  * whether unlimited precision or limited precision, then these rules for scale of the result are used:
  * <ul>
  *     <li>add, subtract - max of the two scales</li>
  *     <li>multiply - sum of the two scales</li>
  *     <li>divide - min of the two scales</li>
- *
+ * </ul>
  * Created by Ugljesa Jovanovic
  * ugljesa.jovanovic@ionspin.com
  * on 23-Mar-2019
