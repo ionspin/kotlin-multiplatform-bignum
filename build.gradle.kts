@@ -24,13 +24,11 @@ buildscript {
     }
 
     dependencies {
-//        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}")
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:${Versions.dokkaPlugin}")
     }
 }
 
 allprojects {
-
     repositories {
         mavenCentral()
         maven {
