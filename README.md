@@ -484,7 +484,7 @@ ModularBigInteger: 50 mod 100
 
 ```
 
-Otherwise behavior is similar to normal integers
+Otherwise, behavior is similar to normal integers
 
 
 ### Sources
