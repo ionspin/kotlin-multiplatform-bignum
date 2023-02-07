@@ -72,7 +72,7 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
     }
 
     companion object : BigNumber.Creator<BigInteger>, BigNumber.Util<BigInteger>, ByteArrayDeserializable<BigInteger> {
-        private val arithmetic: BigIntegerArithmetic = chosenArithmetic
+        val arithmetic: BigIntegerArithmetic = chosenArithmetic
 
         override val ZERO = BigInteger(arithmetic.ZERO, Sign.ZERO)
         override val ONE = BigInteger(arithmetic.ONE, Sign.POSITIVE)
