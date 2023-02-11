@@ -4,7 +4,6 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.Sign
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializer
 import kotlinx.serialization.builtins.ArraySerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -24,8 +23,7 @@ import kotlinx.serialization.modules.SerializersModule
  * on 04-Jul-2021
  */
 
-@OptIn(ExperimentalStdlibApi::class, ExperimentalSerializationApi::class, ExperimentalUnsignedTypes::class)
-@Serializer(forClass = BigInteger::class)
+@OptIn(ExperimentalSerializationApi::class, ExperimentalUnsignedTypes::class)
 object BigIntegerArraySerializer : KSerializer<BigInteger> {
 
 

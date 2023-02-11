@@ -20,6 +20,7 @@ package com.ionspin.kotlin.bignum.integer.arithmetic
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 /**
@@ -104,6 +105,42 @@ class BitwiseTest {
             val bigInt = BigInteger.fromLong(Long.MAX_VALUE) - 2.toBigInteger().pow(32)
             val result = bigInt.setBitAt(32, true)
             result == (Long.MAX_VALUE.toBigInteger())
+        }
+    }
+
+    @Test
+    fun bitLengthTestSimple() {
+        assertTrue {
+            val bigInt = BigInteger.fromInt(0)
+            val result = bigInt.bitLength()
+            result == 0
+        }
+
+        assertTrue {
+            val bigInt = BigInteger.fromInt(1)
+            val result = bigInt.bitLength()
+            result == 1
+        }
+
+        assertTrue {
+            val bigInt = BigInteger.fromInt(2)
+            val result = bigInt.bitLength()
+            result == 2
+        }
+
+        assertTrue {
+            val bigInt = BigInteger.fromInt(4)
+            val result = bigInt.bitLength()
+            result == 3
+        }
+    }
+
+    @Test
+    fun bitLengthTest() {
+        for (i in 0..4096) {
+            val bigInt = BigInteger.ONE.shl(i)
+            val bitLength = bigInt.bitLength()
+            assertEquals(i + 1, bitLength)
         }
     }
 }

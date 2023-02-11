@@ -547,12 +547,16 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
         return BigInteger(arithmetic.setBitAt(magnitude, position, bit), sign)
     }
 
+    override fun bitLength(): Int {
+        return arithmetic.bitLength(magnitude)
+    }
+
     override fun numberOfDecimalDigits(): Long {
         if (isZero()) {
             return 1
         }
-        val bitLenght = arithmetic.bitLength(magnitude)
-        val minDigit = ceil((bitLenght - 1) * LOG_10_OF_2)
+        val bitLength = arithmetic.bitLength(magnitude)
+        val minDigit = ceil((bitLength - 1) * LOG_10_OF_2)
 //        val maxDigit = floor(bitLenght * LOG_10_OF_2) + 1
 //        val correct = this / 10.toBigInteger().pow(maxDigit.toInt())
 //        return when {

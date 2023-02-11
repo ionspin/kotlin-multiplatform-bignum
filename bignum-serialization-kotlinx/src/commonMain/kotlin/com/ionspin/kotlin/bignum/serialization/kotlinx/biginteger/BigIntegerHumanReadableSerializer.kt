@@ -2,7 +2,6 @@ package com.ionspin.kotlin.bignum.serialization.kotlinx.biginteger
 
 import com.ionspin.kotlin.bignum.integer.BigInteger
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -17,7 +16,6 @@ import kotlinx.serialization.modules.SerializersModule
  *
  * Serializes big integer into base 10 human readable format.
  */
-@Serializer(forClass = BigInteger::class)
 object BigIntegerHumanReadableSerializer : KSerializer<BigInteger> {
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("BigInteger", PrimitiveKind.STRING)

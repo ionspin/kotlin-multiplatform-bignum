@@ -255,6 +255,11 @@ interface BitwiseCapable<BigType> {
      * I.e.: If the number was "1100" binary, not returns "0011" => "11" => 4 decimal
      */
     fun not(): BigType
+
+    /**
+     * Returns the number of bits needed to represent this number
+     */
+    fun bitLength(): Int
 }
 
 interface ByteArraySerializable {
