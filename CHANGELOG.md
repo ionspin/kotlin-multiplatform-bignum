@@ -2,6 +2,10 @@
 (All dates are DD.MM.YYYY)
 
 ##### 0.3.8-SNAPSHOT - current snapshot
+- Bump to Kotlin 1.8.10
+- Fix for #253, empty string is not a valid floating point number any more and parsing it throws ArithmeticException
+- Fix for #245, division test failures run in coroutines were ignored.
+- Expanded BigInteger API to expose bitLength as proposed by #254
 
 ##### 0.3.7 - 6.8.2022
 - Bump to Kotlin 1.7.10

@@ -9,3 +9,4 @@ build/
 /bignum/node_modules
 /buildSrc/out
 /bignum/node_modules
+zignum/

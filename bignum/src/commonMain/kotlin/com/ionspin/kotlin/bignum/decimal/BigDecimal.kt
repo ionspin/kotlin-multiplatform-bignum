@@ -897,7 +897,7 @@ class BigDecimal private constructor(
          */
         fun parseStringWithMode(floatingPointString: String, decimalMode: DecimalMode? = null): BigDecimal {
             if (floatingPointString.isEmpty()) {
-                return ZERO
+                throw ArithmeticException("Empty string is not a valid decimal number")
             }
             if (floatingPointString.contains('E', true)) {
                 // Sci notation
