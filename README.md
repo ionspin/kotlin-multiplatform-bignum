@@ -27,7 +27,7 @@ and bug-fixing.
 
 #### Gradle
 ```kotlin
-implementation("com.ionspin.kotlin:bignum:0.3.7")
+implementation("com.ionspin.kotlin:bignum:0.3.8")
 ```
 
 #### Snapshot builds
@@ -37,7 +37,7 @@ repositories {
         url = uri("https://oss.sonatype.org/content/repositories/snapshots")
     }
 }
-implementation("com.ionspin.kotlin:bignum:0.3.8-SNAPSHOT")
+implementation("com.ionspin.kotlin:bignum:0.3.9-SNAPSHOT")
 
 ```
 

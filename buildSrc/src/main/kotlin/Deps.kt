@@ -16,9 +16,9 @@
  */
 
 object Versions {
-    val kotlinCoroutines = "1.6.3"
+    val kotlinCoroutines = "1.6.4"
     val kotlin = "1.8.10"
-    val kotlinSerialization = "1.3.3"
+    val kotlinSerialization = "1.5.0-RC"
     val dokkaPlugin = "1.7.20"
 }
 
