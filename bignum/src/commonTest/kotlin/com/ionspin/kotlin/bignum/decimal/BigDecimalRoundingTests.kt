@@ -246,4 +246,54 @@ class BigDecimalRoundingTests {
         val res = a * b
         assertEquals(res, 0.33.toBigDecimal())
     }
+
+    @Test
+    fun `test ROUND_HALF_TO_EVEN`() {
+        val map = mapOf(
+            -1.005 to -1.00,
+            -1.015 to -1.02,
+            1.015 to 1.02,
+            1.005 to 1.00,
+            1.004 to 1.00,
+            1.006 to 1.01,
+            -1.004 to -1.00,
+            -1.006 to -1.01,
+            .0 to .0
+        )
+        map.forEach {
+            assertEquals(
+                (it.value).toBigDecimal(),
+                BigDecimal.fromBigDecimal(
+                    it.key.toBigDecimal(),
+                    DecimalMode(10, roundingMode = RoundingMode.ROUND_HALF_TO_EVEN, scale = 2)
+                ),
+                "the ${it.key} should round to ${it.value}"
+            )
+        }
+    }
+
+    @Test
+    fun `test ROUND_HALF_TO_ODD`() {
+        val map = mapOf(
+            -1.005 to -1.01,
+            -1.025 to -1.03,
+            1.015 to 1.01,
+            1.005 to 1.01,
+            1.004 to 1.00,
+            1.006 to 1.01,
+            -1.004 to -1.00,
+            -1.006 to -1.01,
+            .0 to .0
+        )
+        map.forEach {
+            assertEquals(
+                (it.value).toBigDecimal(),
+                BigDecimal.fromBigDecimal(
+                    it.key.toBigDecimal(),
+                    DecimalMode(10, roundingMode = RoundingMode.ROUND_HALF_TO_ODD, scale = 2)
+                ),
+                "the ${it.key} should round to ${it.value}"
+            )
+        }
+    }
 }
