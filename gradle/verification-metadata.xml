@@ -78,6 +78,7 @@
          <trusted-key id="e62231331bca7e1f292c9b88c1b12a5d99c0729d" group="org.jetbrains"/>
          <trusted-key id="e7dc75fc24fb3c8dfe8086ad3d5839a2262cbbfb" group="org.jetbrains.kotlinx"/>
          <trusted-key id="f3184bcd55f4d016e30d4c9bf42e87f9665015c9" group="org.jsoup" name="jsoup" version="1.13.1"/>
+         <trusted-key id="f3184bcd55f4d016e30d4c9bf42e87f9665015c9" group="org.jsoup" name="jsoup" version="1.15.3"/>
          <trusted-key id="fa7929f83ad44c4590f6cc6815c71c0a4e0b8edd" group="net.java.dev.jna" name="jna" version="5.6.0"/>
          <trusted-key id="fc411cd3cb7dcb0abc9801058118b3bcdb1a5000" group="jakarta.xml.bind"/>
          <trusted-key id="ff6e2c001948c5f2f38b0cc385911f425ec61b51" group="org.junit"/>
