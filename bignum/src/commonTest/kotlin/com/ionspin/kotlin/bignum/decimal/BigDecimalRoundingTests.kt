@@ -248,7 +248,7 @@ class BigDecimalRoundingTests {
     }
 
     @Test
-    fun `test ROUND_HALF_TO_EVEN`() {
+    fun testRoundHalfToEven() {
         val map = mapOf(
             -1.005 to -1.00,
             -1.015 to -1.02,
@@ -273,7 +273,7 @@ class BigDecimalRoundingTests {
     }
 
     @Test
-    fun `test ROUND_HALF_TO_ODD`() {
+    fun testRoundHalfToOdd() {
         val map = mapOf(
             -1.005 to -1.01,
             -1.025 to -1.03,

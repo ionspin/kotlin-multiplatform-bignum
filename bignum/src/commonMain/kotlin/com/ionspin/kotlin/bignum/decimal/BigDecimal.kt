@@ -297,14 +297,10 @@ class BigDecimal private constructor(
                                 // RoundingMode.HALF_CEILING if the digit to the left of the discarded fraction is odd
                                 when (sign) {
                                     Sign.POSITIVE -> {
-                                        if (decider != SignificantDecider.LESS_THAN_FIVE) {
-                                            result++
-                                        }
+                                        result++
                                     }
                                     Sign.NEGATIVE -> {
-                                        if (decider != SignificantDecider.LESS_THAN_FIVE) {
-                                            result--
-                                        }
+                                        result--
                                     }
                                     Sign.ZERO -> {
                                     }
@@ -328,29 +324,10 @@ class BigDecimal private constructor(
                                 // RoundingMode.HALF_CEILING if the digit to the left of the discarded fraction is even
                                 when (sign) {
                                     Sign.POSITIVE -> {
-                                        if (decider != SignificantDecider.LESS_THAN_FIVE) {
-                                            result++
-                                        }
+                                        result++
                                     }
                                     Sign.NEGATIVE -> {
-                                        if (decider != SignificantDecider.LESS_THAN_FIVE) {
-                                            result--
-                                        }
-                                    }
-                                    Sign.ZERO -> {
-                                    }
-                                }
-                            } else {
-                                when (sign) {
-                                    Sign.POSITIVE -> {
-                                        if (decider == SignificantDecider.MORE_THAN_FIVE) {
-                                            result++
-                                        }
-                                    }
-                                    Sign.NEGATIVE -> {
-                                        if (decider != SignificantDecider.LESS_THAN_FIVE) {
-                                            result--
-                                        }
+                                        result--
                                     }
                                     Sign.ZERO -> {
                                     }
