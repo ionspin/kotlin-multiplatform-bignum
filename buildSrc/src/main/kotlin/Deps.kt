@@ -16,10 +16,10 @@
  */
 
 object Versions {
-    val kotlinCoroutines = "1.6.4"
-    val kotlin = "1.8.10"
-    val kotlinSerialization = "1.5.0-RC"
-    val dokkaPlugin = "1.7.20"
+    val kotlinCoroutines = "1.7.3"
+    val kotlin = "1.9.20"
+    val kotlinSerialization = "1.6.0"
+    val dokkaPlugin = "1.9.10"
 }
 
 val projectVersion = "0.3.9-SNAPSHOT"
@@ -69,9 +69,9 @@ object Deps {
 }
 
 object PluginsDeps {
-    object Versions {
+    object PluginVersions {
         val spotlessVersion = "5.14.0"
-        val kotlinxSerialization = "1.5.0"
+        val kotlinxSerialization = Versions.kotlin
     }
 
 

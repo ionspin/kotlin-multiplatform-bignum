@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
 
 plugins {
     kotlin(PluginsDeps.multiplatform)
-    kotlin(PluginsDeps.kotlinxSerialization) version PluginsDeps.Versions.kotlinxSerialization
+    kotlin(PluginsDeps.kotlinxSerialization) version PluginsDeps.PluginVersions.kotlinxSerialization
     id(PluginsDeps.mavenPublish)
     id(PluginsDeps.signing)
     id(PluginsDeps.dokka)
@@ -71,16 +71,6 @@ kotlin {
     if (hostOs == primaryDevelopmentOs) {
         jvm()
         js(IR) {
-            /* IR only for now as legacy fails with the following exception:
-        TypeError: tmp$.serializer is not a function
-            at <global>.compiledSerializerImpl(/tmp/_karma_webpack_695475/commons.js:72072)
-            at <global>.serializerOrNull(/tmp/_karma_webpack_695475/commons.js:72052)
-            at <global>.serializerByKTypeImpl(/tmp/_karma_webpack_695475/commons.js:71975)
-            at <global>.serializer(/tmp/_karma_webpack_695475/commons.js:71947)
-            at com.ionspin.kotlin.bignum.serialization.kotlinx.HumanReadableSerializationTest.testSerialization(/tmp/_karma_webpack_695475/commons.js:88247)
-            at <global>.<unknown>(/tmp/_karma_webpack_695475/commons.js:88269)
-            at Context.<anonymous>(/tmp/_karma_webpack_695475/commons.js:57)
-         */
             nodejs()
             browser()
         }
@@ -92,7 +82,6 @@ kotlin {
     }
     iosX64()
     iosArm64()
-    iosArm32()
     iosSimulatorArm64()
     macosX64()
     macosArm64()
