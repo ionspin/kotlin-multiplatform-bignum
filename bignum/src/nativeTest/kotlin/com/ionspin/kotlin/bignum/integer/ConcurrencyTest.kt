@@ -1,5 +1,7 @@
 package com.ionspin.kotlin.bignum.integer
 
+import kotlin.test.Test
+import kotlin.test.assertTrue
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -7,8 +9,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.test.runTest
 import platform.posix.pthread_self
-import kotlin.test.Test
-import kotlin.test.assertTrue
 
 /**
  * Created by Ugljesa Jovanovic
