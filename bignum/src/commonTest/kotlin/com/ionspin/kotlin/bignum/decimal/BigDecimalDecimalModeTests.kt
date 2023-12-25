@@ -1,9 +1,9 @@
 package com.ionspin.kotlin.bignum.decimal
 
-import com.ionspin.kotlin.bignum.runBlockingTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlinx.coroutines.test.runTest
 
 class BigDecimalDecimalModeTests {
 
@@ -15,7 +15,7 @@ class BigDecimalDecimalModeTests {
     }
 
     @Test
-    fun testModePreservation() = runBlockingTest {
+    fun testModePreservation() = runTest {
         run {
             val a = BigDecimal.fromInt(1, DecimalMode(scale = 5, roundingMode = RoundingMode.AWAY_FROM_ZERO))
             val negated = -a

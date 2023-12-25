@@ -63,6 +63,11 @@ object Deps {
         val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinCoroutines}"
     }
 
+    object WasmJs {
+        val stdLib = "stdlib-wasm-js"
+        val test = "test-wasm-js"
+    }
+
     object Project {
         val bignum = ":bignum"
     }

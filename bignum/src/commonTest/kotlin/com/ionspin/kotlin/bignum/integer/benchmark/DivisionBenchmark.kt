@@ -19,7 +19,6 @@ package com.ionspin.kotlin.bignum.integer.benchmark
 
 import com.ionspin.kotlin.bignum.integer.WordArray
 import com.ionspin.kotlin.bignum.integer.chosenArithmetic
-import com.ionspin.kotlin.bignum.runBlockingTest
 import com.ionspin.kotlin.bignum.toProperType
 import kotlin.random.Random
 import kotlin.random.nextULong
@@ -33,6 +32,7 @@ import kotlin.time.measureTime
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runTest
 
 /**
  * Created by Ugljesa Jovanovic
@@ -64,7 +64,7 @@ class DivisionBenchmark {
         }
     }
 
-    fun benchmarkSmallOperands(seed: Int) = runBlockingTest {
+    fun benchmarkSmallOperands(seed: Int) = runTest {
         val random = Random(seed)
         var timeSpent = 0L
         val numberOfSamples = 100_000L
@@ -102,7 +102,7 @@ class DivisionBenchmark {
         }
     }
 
-    fun benchmarkRangeOfOperands(seed: Int) = runBlockingTest {
+    fun benchmarkRangeOfOperands(seed: Int) = runTest {
         val random = Random(seed)
         var timeSpent = 0L
         val numberOfSamples = 1_000
@@ -140,7 +140,7 @@ class DivisionBenchmark {
         }
     }
 
-    fun benchmarkLargeOperands(seed: Int) = runBlockingTest {
+    fun benchmarkLargeOperands(seed: Int) = runTest {
         val random = Random(seed)
         var timeSpent = 0L
         val numberOfSamples = 100

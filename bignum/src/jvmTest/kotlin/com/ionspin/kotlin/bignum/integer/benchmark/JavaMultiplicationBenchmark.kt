@@ -20,7 +20,6 @@ package com.ionspin.kotlin.bignum.integer.benchmark
 import com.ionspin.kotlin.bignum.integer.WordArray
 import com.ionspin.kotlin.bignum.integer.base63.toJavaBigInteger
 import com.ionspin.kotlin.bignum.integer.chosenArithmetic
-import com.ionspin.kotlin.bignum.runBlockingTest
 import com.ionspin.kotlin.bignum.toProperType
 import java.math.BigInteger
 import kotlin.random.Random
@@ -35,6 +34,7 @@ import kotlin.time.measureTime
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runTest
 
 /**
  * Created by Ugljesa Jovanovic
@@ -66,7 +66,7 @@ class JavaMultiplicationBenchmark {
         }
     }
 
-    fun benchmarkSmallOperands(seed: Int) = runBlockingTest {
+    fun benchmarkSmallOperands(seed: Int) = runTest {
         val random = Random(seed)
         var timeSpent = 0L
         var javaTimeSpent = 0L
@@ -109,7 +109,7 @@ class JavaMultiplicationBenchmark {
         }
     }
 
-    fun benchmarkRangeOfOperands(seed: Int) = runBlockingTest {
+    fun benchmarkRangeOfOperands(seed: Int) = runTest {
         val random = Random(seed)
         var timeSpent = 0L
         var javaTimeSpent = 0L
@@ -152,7 +152,7 @@ class JavaMultiplicationBenchmark {
         }
     }
 
-    fun benchmarkLargeOperands(seed: Int) = runBlockingTest {
+    fun benchmarkLargeOperands(seed: Int) = runTest {
         val random = Random(seed)
         var timeSpent = 0L
         var javaTimeSpent = 0L

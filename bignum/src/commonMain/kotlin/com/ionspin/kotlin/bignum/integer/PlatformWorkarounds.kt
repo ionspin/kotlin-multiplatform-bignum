@@ -23,7 +23,7 @@ package com.ionspin.kotlin.bignum.integer
  * on 02-Jun-2019
  */
 enum class Platform {
-    JVM, NATIVE, JS
+    JVM, NATIVE, JS, WASMJS
 }
 
 expect object RuntimePlatform {
