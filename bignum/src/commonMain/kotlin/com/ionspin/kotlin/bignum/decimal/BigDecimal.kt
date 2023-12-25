@@ -2101,7 +2101,7 @@ class BigDecimal private constructor(
 
     override fun compareTo(other: Any): Int {
         if (other is Number) {
-            if (RuntimePlatform.currentPlatform() == Platform.JS) {
+            if (RuntimePlatform.currentPlatform() == Platform.JS || RuntimePlatform.currentPlatform() == Platform.WASMJS) {
                 return javascriptNumberComparison(other)
             }
         }

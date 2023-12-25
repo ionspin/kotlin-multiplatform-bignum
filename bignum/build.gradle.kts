@@ -108,6 +108,10 @@ kotlin {
                 }
             }
         }
+
+        wasmJs {
+            browser()
+        }
     }
 
     if (hostOs == HostOs.LINUX) {
@@ -195,6 +199,17 @@ kotlin {
             val jsTest by getting {
                 dependencies {
                     implementation(kotlin(Deps.Js.test))
+                }
+            }
+
+            val wasmJsMain by getting {
+                dependencies {
+                    implementation(kotlin(Deps.WasmJs.stdLib))
+                }
+            }
+            val wasmJsTest by getting {
+                dependencies {
+                    implementation(kotlin(Deps.WasmJs.test))
                 }
             }
         }
