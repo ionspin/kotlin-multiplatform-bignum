@@ -338,7 +338,7 @@ class ReportedIssueReplicationTest {
         val a = BigDecimal.fromDouble(1815.5)
         val b = BigDecimal.fromInt(360)
 
-        val (q,r) = a.divideAndRemainder(b)
+        val (q, r) = a.divideAndRemainder(b)
         assertEquals("5", q.toStringExpanded())
         assertEquals("15.5", r.toStringExpanded())
     }
