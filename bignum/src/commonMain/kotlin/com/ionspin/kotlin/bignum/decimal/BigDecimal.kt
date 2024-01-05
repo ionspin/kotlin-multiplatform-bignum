@@ -1321,7 +1321,7 @@ class BigDecimal private constructor(
             return Pair(ZERO, this)
         }
         val resolvedRoundingMode =
-            this.decimalMode?.copy(decimalPrecision = exponent + 1) ?: DecimalMode(exponent + 1, RoundingMode.FLOOR)
+            this.decimalMode?.copy(decimalPrecision = exponent - other.exponent + 1) ?: DecimalMode(exponent - other.exponent + 1, RoundingMode.FLOOR)
         val quotient = divide(other, resolvedRoundingMode)
         val quotientInfinitePrecision = quotient.copy(decimalMode = DecimalMode.DEFAULT)
         val remainder = this - (quotientInfinitePrecision * other)
@@ -1431,7 +1431,6 @@ class BigDecimal private constructor(
                 Sign.NEGATIVE -> ONE.negate()
                 Sign.ZERO -> ZERO
             }
-            return ZERO
         }
         return roundSignificand(DecimalMode(exponent + 1, RoundingMode.FLOOR))
     }
@@ -1832,7 +1831,7 @@ class BigDecimal private constructor(
                     }
                     bitList.add(bit)
                     fractionConvertTemp = if (bit == 1) {
-                        (multiplied divrem TEN).second
+                        (multiplied divrem ONE).second
                     } else {
                         multiplied
                     }
@@ -1887,7 +1886,7 @@ class BigDecimal private constructor(
             }
             // For significand we can have a maximum of 53 (52 + 1 implicit)
             // If there is no decimal point at all we can directly count the bits in significand and use them,
-            // but if there is we need to convert the fractional part to binary32 representation first.
+            // but if there is we need to convert the fractional part to binary64 representation first.
             // Bit count:
             val totalBits = if (precision - exponent - 1 > 0) {
                 // First find out where the decimal point will be
@@ -1912,7 +1911,7 @@ class BigDecimal private constructor(
                     }
                     bitList.add(bit)
                     fractionConvertTemp = if (bit == 1) {
-                        (multiplied divrem TEN).second
+                        (multiplied divrem ONE).second
                     } else {
                         multiplied
                     }

@@ -126,6 +126,38 @@ class BigDecimalDivisionTest {
         }
 
         run {
+            val a = 101.14.toBigDecimal()
+            val b = 100.toBigDecimal()
+            val (quotient, remainder) = a.divideAndRemainder(b)
+            assertEquals(1.toBigDecimal(), quotient)
+            assertEquals(1.14.toBigDecimal(), remainder)
+        }
+
+        run {
+            val a = 10100.14.toBigDecimal()
+            val b = 100.toBigDecimal()
+            val (quotient, remainder) = a.divideAndRemainder(b)
+            assertEquals(101.toBigDecimal(), quotient)
+            assertEquals(0.14.toBigDecimal(), remainder)
+        }
+
+        run {
+            val a = 10100.14.toBigDecimal()
+            val b = 1000.toBigDecimal()
+            val (quotient, remainder) = a.divideAndRemainder(b)
+            assertEquals(10.toBigDecimal(), quotient)
+            assertEquals(100.14.toBigDecimal(), remainder)
+        }
+
+        run {
+            val a = 1.14.toBigDecimal()
+            val b = 1000.toBigDecimal()
+            val (quotient, remainder) = a.divideAndRemainder(b)
+            assertEquals(BigDecimal.ZERO, quotient)
+            assertEquals(1.14.toBigDecimal(), remainder)
+        }
+
+        run {
             val a = 1.toBigDecimal()
             val b = BigDecimal.ONE
             val (quotient, remainder) = a.divideAndRemainder(b)
