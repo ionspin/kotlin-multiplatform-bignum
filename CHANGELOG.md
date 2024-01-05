@@ -6,6 +6,7 @@
 - Expanded BigInteger API to expose bitLength as proposed by #254
 - Added wasm-js target
 - Fix for #269, thanks to @CodeServant
+- Fix for #276, BigDecimal divrem was not rounding properly
 
 ##### 0.3.8 - 11.2.2023
 - Bump to Kotlin 1.8.10
