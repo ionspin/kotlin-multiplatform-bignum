@@ -7,6 +7,7 @@
 - Added wasm-js target
 - Fix for #269, thanks to @CodeServant
 - Fix for #276, BigDecimal divrem was not rounding properly
+- Fix for #277, round half to even was wrong when exponent was 0
 
 ##### 0.3.8 - 11.2.2023
 - Bump to Kotlin 1.8.10
