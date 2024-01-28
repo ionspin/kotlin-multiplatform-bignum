@@ -1,7 +1,9 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
 
-##### 0.3.9-SNAPSHOT - current snapshot
+##### 0.3.10-SNAPSHOT - current snapshot
+
+##### 0.3.9 - 28.1.2024
 - Bump to kotlin 1.9.21
 - Expanded BigInteger API to expose bitLength as proposed by #254
 - Added wasm-js target

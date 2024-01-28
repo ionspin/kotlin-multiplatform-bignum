@@ -36,7 +36,7 @@ expect `a` to be `1.2299999885799495E-13`.
 
 #### Gradle
 ```kotlin
-implementation("com.ionspin.kotlin:bignum:0.3.8")
+implementation("com.ionspin.kotlin:bignum:0.3.9")
 ```
 
 #### Snapshot builds
@@ -46,7 +46,7 @@ repositories {
         url = uri("https://oss.sonatype.org/content/repositories/snapshots")
     }
 }
-implementation("com.ionspin.kotlin:bignum:0.3.9-SNAPSHOT")
+implementation("com.ionspin.kotlin:bignum:0.3.10-SNAPSHOT")
 
 ```
 
