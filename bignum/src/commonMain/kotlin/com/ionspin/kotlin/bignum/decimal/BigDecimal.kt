@@ -450,8 +450,13 @@ class BigDecimal private constructor(
             return if (exponent >= 0) {
                 roundSignificand(significand, exponent, workMode)
             } else {
-                val temp = BigDecimal(significand, exponent) + significand.signum()
-                roundSignificand(temp.significand, temp.exponent, workMode) - significand.signum()
+                if (decimalMode.roundingMode == RoundingMode.ROUND_HALF_TO_EVEN) {
+                    val temp = BigDecimal(significand, exponent) + (significand.signum() * 2)
+                    roundSignificand(temp.significand, temp.exponent, workMode) - (significand.signum() * 2)
+                } else {
+                    val temp = BigDecimal(significand, exponent) + significand.signum()
+                    roundSignificand(temp.significand, temp.exponent, workMode) - significand.signum()
+                }
             }
         }
 
@@ -1986,7 +1991,11 @@ class BigDecimal private constructor(
         val rounded = if (this.exponent >= 0) {
             roundSignificand(DecimalMode(digitPosition, roundingMode))
         } else {
-            (this + this.signum()).roundSignificand(DecimalMode(digitPosition, roundingMode)) - this.signum()
+            if (roundingMode == RoundingMode.ROUND_HALF_TO_EVEN) {
+                (this + this.signum() * 2).roundSignificand(DecimalMode(digitPosition, roundingMode)) - this.signum() * 2
+            } else {
+                (this + this.signum()).roundSignificand(DecimalMode(digitPosition, roundingMode)) - this.signum()
+            }
         }
 
         return if (decimalMode == null) {

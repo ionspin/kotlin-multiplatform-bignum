@@ -342,4 +342,14 @@ class ReportedIssueReplicationTest {
         assertEquals("5", q.toStringExpanded())
         assertEquals("15.5", r.toStringExpanded())
     }
+
+    @Test
+    fun roundingHalfEven() {
+        val bigDecimal = BigDecimal.parseString("0.5")
+        val rounded = bigDecimal.roundToDigitPositionAfterDecimalPoint(0, roundingMode = RoundingMode.ROUND_HALF_TO_EVEN)
+        assertEquals(
+            BigDecimal.ZERO,
+            rounded
+        )
+    }
 }
