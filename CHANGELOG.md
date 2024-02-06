@@ -2,6 +2,7 @@
 (All dates are DD.MM.YYYY)
 
 ##### 0.3.10-SNAPSHOT - current snapshot
+- Fix for #280, return byte array containing zero instead of empty array when big integer is zero.
 
 ##### 0.3.9 - 28.1.2024
 - Bump to kotlin 1.9.21
