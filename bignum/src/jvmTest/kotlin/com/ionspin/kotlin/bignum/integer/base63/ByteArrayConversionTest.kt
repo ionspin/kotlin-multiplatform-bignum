@@ -826,4 +826,11 @@ class ByteArrayConversionTest {
         val kotlinBigBytes = IonSpinBigInteger.parseString("21000").toByteArray()
         Assert.assertArrayEquals(javaBigBytes, kotlinBigBytes)
     }
+
+    @Test
+    fun zeroToByteArray() {
+        val javaBigBytes = BigInteger("0").toByteArray()
+        val kotlinBigBytes = IonSpinBigInteger.parseString("0").toByteArray()
+        Assert.assertArrayEquals(javaBigBytes, kotlinBigBytes)
+    }
 }
