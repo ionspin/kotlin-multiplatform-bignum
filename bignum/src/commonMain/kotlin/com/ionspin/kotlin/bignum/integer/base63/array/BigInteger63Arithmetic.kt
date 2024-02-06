@@ -2228,6 +2228,9 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
     override fun toUByteArray(
         operand: ULongArray
     ): UByteArray {
+        if (operand == ZERO) {
+            return UByteArray(1) { 0U }
+        }
         val as64Bit = convertTo64BitRepresentation(operand).reversedArray()
         val result = UByteArray(as64Bit.size * 8)
         for (i in 0 until as64Bit.size) {
