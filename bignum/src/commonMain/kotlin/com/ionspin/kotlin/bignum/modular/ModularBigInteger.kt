@@ -298,6 +298,10 @@ class ModularBigInteger private constructor(
         }
     }
 
+    override fun hashCode(): Int {
+        return residue.hashCode()
+    }
+
     override fun toString(): String {
         return residue.toString()
     }
