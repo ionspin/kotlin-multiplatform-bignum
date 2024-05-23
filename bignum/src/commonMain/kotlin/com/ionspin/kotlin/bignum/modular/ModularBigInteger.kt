@@ -214,14 +214,7 @@ class ModularBigInteger private constructor(
     }
 
     override fun negate(): ModularBigInteger {
-        return this
-        // Code below doesn't make sense as negated number if original was positive, would be the same number we started
-        // from. Also a ModularBigInteger is never negative
-//        return when (residue.sign) {
-//            Sign.ZERO -> this
-//            Sign.POSITIVE -> ModularBigInteger(residue - modulus, modulus, creator)
-//            Sign.NEGATIVE -> ModularBigInteger(residue + modulus, modulus, creator)
-//        }
+        return ModularBigInteger(-residue, modulus, creator)
     }
 
     override fun abs(): ModularBigInteger {

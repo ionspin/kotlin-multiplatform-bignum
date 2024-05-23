@@ -42,4 +42,12 @@ class ModularBigIntegerAddition {
             c == expected
         }
     }
+
+    @Test
+    fun testInverse() {
+        val creator = ModularBigInteger.creatorForModulo(13)
+        val a = creator.fromInt(7)
+        assertTrue { -a == creator.fromInt(6) }
+        assertTrue { a.negate()+a == creator.ZERO }
+    }
 }
