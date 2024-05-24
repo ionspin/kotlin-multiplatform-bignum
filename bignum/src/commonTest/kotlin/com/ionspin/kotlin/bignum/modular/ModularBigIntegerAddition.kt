@@ -48,6 +48,6 @@ class ModularBigIntegerAddition {
         val creator = ModularBigInteger.creatorForModulo(13)
         val a = creator.fromInt(7)
         assertTrue { -a == creator.fromInt(6) }
-        assertTrue { a.negate()+a == creator.ZERO }
+        assertTrue { a.negate() + a == creator.ZERO }
     }
 }
