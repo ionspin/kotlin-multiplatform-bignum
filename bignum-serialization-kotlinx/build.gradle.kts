@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
+import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
 
 plugins {
     kotlin(PluginsDeps.multiplatform)
@@ -28,8 +29,10 @@ val primaryDevelopmentOs: HostOs = if (bignumPrimaryDevelopmentOs != null) {
         "linux" -> HostOs.LINUX
         "windows" -> HostOs.WINDOWS
         "mac" -> HostOs.MAC
-        else -> throw org.gradle.api.GradleException("Invalid development enviromoment OS selecte: " +
-                "$bignumPrimaryDevelopmentOs. Only linux, windows and mac are supported at the moment")
+        else -> throw org.gradle.api.GradleException(
+            "Invalid development enviromoment OS selecte: " +
+                "$bignumPrimaryDevelopmentOs. Only linux, windows and mac are supported at the moment"
+        )
     }
 } else {
     HostOs.LINUX
@@ -66,74 +69,80 @@ signing {
 }
 
 kotlin {
-
-    val hostOs = getHostOsName()
-    if (hostOs == primaryDevelopmentOs) {
-        jvm()
-        js(IR) {
+    jvm()
+    js {
+        compilations {
+            this.forEach {
+                it.compileTaskProvider.configure {
+                    kotlinOptions.sourceMap = true
+                    kotlinOptions.metaInfo = true
+                    if (it.name == "main") {
+                        kotlinOptions.main = "call"
+                    }
+                }
+            }
             nodejs()
-            browser()
-        }
-        wasmJs {
-            browser()
+            browser() {
+                testTask {
+                    useKarma {
+                        useChromeHeadless()
+                    }
+                }
+            }
         }
     }
-    if (hostOs == HostOs.LINUX) {
-        linuxX64()
-//    linuxArm32Hfp() Not supported by kotlinx serialization
-//    linuxArm64() Not supported by kotlinx serialization
-    }
+    linuxX64()
+    linuxArm64()
+    androidNativeX64()
+    androidNativeX86()
+    androidNativeArm32()
+    androidNativeArm64()
     iosX64()
     iosArm64()
     iosSimulatorArm64()
     macosX64()
     macosArm64()
-    tvos()
+    tvosArm64()
     tvosSimulatorArm64()
-    watchos()
+    tvosX64()
+    watchosArm32()
+    watchosArm64()
+    watchosDeviceArm64()
+    watchosX64()
     watchosSimulatorArm64()
-//    mingwX86() Not supported by kotlinx serialization
     mingwX64()
+    wasmJs {
+        browser()
+        this.applyBinaryen()
+        this.d8()
+    }
+    wasmWasi()
 
     sourceSets {
-        val commonMain by getting {
+        commonMain.dependencies {
+            implementation(kotlin(Deps.Common.stdLib))
+            implementation(project(Deps.Project.bignum))
+            implementation(Deps.Common.kotlinxSerialization)
+        }
+        commonTest.dependencies {
+            implementation(kotlin(Deps.Common.test))
+            implementation(kotlin(Deps.Common.testAnnotation))
+            implementation(Deps.Common.coroutines)
+        }
+
+        jvmTest.dependencies {
+            implementation(kotlin(Deps.Jvm.test))
+            implementation(kotlin(Deps.Jvm.testJUnit))
+            implementation(kotlin(Deps.Jvm.reflection))
+        }
+        jsTest.dependencies {
+            implementation(kotlin(Deps.Js.test))
+        }
+        val wasmJsTest by getting {
             dependencies {
-                implementation(kotlin(Deps.Common.stdLib))
-                implementation(project(Deps.Project.bignum))
-                implementation(Deps.Common.kotlinxSerialization)
+                implementation(kotlin(Deps.WasmJs.test))
             }
         }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin(Deps.Common.test))
-                implementation(kotlin(Deps.Common.testAnnotation))
-                implementation(Deps.Common.coroutines)
-            }
-        }
-
-        if (hostOs == primaryDevelopmentOs) {
-            val jvmTest by getting {
-                dependencies {
-                    implementation(kotlin(Deps.Jvm.test))
-                    implementation(kotlin(Deps.Jvm.testJUnit))
-                    implementation(kotlin(Deps.Jvm.reflection))
-                }
-            }
-
-            val jsTest by getting {
-                dependencies {
-                    implementation(kotlin(Deps.Js.test))
-                }
-            }
-
-            val wasmJsTest by getting {
-                dependencies {
-                    implementation(kotlin(Deps.WasmJs.test))
-                }
-            }
-        }
-
-
     }
 }
 
@@ -163,37 +172,23 @@ tasks {
             }
         }
 
-        val jsNodeTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
+        val jsNodeTest by getting(KotlinJsTest::class) {
             testLogging {
                 events("PASSED", "FAILED", "SKIPPED")
             }
         }
 
-        val jsBrowserTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
+        val jsBrowserTest by getting(KotlinJsTest::class) {
             testLogging {
                 events("PASSED", "FAILED", "SKIPPED")
             }
         }
     }
 
-//        val jsLegacyNodeTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
-//            testLogging {
-//                events("PASSED", "FAILED", "SKIPPED")
-//            }
-//        }
-//
-//        val jsLegacyBrowserTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
-//            testLogging {
-//                events("PASSED", "FAILED", "SKIPPED")
-//            }
-//        }
-
-    if (hostOs == HostOs.LINUX) {
-        val linuxX64Test by getting(KotlinNativeTest::class) {
-            testLogging {
-                events("PASSED", "FAILED", "SKIPPED")
-                // showStandardStreams = true
-            }
+    val linuxX64Test by getting(KotlinNativeTest::class) {
+        testLogging {
+            events("PASSED", "FAILED", "SKIPPED")
+            // showStandardStreams = true
         }
     }
 }
