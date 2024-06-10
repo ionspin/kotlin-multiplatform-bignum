@@ -31,17 +31,18 @@ class BigDecimalRoundingTests {
 
     @Test
     fun testNumberOfDigits() {
-        val a = BigDecimal.fromIntWithExponent(123, 3)
-        val b = BigDecimal.fromIntWithExponent(1, -3)
-        val c = BigDecimal.fromIntWithExponent(12345, 3)
-        val d = BigDecimal.fromIntAsSignificand(10000)
-        assertTrue {
-            a.numberOfDecimalDigits() == 4L &&
-                    b.numberOfDecimalDigits() == 4L &&
-                    c.numberOfDecimalDigits() == 5L &&
-                    d.numberOfDecimalDigits() == 1L
+        assertEquals(4, BigDecimal.parseString("1230").numberOfDecimalDigits())
+        assertEquals(4, BigDecimal.parseString("0.001").numberOfDecimalDigits())
+        assertEquals(5, BigDecimal.parseString("1234.5").numberOfDecimalDigits())
+        assertEquals(1, BigDecimal.parseString("1.0000").numberOfDecimalDigits())
+        assertEquals(5, BigDecimal.parseString("1.0001000").numberOfDecimalDigits())
+        assertEquals(6, BigDecimal.parseString("10.0001000").numberOfDecimalDigits())
+        assertEquals(1, BigDecimal.parseString("0").numberOfDecimalDigits())
+        assertEquals(1, BigDecimal.parseString("0.0").numberOfDecimalDigits())
+        assertEquals(1, BigDecimal.parseString("00.00").numberOfDecimalDigits())
+        assertEquals(1, BigDecimal.parseString("1").numberOfDecimalDigits())
+        assertEquals(2, BigDecimal.parseString("10").numberOfDecimalDigits())
         }
-    }
 
     @Test
     fun testRoundSignificand() {
