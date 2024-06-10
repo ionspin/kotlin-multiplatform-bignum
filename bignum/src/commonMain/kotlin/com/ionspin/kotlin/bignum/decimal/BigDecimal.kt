@@ -1484,6 +1484,7 @@ class BigDecimal private constructor(
      * 12.345 will return 5
      * 0.001 will return 4
      * 123000 will return 6
+     * 0.010000 will return 3 (trailing zeros are not counted)
      */
     override fun numberOfDecimalDigits(): Long {
         val numberOfDigits = when {
@@ -1491,7 +1492,18 @@ class BigDecimal private constructor(
             exponent > 0 && exponent > precision -> exponent + 1 // Significand is already 10^1 when exponent is > 0
             exponent > 0 && exponent == precision -> precision + 1 // Same as above
             exponent < 0 -> exponent.absoluteValue + precision
-            exponent == 0L -> removeTrailingZeroes(this).precision
+            exponent == 0L -> {
+                var s = significand
+                if (s.isZero()) return 1L
+                var zeroCount = -1L
+                do {
+                    val res = s.divrem(BigInteger.TEN)
+                    s = res.quotient
+                    zeroCount++
+                } while (res.remainder.isZero())
+                precision - zeroCount
+            }
+
             else -> throw RuntimeException("Invalid case when getting number of decimal digits")
         }
         return numberOfDigits
