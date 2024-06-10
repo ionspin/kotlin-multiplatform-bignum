@@ -25,6 +25,7 @@ import com.ionspin.kotlin.bignum.CommonBigNumberOperations
 import com.ionspin.kotlin.bignum.NarrowingOperations
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.integer.base63.array.BigInteger63Arithmetic
+import com.ionspin.kotlin.bignum.integer.base63.array.BigInteger63Arithmetic.compareTo
 import com.ionspin.kotlin.bignum.modular.ModularBigInteger
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -555,8 +556,14 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
         if (isZero()) {
             return 1
         }
-        val bitLength = arithmetic.bitLength(magnitude)
-        val minDigit = ceil((bitLength - 1) * LOG_10_OF_2)
+        // Search through firsts powersOf10
+        val powersOf10 = BigInteger63Arithmetic.powersOf10
+        val quickSearch = powersOf10.indexOfFirst { it > magnitude }
+        if (quickSearch != -1) {
+            return quickSearch.toLong()
+        }
+//        val bitLength = arithmetic.bitLength(magnitude)
+//        val minDigit = ceil((bitLength - 1) * LOG_10_OF_2)
 //        val maxDigit = floor(bitLenght * LOG_10_OF_2) + 1
 //        val correct = this / 10.toBigInteger().pow(maxDigit.toInt())
 //        return when {
@@ -565,13 +572,13 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
 //            else -> -1
 //        }
 
-        var tmp = this / 10.toBigInteger().pow(minDigit.toInt())
+        var tmp = this / TEN.pow(powersOf10.size)
         var counter = 0L
-        while (tmp.compareTo(0) != 0) {
+        while (!tmp.isZero()) {
             tmp /= 10
             counter++
         }
-        return counter + minDigit.toInt()
+        return counter + powersOf10.size
     }
 
     override infix fun shl(places: Int): BigInteger {
