@@ -72,78 +72,58 @@ fun getHostOsName(): HostOs {
 }
 
 kotlin {
-
-    val hostOs = getHostOsName()
-    println("Host os name $hostOs")
-
-    if (ideaActive) {
-        when (hostOs) {
-            HostOs.LINUX -> linuxX64("native")
-            HostOs.MAC -> macosX64("native")
-            HostOs.WINDOWS -> mingwX64("native")
-        }
-    }
-    if (hostOs == primaryDevelopmentOs) {
-        jvm()
-
-        js {
-            compilations {
-                this.forEach {
-                    it.compileKotlinTask.kotlinOptions.sourceMap = true
-                    it.compileKotlinTask.kotlinOptions.metaInfo = true
-
+    jvm()
+    js {
+        compilations {
+            this.forEach {
+                it.compileTaskProvider.configure {
+                    kotlinOptions.sourceMap = true
+                    kotlinOptions.metaInfo = true
                     if (it.name == "main") {
-                        it.compileKotlinTask.kotlinOptions.main = "call"
+                        kotlinOptions.main = "call"
                     }
-                    println("Compilation name ${it.name} set")
-                    println("Destination dir ${it.compileKotlinTask.destinationDirectory}")
                 }
-                nodejs()
-                browser() {
-                    testTask {
-                        useKarma {
-                            useChromeHeadless()
-                        }
+            }
+            nodejs()
+            browser() {
+                testTask {
+                    useKarma {
+                        useChromeHeadless()
                     }
                 }
             }
         }
-
-        wasmJs {
-            browser()
-        }
     }
-
-    if (hostOs == HostOs.LINUX) {
-        linuxX64("linux")
-        if (ideaActive.not()) {
-            linuxArm32Hfp()
-            linuxArm64()
-            androidNativeX64()
-            androidNativeX86()
-            androidNativeArm32()
-            androidNativeArm64()
-        }
-    }
-
+    linuxX64()
+    linuxArm64()
+    androidNativeX64()
+    androidNativeX86()
+    androidNativeArm32()
+    androidNativeArm64()
     iosX64()
     iosArm64()
     iosSimulatorArm64()
     macosX64()
     macosArm64()
-    tvos()
+    tvosArm64()
     tvosSimulatorArm64()
-    if (ideaActive.not()) {
-        watchos()
-        watchosSimulatorArm64()
-    }
+    tvosX64()
+    watchosArm32()
+    watchosArm64()
+    watchosDeviceArm64()
+    watchosX64()
+    watchosSimulatorArm64()
     mingwX64()
+    wasmJs {
+        browser()
+        this.applyBinaryen()
+        this.d8()
+    }
+    wasmWasi()
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(kotlin(Deps.Common.stdLib))
-            }
+        commonMain.dependencies {
+            implementation(kotlin(Deps.Common.stdLib))
         }
         val commonTest by getting {
             dependencies {
@@ -154,199 +134,24 @@ kotlin {
             }
         }
 
-        val nativeMain = if (ideaActive) {
-            val nativeMain by getting {
-                dependsOn(commonMain)
-            }
-            nativeMain
-        } else {
-            val nativeMain by creating {
-                dependsOn(commonMain)
-            }
-            nativeMain
+        jvmMain.dependencies {
+            implementation(kotlin(Deps.Jvm.stdLib))
         }
-        val nativeTest = if (ideaActive) {
-            val nativeTest by getting {
-                dependsOn(commonTest)
-            }
-            nativeTest
-        } else {
-            val nativeTest by creating {
-                dependsOn(commonTest)
-            }
-            nativeTest
+        jvmTest.dependencies {
+            implementation(kotlin(Deps.Jvm.test))
+            implementation(kotlin(Deps.Jvm.testJUnit))
+            implementation(kotlin(Deps.Jvm.reflection))
         }
-
-        if (hostOs == primaryDevelopmentOs) {
-            val jvmMain by getting {
-                dependencies {
-                    implementation(kotlin(Deps.Jvm.stdLib))
-                }
-            }
-            val jvmTest by getting {
-                dependencies {
-                    implementation(kotlin(Deps.Jvm.test))
-                    implementation(kotlin(Deps.Jvm.testJUnit))
-                    implementation(kotlin(Deps.Jvm.reflection))
-                }
-            }
-
-            val jsMain by getting {
-                dependencies {
-                    implementation(kotlin(Deps.Js.stdLib))
-                }
-            }
-            val jsTest by getting {
-                dependencies {
-                    implementation(kotlin(Deps.Js.test))
-                }
-            }
-
-            val wasmJsMain by getting {
-                dependencies {
-                    implementation(kotlin(Deps.WasmJs.stdLib))
-                }
-            }
-            val wasmJsTest by getting {
-                dependencies {
-                    implementation(kotlin(Deps.WasmJs.test))
-                }
-            }
+        jsMain.dependencies {
+            implementation(kotlin(Deps.Js.stdLib))
         }
-
-        if (hostOs == HostOs.LINUX) {
-
-            val linuxMain by getting {
-                dependsOn(nativeMain)
-            }
-            val linuxTest by getting {
-                dependsOn(nativeTest)
-            }
-
-            if (ideaActive.not()) {
-
-                val linuxArm32HfpMain by getting {
-                    dependsOn(nativeMain)
-                }
-
-                val linuxArm32HfpTest by getting {
-                    dependsOn(nativeTest)
-                }
-
-                val linuxArm64Main by getting {
-                    dependsOn(nativeMain)
-                }
-
-                val linuxArm64Test by getting {
-                    dependsOn(nativeTest)
-                }
-
-                val androidNativeX64Main by getting {
-                    dependsOn(nativeMain)
-                }
-
-                val androidNativeX64Test by getting {
-                    dependsOn(nativeTest)
-                }
-
-                val androidNativeX86Main by getting {
-                    dependsOn(nativeMain)
-                }
-
-                val androidNativeX86Test by getting {
-                    dependsOn(nativeTest)
-                }
-
-                val androidNativeArm32Main by getting {
-                    dependsOn(nativeMain)
-                }
-
-                val androidNativeArm32Test by getting {
-                    dependsOn(nativeTest)
-                }
-
-                val androidNativeArm64Main by getting {
-                    dependsOn(nativeMain)
-                }
-
-                val androidNativeArm64Test by getting {
-                    dependsOn(nativeTest)
-                }
-            }
-        }
-
-        val iosX64Main by getting {
-            dependsOn(nativeMain)
-        }
-        val iosX64Test by getting {
-            dependsOn(nativeTest)
-        }
-
-        val iosArm64Main by getting {
-            dependsOn(nativeMain)
-        }
-        val iosArm64Test by getting {
-            dependsOn(nativeTest)
-        }
-
-        val macosX64Main by getting {
-            dependsOn(nativeMain)
-        }
-        val macosX64Test by getting {
-            dependsOn(nativeTest)
-        }
-
-        val tvosMain by getting {
-            dependsOn(nativeMain)
-        }
-        val tvosTest by getting {
-            dependsOn(nativeTest)
-        }
-
-        val iosSimulatorArm64Main by sourceSets.getting
-        val iosSimulatorArm64Test by sourceSets.getting
-
-        iosSimulatorArm64Main.dependsOn(nativeMain)
-        iosSimulatorArm64Test.dependsOn(nativeTest)
-
-        val macosArm64Main by sourceSets.getting
-        val macosArm64Test by sourceSets.getting
-
-        macosArm64Main.dependsOn(nativeMain)
-        macosArm64Test.dependsOn(nativeTest)
-
-        val tvosSimulatorArm64Main by sourceSets.getting
-        val tvosSimulatorArm64Test by sourceSets.getting
-
-        tvosSimulatorArm64Main.dependsOn(nativeMain)
-        tvosSimulatorArm64Test.dependsOn(nativeTest)
-
-        if (ideaActive.not()) {
-            val watchosMain by getting {
-                dependsOn(nativeMain)
-            }
-
-            val watchosTest by getting {
-                dependsOn(nativeTest)
-            }
-
-            val watchosSimulatorArm64Main by sourceSets.getting
-            val watchosSimulatorArm64Test by sourceSets.getting
-
-            watchosSimulatorArm64Main.dependsOn(nativeMain)
-            watchosSimulatorArm64Test.dependsOn(nativeTest)
-        }
-
-        val mingwX64Main by getting {
-            dependsOn(nativeMain)
-        }
-
-        val mingwX64Test by getting {
-            dependsOn(nativeTest)
+        jsTest.dependencies {
+            implementation(kotlin(Deps.Js.test))
         }
 
         all {
             languageSettings.enableLanguageFeature("InlineClasses")
+            languageSettings.optIn("expect-actual-classes")
             languageSettings.optIn("kotlin.ExperimentalUnsignedTypes")
             languageSettings.optIn("kotlin.ExperimentalStdlibApi")
         }
@@ -367,7 +172,6 @@ tasks {
     }
 
     dokkaHtml {
-        println("Dokka !")
         dokkaSourceSets {
         }
     }
@@ -378,40 +182,7 @@ tasks {
                 exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
             }
         }
-
-//        val jsIrNodeTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
-//            testLogging {
-//                events("PASSED", "FAILED", "SKIPPED")
-//            }
-//        }
-//
-//        val jsIrBrowserTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
-//            testLogging {
-//                events("PASSED", "FAILED", "SKIPPED")
-//            }
-//        }
-//
-//        val jsLegacyNodeTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
-//            testLogging {
-//                events("PASSED", "FAILED", "SKIPPED")
-//            }
-//        }
-//
-//        val jsLegacyBrowserTest by getting(org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest::class) {
-//            testLogging {
-//                events("PASSED", "FAILED", "SKIPPED")
-//            }
-//        }
     }
-//
-//    if (hostOsName == HostOs.LINUX) {
-//        val linuxTest by getting(KotlinNativeTest::class) {
-//            testLogging {
-//                events("PASSED", "FAILED", "SKIPPED")
-//                // showStandardStreams = true
-//            }
-//        }
-//    }
 }
 
 spotless {
