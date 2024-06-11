@@ -272,14 +272,14 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
     }
 
     override fun subtract(other: BigInteger): BigInteger {
-        val comparison = arithmetic.compare(this.magnitude, other.magnitude)
-        if (this == ZERO) {
+        if (this.isZero()) {
             return other.negate()
         }
-        if (other == ZERO) {
+        if (other.isZero()) {
             return this
         }
         return if (other.sign == this.sign) {
+            val comparison = arithmetic.compare(this.magnitude, other.magnitude)
             when {
                 comparison > 0 -> {
                     BigInteger(arithmetic.subtract(this.magnitude, other.magnitude), sign)
@@ -421,7 +421,7 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
         var w = ZERO
         var b = this
         var c = modulo
-        while (c != ZERO) {
+        while (!c.isZero()) {
             val (q, r) = b divrem c
             b = c
             c = r
@@ -488,7 +488,7 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
     }
 
     fun pow(exponent: BigInteger): BigInteger {
-        if (exponent < ZERO)
+        if (exponent.isNegative)
             throw ArithmeticException("Negative exponent not supported with BigInteger")
 
         if (exponent <= Long.MAX_VALUE) {
@@ -500,9 +500,9 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
 
     private tailrec fun exponentiationBySquaring(y: BigInteger, x: BigInteger, n: BigInteger): BigInteger {
         return when {
-            n == ZERO -> y
+            n.isZero() -> y
             n == ONE -> x * y
-            n.mod(TWO) == ZERO -> exponentiationBySquaring(y, x * x, n / 2)
+            n.mod(TWO).isZero() -> exponentiationBySquaring(y, x * x, n / 2)
             else -> exponentiationBySquaring(x * y, x * x, (n - 1) / 2)
         }
     }
@@ -511,9 +511,9 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
         if (exponent < 0) {
             throw ArithmeticException("Negative exponent not supported with BigInteger")
         }
-        return when (this) {
-            ZERO -> ZERO
-            ONE -> ONE
+        return when {
+            isZero() -> ZERO
+            this == ONE -> ONE
             else -> {
                 val sign = if (sign == Sign.NEGATIVE) {
                     if (exponent % 2 == 0L) {
@@ -752,7 +752,7 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
 
     // TODO eh
     operator fun times(char: Char): String {
-        if (this < 0) {
+        if (this.isNegative) {
             throw RuntimeException("Char cannot be multiplied with negative number")
         }
         var counter = this
