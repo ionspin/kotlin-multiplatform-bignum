@@ -385,7 +385,7 @@ class BigDecimal private constructor(
             exponent: Long,
             decimalMode: DecimalMode
         ): BigDecimal {
-            if (significand == BigInteger.ZERO) {
+            if (significand.isZero()) {
                 return BigDecimal(BigInteger.ZERO, exponent, decimalMode)
             }
             val significandDigits = significand.numberOfDecimalDigits()
@@ -395,7 +395,7 @@ class BigDecimal private constructor(
                 decimalMode.decimalPrecision
             }
             return when {
-                desiredPrecision > significandDigits -> {
+                desiredPrecision > significandDigits && !decimalMode.usingScale -> {
                     val extendedSignificand = significand * BigInteger.TEN.pow(desiredPrecision - significandDigits)
                     BigDecimal(extendedSignificand, exponent, decimalMode)
                 }
