@@ -1972,7 +1972,6 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
     }
 
     override fun or(operand: ULongArray, mask: ULongArray): ULongArray {
-        if (operand.size < mask.size) return or(mask, operand)
         return removeLeadingZeros(
             ULongArray(operand.size) {
                 if (it < mask.size) {

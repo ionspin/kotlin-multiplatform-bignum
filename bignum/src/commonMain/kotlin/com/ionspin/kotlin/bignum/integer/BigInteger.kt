@@ -629,14 +629,8 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
         return BigInteger(arithmetic.and(this.magnitude, other.magnitude), sign)
     }
 
-    /** Returns a new BigInt with bits combining [this], [other] doing a bitwise `|`/`or` operation. Forces sign to positive. */
     override infix fun or(other: BigInteger): BigInteger {
-        val resultMagnitude = arithmetic.or(this.magnitude, other.magnitude)
-        val resultSign = when {
-            isResultZero(resultMagnitude) -> Sign.ZERO
-            else -> Sign.POSITIVE
-        }
-        return BigInteger(resultMagnitude, resultSign)
+        return BigInteger(arithmetic.or(this.magnitude, other.magnitude), sign)
     }
 
     override infix fun xor(other: BigInteger): BigInteger {
