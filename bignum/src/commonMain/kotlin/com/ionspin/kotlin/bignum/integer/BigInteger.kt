@@ -413,23 +413,41 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
         return u
     }
 
+    // https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm#Modular_integers
     fun modInverse(modulo: BigInteger): BigInteger {
-        if (gcd(modulo) != ONE) {
-            throw ArithmeticException("BigInteger is not invertible. This and modulus are not relatively prime (coprime)")
+        // Ensure the numbers are coprime
+        if (this.gcd(modulo) != ONE) {
+            throw ArithmeticException("BigInteger is not invertible. This and modulus are not relatively prime (coprime).")
         }
-        var u = ONE
-        var w = ZERO
-        var b = this
-        var c = modulo
-        while (c != ZERO) {
-            val (q, r) = b divrem c
-            b = c
-            c = r
-            val tmpU = u
-            u = w
-            w = tmpU - q * w
+        // Initialize variables for the Extended Euclidean Algorithm
+        var t = ZERO
+        var newT = ONE
+        var r = modulo
+        var newR = this
+
+        // Loop until the remainder is zero
+        while (newR != ZERO) {
+            // Compute the quotient
+            val quotient = r.divide(newR)
+
+            // Update t and newT (coefficient)
+            val tempT = t
+            t = newT
+            newT = tempT - quotient * newT
+
+            // Update r and newR (remainder)
+            val tempR = r
+            r = newR
+            newR = tempR - quotient * newR
         }
-        return u
+
+        // If r is greater than 1, this is not invertible
+        if (r > ONE) throw ArithmeticException("BigInteger is not invertible.")
+
+        // Ensure the result is positive
+        if (t < ZERO) t += modulo
+
+        return t
     }
 
     /**
