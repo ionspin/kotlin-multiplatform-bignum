@@ -41,10 +41,16 @@ class BigIntegerJvmTest {
 
     @Test
     fun testModInverse() {
-        val a = BigInteger(11)
-        val aInverse = a.modInverse(5.toBigInteger())
-        val aJavaInverse = a.toJavaBigInteger().modInverse(java.math.BigInteger.valueOf(5))
         assertTrue {
+            val a = BigInteger(11)
+            val aInverse = a.modInverse(5.toBigInteger())
+            val aJavaInverse = a.toJavaBigInteger().modInverse(java.math.BigInteger.valueOf(5))
+            aInverse.toJavaBigInteger() == aJavaInverse
+        }
+        assertTrue {
+            val a = BigInteger(12312354647)
+            val aInverse = a.modInverse(121157920.toBigInteger())
+            val aJavaInverse = a.toJavaBigInteger().modInverse(java.math.BigInteger.valueOf(121157920))
             aInverse.toJavaBigInteger() == aJavaInverse
         }
     }

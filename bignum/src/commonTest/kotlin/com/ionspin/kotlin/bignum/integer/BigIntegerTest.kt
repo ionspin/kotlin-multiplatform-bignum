@@ -15,11 +15,10 @@
  *
  */
 
-package com.ionspin.kotlin.bignum.integer.arithmetic
+package com.ionspin.kotlin.bignum.integer
 
-import com.ionspin.kotlin.bignum.integer.BigInteger
-import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -149,15 +148,21 @@ BigIntegerTest {
 
     @Test
     fun testModInverse() {
-
         assertTrue {
-            var a = BigInteger(11)
-            var aInverse = a.modInverse(5.toBigInteger())
+            val a = BigInteger(11)
+            val aInverse = a.modInverse(5.toBigInteger())
             aInverse == BigInteger(1)
         }
+        assertTrue {
+            val a = BigInteger(54647)
+            val aInverse = a.modInverse(1157920.toBigInteger())
+            aInverse == BigInteger(1141223)
+        }
         assertFailsWith<ArithmeticException> {
-            var a = BigInteger(10)
+            val a = BigInteger(10)
             a.modInverse(5.toBigInteger())
+        }.also {
+            assertEquals("BigInteger is not invertible. This and modulus are not relatively prime (coprime).", it.message)
         }
     }
 
@@ -166,7 +171,7 @@ BigIntegerTest {
         val a = 10.toBigInteger()
         val b = 3.toBigInteger()
         assertTrue { a.gcd(b) == 1.toBigInteger() }
-        var c = 6.toBigInteger()
+        val c = 6.toBigInteger()
         assertTrue { a.gcd(c) == 2.toBigInteger() }
     }
 
