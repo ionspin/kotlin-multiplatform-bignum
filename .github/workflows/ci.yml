@@ -1,0 +1,119 @@
+name: CI and Publish
+
+on:
+  push:
+    branches: [ main, releases/* ]
+    tags: [ v* ]
+  pull_request:
+    branches: [ main, releases/* ]
+
+env:
+  JAVA_VERSION: '17'
+  GRADLE_CACHE_PATH: |
+    ~/.gradle/caches
+    ~/.gradle/wrapper
+  USERNAME_GITHUB: ${{ github.actor }}
+  TOKEN_GITHUB: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        module: [ bignum ]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.GRADLE_CACHE_PATH }}
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: ${{ runner.os }}-gradle-
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build and Test
+        run: ./gradlew :${{ matrix.module }}:build --parallel --build-cache --gradle-user-home ~/.gradle
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-artifacts-${{ matrix.module }}
+          path: ${{ matrix.module }}/build/libs/
+
+  publish:
+    name: Publish Package
+    runs-on: macos-latest
+    permissions:
+      contents: read
+      packages: write
+    needs: build-and-test
+    strategy:
+      matrix:
+        module: [ bignum ]
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.GRADLE_CACHE_PATH }}
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: ${{ runner.os }}-gradle-
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: build-artifacts-${{ matrix.module }}
+          path: ${{ matrix.module }}/build/libs/
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Publish package
+        run: ./gradlew :${{ matrix.module }}:publish
+
+  create-release:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    needs: publish
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build Changelog
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: ${{ steps.changelog.outputs.changelog }}
+            
+            For more details see [CHANGELOG.md](https://github.com/KryptonReborn/kotlin-multiplatform-bignum/blob/main/CHANGELOG.md).
+          draft: false
+          prerelease: false
