@@ -3,6 +3,11 @@
 
 ##### 0.3.10-SNAPSHOT - current snapshot
 - Fix for #280, return byte array containing zero instead of empty array when big integer is zero.
+- Fix for #291, override hashCode as well as equals in ModularBigInteger
+- Fix for #292, negate for Modular big intiger did nothing.
+- Bump to kotlin 2.0.0
+- Add github action for pull request build and test.
+
 
 ##### 0.3.9 - 28.1.2024
 - Bump to kotlin 1.9.21
