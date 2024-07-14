@@ -7,6 +7,7 @@
          <ignored-key id="7EB97D110DFADD60" reason="Key couldn't be downloaded from any key server"/>
          <ignored-key id="96B88EACD463B90B" reason="Key couldn't be downloaded from any key server"/>
          <ignored-key id="E2F38302C8075E3D" reason="Key couldn't be downloaded from any key server"/>
+         <ignored-key id="C2148900BCD3C2AF" reason="Key couldn't be downloaded from any key server"/>
       </ignored-keys>
       <trusted-keys>
          <trusted-key id="015479E1055341431B4545AB72475FD306B9CAB7" group="com.googlecode.javaewah" name="JavaEWAH" version="1.1.7"/>
