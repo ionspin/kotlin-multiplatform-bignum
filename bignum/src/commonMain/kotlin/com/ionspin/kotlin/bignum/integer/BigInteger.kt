@@ -636,6 +636,7 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
     }
 
     /** Returns a new BigInt with bits combining [this], [other] doing a bitwise `|`/`or` operation. Forces sign to positive. */
+    // TODO Investigate what is expected behavior when one of the operand is negative. Is it considered to be two's complement?
     override infix fun or(other: BigInteger): BigInteger {
         val resultMagnitude = arithmetic.or(this.magnitude, other.magnitude)
         val resultSign = when {
