@@ -1,1 +1,27 @@
-./gradlew publishAllPublicationsToMavenRepository
+./gradlew build \
+bignum:publishJvmPublicationToMavenRepository \
+bignum:publishJsPublicationToMavenRepository \
+bignum:publishKotlinMultiplatformPublicationToMavenRepository \
+bignum:publishLinuxPublicationToMavenRepository \
+bignum:publishLinuxArm64PublicationToMavenRepository \
+bignum:publishAndroidNativeX64ToMavenRepository \
+bignum:publishAndroidNativeX86ToMavenRepository \
+bignum:publishAndroidNativeArm32ToMavenRepository \
+bignum:publishAndroidNativeArm64ToMavenRepository \
+bignum:publishWasmJsPublicationToMavenRepository \
+bignum:publishWasmWasiPublicationToMavenRepository || exit 1
+
+./gradlew \
+bignum-serialization-kotlinx:publishJsPublicationToMavenRepository \
+bignum-serialization-kotlinx:publishJvmPublicationToMavenRepository \
+bignum-serialization-kotlinx:publishJsPublicationToMavenRepository \
+bignum-serialization-kotlinx:publishKotlinMultiplatformPublicationToMavenRepository \
+bignum-serialization-kotlinx:publishLinuxPublicationToMavenRepository \
+bignum-serialization-kotlinx:publishLinuxArm64PublicationToMavenRepository \
+bignum-serialization-kotlinx:publishAndroidNativeX64ToMavenRepository \
+bignum-serialization-kotlinx:publishAndroidNativeX86ToMavenRepository \
+bignum-serialization-kotlinx:publishAndroidNativeArm32ToMavenRepository \
+bignum-serialization-kotlinx:publishAndroidNativeArm64ToMavenRepository \
+bignum-serialization-kotlinx:publishWasmJsPublicationToMavenRepository \
+bignum-serialization-kotlinx:publishWasmWasiPublicationToMavenRepository || exit 1
+exit 0

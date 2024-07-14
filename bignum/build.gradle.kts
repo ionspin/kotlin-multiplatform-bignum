@@ -210,6 +210,8 @@ tasks {
             this.mustRunAfter("signAndroidNativeArm32Publication")
         }
         // Macos task dependencies
+
+        // publish tasks after sign tasks
         // @formatter:off
         if (this.name.equals("signIosArm64Publication")) { this.mustRunAfter("signIosSimulatorArm64Publication") }
         if (this.name.equals("signIosSimulatorArm64Publication")) { this.mustRunAfter("signIosX64Publication") }
@@ -233,6 +235,8 @@ tasks {
         if (this.name.startsWith("publish")) {
             this.mustRunAfter("signIosArm64Publication")
         }
+
+        //
     }
 }
 
