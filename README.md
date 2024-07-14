@@ -25,7 +25,7 @@ and bug-fixing.
 
 ### WASM
 
-WASM platform is experimental, use with caution. Note that currently wasm returns a value after converting to IEEE-754 number, unlike
+WASM platform is experimental, use with caution, tests for wasm are not run on Windows and Mac at the moment. Note that currently wasm returns a value after converting to IEEE-754 number, unlike
 other platforms (JVM, JS, Native), so if you use:
 ```kotlin
 val a = BigDecimal.fromFloat(0.000000000000123f)
