@@ -28,16 +28,50 @@ import kotlin.test.assertEquals
  */
 class BigIntegerBitwiseOperations {
     @Test
+    fun andWithZero() {
+        val operand = BigInteger.parseString("11110000", 2)
+        val mask = BigInteger.ZERO
+
+        assertEquals(mask, operand and mask)
+        assertEquals(mask, mask and operand)
+    }
+
+    @Test
+    fun andBiggerThanLongMaxWithZero() {
+        val operand = BigInteger.parseString("9223372036854775808", 10)
+        val mask = BigInteger.ZERO
+
+        assertEquals(mask, operand and mask)
+        assertEquals(mask, mask and operand)
+    }
+
+    @Test
+    fun orWithZero() {
+        val operand = BigInteger.parseString("11110000", 2)
+        val mask = BigInteger.ZERO
+
+        assertEquals(operand, operand or mask)
+        assertEquals(operand, mask or operand)
+    }
+
+    @Test
+    fun orBiggerThanLongMaxWithZero() {
+        val operand = BigInteger.parseString("9223372036854775808", 10)
+        val mask = BigInteger.ZERO
+
+        assertEquals(operand, operand or mask)
+        assertEquals(operand, mask or operand)
+    }
+
+    @Test
     fun xorWithZero() {
         val operand = BigInteger.parseString("11110000", 2)
         val mask = BigInteger.ZERO
         val xorResult = operand xor mask
         println("Xor result: ${xorResult.toString(2)}")
 
-        val expectedResult = operand
-
-        assertEquals(expectedResult, xorResult)
-        assertEquals(expectedResult, mask xor operand)
+        assertEquals(operand, xorResult)
+        assertEquals(operand, mask xor operand)
     }
 
     @Test
@@ -45,9 +79,7 @@ class BigIntegerBitwiseOperations {
         val operand = BigInteger.parseString("9223372036854775808", 10)
         val mask = BigInteger.ZERO
 
-        val expectedResult = operand
-
-        assertEquals(expectedResult, operand xor mask)
-        assertEquals(expectedResult, mask xor operand)
+        assertEquals(operand, operand xor mask)
+        assertEquals(operand, mask xor operand)
     }
 }
