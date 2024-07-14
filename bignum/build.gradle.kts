@@ -147,6 +147,12 @@ kotlin {
             implementation(kotlin(Deps.Js.test))
         }
 
+        val wasmJsTest by getting {
+            dependencies {
+                implementation(kotlin(Deps.WasmJs.test))
+            }
+        }
+
         all {
             languageSettings.enableLanguageFeature("InlineClasses")
             languageSettings.optIn("expect-actual-classes")

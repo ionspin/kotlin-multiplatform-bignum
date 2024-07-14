@@ -113,8 +113,6 @@ kotlin {
     mingwX64()
     wasmJs {
         browser()
-        this.applyBinaryen()
-        this.d8()
     }
     wasmWasi()
 
