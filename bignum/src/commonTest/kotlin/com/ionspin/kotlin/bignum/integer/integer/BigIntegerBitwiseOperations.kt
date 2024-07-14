@@ -27,7 +27,6 @@ import kotlin.test.assertEquals
  * on 01-Nov-2019
  */
 class BigIntegerBitwiseOperations {
-
     @Test
     fun xorWithZero() {
         val operand = BigInteger.parseString("11110000", 2)
