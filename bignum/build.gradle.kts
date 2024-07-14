@@ -117,7 +117,6 @@ kotlin {
     if (hostOs == HostOs.LINUX) {
         linuxX64("linux")
         if (ideaActive.not()) {
-            linuxArm32Hfp()
             linuxArm64()
             androidNativeX64()
             androidNativeX86()
@@ -224,14 +223,6 @@ kotlin {
             }
 
             if (ideaActive.not()) {
-
-                val linuxArm32HfpMain by getting {
-                    dependsOn(nativeMain)
-                }
-
-                val linuxArm32HfpTest by getting {
-                    dependsOn(nativeTest)
-                }
 
                 val linuxArm64Main by getting {
                     dependsOn(nativeMain)
