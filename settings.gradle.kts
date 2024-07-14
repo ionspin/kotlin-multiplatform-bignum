@@ -16,6 +16,10 @@
  */
 
 pluginManagement {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
     resolutionStrategy {
         eachPlugin {
             if (requested.id.id == "kotlin-multiplatform") {

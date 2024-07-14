@@ -1,0 +1,50 @@
+
+name: Build project and run tests.
+run-name: ${{ github.actor }} pull request
+on:
+  pull_request:
+    branches:
+      - main
+
+env:
+  CHROME_BIN: "chrome"
+jobs:
+  Build-And-Test-Linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: browser-actions/setup-chrome@v1
+      - run:  ./linuxBuild.sh
+  Build-And-Test-Mac:
+    runs-on: macos-latest
+    steps:
+      - name: Setup java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: browser-actions/setup-chrome@v1
+      - run:  ./macBuild.sh
+  Build-And-Test-Windows:
+    runs-on: windows-latest
+    steps:
+      - name: Setup java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: msys2/setup-msys2@v2
+      - uses: browser-actions/setup-chrome@v1
+      - shell: msys2 {0}
+        run:  |
+          ./windowsBuild.sh
