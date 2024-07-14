@@ -10,3 +10,4 @@ build/
 /buildSrc/out
 /bignum/node_modules
 zignum/
+.kotlin/

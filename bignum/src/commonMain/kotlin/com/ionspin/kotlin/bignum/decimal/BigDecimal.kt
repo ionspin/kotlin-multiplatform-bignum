@@ -385,7 +385,7 @@ class BigDecimal private constructor(
             exponent: Long,
             decimalMode: DecimalMode
         ): BigDecimal {
-            if (significand == BigInteger.ZERO) {
+            if (significand.isZero()) {
                 return BigDecimal(BigInteger.ZERO, exponent, decimalMode)
             }
             val significandDigits = significand.numberOfDecimalDigits()
@@ -395,7 +395,7 @@ class BigDecimal private constructor(
                 decimalMode.decimalPrecision
             }
             return when {
-                desiredPrecision > significandDigits -> {
+                desiredPrecision > significandDigits && !decimalMode.usingScale -> {
                     val extendedSignificand = significand * BigInteger.TEN.pow(desiredPrecision - significandDigits)
                     BigDecimal(extendedSignificand, exponent, decimalMode)
                 }
@@ -1096,10 +1096,10 @@ class BigDecimal private constructor(
      */
     fun add(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
         val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
-        if (this == ZERO) {
+        if (this.isZero()) {
             return roundOrDont(other.significand, other.exponent, resolvedDecimalMode)
         }
-        if (other == ZERO) {
+        if (other.isZero()) {
             return roundOrDont(this.significand, this.exponent, resolvedDecimalMode)
         }
         val (first, second, _) = bringSignificandToSameExponent(this, other)
@@ -1153,10 +1153,10 @@ class BigDecimal private constructor(
     fun subtract(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
         val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
 
-        if (this == ZERO) {
+        if (this.isZero()) {
             return roundOrDont(other.significand.negate(), other.exponent, resolvedDecimalMode)
         }
-        if (other == ZERO) {
+        if (other.isZero()) {
             return roundOrDont(this.significand, this.exponent, resolvedDecimalMode)
         }
 
@@ -1484,6 +1484,7 @@ class BigDecimal private constructor(
      * 12.345 will return 5
      * 0.001 will return 4
      * 123000 will return 6
+     * 0.010000 will return 3 (trailing zeros are not counted)
      */
     override fun numberOfDecimalDigits(): Long {
         val numberOfDigits = when {
@@ -1491,7 +1492,18 @@ class BigDecimal private constructor(
             exponent > 0 && exponent > precision -> exponent + 1 // Significand is already 10^1 when exponent is > 0
             exponent > 0 && exponent == precision -> precision + 1 // Same as above
             exponent < 0 -> exponent.absoluteValue + precision
-            exponent == 0L -> removeTrailingZeroes(this).precision
+            exponent == 0L -> {
+                var s = significand
+                if (s.isZero()) return 1L
+                var zeroCount = -1L
+                do {
+                    val res = s.divrem(BigInteger.TEN)
+                    s = res.quotient
+                    zeroCount++
+                } while (res.remainder.isZero())
+                precision - zeroCount
+            }
+
             else -> throw RuntimeException("Invalid case when getting number of decimal digits")
         }
         return numberOfDigits
@@ -1502,7 +1514,7 @@ class BigDecimal private constructor(
      * the same number i.e. 1.234
      */
     private fun removeTrailingZeroes(bigDecimal: BigDecimal): BigDecimal {
-        if (bigDecimal == ZERO) return this
+        if (bigDecimal.isZero()) return this
         var significand = bigDecimal.significand
         var divisionResult = BigInteger.QuotientAndRemainder(bigDecimal.significand, BigInteger.ZERO)
         do {
@@ -1645,7 +1657,7 @@ class BigDecimal private constructor(
      * as division.
      */
     override fun pow(exponent: Long): BigDecimal {
-        if (this == ZERO && exponent < 0) {
+        if (this.isZero() && exponent < 0) {
             throw ArithmeticException("Negative exponentiation of zero is not defined.")
         }
         var result = this
@@ -2155,7 +2167,7 @@ class BigDecimal private constructor(
     }
 
     override fun hashCode(): Int {
-        if (this == ZERO) {
+        if (this.isZero()) {
             return 0
         }
         return removeTrailingZeroes(this).significand.hashCode() + exponent.hashCode()
@@ -2241,7 +2253,7 @@ class BigDecimal private constructor(
      * i.e. 123000000 for 1.23E+9 or 0.00000000123 for 1.23E-9
      */
     fun toStringExpanded(): String {
-        if (this == ZERO) {
+        if (this.isZero()) {
             return "0"
         }
         val digits = significand.numberOfDecimalDigits()
