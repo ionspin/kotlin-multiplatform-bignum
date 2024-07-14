@@ -210,22 +210,15 @@ tasks {
             this.mustRunAfter("signAndroidNativeArm32Publication")
         }
         // Macos task dependencies
-
-        // publish tasks after sign tasks
         // @formatter:off
         if (this.name.equals("signIosArm64Publication")) { this.mustRunAfter("signIosSimulatorArm64Publication") }
         if (this.name.equals("signIosSimulatorArm64Publication")) { this.mustRunAfter("signIosX64Publication") }
-        if (this.name.equals("signIosX64Publication")) { this.mustRunAfter("signLinuxArm64Publication") }
-        if (this.name.equals("signLinuxArm64Publication")) { this.mustRunAfter("signLinuxX64Publication") }
-        if (this.name.equals("signLinuxX64Publication")) { this.mustRunAfter("signMacosArm64Publication") }
+        if (this.name.equals("signIosX64Publication")) { this.mustRunAfter("signMacosArm64Publication") }
         if (this.name.equals("signMacosArm64Publication")) { this.mustRunAfter("signMacosX64Publication") }
-        if (this.name.equals("signMacosX64Publication")) { this.mustRunAfter("signMingwX64Publication") }
-        if (this.name.equals("signMingwX64Publication")) { this.mustRunAfter("signTvosArm64Publication") }
+        if (this.name.equals("signMacosX64Publication")) { this.mustRunAfter("signTvosArm64Publication") }
         if (this.name.equals("signTvosArm64Publication")) { this.mustRunAfter("signTvosSimulatorArm64Publication") }
         if (this.name.equals("signTvosSimulatorArm64Publication")) { this.mustRunAfter("signTvosX64Publication") }
-        if (this.name.equals("signTvosX64Publication")) { this.mustRunAfter("signWasmJsPublication") }
-        if (this.name.equals("signWasmJsPublication")) { this.mustRunAfter("signWasmWasiPublication") }
-        if (this.name.equals("signWasmWasiPublication")) { this.mustRunAfter("signWatchosArm32Publication") }
+        if (this.name.equals("signTvosX64Publication")) { this.mustRunAfter("signWatchosArm32Publication") }
         if (this.name.equals("signWatchosArm32Publication")) { this.mustRunAfter("signWatchosArm64Publication") }
         if (this.name.equals("signWatchosArm64Publication")) { this.mustRunAfter("signWatchosDeviceArm64Publication") }
         if (this.name.equals("signWatchosDeviceArm64Publication")) { this.mustRunAfter("signWatchosSimulatorArm64Publication") }
@@ -236,7 +229,13 @@ tasks {
             this.mustRunAfter("signIosArm64Publication")
         }
 
-        //
+        if (this.name.startsWith("compileTest")) {
+            this.mustRunAfter("signIosArm64Publication")
+        }
+        if (this.name.startsWith("linkDebugTest")) {
+            this.mustRunAfter("signIosArm64Publication")
+        }
+
     }
 }
 
