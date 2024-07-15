@@ -2,12 +2,12 @@
 bignum:publishJvmPublicationToMavenRepository \
 bignum:publishJsPublicationToMavenRepository \
 bignum:publishKotlinMultiplatformPublicationToMavenRepository \
-bignum:publishLinuxPublicationToMavenRepository \
+bignum:publishLinuxX64PublicationToMavenRepository \
 bignum:publishLinuxArm64PublicationToMavenRepository \
-bignum:publishAndroidNativeX64ToMavenRepository \
-bignum:publishAndroidNativeX86ToMavenRepository \
-bignum:publishAndroidNativeArm32ToMavenRepository \
-bignum:publishAndroidNativeArm64ToMavenRepository \
+bignum:publishAndroidNativeX64PublicationToMavenRepository \
+bignum:publishAndroidNativeX86PublicationToMavenRepository \
+bignum:publishAndroidNativeArm32PublicationToMavenRepository \
+bignum:publishAndroidNativeArm64PublicationToMavenRepository \
 bignum:publishWasmJsPublicationToMavenRepository \
 bignum:publishWasmWasiPublicationToMavenRepository || exit 1
 
@@ -16,12 +16,12 @@ bignum-serialization-kotlinx:publishJsPublicationToMavenRepository \
 bignum-serialization-kotlinx:publishJvmPublicationToMavenRepository \
 bignum-serialization-kotlinx:publishJsPublicationToMavenRepository \
 bignum-serialization-kotlinx:publishKotlinMultiplatformPublicationToMavenRepository \
-bignum-serialization-kotlinx:publishLinuxPublicationToMavenRepository \
+bignum-serialization-kotlinx:publishLinuxX64PublicationToMavenRepository \
 bignum-serialization-kotlinx:publishLinuxArm64PublicationToMavenRepository \
-bignum-serialization-kotlinx:publishAndroidNativeX64ToMavenRepository \
-bignum-serialization-kotlinx:publishAndroidNativeX86ToMavenRepository \
-bignum-serialization-kotlinx:publishAndroidNativeArm32ToMavenRepository \
-bignum-serialization-kotlinx:publishAndroidNativeArm64ToMavenRepository \
+bignum-serialization-kotlinx:publishAndroidNativeX64PublicationToMavenRepository \
+bignum-serialization-kotlinx:publishAndroidNativeX86PublicationToMavenRepository \
+bignum-serialization-kotlinx:publishAndroidNativeArm32PublicationToMavenRepository \
+bignum-serialization-kotlinx:publishAndroidNativeArm64PublicationToMavenRepository \
 bignum-serialization-kotlinx:publishWasmJsPublicationToMavenRepository \
 bignum-serialization-kotlinx:publishWasmWasiPublicationToMavenRepository || exit 1
 exit 0

@@ -156,7 +156,7 @@ tasks {
             events("PASSED", "FAILED", "SKIPPED")
         }
     }
-    
+
     val linuxX64Test by getting(KotlinNativeTest::class) {
         testLogging {
             events("PASSED", "FAILED", "SKIPPED")
@@ -168,21 +168,31 @@ tasks {
         if (hostOs == HostOs.LINUX) {
             // Linux task dependecies
 
-            //@formatter:off
-            if (this.name.equals("signAndroidNativeArm32Publication"))       { this.mustRunAfter("signAndroidNativeArm64Publication") }
-            if (this.name.equals("signAndroidNativeArm64Publication"))       { this.mustRunAfter("signAndroidNativeX64Publication") }
-            if (this.name.equals("signAndroidNativeX64Publication"))         { this.mustRunAfter("signAndroidNativeX86Publication") }
-            if (this.name.equals("signAndroidNativeX86Publication"))         { this.mustRunAfter("signJsPublication") }
-            if (this.name.equals("signJsPublication"))                       { this.mustRunAfter("signJvmPublication") }
-            if (this.name.equals("signJvmPublication"))                      { this.mustRunAfter("signKotlinMultiplatformPublication") }
-            if (this.name.equals("signKotlinMultiplatformPublication"))      { this.mustRunAfter("signLinuxArm64Publication") }
-            if (this.name.equals("signLinuxArm64Publication"))               { this.mustRunAfter("signLinuxX64Publication") }
-            if (this.name.equals("signLinuxX64Publication"))                 { this.mustRunAfter("signWasmJsPublication") }
-            if (this.name.equals("signWasmJsPublication"))                   { this.mustRunAfter("signWasmWasiPublication") }
-            //@formatter:on
+            // @formatter:off
+            if (this.name.equals("signAndroidNativeArm32Publication")) { this.mustRunAfter("signAndroidNativeArm64Publication") }
+            if (this.name.equals("signAndroidNativeArm64Publication")) { this.mustRunAfter("signAndroidNativeX64Publication") }
+            if (this.name.equals("signAndroidNativeX64Publication")) { this.mustRunAfter("signAndroidNativeX86Publication") }
+            if (this.name.equals("signAndroidNativeX86Publication")) { this.mustRunAfter("signJsPublication") }
+            if (this.name.equals("signJsPublication")) { this.mustRunAfter("signJvmPublication") }
+            if (this.name.equals("signJvmPublication")) { this.mustRunAfter("signKotlinMultiplatformPublication") }
+            if (this.name.equals("signKotlinMultiplatformPublication")) { this.mustRunAfter("signLinuxArm64Publication") }
+            if (this.name.equals("signLinuxArm64Publication")) { this.mustRunAfter("signLinuxX64Publication") }
+            if (this.name.equals("signLinuxX64Publication")) { this.mustRunAfter("signWasmJsPublication") }
+            if (this.name.equals("signWasmJsPublication")) { this.mustRunAfter("signWasmWasiPublication") }
+            // @formatter:on
 
             if (this.name.startsWith("publish")) {
                 this.mustRunAfter("signAndroidNativeArm32Publication")
+                this.mustRunAfter("signAndroidNativeArm64Publication")
+                this.mustRunAfter("signAndroidNativeX64Publication")
+                this.mustRunAfter("signAndroidNativeX86Publication")
+                this.mustRunAfter("signJsPublication")
+                this.mustRunAfter("signJvmPublication")
+                this.mustRunAfter("signKotlinMultiplatformPublication")
+                this.mustRunAfter("signLinuxArm64Publication")
+                this.mustRunAfter("signLinuxX64Publication")
+                this.mustRunAfter("signWasmJsPublication")
+                this.mustRunAfter("signWasmWasiPublication")
             }
         }
 
@@ -205,13 +215,50 @@ tasks {
 
             if (this.name.startsWith("publish")) {
                 this.mustRunAfter("signIosArm64Publication")
+                this.mustRunAfter("signIosArm64Publication")
+                this.mustRunAfter("signIosSimulatorArm64Publication")
+                this.mustRunAfter("signIosX64Publication")
+                this.mustRunAfter("signMacosArm64Publication")
+                this.mustRunAfter("signMacosX64Publication")
+                this.mustRunAfter("signTvosArm64Publication")
+                this.mustRunAfter("signTvosSimulatorArm64Publication")
+                this.mustRunAfter("signTvosX64Publication")
+                this.mustRunAfter("signWatchosArm32Publication")
+                this.mustRunAfter("signWatchosArm64Publication")
+                this.mustRunAfter("signWatchosDeviceArm64Publication")
+                this.mustRunAfter("signWatchosSimulatorArm64Publication")
+                this.mustRunAfter("signWatchosX64Publication")
             }
 
             if (this.name.startsWith("compileTest")) {
                 this.mustRunAfter("signIosArm64Publication")
+                this.mustRunAfter("signIosArm64Publication")
+                this.mustRunAfter("signIosSimulatorArm64Publication")
+                this.mustRunAfter("signIosX64Publication")
+                this.mustRunAfter("signMacosArm64Publication")
+                this.mustRunAfter("signMacosX64Publication")
+                this.mustRunAfter("signTvosArm64Publication")
+                this.mustRunAfter("signTvosSimulatorArm64Publication")
+                this.mustRunAfter("signTvosX64Publication")
+                this.mustRunAfter("signWatchosArm32Publication")
+                this.mustRunAfter("signWatchosArm64Publication")
+                this.mustRunAfter("signWatchosDeviceArm64Publication")
+                this.mustRunAfter("signWatchosSimulatorArm64Publication")
             }
             if (this.name.startsWith("linkDebugTest")) {
                 this.mustRunAfter("signIosArm64Publication")
+                this.mustRunAfter("signIosArm64Publication")
+                this.mustRunAfter("signIosSimulatorArm64Publication")
+                this.mustRunAfter("signIosX64Publication")
+                this.mustRunAfter("signMacosArm64Publication")
+                this.mustRunAfter("signMacosX64Publication")
+                this.mustRunAfter("signTvosArm64Publication")
+                this.mustRunAfter("signTvosSimulatorArm64Publication")
+                this.mustRunAfter("signTvosX64Publication")
+                this.mustRunAfter("signWatchosArm32Publication")
+                this.mustRunAfter("signWatchosArm64Publication")
+                this.mustRunAfter("signWatchosDeviceArm64Publication")
+                this.mustRunAfter("signWatchosSimulatorArm64Publication")
             }
         }
     }
