@@ -1,7 +1,10 @@
 ## Descriptive changelog
 (All dates are DD.MM.YYYY)
 
-##### 0.3.10-SNAPSHOT - current snapshot
+
+##### 0.3.11-SNAPSHOT - current 
+
+##### 0.3.10 - 15.7.2024
 - Fix for #280, return byte array containing zero instead of empty array when big integer is zero.
 - Fix for #291, override hashCode as well as equals in ModularBigInteger.
 - Fix for #292, negate for Modular big intiger did nothing.
