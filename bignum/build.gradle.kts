@@ -301,6 +301,18 @@ tasks {
                 this.mustRunAfter("signWatchosSimulatorArm64Publication")
             }
         }
+
+        if (hostOs == HostOs.WINDOWS) {
+            if (this.name.startsWith("publish")) {
+                this.mustRunAfter("signMingwX64Publication")
+            }
+            if (this.name.startsWith("compileTest")) {
+                this.mustRunAfter("signMingwX64Publication")
+            }
+            if (this.name.startsWith("linkDebugTest")) {
+                this.mustRunAfter("signMingwX64Publication")
+            }
+        }
     }
 }
 
