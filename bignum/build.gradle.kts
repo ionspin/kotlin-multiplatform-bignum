@@ -206,6 +206,34 @@ tasks {
                 this.mustRunAfter("signWasmJsPublication")
                 this.mustRunAfter("signWasmWasiPublication")
             }
+
+            if (this.name.startsWith("compileTest")) {
+                this.mustRunAfter("signAndroidNativeArm32Publication")
+                this.mustRunAfter("signAndroidNativeArm64Publication")
+                this.mustRunAfter("signAndroidNativeX64Publication")
+                this.mustRunAfter("signAndroidNativeX86Publication")
+                this.mustRunAfter("signJsPublication")
+                this.mustRunAfter("signJvmPublication")
+                this.mustRunAfter("signKotlinMultiplatformPublication")
+                this.mustRunAfter("signLinuxArm64Publication")
+                this.mustRunAfter("signLinuxX64Publication")
+                this.mustRunAfter("signWasmJsPublication")
+                this.mustRunAfter("signWasmWasiPublication")
+            }
+
+            if (this.name.startsWith("linkDebugTest")) {
+                this.mustRunAfter("signAndroidNativeArm32Publication")
+                this.mustRunAfter("signAndroidNativeArm64Publication")
+                this.mustRunAfter("signAndroidNativeX64Publication")
+                this.mustRunAfter("signAndroidNativeX86Publication")
+                this.mustRunAfter("signJsPublication")
+                this.mustRunAfter("signJvmPublication")
+                this.mustRunAfter("signKotlinMultiplatformPublication")
+                this.mustRunAfter("signLinuxArm64Publication")
+                this.mustRunAfter("signLinuxX64Publication")
+                this.mustRunAfter("signWasmJsPublication")
+                this.mustRunAfter("signWasmWasiPublication")
+            }
         }
 
         if (hostOs == HostOs.MAC) {
