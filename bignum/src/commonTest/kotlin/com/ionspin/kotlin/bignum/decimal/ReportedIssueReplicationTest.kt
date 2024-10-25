@@ -352,4 +352,12 @@ class ReportedIssueReplicationTest {
             rounded
         )
     }
+
+    @Test
+    fun roundHalfAway() {
+        val result = BigDecimal.fromInt(2)
+            .divide(BigDecimal.fromInt(3), DecimalMode(2, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
+            .doubleValue(false)
+        assertEquals(0.67f, result.toFloat())
+    }
 }

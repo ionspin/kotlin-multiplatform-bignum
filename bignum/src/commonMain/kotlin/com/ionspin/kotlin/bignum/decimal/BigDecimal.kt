@@ -1289,16 +1289,17 @@ class BigDecimal private constructor(
                 newExponent--
             }
             val exponentModifier = result.numberOfDecimalDigits() - resolvedDecimalMode.decimalPrecision
+            val discarded = divRem.remainder * other.significand
 
             return if (usingScale) {
                 BigDecimal(
-                    roundDiscarded(result, divRem.remainder, resolvedDecimalMode),
+                    roundDiscarded(result, discarded, resolvedDecimalMode),
                     newExponent + exponentModifier,
                     resolvedDecimalMode.copy(decimalPrecision = result.numberOfDecimalDigits())
                 )
             } else {
                 BigDecimal(
-                    roundDiscarded(result, divRem.remainder, resolvedDecimalMode),
+                    roundDiscarded(result, discarded, resolvedDecimalMode),
                     newExponent + exponentModifier,
                     resolvedDecimalMode
                 )
