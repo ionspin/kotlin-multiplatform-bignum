@@ -470,8 +470,8 @@ CEILING|Towards positive infinity
 AWAY_FROM_ZERO|Away from zero
 TOWARDS_ZERO| Towards zero
 NONE|Infinite decimalPrecision, and beyond
-ROUND_HALF_AWAY_FROM_ZERO|Round towards nearest integer, using towards zero as tie breaker when significant digit being rounded is 5
-ROUND_HALF_TOWARDS_ZERO|Round towards nearest integer, using away from zero as tie breaker when significant digit being rounded is 5
+ROUND_HALF_AWAY_FROM_ZERO|Round towards nearest integer, using away from zero as tie breaker when significant digit being rounded is 5
+ROUND_HALF_TOWARDS_ZERO|Round towards nearest integer, using towards zero as tie breaker when significant digit being rounded is 5
 ROUND_HALF_CEILING|Round towards nearest integer, using towards infinity as tie breaker when significant digit being rounded is 5
 ROUND_HALF_FLOOR|Round towards nearest integer, using towards negative infinity as tie breaker when significant digit being rounded is 5
 
