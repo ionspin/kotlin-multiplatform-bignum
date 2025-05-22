@@ -1,7 +1,7 @@
 package com.ionspin.kotlin.bignum.decimal
 
-import kotlin.test.assertEquals
 import org.junit.Test
+import kotlin.test.assertEquals
 
 /**
  * Created by Ugljesa Jovanovic
@@ -9,6 +9,17 @@ import org.junit.Test
  * on 09-May-2021
  */
 class ReportedIssuesTest {
+
+    @Test
+    fun testMod2() {
+
+        val a = "15.5".toBigDecimal()
+        val b = "360".toBigDecimal()
+
+        assertEquals("15.5", ((b * 5 + a) % b).toStringExpanded())
+
+        assertEquals("${-15.5 % 360.0}", (-a % b).toStringExpanded())
+    }
 
     @Test
     fun multiplicationPrecisionLoss() {
