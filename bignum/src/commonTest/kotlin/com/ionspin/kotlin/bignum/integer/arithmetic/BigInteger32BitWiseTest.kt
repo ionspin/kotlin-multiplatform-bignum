@@ -17,6 +17,7 @@
 
 package com.ionspin.kotlin.bignum.integer.arithmetic
 
+import com.ionspin.kotlin.bignum.integer.base32.BigInteger32Arithmetic
 import com.ionspin.kotlin.bignum.integer.base63.array.BigInteger63Arithmetic
 import kotlin.test.Ignore
 import kotlin.test.Test
@@ -49,6 +50,22 @@ class BigInteger32BitWiseTest {
             val a = ulongArrayOf(0U, 64U, 0U)
             val count = BigInteger63Arithmetic.trailingZeroBits(a)
             count == 70
+        }
+    }
+
+    @Test
+    fun testIsEven() {
+
+        val firstArray = uintArrayOf(0U, 64U, 0U, 2U)
+        val number = BigInteger32Arithmetic.add(firstArray, uintArrayOf(2U))
+        assertTrue {
+            BigInteger32Arithmetic.isEven(number)
+        }
+
+        val secondArray = uintArrayOf(1U, 64U, 0U, 2U)
+        val number2 = BigInteger32Arithmetic.add(secondArray, uintArrayOf(2U))
+        assertTrue {
+            BigInteger32Arithmetic.isEven(number2).not()
         }
     }
 }

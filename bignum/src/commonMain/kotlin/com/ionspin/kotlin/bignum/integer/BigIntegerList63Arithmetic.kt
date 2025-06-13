@@ -119,6 +119,8 @@ interface BigIntegerList63Arithmetic {
 
     fun numberOfDecimalDigits(operand: List<ULong>): Long
 
+    fun isEven(value: List<ULong>): Boolean
+
     fun fromULong(uLong: ULong): List<ULong>
     fun fromUInt(uInt: UInt): List<ULong>
     fun fromUShort(uShort: UShort): List<ULong>

@@ -17,6 +17,7 @@
 
 package com.ionspin.kotlin.bignum.decimal
 
+import java.math.MathContext
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -718,7 +719,12 @@ class BigDecimalRoundingTest {
         for (i in 1..1_000_000) {
             jobList.add(
                 scope.launch {
-                    testDivisionAndRounding(random.nextDouble(), random.nextDouble(), random.nextInt(100), modes.random())
+                    testDivisionAndRounding(
+                        random.nextDouble(),
+                        random.nextDouble(),
+                        random.nextInt(100),
+                        modes.random()
+                    )
                 }
             )
         }
@@ -780,6 +786,75 @@ class BigDecimalRoundingTest {
             val bignum = a.toBigDecimal(decimalMode = DecimalMode(20, mode.toBigNumRoundingMode(), 3))
             val jvm = java.math.BigDecimal(a).setScale(3, mode)
             assertEquals(bignum.toPlainString(), jvm.toPlainString())
+        }
+    }
+
+    @Test
+    fun testRoundingComparedWithJava() {
+        val random = Random(1)
+
+        for (i in 1..1000) {
+            val numberOfDigits = random.nextInt(100)
+            val numberOfDigits2 = random.nextInt(100)
+            val number1 = StringBuilder()
+            val number2 = StringBuilder()
+
+            for (j in 0..numberOfDigits) {
+                val int = random.nextInt(10)
+                number1.append(int)
+            }
+
+            for (j in 0..numberOfDigits2) {
+                val int = random.nextInt(10)
+                number2.append(int)
+            }
+
+            val sign1 = random.nextBoolean()
+            val sign2 = random.nextBoolean()
+
+            val pointPlace1 = random.nextInt(number1.length.coerceAtLeast(1))
+            number1.insert(pointPlace1, ".")
+            number1.run {
+                if (sign1) {
+                    insert(0, "-")
+                }
+            }
+            val pointPlace2 = random.nextInt(number2.length.coerceAtLeast(1))
+            number2.insert(pointPlace2, ".")
+            number2.run {
+                if (sign2) {
+                    insert(0, "-")
+                }
+            }
+            val kotlinBigDecimal1 = number1.toString().toBigDecimal()
+            val kotlinBigDecimal2 =
+                number2.toString().toBigDecimal()
+            if (kotlinBigDecimal2 == BigDecimal.ZERO) {
+                continue
+            }
+            val roundingModesMap = mapOf(
+                Pair(java.math.RoundingMode.CEILING, RoundingMode.CEILING),
+                Pair(java.math.RoundingMode.FLOOR, RoundingMode.FLOOR),
+                Pair(java.math.RoundingMode.DOWN, RoundingMode.TOWARDS_ZERO),
+                Pair(java.math.RoundingMode.UP, RoundingMode.AWAY_FROM_ZERO),
+                Pair(java.math.RoundingMode.HALF_UP, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO),
+                Pair(java.math.RoundingMode.HALF_DOWN, RoundingMode.ROUND_HALF_TOWARDS_ZERO),
+                Pair(java.math.RoundingMode.HALF_EVEN, RoundingMode.ROUND_HALF_TO_EVEN)
+            )
+
+            val javaBigDecimal1 = kotlinBigDecimal1.toJavaBigDecimal()
+            val javaBigDecimal2 = kotlinBigDecimal2.toJavaBigDecimal()
+            roundingModesMap.forEach { (javaMode, kotlinMode) ->
+                (1..100).forEach { precision ->
+                    val javaDivided =
+                        javaBigDecimal1.divide(javaBigDecimal2, MathContext(precision, javaMode))
+                    val kotlinDivided =
+                        kotlinBigDecimal1.divide(kotlinBigDecimal2, DecimalMode(precision.toLong(), kotlinMode))
+                    assertTrue {
+                        javaDivided.compareTo(kotlinDivided.toJavaBigDecimal()) == 0
+                    }
+                }
+            }
         }
     }
 }

@@ -1236,6 +1236,14 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
         return compare(this, uintArrayOf(other))
     }
 
+    override fun isEven(value: UIntArray): Boolean {
+        return if (value.isEmpty()) {
+            true
+        } else {
+            value[0].and(1U) != 1U
+        }
+    }
+
     fun toUnsignedIntArrayCodeFormat(array: UIntArray): String {
         return array.joinToString(prefix = "uintArrayOf(", separator = ", ", postfix = ")") {
             it.toString() + "U"

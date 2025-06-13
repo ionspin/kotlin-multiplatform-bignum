@@ -37,4 +37,19 @@ class BigInteger63BitwiseTest {
             expected.contentEquals(result)
         }
     }
+
+    @Test
+    fun testIsEven() {
+        val firstArray = ulongArrayOf(0U, 64U, 0U, 3U, 2U, 1U)
+        val number = BigInteger63Arithmetic.add(firstArray, ulongArrayOf(2U))
+        assertTrue {
+            BigInteger63Arithmetic.isEven(number)
+        }
+
+        val secondArray = ulongArrayOf(1U, 64U, 0U, 2U)
+        val number2 = BigInteger63Arithmetic.add(secondArray, ulongArrayOf(2U))
+        assertTrue {
+            BigInteger63Arithmetic.isEven(number2).not()
+        }
+    }
 }

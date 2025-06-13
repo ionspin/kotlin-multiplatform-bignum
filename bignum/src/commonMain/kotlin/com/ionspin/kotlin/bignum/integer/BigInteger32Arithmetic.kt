@@ -123,6 +123,8 @@ interface BigInteger32ArithmeticInterface {
 
     fun numberOfDecimalDigits(operand: UIntArray): Long
 
+    fun isEven(value: UIntArray): Boolean
+
     fun fromULong(uLong: ULong): UIntArray
     fun fromUInt(uInt: UInt): UIntArray
     fun fromUShort(uShort: UShort): UIntArray

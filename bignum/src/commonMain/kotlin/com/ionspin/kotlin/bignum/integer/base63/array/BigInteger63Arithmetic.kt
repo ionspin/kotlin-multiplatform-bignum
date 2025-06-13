@@ -307,12 +307,15 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
                 shiftWords -> {
                     (operand[it - shiftWords] shl shiftBits) and baseMask
                 }
+
                 in (shiftWords + 1) until (originalSize + shiftWords) -> {
                     ((operand[it - shiftWords] shl shiftBits) and baseMask) or (operand[it - shiftWords - 1] shr (basePowerOfTwo - shiftBits))
                 }
+
                 originalSize + wordsNeeded - 1 -> {
                     (operand[it - wordsNeeded] shr (basePowerOfTwo - shiftBits))
                 }
+
                 else -> {
                     throw RuntimeException("Invalid case $it")
                 }
@@ -354,9 +357,11 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
                     ((operand[it + wordsToDiscard] shr shiftBits)) or
                             ((operand[it + wordsToDiscard + 1] shl (basePowerOfTwo - shiftBits) and baseMask))
                 }
+
                 realOperandSize - 1 - wordsToDiscard -> {
                     (operand[it + wordsToDiscard] shr shiftBits)
                 }
+
                 else -> {
                     throw RuntimeException("Invalid case $it")
                 }
@@ -859,6 +864,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
                     )
                 Pair(first, prepared)
             }
+
             firstLength < secondLength -> {
                 val prepared =
                     extendULongArray(
@@ -868,6 +874,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
                     )
                 Pair(prepared, second)
             }
+
             else -> Pair(first, second)
         }
 
@@ -1534,12 +1541,14 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
                     0 -> {
                         result[i] = operand[0].toULong() or ((operand[1].toULong() shl 32) and highMask)
                     }
+
                     in 1 until requiredLength - 1 -> {
                         result[i] =
                             (operand[position - 1].toULong() shr (32 - shiftAmount)) or
                                     (operand[position].toULong() shl shiftAmount) or
                                     ((operand[position + 1].toULong() shl (32 + shiftAmount)) and highMask)
                     }
+
                     requiredLength - 1 -> {
                         if (position < operand.size) {
                             result[i] =
@@ -1592,6 +1601,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
                 0 -> {
                     result[i] = operand[0] and baseMask
                 }
+
                 in 1 until requiredLength - 1 -> {
                     result[i] = if (shiftAmount > 0) {
                         ((operand[position - 1] shr (64 - shiftAmount)) or
@@ -1600,6 +1610,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
                         (operand[position] shl shiftAmount) and baseMask
                     }
                 }
+
                 requiredLength - 1 -> {
                     if (position < operand.size) {
                         result[i] = if (shiftAmount > 0) {
@@ -2156,6 +2167,14 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
             this,
             ulongArrayOf(other)
         )
+    }
+
+    override fun isEven(value: ULongArray): Boolean {
+        return if (value.isEmpty()) {
+            true
+        } else {
+            value[0].and(1UL) != 1UL
+        }
     }
 
     internal fun ULongArray.to32Bit(): UIntArray {
