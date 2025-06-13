@@ -11,6 +11,17 @@ import org.junit.Test
 class ReportedIssuesTest {
 
     @Test
+    fun testMod2() {
+
+        val a = "15.5".toBigDecimal()
+        val b = "360".toBigDecimal()
+
+        assertEquals("15.5", ((b * 5 + a) % b).toStringExpanded())
+
+        assertEquals("${-15.5 % 360.0}", (-a % b).toStringExpanded())
+    }
+
+    @Test
     fun multiplicationPrecisionLoss() {
         val a = "5.61".toBigDecimal().roundToDigitPositionAfterDecimalPoint(2, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
         val b = "2.95".toBigDecimal().roundToDigitPositionAfterDecimalPoint(2, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)

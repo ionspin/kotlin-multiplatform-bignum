@@ -89,10 +89,10 @@ class BigDecimal private constructor(
                 decimalMode = _decimalMode.copy(decimalPrecision = precision)
             }
         } else {
-                significand = _significand
-                precision = _significand.numberOfDecimalDigits()
-                exponent = _exponent
-                decimalMode = _decimalMode
+            significand = _significand
+            precision = _significand.numberOfDecimalDigits()
+            exponent = _exponent
+            decimalMode = _decimalMode
         }
     }
 
@@ -101,6 +101,9 @@ class BigDecimal private constructor(
      */
     val precisionLimit = decimalMode?.decimalPrecision ?: 0
     val roundingMode = decimalMode?.roundingMode ?: RoundingMode.NONE
+
+    val scale = decimalMode?.scale ?: -1
+    val usingScale = scale >= 0
 
     companion object : BigNumber.Creator<BigDecimal> {
         override val ZERO = BigDecimal(BigInteger.ZERO)
@@ -159,6 +162,7 @@ class BigDecimal private constructor(
                         SignificantDecider.MORE_THAN_FIVE
                     }
                 }
+
                 significant > 5 -> SignificantDecider.MORE_THAN_FIVE
                 significant < 5 -> SignificantDecider.LESS_THAN_FIVE
                 else -> throw RuntimeException("Couldn't determine decider")
@@ -209,9 +213,11 @@ class BigDecimal private constructor(
                         result--
                     }
                 }
+
                 RoundingMode.TOWARDS_ZERO -> {
                     result
                 }
+
                 RoundingMode.CEILING -> {
                     if (sign == Sign.POSITIVE) {
                         result++
@@ -219,6 +225,7 @@ class BigDecimal private constructor(
                         result
                     }
                 }
+
                 RoundingMode.FLOOR -> {
                     if (sign == Sign.POSITIVE) {
                         result
@@ -226,6 +233,7 @@ class BigDecimal private constructor(
                         result--
                     }
                 }
+
                 RoundingMode.ROUND_HALF_AWAY_FROM_ZERO -> {
                     when (sign) {
                         Sign.POSITIVE -> {
@@ -233,15 +241,18 @@ class BigDecimal private constructor(
                                 result++
                             }
                         }
+
                         Sign.NEGATIVE -> {
                             if (decider != SignificantDecider.LESS_THAN_FIVE) {
                                 result--
                             }
                         }
+
                         Sign.ZERO -> {
                         }
                     }
                 }
+
                 RoundingMode.ROUND_HALF_TOWARDS_ZERO -> {
                     when (sign) {
                         Sign.POSITIVE -> {
@@ -249,15 +260,18 @@ class BigDecimal private constructor(
                                 result++
                             }
                         }
+
                         Sign.NEGATIVE -> {
                             if (decider == SignificantDecider.MORE_THAN_FIVE) {
                                 result--
                             }
                         }
+
                         Sign.ZERO -> {
                         }
                     }
                 }
+
                 RoundingMode.ROUND_HALF_CEILING -> {
                     when (sign) {
                         Sign.POSITIVE -> {
@@ -265,15 +279,18 @@ class BigDecimal private constructor(
                                 result++
                             }
                         }
+
                         Sign.NEGATIVE -> {
                             if (decider == SignificantDecider.MORE_THAN_FIVE) {
                                 result--
                             }
                         }
+
                         Sign.ZERO -> {
                         }
                     }
                 }
+
                 RoundingMode.ROUND_HALF_FLOOR -> {
                     when (sign) {
                         Sign.POSITIVE -> {
@@ -281,15 +298,18 @@ class BigDecimal private constructor(
                                 result++
                             }
                         }
+
                         Sign.NEGATIVE -> {
                             if (decider != SignificantDecider.LESS_THAN_FIVE) {
                                 result--
                             }
                         }
+
                         Sign.ZERO -> {
                         }
                     }
                 }
+
                 RoundingMode.ROUND_HALF_TO_EVEN -> {
                     when {
                         decider == SignificantDecider.FIVE -> {
@@ -299,14 +319,17 @@ class BigDecimal private constructor(
                                     Sign.POSITIVE -> {
                                         result++
                                     }
+
                                     Sign.NEGATIVE -> {
                                         result--
                                     }
+
                                     Sign.ZERO -> {
                                     }
                                 }
                             }
                         }
+
                         decider == SignificantDecider.MORE_THAN_FIVE -> {
                             if (sign == Sign.POSITIVE) {
                                 result++
@@ -317,6 +340,7 @@ class BigDecimal private constructor(
                         }
                     }
                 }
+
                 RoundingMode.ROUND_HALF_TO_ODD -> {
                     when {
                         decider == SignificantDecider.FIVE -> {
@@ -326,14 +350,17 @@ class BigDecimal private constructor(
                                     Sign.POSITIVE -> {
                                         result++
                                     }
+
                                     Sign.NEGATIVE -> {
                                         result--
                                     }
+
                                     Sign.ZERO -> {
                                     }
                                 }
                             }
                         }
+
                         decider == SignificantDecider.MORE_THAN_FIVE -> {
                             if (sign == Sign.POSITIVE) {
                                 result++
@@ -362,9 +389,11 @@ class BigDecimal private constructor(
                                 increasedSignificand.numberOfDecimalDigits() - significand.numberOfDecimalDigits()
                             BigDecimal(increasedSignificand, exponent + exponentModifier, decimalMode)
                         }
+
                         else -> BigDecimal(significand, exponent, decimalMode)
                     }
                 }
+
                 significand.sign == Sign.NEGATIVE -> {
                     when (decimalMode.roundingMode) {
                         RoundingMode.FLOOR, RoundingMode.AWAY_FROM_ZERO -> {
@@ -373,9 +402,11 @@ class BigDecimal private constructor(
                                 increasedSignificand.numberOfDecimalDigits() - significand.numberOfDecimalDigits()
                             BigDecimal(increasedSignificand, exponent + exponentModifier, decimalMode)
                         }
+
                         else -> BigDecimal(significand, exponent, decimalMode)
                     }
                 }
+
                 else -> BigDecimal(significand, exponent, decimalMode)
             }
         }
@@ -399,6 +430,7 @@ class BigDecimal private constructor(
                     val extendedSignificand = significand * BigInteger.TEN.pow(desiredPrecision - significandDigits)
                     BigDecimal(extendedSignificand, exponent, decimalMode)
                 }
+
                 desiredPrecision < significandDigits -> {
                     val divRem = significand divrem BigInteger.TEN.pow(significandDigits - desiredPrecision)
                     val resolvedRemainder = divRem.remainder
@@ -415,6 +447,7 @@ class BigDecimal private constructor(
                         handleZeroRounding(divRem.quotient, exponent, decimalMode)
                     }
                 }
+
                 else -> {
                     BigDecimal(significand, exponent, decimalMode)
                 }
@@ -441,10 +474,12 @@ class BigDecimal private constructor(
                     exponent + decimalMode.scale + 1,
                     decimalMode.roundingMode
                 )
+
                 exponent < 0 -> DecimalMode(
                     decimalMode.scale + 1,
                     decimalMode.roundingMode
                 )
+
                 else -> throw RuntimeException("Unexpected state")
             }
             return if (exponent >= 0) {
@@ -945,6 +980,7 @@ class BigDecimal private constructor(
                         }
                         return BigDecimal(significand, exponentModifiedByFloatingPointPosition, decimalMode)
                     }
+
                     else -> throw ArithmeticException("Invalid (or unsupported) floating point number format: $floatingPointString")
                 }
             } else {
@@ -998,6 +1034,7 @@ class BigDecimal private constructor(
                             }
                             return BigDecimal(significand, exponent.toLong(), decimalMode)
                         }
+
                         else -> throw ArithmeticException("Invalid (or unsupported) floating point number format: $floatingPointString")
                     }
                 } else {
@@ -1041,9 +1078,6 @@ class BigDecimal private constructor(
             }
         }
     }
-
-    val scale = decimalMode?.scale ?: -1
-    val usingScale = scale >= 0
 
     /**
      * @param scale a value between 0 and if precision is limited, precision - 1.
@@ -1317,21 +1351,43 @@ class BigDecimal private constructor(
 
     /**
      * Quotient and remainder of **integer** division on this bigDecimal. If there is no rounding mode defined in decimal mode
-     * #RoundingMode.FLOOR will be used. Uses truncating division to determine quotient, which means that the sign of remainder will be same as sign of dividend
+     * #RoundingMode.TOWARDS_ZERO will be used. Uses truncating division to determine quotient, which means that the
+     * sign of remainder will be same as sign of dividend
      */
     override fun divideAndRemainder(other: BigDecimal): Pair<BigDecimal, BigDecimal> {
-        if (exponent < 0) {
-            return Pair(ZERO, this)
-        }
         if (other.abs() > this.abs()) {
             return Pair(ZERO, this)
         }
-        val resolvedRoundingMode =
-            this.decimalMode?.copy(decimalPrecision = exponent - other.exponent + 1) ?: DecimalMode(exponent - other.exponent + 1, RoundingMode.FLOOR)
-        val quotient = divide(other, resolvedRoundingMode)
-        val quotientInfinitePrecision = quotient.copy(decimalMode = DecimalMode.DEFAULT)
-        val remainder = this - (quotientInfinitePrecision * other)
-        return Pair(quotient, remainder)
+        val roundingMode = DecimalMode(exponent - other.exponent + 1, RoundingMode.TOWARDS_ZERO)
+        val quotient = divide(other, roundingMode)
+        val quotientWithoutDecimal = quotient.roundToDigitPositionAfterDecimalPoint(0, roundingMode.roundingMode)
+        val remainder = this - (quotientWithoutDecimal * other)
+        val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
+        return if (resolvedDecimalMode.usingScale) {
+            val roundedQuotient = roundOrDont(
+                quotientWithoutDecimal.significand,
+                quotientWithoutDecimal.exponent,
+                resolvedDecimalMode.copy(decimalPrecision = quotient.significand.numberOfDecimalDigits())
+            )
+            val roundedRemainder = roundOrDont(
+                remainder.significand,
+                remainder.exponent,
+                resolvedDecimalMode.copy(decimalPrecision = remainder.significand.numberOfDecimalDigits())
+            )
+            Pair(roundedQuotient, roundedRemainder)
+        } else {
+            val roundedQuotient = roundOrDont(
+                quotientWithoutDecimal.significand,
+                quotientWithoutDecimal.exponent,
+                resolvedDecimalMode
+            )
+            val roundedRemainder = roundOrDont(
+                remainder.significand,
+                remainder.exponent,
+                resolvedDecimalMode
+            )
+            Pair(roundedQuotient, roundedRemainder)
+        }
     }
 
     override fun isZero(): Boolean {
@@ -1470,9 +1526,11 @@ class BigDecimal private constructor(
             precisionExponentDiff > 0 -> {
                 significand * 10.toBigInteger().pow(precisionExponentDiff + 1)
             }
+
             precisionExponentDiff < 0 -> {
                 significand / 10.toBigInteger().pow(precisionExponentDiff.absoluteValue - 1)
             }
+
             else -> {
                 significand * 10
             }
@@ -1543,14 +1601,6 @@ class BigDecimal private constructor(
         return roundOrDont(newSignificand, newExponent, resolvedDecimalMode)
     }
 
-    private fun rem(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
-        val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
-//        val (first, second) = bringSignificandToSameExponent(this, other)
-        val newExponent = this.exponent - other.exponent
-        val newSignificand = this.significand % other.significand
-        return roundOrDont(newSignificand, newExponent, resolvedDecimalMode)
-    }
-
     // TODO
     private fun divrem(other: BigDecimal, decimalMode: DecimalMode? = null): Pair<BigDecimal, BigDecimal> {
         val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
@@ -1610,7 +1660,7 @@ class BigDecimal private constructor(
     }
 
     override operator fun rem(other: BigDecimal): BigDecimal {
-        return this.rem(other, null)
+        return divideAndRemainder(other).second
     }
 
     /**
@@ -1669,6 +1719,7 @@ class BigDecimal private constructor(
                 }
                 result
             }
+
             exponent < 0 -> {
                 if (exponent == Long.MIN_VALUE) {
                     for (i in 0..Long.MAX_VALUE) {
@@ -1684,6 +1735,7 @@ class BigDecimal private constructor(
 
                 result
             }
+
             else -> {
                 ONE
             }
@@ -2005,7 +2057,12 @@ class BigDecimal private constructor(
             roundSignificand(DecimalMode(digitPosition, roundingMode))
         } else {
             if (roundingMode == RoundingMode.ROUND_HALF_TO_EVEN) {
-                (this + this.signum() * 2).roundSignificand(DecimalMode(digitPosition, roundingMode)) - this.signum() * 2
+                (this + this.signum() * 2).roundSignificand(
+                    DecimalMode(
+                        digitPosition,
+                        roundingMode
+                    )
+                ) - this.signum() * 2
             } else {
                 (this + this.signum()).roundSignificand(DecimalMode(digitPosition, roundingMode)) - this.signum()
             }
@@ -2075,6 +2132,7 @@ class BigDecimal private constructor(
                     Triple(first.significand, movedSecond, firstPreparedExponent)
                 }
             }
+
             first.exponent < second.exponent -> {
                 val moveSecondBy = secondPreparedExponent - firstPreparedExponent
                 return if (moveSecondBy >= 0) {
@@ -2085,6 +2143,7 @@ class BigDecimal private constructor(
                     Triple(movedFirst, second.significand, firstPreparedExponent)
                 }
             }
+
             first.exponent == second.exponent -> {
                 val delta = firstPreparedExponent - secondPreparedExponent
                 return when {
@@ -2092,16 +2151,20 @@ class BigDecimal private constructor(
                         val movedFirst = first.significand * 10.toBigInteger().pow(delta)
                         Triple(movedFirst, second.significand, firstPreparedExponent)
                     }
+
                     delta < 0 -> {
                         val movedSecond = second.significand * 10.toBigInteger().pow(delta * -1)
                         Triple(first.significand, movedSecond, firstPreparedExponent)
                     }
+
                     delta.compareTo(0) == 0 -> {
                         Triple(first.significand, second.significand, firstPreparedExponent)
                     }
+
                     else -> throw RuntimeException("Invalid delta: $delta")
                 }
             }
+
             else -> {
                 throw RuntimeException("Invalid comparison state BigInteger: ${first.exponent}, ${second.exponent}")
             }
@@ -2203,6 +2266,7 @@ class BigDecimal private constructor(
                     )
                 }${expand}E+$exponent"
             }
+
             exponent < 0 -> {
 
                 "${
@@ -2212,6 +2276,7 @@ class BigDecimal private constructor(
                     )
                 }${expand}E$exponent"
             }
+
             exponent == 0L -> {
                 "${
                     placeADotInString(
@@ -2220,6 +2285,7 @@ class BigDecimal private constructor(
                     )
                 }$expand"
             }
+
             else -> throw RuntimeException("Invalid state, please report a bug (Integer compareTo invalid)")
         }
     }
@@ -2279,6 +2345,7 @@ class BigDecimal private constructor(
                     placeADotInStringExpanded(significandString, significandString.length - exponent.toInt() - 1)
                 }
             }
+
             exponent < 0 -> {
 
                 val diffInt = exponent.toInt().absoluteValue
@@ -2293,6 +2360,7 @@ class BigDecimal private constructor(
                     placeADotInStringExpanded(significandString, significandString.length - 1)
                 }
             }
+
             exponent == 0L -> {
                 if (digits == 1L) {
                     return sign + significandString
