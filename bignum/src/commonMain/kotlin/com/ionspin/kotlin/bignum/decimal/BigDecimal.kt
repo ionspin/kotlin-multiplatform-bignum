@@ -1079,7 +1079,6 @@ class BigDecimal private constructor(
         }
     }
 
-
     /**
      * @param scale a value between 0 and if precision is limited, precision - 1.
      * @return a new BigDecimal with same precision and RoundingMode, but new scale applied. If current

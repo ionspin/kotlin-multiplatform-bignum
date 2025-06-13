@@ -1,7 +1,7 @@
 package com.ionspin.kotlin.bignum.decimal
 
-import org.junit.Test
 import kotlin.test.assertEquals
+import org.junit.Test
 
 /**
  * Created by Ugljesa Jovanovic

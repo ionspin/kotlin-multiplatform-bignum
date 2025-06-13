@@ -1,13 +1,12 @@
 package com.ionspin.kotlin.bignum.decimal
 
+import kotlin.random.Random
+import kotlin.test.fail
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlinx.coroutines.runBlocking
-import kotlin.random.Random
-import kotlin.test.fail
-
 
 fun multipleTestLauncher(test: (random: Random) -> Unit) {
     val dispatcher = newFixedThreadPoolContext(32, "Division and rounds")
