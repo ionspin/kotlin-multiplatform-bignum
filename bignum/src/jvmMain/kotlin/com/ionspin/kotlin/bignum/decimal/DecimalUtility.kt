@@ -46,3 +46,10 @@ fun BigDecimal.toJavaBigDecimal(): java.math.BigDecimal {
     }
 //    return java.math.BigDecimal(this.toStringExpanded())
 }
+
+import java.math.BigDecimal as JavaBigDecimal
+import com.ionspin.kotlin.bignum.decimal.BigDecimal as KotlinBigDecimal
+
+fun JavaBigDecimal.toKotlinBigDecimal(): KotlinBigDecimal {
+    return KotlinBigDecimal.parseString(this.toPlainString())
+}
