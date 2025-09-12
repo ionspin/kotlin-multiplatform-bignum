@@ -146,7 +146,7 @@ class BigDecimal private constructor(
         }
 
         private enum class SignificantDecider {
-            FIVE, LESS_THAN_FIVE, MORE_THAN_FIVE
+            FIVE, LESS_THAN_FIVE, MORE_THAN_FIVE, ZERO
         }
 
         private fun determineDecider(discarded: BigInteger): SignificantDecider {
@@ -181,56 +181,59 @@ class BigDecimal private constructor(
             decimalMode: DecimalMode
         ): BigInteger {
             val toDiscard = significand.numberOfDecimalDigits() - decimalMode.decimalPrecision
-            var (result, remainder) = if (toDiscard > 0) {
+            val (result, remainder) = if (toDiscard > 0) {
                 val additionallyDiscarded = (significand divrem BigInteger.TEN.pow(toDiscard))
-                Pair(additionallyDiscarded.quotient, additionallyDiscarded.remainder)
+                Pair(
+                    additionallyDiscarded.quotient,
+                    additionallyDiscarded.remainder + discarded / BigInteger.TEN.pow(toDiscard)
+                )
             } else {
                 Pair(significand, discarded)
             }
 
-            val sign = if (significand == BigInteger.ZERO) {
-                discarded.sign
-            } else {
-                significand.sign
-            }
-            if (decimalMode.roundingMode != RoundingMode.AWAY_FROM_ZERO &&
-                decimalMode.roundingMode != RoundingMode.TOWARDS_ZERO
-            ) {
-                if (remainder.isZero()) {
-                    return result
-                }
-            } else {
-                if (remainder.isZero() && discarded.isZero()) {
-                    return result
-                }
-            }
             val decider = determineDecider(remainder)
-            when (decimalMode.roundingMode) {
+            val isEven = result.isEven()
+            val modifiedResult = roundWithDecider(result, decimalMode.roundingMode, significand.sign, decider, isEven)
+
+            return modifiedResult
+        }
+
+        private fun roundWithDecider(
+            numberToRound: BigInteger,
+            roundingMode: RoundingMode,
+            sign: Sign,
+            decider: SignificantDecider,
+            isEven: Boolean
+        ): BigInteger {
+            if (decider == SignificantDecider.ZERO) {
+                return numberToRound
+            }
+            return when (roundingMode) {
                 RoundingMode.AWAY_FROM_ZERO -> {
                     if (sign == Sign.POSITIVE) {
-                        result++
+                        numberToRound + 1
                     } else {
-                        result--
+                        numberToRound - 1
                     }
                 }
 
                 RoundingMode.TOWARDS_ZERO -> {
-                    result
+                    numberToRound
                 }
 
                 RoundingMode.CEILING -> {
                     if (sign == Sign.POSITIVE) {
-                        result++
+                        numberToRound + 1
                     } else {
-                        result
+                        numberToRound
                     }
                 }
 
                 RoundingMode.FLOOR -> {
                     if (sign == Sign.POSITIVE) {
-                        result
+                        numberToRound
                     } else {
-                        result--
+                        numberToRound - 1
                     }
                 }
 
@@ -238,17 +241,22 @@ class BigDecimal private constructor(
                     when (sign) {
                         Sign.POSITIVE -> {
                             if (decider != SignificantDecider.LESS_THAN_FIVE) {
-                                result++
+                                numberToRound + 1
+                            } else {
+                                numberToRound
                             }
                         }
 
                         Sign.NEGATIVE -> {
                             if (decider != SignificantDecider.LESS_THAN_FIVE) {
-                                result--
+                                numberToRound - 1
+                            } else {
+                                numberToRound
                             }
                         }
 
                         Sign.ZERO -> {
+                            numberToRound
                         }
                     }
                 }
@@ -257,17 +265,22 @@ class BigDecimal private constructor(
                     when (sign) {
                         Sign.POSITIVE -> {
                             if (decider == SignificantDecider.MORE_THAN_FIVE) {
-                                result++
+                                numberToRound + 1
+                            } else {
+                                numberToRound
                             }
                         }
 
                         Sign.NEGATIVE -> {
                             if (decider == SignificantDecider.MORE_THAN_FIVE) {
-                                result--
+                                numberToRound - 1
+                            } else {
+                                numberToRound
                             }
                         }
 
                         Sign.ZERO -> {
+                            numberToRound
                         }
                     }
                 }
@@ -276,17 +289,22 @@ class BigDecimal private constructor(
                     when (sign) {
                         Sign.POSITIVE -> {
                             if (decider != SignificantDecider.LESS_THAN_FIVE) {
-                                result++
+                                numberToRound + 1
+                            } else {
+                                numberToRound
                             }
                         }
 
                         Sign.NEGATIVE -> {
                             if (decider == SignificantDecider.MORE_THAN_FIVE) {
-                                result--
+                                numberToRound - 1
+                            } else {
+                                numberToRound
                             }
                         }
 
                         Sign.ZERO -> {
+                            numberToRound
                         }
                     }
                 }
@@ -295,88 +313,113 @@ class BigDecimal private constructor(
                     when (sign) {
                         Sign.POSITIVE -> {
                             if (decider == SignificantDecider.MORE_THAN_FIVE) {
-                                result++
+                                numberToRound + 1
+                            } else {
+                                numberToRound
                             }
                         }
 
                         Sign.NEGATIVE -> {
                             if (decider != SignificantDecider.LESS_THAN_FIVE) {
-                                result--
+                                numberToRound - 1
+                            } else {
+                                numberToRound
                             }
                         }
 
                         Sign.ZERO -> {
+                            numberToRound
                         }
                     }
                 }
 
                 RoundingMode.ROUND_HALF_TO_EVEN -> {
-                    when {
-                        decider == SignificantDecider.FIVE -> {
-                            if ((significand % 2).abs() == BigInteger.ONE) {
+                    when (decider) {
+                        SignificantDecider.FIVE -> {
+                            // significand was here
+                            if (isEven) {
+                                numberToRound
+                            } else {
                                 // RoundingMode.HALF_CEILING if the digit to the left of the discarded fraction is odd
                                 when (sign) {
                                     Sign.POSITIVE -> {
-                                        result++
+                                        numberToRound + 1
                                     }
 
                                     Sign.NEGATIVE -> {
-                                        result--
+                                        numberToRound - 1
                                     }
 
                                     Sign.ZERO -> {
+                                        numberToRound
                                     }
                                 }
                             }
                         }
 
-                        decider == SignificantDecider.MORE_THAN_FIVE -> {
-                            if (sign == Sign.POSITIVE) {
-                                result++
+                        SignificantDecider.MORE_THAN_FIVE -> {
+                            when (sign) {
+                                Sign.POSITIVE -> numberToRound + 1
+                                Sign.NEGATIVE -> numberToRound - 1
+                                Sign.ZERO -> numberToRound
                             }
-                            if (sign == Sign.NEGATIVE) {
-                                result--
-                            }
+                        }
+
+                        else -> {
+                            numberToRound
                         }
                     }
                 }
 
                 RoundingMode.ROUND_HALF_TO_ODD -> {
-                    when {
-                        decider == SignificantDecider.FIVE -> {
-                            if (significand % 2 == BigInteger.ZERO) {
+                    when (decider) {
+                        SignificantDecider.FIVE -> {
+                            if (isEven.not()) {
+                                numberToRound
+                            } else {
                                 // RoundingMode.HALF_CEILING if the digit to the left of the discarded fraction is even
                                 when (sign) {
                                     Sign.POSITIVE -> {
-                                        result++
+                                        numberToRound + 1
                                     }
 
                                     Sign.NEGATIVE -> {
-                                        result--
+                                        numberToRound - 1
                                     }
 
                                     Sign.ZERO -> {
+                                        numberToRound
                                     }
                                 }
                             }
                         }
 
-                        decider == SignificantDecider.MORE_THAN_FIVE -> {
-                            if (sign == Sign.POSITIVE) {
-                                result++
+                        SignificantDecider.MORE_THAN_FIVE -> {
+                            when (sign) {
+                                Sign.POSITIVE -> numberToRound + 1
+                                Sign.NEGATIVE -> numberToRound - 1
+                                Sign.ZERO -> numberToRound
                             }
-                            if (sign == Sign.NEGATIVE) {
-                                result--
-                            }
+                        }
+
+                        SignificantDecider.LESS_THAN_FIVE -> {
+                            numberToRound
+                        }
+
+                        SignificantDecider.ZERO -> {
+                            numberToRound
                         }
                     }
                 }
 
                 RoundingMode.NONE -> {
-                    throw ArithmeticException("Non-terminating result of division operation. Specify decimalPrecision")
+                    throw ArithmeticException(
+                        "Non-terminating result of division operation " +
+                                "(i.e. 1/3 = 0.3333... library needs to know when to stop and how to round up at that point). " +
+                                "Specify rounding mode inside your decimal mode."
+                    )
                 }
             }
-            return result
         }
 
         fun handleZeroRounding(significand: BigInteger, exponent: Long, decimalMode: DecimalMode): BigDecimal {
@@ -1275,13 +1318,75 @@ class BigDecimal private constructor(
         return divide(other, computeMode(other, ScaleOps.Max))
     }
 
+    private fun isEven(quotient: BigInteger): Boolean {
+        return quotient.isEven()
+    }
+
+    private fun isHalfRounding(roundingMode: RoundingMode): Boolean {
+        return when (roundingMode) {
+            RoundingMode.ROUND_HALF_AWAY_FROM_ZERO,
+            RoundingMode.ROUND_HALF_TOWARDS_ZERO,
+            RoundingMode.ROUND_HALF_CEILING,
+            RoundingMode.ROUND_HALF_FLOOR,
+            RoundingMode.ROUND_HALF_TO_EVEN,
+            RoundingMode.ROUND_HALF_TO_ODD -> true
+
+            else -> false
+        }
+    }
+
+    private fun getDecider(
+        divRem: BigInteger.QuotientAndRemainder,
+        divRemToSize: BigInteger.QuotientAndRemainder,
+        isHalfRounding: Boolean
+    ): SignificantDecider {
+        val quotient = divRem.quotient
+        val remainder = divRem.remainder
+        val quotientToSize = divRemToSize.quotient
+        val remainderToSize = divRemToSize.remainder
+        return if (remainderToSize.numberOfDecimalDigits() + quotientToSize.numberOfDecimalDigits() < quotient.numberOfDecimalDigits() && isHalfRounding) {
+            SignificantDecider.ZERO
+        } else {
+            val border = BigInteger.TEN.pow(remainderToSize.numberOfDecimalDigits() - 1) * 5
+            when {
+                remainderToSize.abs() < border -> {
+                    SignificantDecider.LESS_THAN_FIVE
+                }
+
+                remainderToSize.abs() > border -> {
+                    SignificantDecider.MORE_THAN_FIVE
+                }
+
+                remainderToSize.abs() == border -> {
+                    if (remainder == BigInteger.ZERO) {
+                        SignificantDecider.FIVE
+                    } else {
+                        SignificantDecider.MORE_THAN_FIVE
+                    }
+                }
+
+                else -> {
+                    throw RuntimeException("Unreachable code.")
+                }
+            }
+        }
+    }
+
     /**
      * Divide two BigDecimal and return result in a new instance of BigDecimal
      *
      * @param other BigDecimal (divisor)
+     * @param decimalMode DecimalMode
      * @return BigDecimal containing result of the operation
      */
     fun divide(other: BigDecimal, decimalMode: DecimalMode? = null): BigDecimal {
+        if (other.isZero()) {
+            throw ArithmeticException("Can not divide by zero.")
+        }
+        if (this.isZero()) {
+            return ZERO
+        }
+
         val resolvedDecimalMode = resolveDecimalMode(this.decimalMode, other.decimalMode, decimalMode)
         if (resolvedDecimalMode.isPrecisionUnlimited && resolvedDecimalMode.usingScale.not()) {
             val newExponent = this.exponent - other.exponent
@@ -1306,35 +1411,57 @@ class BigDecimal private constructor(
                 resolvedDecimalMode
             )
         } else {
-            var newExponent = this.exponent - other.exponent - 1
-
             val desiredPrecision = resolvedDecimalMode.decimalPrecision
 
-            val power = desiredPrecision - this.precision + other.precision
-            val thisPrepared = when {
-                power > 0 -> this.significand * 10.toBigInteger().pow(power)
-                power < 0 -> this.significand / 10.toBigInteger().pow(power.absoluteValue)
-                else -> this.significand
+            val power = if (desiredPrecision + other.precision - this.precision > 0) {
+                desiredPrecision + other.precision - this.precision + 5
+            } else {
+                this.precision - desiredPrecision - other.precision + 5
             }
+
+            val thisPrepared = significand * 10.toBigInteger().pow(power)
 
             val divRem = thisPrepared divrem other.significand
-            val result = divRem.quotient
-            if (result == BigInteger.ZERO) {
-                newExponent--
-            }
-            val exponentModifier = result.numberOfDecimalDigits() - resolvedDecimalMode.decimalPrecision
-            val discarded = divRem.remainder * other.significand
+            val quotient = divRem.quotient
 
-            return if (usingScale) {
+            val expectedNumOfDigitsInQuotient = thisPrepared.numberOfDecimalDigits() - other.precision
+            val exponentModifier = quotient.numberOfDecimalDigits() - expectedNumOfDigitsInQuotient - 1
+            val precisionDifference = quotient.numberOfDecimalDigits() - desiredPrecision
+
+            val divRemToSize =
+                quotient divrem 10.toBigInteger().pow(precisionDifference)
+
+            val quotientToSize = divRemToSize.quotient
+            val remainderToSize = divRemToSize.remainder
+            return if (remainderToSize == BigInteger.ZERO) {
                 BigDecimal(
-                    roundDiscarded(result, discarded, resolvedDecimalMode),
-                    newExponent + exponentModifier,
-                    resolvedDecimalMode.copy(decimalPrecision = result.numberOfDecimalDigits())
+                    quotientToSize,
+                    this.exponent - other.exponent + exponentModifier,
+                    resolvedDecimalMode
                 )
             } else {
+
+                val signOfTheResultOfDivision = if (this.signum() == other.signum()) {
+                    Sign.POSITIVE
+                } else {
+                    Sign.NEGATIVE
+                }
+                val isEven = isEven(divRemToSize.quotient)
+                val isHalfRounding = isHalfRounding(resolvedDecimalMode.roundingMode)
+                val newDecider = getDecider(divRem, divRemToSize, isHalfRounding)
+
+                val roundedQuotient = roundWithDecider(
+                    quotientToSize,
+                    resolvedDecimalMode.roundingMode,
+                    signOfTheResultOfDivision,
+                    newDecider,
+                    isEven
+                )
+                // this is needed if the rounding changes the number of digits
+                val roundedQuotientExponentModifier = roundedQuotient.numberOfDecimalDigits() - quotientToSize.numberOfDecimalDigits()
                 BigDecimal(
-                    roundDiscarded(result, discarded, resolvedDecimalMode),
-                    newExponent + exponentModifier,
+                    roundedQuotient,
+                    this.exponent - other.exponent + exponentModifier + roundedQuotientExponentModifier,
                     resolvedDecimalMode
                 )
             }
@@ -1427,7 +1554,7 @@ class BigDecimal private constructor(
         return copy(exponent = exponent + places)
     }
 
-    // TODO in 0.3.x
+// TODO in 0.3.x
 //    override fun pow(exponent: BigDecimal): BigDecimal {
 //        if (exponent.signum() < 0) {
 //            throw RuntimeException("BigDecimal exponentiation with negative numbers is not supported. Exponent: ${exponent}")
@@ -1448,7 +1575,7 @@ class BigDecimal private constructor(
         return pow(exponent.toLong())
     }
 
-    // TODO in 0.3.x
+// TODO in 0.3.x
 //    /**
 //     * Natural logarithm of this BigDecimal
 //     */

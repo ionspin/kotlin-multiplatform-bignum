@@ -248,6 +248,10 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
         return arithmetic.compare(resultMagnitude, arithmetic.ZERO) == 0
     }
 
+    fun isEven(): Boolean {
+        return arithmetic.isEven(this.magnitude)
+    }
+
     val numberOfWords = magnitude.size
 
     var stringRepresentation: String? = null

@@ -140,7 +140,9 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
     }
 
     override fun trailingZeroBits(value: List<ULong>): Int {
-        if (value == ZERO) { return 0 }
+        if (value == ZERO) {
+            return 0
+        }
         val zeroWordsCount = value.takeWhile { it == 0UL }.count()
         if (zeroWordsCount == value.size) {
             return 0
@@ -188,12 +190,15 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
                 shiftWords -> {
                     (operand[it - shiftWords] shl shiftBits) and baseMask
                 }
+
                 in (shiftWords + 1) until (originalSize + shiftWords) -> {
                     ((operand[it - shiftWords] shl shiftBits) and baseMask) or (operand[it - shiftWords - 1] shr (basePowerOfTwo - shiftBits))
                 }
+
                 originalSize + wordsNeeded - 1 -> {
                     (operand[it - wordsNeeded] shr (basePowerOfTwo - shiftBits))
                 }
+
                 else -> {
                     throw RuntimeException("Invalid case $it")
                 }
@@ -223,11 +228,13 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
             when (it) {
                 in 0 until (operand.size - 1 - wordsToDiscard) -> {
                     ((operand[it + wordsToDiscard] shr shiftBits)) or
-                        ((operand[it + wordsToDiscard + 1] shl (basePowerOfTwo - shiftBits) and baseMask))
+                            ((operand[it + wordsToDiscard + 1] shl (basePowerOfTwo - shiftBits) and baseMask))
                 }
+
                 operand.size - 1 - wordsToDiscard -> {
                     (operand[it + wordsToDiscard] shr shiftBits)
                 }
+
                 else -> {
                     throw RuntimeException("Invalid case $it")
                 }
@@ -460,10 +467,12 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
                 val prepared = extendULongArray(second, firstLength - secondLength, 0U)
                 Pair(first, prepared)
             }
+
             firstLength < secondLength -> {
                 val prepared = extendULongArray(first, secondLength - firstLength, 0U)
                 Pair(prepared, second)
             }
+
             else -> Pair(first, second)
         }
 
@@ -529,10 +538,10 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
         val rb3 = (r3 shl (bShiftAmount * 3))
         val rb4 = (r4 shl (bShiftAmount * 4))
         val rb = rb0 +
-            rb1 +
-            rb2 +
-            rb3 +
-            rb4
+                rb1 +
+                rb2 +
+                rb3 +
+                rb4
 
         return rb.unsignedValue
     }
@@ -554,13 +563,17 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
 
     val SIGNED_POSITIVE_TWO = SignedULongArray(TWO, true)
 
-    private fun signedSubtract(first: SignedULongArray, second: SignedULongArray) = signedAdd(first, second.copy(sign = !second.sign))
+    private fun signedSubtract(first: SignedULongArray, second: SignedULongArray) =
+        signedAdd(first, second.copy(sign = !second.sign))
 
-    private fun signedMultiply(first: SignedULongArray, second: SignedULongArray) = SignedULongArray(first.unsignedValue * second.unsignedValue, !(first.sign xor second.sign))
+    private fun signedMultiply(first: SignedULongArray, second: SignedULongArray) =
+        SignedULongArray(first.unsignedValue * second.unsignedValue, !(first.sign xor second.sign))
 
-    private fun signedDivide(first: SignedULongArray, second: SignedULongArray) = SignedULongArray(first.unsignedValue / second.unsignedValue, !(first.sign xor second.sign))
+    private fun signedDivide(first: SignedULongArray, second: SignedULongArray) =
+        SignedULongArray(first.unsignedValue / second.unsignedValue, !(first.sign xor second.sign))
 
-    private fun signedRemainder(first: SignedULongArray, second: SignedULongArray) = SignedULongArray(first.unsignedValue % second.unsignedValue, !(first.sign xor second.sign))
+    private fun signedRemainder(first: SignedULongArray, second: SignedULongArray) =
+        SignedULongArray(first.unsignedValue % second.unsignedValue, !(first.sign xor second.sign))
 
     internal operator fun SignedULongArray.plus(other: SignedULongArray): SignedULongArray {
         return signedAdd(this, other)
@@ -859,23 +872,26 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
             val position = (i * 2) - skipWordCount
             if (requiredLength == 2) {
                 result[0] = operand[0].toULong() or ((operand[1].toULong() shl 32) and highMask)
-                result[i] = (operand[1].toULong() shr 31) or (operand[2].toULong() shl 1) or (operand[3].toULong() shl 33)
+                result[i] =
+                    (operand[1].toULong() shr 31) or (operand[2].toULong() shl 1) or (operand[3].toULong() shl 33)
             } else {
                 when (i) {
                     0 -> {
                         result[i] = operand[0].toULong() or ((operand[1].toULong() shl 32) and highMask)
                     }
+
                     in 1 until requiredLength - 1 -> {
                         result[i] =
                             (operand[position - 1].toULong() shr (32 - shiftAmount)) or
-                                (operand[position].toULong() shl shiftAmount) or
-                                ((operand[position + 1].toULong() shl (32 + shiftAmount)) and highMask)
+                                    (operand[position].toULong() shl shiftAmount) or
+                                    ((operand[position + 1].toULong() shl (32 + shiftAmount)) and highMask)
                     }
+
                     requiredLength - 1 -> {
                         if (position < operand.size) {
                             result[i] =
                                 (operand[position - 1].toULong() shr (32 - shiftAmount)) or
-                                    (operand[position].toULong() shl shiftAmount)
+                                        (operand[position].toULong() shl shiftAmount)
                         } else {
                             result[i] =
                                 (operand[position - 1].toULong() shr (32 - shiftAmount))
@@ -1040,7 +1056,9 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
     }
 
     override fun toString(operand: List<ULong>, base: Int): String {
-        if (operand == ZERO) { return "0" }
+        if (operand == ZERO) {
+            return "0"
+        }
         var copy = operand
         val baseArray = listOf(base.toULong())
         val stringBuilder = StringBuilder()
@@ -1237,6 +1255,14 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
         return convertFrom32BitRepresentation(this)
     }
 
+    override fun isEven(value: List<ULong>): Boolean {
+        return if (value.isEmpty()) {
+            true
+        } else {
+            value[0].and(1UL) != 1UL
+        }
+    }
+
     override fun fromULong(uLong: ULong): List<ULong> {
         return if ((uLong and BigInteger63Arithmetic.overflowMask) != 0UL) {
             listOf(uLong and BigInteger63Arithmetic.baseMask, 1U)
@@ -1275,9 +1301,11 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
         val converted = result.toList()
         return converted
     }
+
     override fun toUByteArray(operand: List<ULong>): UByteArray {
         return BigInteger63Arithmetic.toUByteArray(operand.toULongArray())
     }
+
     override fun toByteArray(operand: List<ULong>): ByteArray {
         return BigInteger63Arithmetic.toByteArray(operand.toULongArray())
     }
