@@ -229,6 +229,8 @@ class ModularBigInteger private constructor(
         var e = exponent
         return if (this.modulus == BigInteger.ONE) {
             creator.ZERO
+        } else if (e < 0) {
+            return inverse().pow(-e)
         } else {
             var residue = BigInteger.ONE
             var base = this.residue
