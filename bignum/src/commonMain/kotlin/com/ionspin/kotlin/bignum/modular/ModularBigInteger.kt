@@ -244,11 +244,11 @@ class ModularBigInteger private constructor(
     }
 
     override fun pow(exponent: Long): ModularBigInteger {
-        return ModularBigInteger(residue.pow(exponent) % modulus, modulus, creator)
+        return pow(BigInteger(exponent))
     }
 
     override fun pow(exponent: Int): ModularBigInteger {
-        return ModularBigInteger(residue.pow(exponent) % modulus, modulus, creator)
+        return pow(BigInteger(exponent))
     }
 
     override fun signum(): Int {
