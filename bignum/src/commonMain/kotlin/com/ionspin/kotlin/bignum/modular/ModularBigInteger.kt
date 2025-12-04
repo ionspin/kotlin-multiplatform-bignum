@@ -229,6 +229,8 @@ class ModularBigInteger private constructor(
         var e = exponent
         return if (this.modulus == BigInteger.ONE) {
             creator.ZERO
+        } else if (e < 0) {
+            return inverse().pow(-e)
         } else {
             var residue = BigInteger.ONE
             var base = this.residue
@@ -244,11 +246,11 @@ class ModularBigInteger private constructor(
     }
 
     override fun pow(exponent: Long): ModularBigInteger {
-        return ModularBigInteger(residue.pow(exponent) % modulus, modulus, creator)
+        return pow(BigInteger(exponent))
     }
 
     override fun pow(exponent: Int): ModularBigInteger {
-        return ModularBigInteger(residue.pow(exponent) % modulus, modulus, creator)
+        return pow(BigInteger(exponent))
     }
 
     override fun signum(): Int {
