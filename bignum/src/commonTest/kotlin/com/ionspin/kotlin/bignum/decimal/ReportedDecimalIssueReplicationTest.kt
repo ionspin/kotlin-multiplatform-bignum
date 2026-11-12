@@ -452,5 +452,44 @@ class ReportedDecimalIssueReplicationTest {
         }
     }
 
+    @Test
+    fun github284ZeroWithScaleKeepsScaleTest() {
+        run {
+            val result = BigDecimal.parseString("1").scale(0) + BigDecimal.parseString("2").scale(1)
+            assertEquals(1L, result.scale)
+            assertEquals("3".toBigDecimal(), result)
+        }
+
+        run {
+            val result = BigDecimal.parseString("0").scale(1) + BigDecimal.parseString("2").scale(1)
+            assertEquals(1L, result.scale)
+            assertEquals("2".toBigDecimal(), result)
+        }
+
+        run {
+            val result = BigDecimal.parseString("0").scale(0) + BigDecimal.parseString("2").scale(1)
+            assertEquals(1L, result.scale)
+            assertEquals("2".toBigDecimal(), result)
+        }
+
+        run {
+            val result = BigDecimal.parseString("2").scale(1) + BigDecimal.parseString("0").scale(0)
+            assertEquals(1L, result.scale)
+            assertEquals("2".toBigDecimal(), result)
+        }
+
+        run {
+            val result = BigDecimal.parseString("1").scale(0) - BigDecimal.parseString("2").scale(1)
+            assertEquals(1L, result.scale)
+            assertEquals("-1".toBigDecimal(), result)
+        }
+
+        run {
+            val result = BigDecimal.parseString("0").scale(0) - BigDecimal.parseString("2").scale(1)
+            assertEquals(1L, result.scale)
+            assertEquals("-2".toBigDecimal(), result)
+        }
+    }
+
 
 }

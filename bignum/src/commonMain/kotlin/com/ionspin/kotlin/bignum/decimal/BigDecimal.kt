@@ -85,7 +85,7 @@ class BigDecimal private constructor(
             } else {
                 significand = wrk.significand
                 exponent = wrk.exponent.times(_decimalMode.decimalPrecision + _decimalMode.scale)
-                precision = _decimalMode.decimalPrecision + _decimalMode.scale
+                precision = max(_decimalMode.decimalPrecision + _decimalMode.scale, 1L)
                 decimalMode = _decimalMode.copy(decimalPrecision = precision)
             }
         } else {
