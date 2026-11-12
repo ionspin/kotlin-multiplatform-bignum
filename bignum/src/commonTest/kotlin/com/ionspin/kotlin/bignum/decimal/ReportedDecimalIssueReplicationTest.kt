@@ -21,6 +21,7 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -509,6 +510,46 @@ class ReportedDecimalIssueReplicationTest {
             assertEquals("-5".toBigDecimal(), quotient)
             assertEquals("-15.5".toBigDecimal(), remainder)
         }
+    }
+
+    @Test
+    fun github267UnlimitedPrecisionWithScaleTest() {
+        run {
+            val mode = DecimalMode(roundingMode = RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, scale = 4)
+            assertEquals("123".toBigDecimal(), BigDecimal.fromInt(123, decimalMode = mode))
+            assertEquals("1234".toBigDecimal(), BigDecimal.fromInt(1234, decimalMode = mode))
+            assertEquals("12345".toBigDecimal(), BigDecimal.fromInt(12345, decimalMode = mode))
+            assertEquals("12345678".toBigDecimal(), BigDecimal.fromInt(12345678, decimalMode = mode))
+            assertEquals("12345678".toBigDecimal(), BigDecimal.fromLong(12345678L, decimalMode = mode))
+            assertEquals(4L, BigDecimal.fromInt(12345678, decimalMode = mode).scale)
+            assertEquals(
+                "12345678.1235".toBigDecimal(),
+                "12345678.1234567".toBigDecimal(decimalMode = mode)
+            )
+        }
+
+        run {
+            val mode = DecimalMode(roundingMode = RoundingMode.ROUND_HALF_CEILING, scale = 8)
+            val a = "200.5230146281866563757715403019550414480770532190116073".toBigDecimal()
+            val b = "1111.99009855".toBigDecimal()
+            val result = a.divide(b, mode)
+            assertEquals("0.18032806".toBigDecimal(), result)
+        }
+    }
+
+    @Test
+    fun github263ScientificNotationTest() {
+        val expected = BigInteger.parseString("1000000000000000000000000000000")
+        assertEquals(expected, BigInteger.parseString("1e+30"))
+        assertEquals(expected, BigInteger.parseString("1E30"))
+        assertEquals(expected, BigInteger.parseString("1.0e+30"))
+        assertEquals(expected.negate(), BigInteger.parseString("-1e+30"))
+        assertEquals(BigInteger.parseString("1200"), BigInteger.parseString("12e2"))
+        assertEquals(BigInteger.parseString("1500"), BigInteger.parseString("1.5e+3"))
+        assertFailsWith<NumberFormatException> {
+            BigInteger.parseString("5e-1")
+        }
+        assertEquals(BigInteger.parseString("30"), BigInteger.parseString("1e", 16))
     }
 
 

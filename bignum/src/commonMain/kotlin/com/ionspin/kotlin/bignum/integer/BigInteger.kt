@@ -89,7 +89,7 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
             if (base < 2 || base > 36) {
                 throw NumberFormatException("Unsupported base: $base. Supported base range is from 2 to 36")
             }
-            val decimal = string.contains('.')
+            val decimal = string.contains('.') || (base == 10 && string.contains('e', ignoreCase = true))
             if (decimal) {
                 val bigDecimal = BigDecimal.parseString(string)
                 val isActuallyDecimal = (bigDecimal - bigDecimal.floor()) > 0
