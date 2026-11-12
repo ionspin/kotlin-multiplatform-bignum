@@ -214,4 +214,15 @@ class BitwiseTest {
             assertEquals(BigInteger.parseString(expectedXor).getSign(), (a xor b).getSign())
         }
     }
+
+    @Test
+    fun setBitAtClearAndGrowTest() {
+        assertEquals(4.toBigInteger(), 4.toBigInteger().setBitAt(1, false))
+        assertEquals(4.toBigInteger(), 4.toBigInteger().setBitAt(200, false))
+        assertEquals(4.toBigInteger() + BigInteger.ONE.shl(200), 4.toBigInteger().setBitAt(200, true))
+        assertEquals((-4).toBigInteger() - BigInteger.ONE.shl(200), (-4).toBigInteger().setBitAt(200, true))
+        assertEquals(BigInteger.ONE.shl(100), BigInteger.ZERO.setBitAt(100, true))
+        assertEquals(BigInteger.ZERO, BigInteger.ZERO.setBitAt(100, false))
+        assertEquals(BigInteger.ZERO, BigInteger.ONE.setBitAt(0, false))
+    }
 }

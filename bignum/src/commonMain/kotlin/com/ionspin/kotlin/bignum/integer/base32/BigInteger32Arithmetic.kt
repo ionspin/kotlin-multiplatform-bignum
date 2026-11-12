@@ -1141,25 +1141,26 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
     }
 
     override fun setBitAt(operand: UIntArray, position: Long, bit: Boolean): UIntArray {
-        if (position / 63 > Int.MAX_VALUE) {
+        if (position / 32 > Int.MAX_VALUE) {
             throw RuntimeException("Invalid bit index, too large, cannot access word (Word position > Int.MAX_VALUE")
         }
 
-        val wordPosition = position / 63
-        if (wordPosition >= operand.size) {
-            throw IndexOutOfBoundsException("Invalid position, addressed word $wordPosition larger than number of words ${operand.size}")
+        val wordPosition = position / 32
+        if (wordPosition >= operand.size && !bit) {
+            return operand
         }
-        val bitPosition = position % 63
+        val bitPosition = position % 32
         val setMask = 1U shl bitPosition.toInt()
-        return UIntArray(operand.size) {
+        return UIntArray(kotlin.math.max(operand.size, wordPosition.toInt() + 1)) {
+            val word = if (it < operand.size) operand[it] else 0U
             if (it == wordPosition.toInt()) {
                 if (bit) {
-                    operand[it] or setMask
+                    word or setMask
                 } else {
-                    operand[it] xor setMask
+                    word and setMask.inv()
                 }
             } else {
-                operand[it]
+                word
             }
         }
     }

@@ -569,7 +569,7 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
     }
 
     override fun setBitAt(position: Long, bit: Boolean): BigInteger {
-        return BigInteger(arithmetic.setBitAt(magnitude, position, bit), sign)
+        return BigInteger(arithmetic.setBitAt(magnitude, position, bit), if (isZero()) Sign.POSITIVE else sign)
     }
 
     override fun bitLength(): Int {

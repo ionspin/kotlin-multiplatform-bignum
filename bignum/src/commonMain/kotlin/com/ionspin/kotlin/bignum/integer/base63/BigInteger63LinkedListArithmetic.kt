@@ -1201,20 +1201,21 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
         }
 
         val wordPosition = position / 63
-        if (wordPosition >= operand.size) {
-            throw IndexOutOfBoundsException("Invalid position, addressed word $wordPosition larger than number of words ${operand.size}")
+        if (wordPosition >= operand.size && !bit) {
+            return operand
         }
         val bitPosition = position % 63
         val setMask = 1UL shl bitPosition.toInt()
-        return List(operand.size) {
+        return List(kotlin.math.max(operand.size, wordPosition.toInt() + 1)) {
+            val word = if (it < operand.size) operand[it] else 0UL
             if (it == wordPosition.toInt()) {
                 if (bit) {
-                    operand[it] or setMask
+                    word or setMask
                 } else {
-                    operand[it] xor setMask
+                    word and setMask.inv()
                 }
             } else {
-                operand[it]
+                word
             }
         }
     }

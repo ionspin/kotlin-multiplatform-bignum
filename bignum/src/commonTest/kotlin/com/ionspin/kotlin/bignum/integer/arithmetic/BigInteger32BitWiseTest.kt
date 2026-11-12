@@ -81,4 +81,15 @@ class BigInteger32BitWiseTest {
                 .contentEquals(BigInteger32Arithmetic.shiftLeft(operand, 40))
         }
     }
+
+    @Test
+    fun setBitAtClearAndGrowTest() {
+        assertTrue { BigInteger32Arithmetic.setBitAt(uintArrayOf(4U), 1, false).contentEquals(uintArrayOf(4U)) }
+        assertTrue { BigInteger32Arithmetic.setBitAt(uintArrayOf(4U), 200, false).contentEquals(uintArrayOf(4U)) }
+        assertTrue {
+            BigInteger32Arithmetic.setBitAt(uintArrayOf(4U), 200, true)
+                .contentEquals(uintArrayOf(4U, 0U, 0U, 0U, 0U, 0U, 256U))
+        }
+        assertTrue { BigInteger32Arithmetic.setBitAt(uintArrayOf(0U, 1U), 32, false).contentEquals(uintArrayOf(0U, 0U)) }
+    }
 }

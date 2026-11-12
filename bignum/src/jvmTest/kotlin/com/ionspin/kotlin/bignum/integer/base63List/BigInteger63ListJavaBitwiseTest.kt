@@ -28,6 +28,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Ignore
 import org.junit.Test
+import kotlin.test.assertEquals
 
 /**
  * Created by Ugljesa Jovanovic
@@ -224,5 +225,12 @@ class BigInteger63ListJavaBitwiseTest() {
             .xor(1.toBigInteger().shr(operand.toJavaBigInteger().bitLength()) - 1.toBigInteger())
 
         assertTrue { result.toJavaBigInteger() == bigIntResult }
+    }
+
+    @Test
+    fun setBitAtClearAndGrowTest() {
+        assertEquals(listOf(4UL), BigInteger63LinkedListArithmetic.setBitAt(listOf(4UL), 1, false))
+        assertEquals(listOf(4UL), BigInteger63LinkedListArithmetic.setBitAt(listOf(4UL), 200, false))
+        assertEquals(listOf(4UL, 0UL, 0UL, 2048UL), BigInteger63LinkedListArithmetic.setBitAt(listOf(4UL), 200, true))
     }
 }
