@@ -117,7 +117,7 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
         if (y != 0U) {
             return n - 2
         }
-        return n - x.toInt()
+        return if (x == 0U) n else n - 1
     }
 
     override fun bitLength(value: UIntArray): Int {

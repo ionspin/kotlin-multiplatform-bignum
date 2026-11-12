@@ -135,7 +135,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
             return n - 2
         }
 
-        return n - x.toInt()
+        return if (x == 0UL) n else n - 1
     }
 
     fun numberOfTrailingZerosInAWord(value: ULong): Int {
@@ -172,7 +172,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         if (y != 0UL) {
             return n - 2
         }
-        return n - x.toInt()
+        return if (x == 0UL) n else n - 1
     }
 
     override fun bitLength(value: ULongArray): Int {

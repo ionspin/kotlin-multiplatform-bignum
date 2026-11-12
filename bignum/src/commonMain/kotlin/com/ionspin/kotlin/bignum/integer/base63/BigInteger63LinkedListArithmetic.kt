@@ -123,7 +123,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
         if (y != 0UL) {
             return n - 2
         }
-        return n - x.toInt()
+        return if (x == 0UL) n else n - 1
     }
 
     override fun bitLength(value: List<ULong>): Int {

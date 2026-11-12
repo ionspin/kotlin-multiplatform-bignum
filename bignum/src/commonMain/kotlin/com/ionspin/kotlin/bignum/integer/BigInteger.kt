@@ -955,20 +955,21 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
     }
 
     override fun floatValue(exactRequired: Boolean): Float {
-        if (exactRequired && this.abs() > Float.MAX_VALUE) {
-            throw ArithmeticException("Cannot convert to float and provide exact value")
+        if (exactRequired) {
+            val bitLength = arithmetic.bitLength(magnitude)
+            if (bitLength > 128 || bitLength - arithmetic.trailingZeroBits(magnitude) > 24) {
+                throw ArithmeticException("Cannot convert to float and provide exact value")
+            }
         }
         return this.toString().toFloat()
     }
 
     override fun doubleValue(exactRequired: Boolean): Double {
-        if (exactRequired && this.abs() > Double.MAX_VALUE) {
-            println(this.abs())
-            println(Double.MAX_VALUE)
-            if (this.abs() > Double.MAX_VALUE) {
-                println("huh")
+        if (exactRequired) {
+            val bitLength = arithmetic.bitLength(magnitude)
+            if (bitLength > 1024 || bitLength - arithmetic.trailingZeroBits(magnitude) > 53) {
+                throw ArithmeticException("Cannot convert to double and provide exact value")
             }
-            throw ArithmeticException("Cannot convert to double and provide exact value")
         }
         return this.toString().toDouble()
     }

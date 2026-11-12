@@ -382,11 +382,11 @@ class ModularBigInteger private constructor(
     }
 
     override fun floatValue(exactRequired: Boolean): Float {
-        return residue.floatValue()
+        return residue.floatValue(exactRequired)
     }
 
     override fun doubleValue(exactRequired: Boolean): Double {
-        return residue.doubleValue()
+        return residue.doubleValue(exactRequired)
     }
 
     override fun toUByteArray(): UByteArray {

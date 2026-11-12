@@ -74,4 +74,12 @@ class BigInteger63BitwiseTest {
         assertTrue { BigInteger63Arithmetic.not(ulongArrayOf(12UL)).contentEquals(ulongArrayOf(3UL)) }
         assertTrue { BigInteger63Arithmetic.compare(BigInteger63Arithmetic.not(ulongArrayOf(0UL)), ulongArrayOf(0UL)) == 0 }
     }
+
+    @Test
+    fun trailingZerosAtEveryPositionTest() {
+        for (position in 0..62) {
+            assertTrue { BigInteger63Arithmetic.numberOfTrailingZerosInAWord(1UL shl position) == position }
+            assertTrue { BigInteger63Arithmetic.trailingZeroBits(ulongArrayOf(0UL, 3UL shl position)) == 63 + position }
+        }
+    }
 }

@@ -99,4 +99,11 @@ class BigInteger32BitWiseTest {
         assertTrue { BigInteger32Arithmetic.not(uintArrayOf(12U)).contentEquals(uintArrayOf(3U)) }
         assertTrue { BigInteger32Arithmetic.not(uintArrayOf(0U)).contentEquals(BigInteger32Arithmetic.ZERO) }
     }
+
+    @Test
+    fun trailingZerosAtEveryPositionTest() {
+        for (position in 0..31) {
+            assertTrue { BigInteger32Arithmetic.numberOfTrailingZerosInAWord(1U shl position) == position }
+        }
+    }
 }
