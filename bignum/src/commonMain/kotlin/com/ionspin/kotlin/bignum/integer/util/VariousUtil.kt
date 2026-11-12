@@ -11,12 +11,12 @@ package com.ionspin.kotlin.bignum.integer.util
  */
 fun Array<UByte>.hexColumsPrint(chunk: Int = 16) {
     val printout = this.map { it.toString(16).padStart(2, '0') }.chunked(chunk)
-    printout.forEach { println(it.joinToString(separator = " ") { it.toUpperCase() }) }
+    printout.forEach { println(it.joinToString(separator = " ") { it.uppercase() }) }
 }
 
 fun UByteArray.hexColumsPrint(chunk: Int = 16) {
     val printout = this.map { it.toString(16).padStart(2, '0') }.chunked(chunk)
-    printout.forEach { println(it.joinToString(separator = " ") { it.toUpperCase() }) }
+    printout.forEach { println(it.joinToString(separator = " ") { it.uppercase() }) }
 }
 
 infix operator fun Char.times(count: Int): String {

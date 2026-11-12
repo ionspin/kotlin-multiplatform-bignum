@@ -21,6 +21,8 @@ import kotlin.random.Random
 import kotlin.test.assertTrue
 import org.junit.Ignore
 import org.junit.Test
+import kotlin.random.nextUInt
+import kotlin.test.assertEquals
 
 /**
  * Created by Ugljesa Jovanovic
@@ -30,7 +32,6 @@ import org.junit.Test
 
 class BigInteger32SqrtTest {
 
-    @Ignore("Need to improve basic divide algo before using it in sqrt")
     @Test
     fun testSpecificSqrt() {
         assertTrue {
@@ -81,5 +82,20 @@ class BigInteger32SqrtTest {
         val a = UIntArray(1) { 144U }
         val sqrt = BigInteger32Arithmetic.sqrtInt(a)
         assertTrue { sqrt[0] == 12U }
+    }
+
+    @Test
+    fun testRecursiveSqrtAgainstJava() {
+        val random = Random(1)
+        for (words in 1..24) {
+            repeat(200) {
+                val operand = UIntArray(words) { random.nextUInt() }
+                operand[words - 1] = operand[words - 1] or 1U
+                val (sqrt, remainder) = BigInteger32Arithmetic.sqrt(operand)
+                val javaResult = operand.toJavaBigInteger().sqrtAndRemainder()
+                assertEquals(javaResult[0], sqrt.toJavaBigInteger(), "words=$words")
+                assertEquals(javaResult[1], remainder.toJavaBigInteger(), "words=$words")
+            }
+        }
     }
 }

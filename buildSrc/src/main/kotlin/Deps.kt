@@ -16,10 +16,10 @@
  */
 
 object Versions {
-    val kotlinCoroutines = "1.9.0-RC"
-    val kotlin = "2.0.0"
-    val kotlinSerialization = "1.7.1"
-    val dokkaPlugin = "1.9.10"
+    val kotlinCoroutines = "1.10.2"
+    val kotlin = "2.4.21"
+    val kotlinSerialization = "1.11.0"
+    val dokkaPlugin = "2.2.0"
 }
 
 val projectVersion = "0.3.11-SNAPSHOT"
@@ -27,9 +27,7 @@ val projectVersion = "0.3.11-SNAPSHOT"
 object Deps {
 
     object Common {
-        val stdLib = "stdlib-common"
-        val test = "test-common"
-        val testAnnotation = "test-annotations-common"
+        val test = "test"
         val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinCoroutines}"
         val testCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.kotlinCoroutines}"
         val kotlinxSerialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.kotlinSerialization}"
@@ -88,4 +86,3 @@ object PluginsDeps {
     val spotless = "com.diffplug.spotless"
     val kotlinxSerialization = "plugin.serialization"
 }
-

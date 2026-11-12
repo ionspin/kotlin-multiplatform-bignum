@@ -886,8 +886,17 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
             val position = (i * 2) - skipWordCount
             if (requiredLength == 2) {
                 result[0] = operand[0].toULong() or ((operand[1].toULong() shl 32) and highMask)
-                result[i] =
-                    (operand[1].toULong() shr 31) or (operand[2].toULong() shl 1) or (operand[3].toULong() shl 33)
+                if (operand.size == 4) {
+                    result[1] =
+                        (operand[1].toULong() shr 31) or (operand[2].toULong() shl 1) or (operand[3].toULong() shl 33)
+                } else {
+                    if (operand.size > 2) {
+                        result[1] =
+                            (operand[1].toULong() shr 31) or (operand[2].toULong() shl 1)
+                    } else {
+                        result[1] = (operand[1].toULong() shr 31)
+                    }
+                }
             } else {
                 when (i) {
                     0 -> {
@@ -978,18 +987,21 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
         if (l == 0) {
             return basecaseSqrt(operand)
         }
-        val step = n / 4
-        val stepRemainder = n % 4
         val baseLPowerShift = 63 * l
-        val a1 = operand.subList(n - ((3 * step) + stepRemainder), n - ((2 * step) + stepRemainder))
-        val a0 = operand.subList(0, n - ((3 * step) + stepRemainder))
-        val a3a2 = operand.subList(n - ((2 * step) + stepRemainder), n)
+        val a1 = operand.subList(l, 2 * l)
+        val a0 = operand.subList(0, l)
+        val a3a2 = operand.subList(2 * l, n)
 
         val (sPrim, rPrim) = reqursiveSqrt(a3a2)
         val (q, u) = ((rPrim shl baseLPowerShift) + a1) divrem (sPrim shl 1)
         var s = (sPrim shl baseLPowerShift) + q
-        var r = (u shl baseLPowerShift) + a0 - (q * q)
-        return Pair(s, r)
+        var r = (u shl baseLPowerShift) + a0
+        val qSquared = q * q
+        if (r < qSquared) {
+            s = s - 1UL
+            r = r + (s shl 1) + 1UL
+        }
+        return Pair(s, r - qSquared)
     }
 
     internal fun basecaseSqrt(operand: List<ULong>): Pair<List<ULong>, List<ULong>> {
@@ -1063,7 +1075,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
 
     override fun parseForBase(number: String, base: Int): List<ULong> {
         var parsed = ZERO
-        number.toLowerCase().forEach { char ->
+        number.lowercase().forEach { char ->
             parsed = (parsed * base.toULong()) + (char.toDigit(base)).toULong()
         }
         return removeLeadingZeros(parsed)
