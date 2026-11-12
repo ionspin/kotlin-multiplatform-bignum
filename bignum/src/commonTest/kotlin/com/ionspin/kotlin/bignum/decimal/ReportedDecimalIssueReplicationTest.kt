@@ -491,5 +491,25 @@ class ReportedDecimalIssueReplicationTest {
         }
     }
 
+    @Test
+    fun github276DivideAndRemainderTest() {
+        run {
+            val full = BigDecimal.fromInt(360)
+            val x = BigDecimal.fromDouble(15.5) + full * 5
+            val (quotient, remainder) = x.divideAndRemainder(full)
+            assertEquals("5".toBigDecimal(), quotient)
+            assertEquals("15.5".toBigDecimal(), remainder)
+            assertEquals("15.5".toBigDecimal(), x % full)
+        }
+
+        run {
+            val full = BigDecimal.fromInt(360)
+            val x = BigDecimal.fromDouble(-15.5) - full * 5
+            val (quotient, remainder) = x.divideAndRemainder(full)
+            assertEquals("-5".toBigDecimal(), quotient)
+            assertEquals("-15.5".toBigDecimal(), remainder)
+        }
+    }
+
 
 }
