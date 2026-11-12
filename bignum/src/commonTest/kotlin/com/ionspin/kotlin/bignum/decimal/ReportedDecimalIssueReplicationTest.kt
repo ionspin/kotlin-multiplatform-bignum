@@ -30,7 +30,7 @@ import kotlin.test.assertTrue
  * on 15-Feb-2020
  */
 
-class ReportedIssueReplicationTest {
+class ReportedDecimalIssueReplicationTest {
 
     /**
      * Negative figures round gives incorrect result
@@ -424,4 +424,6 @@ class ReportedIssueReplicationTest {
             assertEquals("1234.57".toBigDecimal(), a)
         }
     }
+
+
 }

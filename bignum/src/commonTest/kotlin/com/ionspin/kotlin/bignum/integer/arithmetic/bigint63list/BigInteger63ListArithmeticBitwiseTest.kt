@@ -19,6 +19,7 @@ package com.ionspin.kotlin.bignum.integer.arithmetic.bigint63list
 
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63LinkedListArithmetic
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class BigInteger63ListArithmeticBitwiseTest {
@@ -35,5 +36,18 @@ class BigInteger63ListArithmeticBitwiseTest {
         assertTrue {
             BigInteger63LinkedListArithmetic.isEven(number2).not()
         }
+    }
+
+    @Test
+    fun testNegativeShift() {
+        val operand = listOf(0UL, 12UL, 13UL, 3UL, 2UL, 1UL)
+        assertEquals(
+            BigInteger63LinkedListArithmetic.shiftRight(operand, 70),
+            BigInteger63LinkedListArithmetic.shiftLeft(operand, -70)
+        )
+        assertEquals(
+            BigInteger63LinkedListArithmetic.shiftLeft(operand, 70),
+            BigInteger63LinkedListArithmetic.shiftRight(operand, -70)
+        )
     }
 }

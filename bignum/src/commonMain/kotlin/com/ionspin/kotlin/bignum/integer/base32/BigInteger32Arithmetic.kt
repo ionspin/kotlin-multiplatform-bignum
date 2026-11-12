@@ -178,6 +178,13 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
         if (operand.isEmpty() || places == 0) {
             return operand
         }
+        if (places < 0) {
+            return if (places == Int.MIN_VALUE) {
+                shiftRight(shiftRight(operand, Int.MAX_VALUE), 1)
+            } else {
+                shiftRight(operand, -places)
+            }
+        }
         val originalSize = operand.size
         val leadingZeros =
             numberOfLeadingZerosInAWord(operand[operand.size - 1])
@@ -218,6 +225,13 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
     override fun shiftRight(operand: UIntArray, places: Int): UIntArray {
         if (operand.isEmpty() || places == 0) {
             return operand
+        }
+        if (places < 0) {
+            return if (places == Int.MIN_VALUE) {
+                shiftLeft(shiftLeft(operand, Int.MAX_VALUE), 1)
+            } else {
+                shiftLeft(operand, -places)
+            }
         }
         val shiftBits = (places % basePowerOfTwo)
         val wordsToDiscard = places / basePowerOfTwo

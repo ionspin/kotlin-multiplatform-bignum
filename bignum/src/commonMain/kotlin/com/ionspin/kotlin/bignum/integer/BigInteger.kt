@@ -601,11 +601,22 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
         }
         return counter + powersOf10.size
     }
-
+    /**
+     * Arithmetic shift left. Shifts the number to the left, by required places of bits, sign is preserved.
+     * Negative places shift the number to the right by the same number of bits instead.
+     */
     override infix fun shl(places: Int): BigInteger {
-        return BigInteger(arithmetic.shiftLeft(this.magnitude, places), sign)
+        val result = BigInteger(arithmetic.shiftLeft(this.magnitude, places), sign)
+        if (result.isZero()) {
+            return ZERO
+        }
+        return result
     }
 
+    /**
+     * Arithmetic shift right. Shifts the number to the right, by required places of bits, sign is preserved.
+     * Negative places shift the number to the left by the same number of bits instead.
+     */
     override infix fun shr(places: Int): BigInteger {
         val result = BigInteger(arithmetic.shiftRight(this.magnitude, places), sign)
         if (result.magnitude == arithmetic.ZERO) {

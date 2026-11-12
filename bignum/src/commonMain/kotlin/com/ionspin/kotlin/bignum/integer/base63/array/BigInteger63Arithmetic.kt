@@ -265,6 +265,13 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         if (operand.isZero()) {
             return operand
         }
+        if (places < 0) {
+            return if (places == Int.MIN_VALUE) {
+                shiftRight(shiftRight(operand, Int.MAX_VALUE), 1)
+            } else {
+                shiftRight(operand, -places)
+            }
+        }
         if (places == 0) {
             return operand
         }
@@ -326,6 +333,13 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
     override fun shiftRight(operand: ULongArray, places: Int): ULongArray {
         if (operand.isEmpty() || places == 0) {
             return operand
+        }
+        if (places < 0) {
+            return if (places == Int.MIN_VALUE) {
+                shiftLeft(shiftLeft(operand, Int.MAX_VALUE), 1)
+            } else {
+                shiftLeft(operand, -places)
+            }
         }
         val leadingZeroWords =
             countLeadingZeroWords(
