@@ -425,5 +425,32 @@ class ReportedDecimalIssueReplicationTest {
         }
     }
 
+    @Test
+    fun github318DivisionRoundingCarryTest() {
+        val a = "10858.9200008919".toBigDecimal()
+        val b = "108589.2300018812".toBigDecimal()
+        val roundedDown = listOf("0.099999", "0.0999999", "0.09999997")
+        val roundedUp = listOf("0.1", "0.1", "0.09999998")
+        val roundedToNearest = listOf("0.1", "0.1", "0.09999997")
+        val expected = mapOf(
+            RoundingMode.FLOOR to roundedDown,
+            RoundingMode.TOWARDS_ZERO to roundedDown,
+            RoundingMode.CEILING to roundedUp,
+            RoundingMode.AWAY_FROM_ZERO to roundedUp,
+            RoundingMode.ROUND_HALF_AWAY_FROM_ZERO to roundedToNearest,
+            RoundingMode.ROUND_HALF_TOWARDS_ZERO to roundedToNearest,
+            RoundingMode.ROUND_HALF_CEILING to roundedToNearest,
+            RoundingMode.ROUND_HALF_FLOOR to roundedToNearest,
+            RoundingMode.ROUND_HALF_TO_EVEN to roundedToNearest,
+            RoundingMode.ROUND_HALF_TO_ODD to roundedToNearest
+        )
+        expected.forEach { (mode, results) ->
+            listOf(5L, 6L, 7L).forEachIndexed { index, precision ->
+                val result = a.divide(b, DecimalMode(precision, mode))
+                assertEquals(results[index].toBigDecimal(), result)
+            }
+        }
+    }
+
 
 }
