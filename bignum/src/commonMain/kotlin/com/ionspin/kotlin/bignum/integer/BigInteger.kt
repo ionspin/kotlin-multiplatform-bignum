@@ -645,30 +645,34 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
         val result = divideAndRemainder(other)
         return QuotientAndRemainder(result.first, result.second)
     }
-
+    /**
+     * Bitwise `and` of the magnitudes. The sign is  negative
+     * only when both operands are negative.
+     * See [andTwosComplement] for Java BigInteger behaviour.
+     */
     override infix fun and(other: BigInteger): BigInteger {
-        return BigInteger(arithmetic.and(this.magnitude, other.magnitude), sign)
+        val resultMagnitude = arithmetic.and(this.magnitude, other.magnitude)
+        return fromBitwiseResult(resultMagnitude, this.isNegative && other.isNegative)
     }
 
-    /** Returns a new BigInt with bits combining [this], [other] doing a bitwise `|`/`or` operation. Forces sign to positive. */
-    // TODO Investigate what is expected behavior when one of the operand is negative. Is it considered to be two's complement?
+    /**
+     * Bitwise `or` of the magnitudes. The sign is  negative
+     * when either of the operands are negative.
+     * See [andTwosComplement] for Java BigInteger behaviour.
+     */
     override infix fun or(other: BigInteger): BigInteger {
         val resultMagnitude = arithmetic.or(this.magnitude, other.magnitude)
-        val resultSign = when {
-            isResultZero(resultMagnitude) -> Sign.ZERO
-            else -> Sign.POSITIVE
-        }
-        return BigInteger(resultMagnitude, resultSign)
+        return fromBitwiseResult(resultMagnitude, this.isNegative || other.isNegative)
     }
 
+    /**
+     * Bitwise `xor` of the magnitudes. The sign is  negative
+     * only when one operands is negative.
+     * See [andTwosComplement] for Java BigInteger behaviour.
+     */
     override infix fun xor(other: BigInteger): BigInteger {
         val resultMagnitude = arithmetic.xor(this.magnitude, other.magnitude)
-        val resultSign = when {
-            this.isNegative xor other.isNegative -> Sign.NEGATIVE
-            isResultZero(resultMagnitude) -> Sign.ZERO
-            else -> Sign.POSITIVE
-        }
-        return BigInteger(resultMagnitude, resultSign)
+        return fromBitwiseResult(resultMagnitude, this.isNegative != other.isNegative)
     }
 
     /**
@@ -679,6 +683,71 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
      */
     override fun not(): BigInteger {
         return BigInteger(arithmetic.not(this.magnitude), sign)
+    }
+
+    private fun fromBitwiseResult(resultMagnitude: WordArray, isNegative: Boolean): BigInteger {
+        val resultSign = when {
+            isResultZero(resultMagnitude) -> Sign.ZERO
+            isNegative -> Sign.NEGATIVE
+            else -> Sign.POSITIVE
+        }
+        return BigInteger(resultMagnitude, resultSign)
+    }
+
+    /**
+     * and that behaves like Java BigInteger and
+     */
+    infix fun andTwosComplement(other: BigInteger): BigInteger {
+        val thisBits = this.twosComplementMagnitude()
+        val otherBits = other.twosComplementMagnitude()
+        return when {
+            this.isNegative && other.isNegative -> fromTwosComplementMagnitude(thisBits or otherBits)
+            this.isNegative -> andNotOfMagnitudes(otherBits, thisBits)
+            other.isNegative -> andNotOfMagnitudes(thisBits, otherBits)
+            else -> thisBits and otherBits
+        }
+    }
+
+    /**
+     * or that behaves like Java BigInteger or
+     */
+    infix fun orTwosComplement(other: BigInteger): BigInteger {
+        val thisBits = this.twosComplementMagnitude()
+        val otherBits = other.twosComplementMagnitude()
+        return when {
+            this.isNegative && other.isNegative -> fromTwosComplementMagnitude(thisBits and otherBits)
+            this.isNegative -> fromTwosComplementMagnitude(andNotOfMagnitudes(thisBits, otherBits))
+            other.isNegative -> fromTwosComplementMagnitude(andNotOfMagnitudes(otherBits, thisBits))
+            else -> thisBits or otherBits
+        }
+    }
+
+    /**
+     * xor that behaves like Java BigInteger xor
+     */
+    infix fun xorTwosComplement(other: BigInteger): BigInteger {
+        val combined = this.twosComplementMagnitude() xor other.twosComplementMagnitude()
+        return if (this.isNegative != other.isNegative) {
+            fromTwosComplementMagnitude(combined)
+        } else {
+            combined
+        }
+    }
+
+    private fun twosComplementMagnitude(): BigInteger {
+        return if (isNegative) {
+            abs() - 1
+        } else {
+            this
+        }
+    }
+
+    private fun fromTwosComplementMagnitude(bits: BigInteger): BigInteger {
+        return (bits + 1).negate()
+    }
+
+    private fun andNotOfMagnitudes(first: BigInteger, second: BigInteger): BigInteger {
+        return first xor (first and second)
     }
 
     override fun compareTo(other: Any): Int {

@@ -143,4 +143,75 @@ class BitwiseTest {
             assertEquals(i + 1, bitLength)
         }
     }
+
+    @Test
+    fun github290OrWithZeroTest() {
+        assertEquals(
+            BigInteger.parseString("11"),
+            BigInteger.parseString("0").or(BigInteger.parseString("11"))
+        )
+        assertEquals(
+            BigInteger.parseString("11"),
+            BigInteger.parseString("11").or(BigInteger.parseString("0"))
+        )
+        assertEquals(
+            BigInteger.ZERO,
+            BigInteger.parseString("0").or(BigInteger.parseString("0"))
+        )
+    }
+
+    @Test
+    fun twosComplementBitwiseTest() {
+        val cases = listOf(
+            listOf("-1", "11", "11", "-1", "-12"),
+            listOf("-12", "10", "0", "-2", "-2"),
+            listOf("12", "-10", "4", "-2", "-6"),
+            listOf("-12", "-10", "-12", "-10", "2"),
+            listOf("12", "10", "8", "14", "6"),
+            listOf("0", "-10", "0", "-10", "-10"),
+            listOf("-12", "0", "0", "-12", "-12"),
+            listOf("0", "0", "0", "0", "0"),
+            listOf("-1180591620717411303424", "18446744073709551621", "0", "-1162144876643701751803", "-1162144876643701751803"),
+            listOf("1180591620717411303427", "-18446744073709551616", "1180591620717411303424", "-18446744073709551613", "-1199038364791120855037"),
+            listOf("-1180591620717411303425", "-18446744073709551623", "-1199038364791120855047", "-1", "1199038364791120855046")
+        )
+        cases.forEach { (first, second, expectedAnd, expectedOr, expectedXor) ->
+            val a = BigInteger.parseString(first)
+            val b = BigInteger.parseString(second)
+            assertEquals(BigInteger.parseString(expectedAnd), a andTwosComplement b)
+            assertEquals(BigInteger.parseString(expectedOr), a orTwosComplement b)
+            assertEquals(BigInteger.parseString(expectedXor), a xorTwosComplement b)
+        }
+    }
+
+    @Test
+    fun bitwiseSignHandlingTest() {
+        val cases = listOf(
+            listOf("12", "10", "8", "14", "6"),
+            listOf("-12", "10", "8", "-14", "-6"),
+            listOf("12", "-10", "8", "-14", "-6"),
+            listOf("-12", "-10", "-8", "-14", "6"),
+            listOf("-5", "5", "5", "-5", "0"),
+            listOf("5", "-5", "5", "-5", "0"),
+            listOf("-5", "-5", "-5", "-5", "0"),
+            listOf("0", "-10", "0", "-10", "-10"),
+            listOf("-12", "0", "0", "-12", "-12"),
+            listOf("0", "0", "0", "0", "0"),
+            listOf("-4", "3", "0", "-7", "-7"),
+            listOf("-1180591620717411303425", "18446744073709551623", "1", "-1199038364791120855047", "-1199038364791120855046")
+        )
+        cases.forEach { (first, second, expectedAnd, expectedOr, expectedXor) ->
+            val a = BigInteger.parseString(first)
+            val b = BigInteger.parseString(second)
+            assertEquals(BigInteger.parseString(expectedAnd), a and b)
+            assertEquals(BigInteger.parseString(expectedOr), a or b)
+            assertEquals(BigInteger.parseString(expectedXor), a xor b)
+            assertEquals(a and b, b and a)
+            assertEquals(a or b, b or a)
+            assertEquals(a xor b, b xor a)
+            assertEquals(BigInteger.parseString(expectedAnd).getSign(), (a and b).getSign())
+            assertEquals(BigInteger.parseString(expectedOr).getSign(), (a or b).getSign())
+            assertEquals(BigInteger.parseString(expectedXor).getSign(), (a xor b).getSign())
+        }
+    }
 }
