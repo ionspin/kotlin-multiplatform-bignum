@@ -374,4 +374,11 @@ class ReportedIssueReplicationTest {
         assertContentEquals(a, c)
         assertContentEquals(a, d)
     }
+
+    @Test
+    fun github337RoundHalfToEvenDivisionTest() {
+        val result = 145690.toBigDecimal().multiply(11.toBigDecimal())
+            .divide(30.toBigDecimal(), DecimalMode(7L, RoundingMode.ROUND_HALF_TO_EVEN))
+        assertEquals("53419.67".toBigDecimal(), result)
+    }
 }
