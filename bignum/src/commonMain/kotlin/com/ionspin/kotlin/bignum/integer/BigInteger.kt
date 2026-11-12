@@ -537,6 +537,7 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
             throw ArithmeticException("Negative exponent not supported with BigInteger")
         }
         return when {
+            exponent == 0L -> ONE
             isZero() -> ZERO
             this == ONE -> ONE
             else -> {

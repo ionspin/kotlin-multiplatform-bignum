@@ -63,4 +63,15 @@ class ReportedIntegerIssueReplicationTests {
             }
         }
     }
+
+    @Test
+    fun zeroToThePowerOfZeroTest() {
+        assertEquals(BigInteger.ONE, BigInteger.ZERO.pow(0))
+        assertEquals(BigInteger.ONE, BigInteger.ZERO.pow(0L))
+        assertEquals(BigInteger.ONE, BigInteger.ZERO.pow(BigInteger.ZERO))
+        assertEquals(BigInteger.ZERO, BigInteger.ZERO.pow(1))
+        assertEquals(BigInteger.ZERO, BigInteger.ZERO.pow(5))
+        assertEquals(BigInteger.ONE, 7.toBigInteger().pow(0))
+        assertEquals(BigInteger.ONE, (-7).toBigInteger().pow(0))
+    }
 }
