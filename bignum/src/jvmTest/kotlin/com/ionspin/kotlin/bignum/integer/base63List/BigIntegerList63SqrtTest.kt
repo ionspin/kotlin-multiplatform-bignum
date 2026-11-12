@@ -20,9 +20,9 @@ package com.ionspin.kotlin.bignum.integer.base63List
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63LinkedListArithmetic
 import kotlin.random.Random
 import kotlin.random.nextULong
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import org.junit.Test
-import kotlin.test.assertEquals
 
 /**
  * Created by Ugljesa Jovanovic
