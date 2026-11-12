@@ -85,7 +85,7 @@ class BigDecimal private constructor(
             } else {
                 significand = wrk.significand
                 exponent = wrk.exponent.times(_decimalMode.decimalPrecision + _decimalMode.scale)
-                precision = _decimalMode.decimalPrecision + _decimalMode.scale
+                precision = max(_decimalMode.decimalPrecision + _decimalMode.scale, 1L)
                 decimalMode = _decimalMode.copy(decimalPrecision = precision)
             }
         } else {
@@ -445,6 +445,9 @@ class BigDecimal private constructor(
         ): BigDecimal {
             if (significand.isZero()) {
                 return BigDecimal(BigInteger.ZERO, exponent, decimalMode)
+            }
+            if (decimalMode.isPrecisionUnlimited) {
+                return BigDecimal(significand, exponent, decimalMode)
             }
             val significandDigits = significand.numberOfDecimalDigits()
             val desiredPrecision = if (decimalMode.usingScale) {

@@ -163,6 +163,13 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
         if (operand == ZERO) {
             return operand
         }
+        if (places < 0) {
+            return if (places == Int.MIN_VALUE) {
+                shiftRight(shiftRight(operand, Int.MAX_VALUE), 1)
+            } else {
+                shiftRight(operand, -places)
+            }
+        }
         if (operand.isEmpty() || places == 0) {
             return operand
         }
@@ -209,6 +216,13 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
     override fun shiftRight(operand: List<ULong>, places: Int): List<ULong> {
         if (operand.isEmpty() || places == 0) {
             return operand
+        }
+        if (places < 0) {
+            return if (places == Int.MIN_VALUE) {
+                shiftLeft(shiftLeft(operand, Int.MAX_VALUE), 1)
+            } else {
+                shiftLeft(operand, -places)
+            }
         }
         val shiftBits = (places % basePowerOfTwo)
         val wordsToDiscard = places / basePowerOfTwo

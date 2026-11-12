@@ -49,12 +49,14 @@ interface BigIntegerArithmetic {
     fun trailingZeroBits(value: ULongArray): Int
 
     /**
-     * Arithmetic shift left. Shifts the number to the left, by required places of bits, creating new words if necessary
+     * Arithmetic shift left. Shifts the number to the left, by required places of bits, creating new words if necessary.
+     * Negative places shift the number to the right by the same number of bits instead.
      */
     fun shiftLeft(operand: ULongArray, places: Int): ULongArray
 
     /**
      * Arithmetic shift right. Shifts the number to the right, by required places of bits, removing words that no longer relevant
+     * Negative places shift the number to the left by the same number of bits instead.
      */
     fun shiftRight(operand: ULongArray, places: Int): ULongArray
 

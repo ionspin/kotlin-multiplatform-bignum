@@ -68,4 +68,17 @@ class BigInteger32BitWiseTest {
             BigInteger32Arithmetic.isEven(number2).not()
         }
     }
+
+    @Test
+    fun testNegativeShift() {
+        val operand = uintArrayOf(0U, 12U, 13U, 2U)
+        assertTrue {
+            BigInteger32Arithmetic.shiftLeft(operand, -40)
+                .contentEquals(BigInteger32Arithmetic.shiftRight(operand, 40))
+        }
+        assertTrue {
+            BigInteger32Arithmetic.shiftRight(operand, -40)
+                .contentEquals(BigInteger32Arithmetic.shiftLeft(operand, 40))
+        }
+    }
 }

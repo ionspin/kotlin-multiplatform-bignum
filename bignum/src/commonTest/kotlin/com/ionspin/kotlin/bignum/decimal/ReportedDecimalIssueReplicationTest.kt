@@ -21,6 +21,7 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -30,7 +31,7 @@ import kotlin.test.assertTrue
  * on 15-Feb-2020
  */
 
-class ReportedIssueReplicationTest {
+class ReportedDecimalIssueReplicationTest {
 
     /**
      * Negative figures round gives incorrect result
@@ -373,5 +374,181 @@ class ReportedIssueReplicationTest {
         assertContentEquals(a, b)
         assertContentEquals(a, c)
         assertContentEquals(a, d)
+    }
+
+    @Test
+    fun github337RoundHalfToEvenDivisionTest() {
+        val result = 145690.toBigDecimal().multiply(11.toBigDecimal())
+            .divide(30.toBigDecimal(), DecimalMode(7L, RoundingMode.ROUND_HALF_TO_EVEN))
+        assertEquals("53419.67".toBigDecimal(), result)
+    }
+
+    @Test
+    fun github331DivisionWithScaleAndUnlimitedPrecisionTest() {
+        run {
+            val result = "460.0".toBigDecimal().divide(
+                other = 40.toBigDecimal(),
+                decimalMode = DecimalMode(scale = 2, roundingMode = RoundingMode.FLOOR)
+            )
+            assertEquals("11.5".toBigDecimal(), result)
+            assertEquals(2L, result.scale)
+        }
+
+        run {
+            val result = "460.0".toBigDecimal().divide(
+                other = 40.toBigDecimal(),
+                decimalMode = DecimalMode(decimalPrecision = 6, scale = 2, roundingMode = RoundingMode.FLOOR)
+            )
+            assertEquals("11.5".toBigDecimal(), result)
+        }
+    }
+
+    @Test
+    fun github330CreationWithScaleAndUnlimitedPrecisionTest() {
+        val decimalMode = DecimalMode(scale = 2, roundingMode = RoundingMode.ROUND_HALF_TO_EVEN)
+
+        run {
+            val a = 1234.0.toBigDecimal(decimalMode = decimalMode)
+            val b = "1234.0".toBigDecimal(decimalMode = decimalMode)
+            assertEquals("1234".toBigDecimal(), a)
+            assertEquals(b, a)
+            assertEquals(2L, a.scale)
+        }
+
+        run {
+            val a = 1234.toBigDecimal(decimalMode = decimalMode)
+            assertEquals("1234".toBigDecimal(), a)
+        }
+
+        run {
+            val a = 1234.567.toBigDecimal(decimalMode = decimalMode)
+            assertEquals("1234.57".toBigDecimal(), a)
+        }
+    }
+
+    @Test
+    fun github318DivisionRoundingCarryTest() {
+        val a = "10858.9200008919".toBigDecimal()
+        val b = "108589.2300018812".toBigDecimal()
+        val roundedDown = listOf("0.099999", "0.0999999", "0.09999997")
+        val roundedUp = listOf("0.1", "0.1", "0.09999998")
+        val roundedToNearest = listOf("0.1", "0.1", "0.09999997")
+        val expected = mapOf(
+            RoundingMode.FLOOR to roundedDown,
+            RoundingMode.TOWARDS_ZERO to roundedDown,
+            RoundingMode.CEILING to roundedUp,
+            RoundingMode.AWAY_FROM_ZERO to roundedUp,
+            RoundingMode.ROUND_HALF_AWAY_FROM_ZERO to roundedToNearest,
+            RoundingMode.ROUND_HALF_TOWARDS_ZERO to roundedToNearest,
+            RoundingMode.ROUND_HALF_CEILING to roundedToNearest,
+            RoundingMode.ROUND_HALF_FLOOR to roundedToNearest,
+            RoundingMode.ROUND_HALF_TO_EVEN to roundedToNearest,
+            RoundingMode.ROUND_HALF_TO_ODD to roundedToNearest
+        )
+        expected.forEach { (mode, results) ->
+            listOf(5L, 6L, 7L).forEachIndexed { index, precision ->
+                val result = a.divide(b, DecimalMode(precision, mode))
+                assertEquals(results[index].toBigDecimal(), result)
+            }
+        }
+    }
+
+    @Test
+    fun github284ZeroWithScaleKeepsScaleTest() {
+        run {
+            val result = BigDecimal.parseString("1").scale(0) + BigDecimal.parseString("2").scale(1)
+            assertEquals(1L, result.scale)
+            assertEquals("3".toBigDecimal(), result)
+        }
+
+        run {
+            val result = BigDecimal.parseString("0").scale(1) + BigDecimal.parseString("2").scale(1)
+            assertEquals(1L, result.scale)
+            assertEquals("2".toBigDecimal(), result)
+        }
+
+        run {
+            val result = BigDecimal.parseString("0").scale(0) + BigDecimal.parseString("2").scale(1)
+            assertEquals(1L, result.scale)
+            assertEquals("2".toBigDecimal(), result)
+        }
+
+        run {
+            val result = BigDecimal.parseString("2").scale(1) + BigDecimal.parseString("0").scale(0)
+            assertEquals(1L, result.scale)
+            assertEquals("2".toBigDecimal(), result)
+        }
+
+        run {
+            val result = BigDecimal.parseString("1").scale(0) - BigDecimal.parseString("2").scale(1)
+            assertEquals(1L, result.scale)
+            assertEquals("-1".toBigDecimal(), result)
+        }
+
+        run {
+            val result = BigDecimal.parseString("0").scale(0) - BigDecimal.parseString("2").scale(1)
+            assertEquals(1L, result.scale)
+            assertEquals("-2".toBigDecimal(), result)
+        }
+    }
+
+    @Test
+    fun github276DivideAndRemainderTest() {
+        run {
+            val full = BigDecimal.fromInt(360)
+            val x = BigDecimal.fromDouble(15.5) + full * 5
+            val (quotient, remainder) = x.divideAndRemainder(full)
+            assertEquals("5".toBigDecimal(), quotient)
+            assertEquals("15.5".toBigDecimal(), remainder)
+            assertEquals("15.5".toBigDecimal(), x % full)
+        }
+
+        run {
+            val full = BigDecimal.fromInt(360)
+            val x = BigDecimal.fromDouble(-15.5) - full * 5
+            val (quotient, remainder) = x.divideAndRemainder(full)
+            assertEquals("-5".toBigDecimal(), quotient)
+            assertEquals("-15.5".toBigDecimal(), remainder)
+        }
+    }
+
+    @Test
+    fun github267UnlimitedPrecisionWithScaleTest() {
+        run {
+            val mode = DecimalMode(roundingMode = RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, scale = 4)
+            assertEquals("123".toBigDecimal(), BigDecimal.fromInt(123, decimalMode = mode))
+            assertEquals("1234".toBigDecimal(), BigDecimal.fromInt(1234, decimalMode = mode))
+            assertEquals("12345".toBigDecimal(), BigDecimal.fromInt(12345, decimalMode = mode))
+            assertEquals("12345678".toBigDecimal(), BigDecimal.fromInt(12345678, decimalMode = mode))
+            assertEquals("12345678".toBigDecimal(), BigDecimal.fromLong(12345678L, decimalMode = mode))
+            assertEquals(4L, BigDecimal.fromInt(12345678, decimalMode = mode).scale)
+            assertEquals(
+                "12345678.1235".toBigDecimal(),
+                "12345678.1234567".toBigDecimal(decimalMode = mode)
+            )
+        }
+
+        run {
+            val mode = DecimalMode(roundingMode = RoundingMode.ROUND_HALF_CEILING, scale = 8)
+            val a = "200.5230146281866563757715403019550414480770532190116073".toBigDecimal()
+            val b = "1111.99009855".toBigDecimal()
+            val result = a.divide(b, mode)
+            assertEquals("0.18032806".toBigDecimal(), result)
+        }
+    }
+
+    @Test
+    fun github263ScientificNotationTest() {
+        val expected = BigInteger.parseString("1000000000000000000000000000000")
+        assertEquals(expected, BigInteger.parseString("1e+30"))
+        assertEquals(expected, BigInteger.parseString("1E30"))
+        assertEquals(expected, BigInteger.parseString("1.0e+30"))
+        assertEquals(expected.negate(), BigInteger.parseString("-1e+30"))
+        assertEquals(BigInteger.parseString("1200"), BigInteger.parseString("12e2"))
+        assertEquals(BigInteger.parseString("1500"), BigInteger.parseString("1.5e+3"))
+        assertFailsWith<NumberFormatException> {
+            BigInteger.parseString("5e-1")
+        }
+        assertEquals(BigInteger.parseString("30"), BigInteger.parseString("1e", 16))
     }
 }

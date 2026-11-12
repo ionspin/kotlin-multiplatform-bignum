@@ -52,4 +52,17 @@ class BigInteger63BitwiseTest {
             BigInteger63Arithmetic.isEven(number2).not()
         }
     }
+
+    @Test
+    fun testNegativeShift() {
+        val operand = ulongArrayOf(0U, 12U, 13U, 3U, 2U, 1U)
+        assertTrue {
+            BigInteger63Arithmetic.shiftLeft(operand, -70)
+                .contentEquals(BigInteger63Arithmetic.shiftRight(operand, 70))
+        }
+        assertTrue {
+            BigInteger63Arithmetic.shiftRight(operand, -70)
+                .contentEquals(BigInteger63Arithmetic.shiftLeft(operand, 70))
+        }
+    }
 }
