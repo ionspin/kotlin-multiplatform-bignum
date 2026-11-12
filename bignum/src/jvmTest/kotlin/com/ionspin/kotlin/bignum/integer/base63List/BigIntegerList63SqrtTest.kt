@@ -20,6 +20,7 @@ package com.ionspin.kotlin.bignum.integer.base63List
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63LinkedListArithmetic
 import kotlin.random.Random
 import kotlin.random.nextULong
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import org.junit.Test
 
@@ -81,5 +82,22 @@ class BigIntegerList63SqrtTest() {
         val a = List<ULong>(1) { 144U }
         val sqrt = BigInteger63LinkedListArithmetic.sqrtInt(a)
         assertTrue { sqrt[0] == 12UL }
+    }
+
+    @Test
+    fun testRecursiveSqrtAgainstJava() {
+        val random = Random(1)
+        for (words in 1..24) {
+            repeat(200) {
+                val operand = List(words) { index ->
+                    val word = random.nextULong() shr 1
+                    if (index == words - 1) word or 1UL else word
+                }
+                val (sqrt, remainder) = BigInteger63LinkedListArithmetic.sqrt(operand)
+                val javaResult = operand.toJavaBigInteger().sqrtAndRemainder()
+                assertEquals(javaResult[0], sqrt.toJavaBigInteger(), "words=$words")
+                assertEquals(javaResult[1], remainder.toJavaBigInteger(), "words=$words")
+            }
+        }
     }
 }

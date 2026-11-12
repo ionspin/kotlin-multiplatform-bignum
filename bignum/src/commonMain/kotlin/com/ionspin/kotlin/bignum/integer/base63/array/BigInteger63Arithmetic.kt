@@ -1718,20 +1718,24 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
                 operand
             )
         }
-        val step = n / 4
-        val stepRemainder = n % 4
+
         val baseLPowerShift = 63 * l
-        val a1 = operand.copyOfRange(n - ((3 * step) + stepRemainder), n - ((2 * step) + stepRemainder))
-        val a0 = operand.copyOfRange(0, n - ((3 * step) + stepRemainder))
-        val a3a2 = operand.copyOfRange(n - ((2 * step) + stepRemainder), n)
+        val a1 = operand.copyOfRange(l, 2 * l)
+        val a0 = operand.copyOfRange(0, l)
+        val a3a2 = operand.copyOfRange(2 * l, n)
 
         val (sPrim, rPrim) = reqursiveSqrt(
             a3a2
         )
         val (q, u) = ((rPrim shl baseLPowerShift) + a1) divrem (sPrim shl 1)
         var s = (sPrim shl baseLPowerShift) + q
-        var r = (u shl baseLPowerShift) + a0 - (q * q)
-        return Pair(s, r)
+        var r = (u shl baseLPowerShift) + a0
+        val qSquared = q * q
+        if (r < qSquared) {
+            s = s - 1U
+            r = r + (s shl 1) + 1U
+        }
+        return Pair(s, r - qSquared)
     }
 
     internal fun basecaseSqrt(operand: ULongArray): Pair<ULongArray, ULongArray> {
@@ -1960,7 +1964,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
 
     override fun parseForBase(number: String, base: Int): ULongArray {
         var parsed = ZERO
-        number.toLowerCase().forEach { char ->
+        number.lowercase().forEach { char ->
             parsed = (parsed * base.toULong()) + (char.toDigit(base)).toULong()
         }
         return removeLeadingZeros(

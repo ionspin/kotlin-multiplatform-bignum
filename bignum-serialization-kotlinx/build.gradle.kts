@@ -10,8 +10,10 @@ plugins {
 //    id(PluginsDeps.spotless) version PluginsDeps.Versions.spotlessVersion
 }
 
-val sonatypeStaging = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-val sonatypeSnapshots = "https://oss.sonatype.org/content/repositories/snapshots/"
+val sonatypeStaging = "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/"
+val sonatypeSnapshots = "https://central.sonatype.com/repository/maven-snapshots/"
+// Snapshots are published to this directory first and uploaded from it by uploadStagedSnapshots
+val snapshotStagingDirectory = layout.buildDirectory.dir("serialization-snapshot-staging").get().asFile
 
 val sonatypePassword: String? by project
 
@@ -58,22 +60,14 @@ signing {
 kotlin {
     jvm()
     js {
-        compilations {
-            this.forEach {
-                it.compileTaskProvider.configure {
-                    kotlinOptions.sourceMap = true
-                    kotlinOptions.metaInfo = true
-                    if (it.name == "main") {
-                        kotlinOptions.main = "call"
-                    }
-                }
-            }
-            nodejs()
-            browser() {
-                testTask {
-                    useKarma {
-                        useChromeHeadless()
-                    }
+        compilerOptions {
+            sourceMap.set(true)
+        }
+        nodejs()
+        browser {
+            testTask {
+                useKarma {
+                    useChromeHeadless()
                 }
             }
         }
@@ -105,13 +99,11 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(kotlin(Deps.Common.stdLib))
             implementation(project(Deps.Project.bignum))
             implementation(Deps.Common.kotlinxSerialization)
         }
         commonTest.dependencies {
             implementation(kotlin(Deps.Common.test))
-            implementation(kotlin(Deps.Common.testAnnotation))
             implementation(Deps.Common.coroutines)
         }
 
@@ -139,16 +131,9 @@ tasks {
     val hostOs = getHostOsName()
 
     create<Jar>("javadocJar") {
-        dependsOn(dokkaHtml)
+        dependsOn("dokkaGeneratePublicationHtml")
         archiveClassifier.set("javadoc")
-        from(dokkaHtml.get().outputDirectory)
-    }
-
-    dokkaHtml {
-        println("Dokka !")
-        dokkaSourceSets {
-
-        }
+        from(layout.buildDirectory.dir("dokka/html"))
     }
 
     val jvmTest by getting(Test::class) {
@@ -337,5 +322,22 @@ publishing {
                 password = sonatypePassword ?: sonatypePasswordEnv ?: ""
             }
         }
+    }
+}
+
+tasks.register("uploadStagedSnapshots") {
+    group = "publishing"
+    description = "Uploads the snapshots published to the snapshotStaging repository, one request at a time"
+    mustRunAfter(tasks.withType<PublishToMavenRepository>())
+    doLast {
+        PacedSnapshotUploader.upload(
+            stagingDirectory = snapshotStagingDirectory,
+            repositoryUrl = sonatypeSnapshots,
+            username = sonatypeUsername ?: sonatypeUsernameEnv ?: "",
+            password = sonatypePassword ?: sonatypePasswordEnv ?: "",
+            intervalMillis = (findProperty("snapshotUploadIntervalMillis") as String?)?.toLong() ?: 1000,
+            log = { logger.lifecycle(it) }
+        )
+        delete(snapshotStagingDirectory)
     }
 }

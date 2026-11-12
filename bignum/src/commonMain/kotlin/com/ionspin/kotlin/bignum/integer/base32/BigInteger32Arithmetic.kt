@@ -980,18 +980,22 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
         if (l == 0) {
             return basecaseSqrt(operand)
         }
-        val step = n / 4
-        val stepRemainder = n % 4
+
         val baseLPowerShift = 32 * l
-        val a1 = operand.copyOfRange(n - ((3 * step) + stepRemainder), n - ((2 * step) + stepRemainder))
-        val a0 = operand.copyOfRange(0, n - ((3 * step) + stepRemainder))
-        val a3a2 = operand.copyOfRange(n - ((2 * step) + stepRemainder), n)
+        val a1 = operand.copyOfRange(l, 2 * l)
+        val a0 = operand.copyOfRange(0, l)
+        val a3a2 = operand.copyOfRange(2 * l, n)
 
         val (sPrim, rPrim) = reqursiveSqrt(a3a2)
-        val (q, u) = basicDivide2(((rPrim shl baseLPowerShift) + a1), (sPrim shl 1))
+        val (q, u) = divide(((rPrim shl baseLPowerShift) + a1), (sPrim shl 1))
         var s = (sPrim shl baseLPowerShift) + q
-        var r = (u shl baseLPowerShift) + a0 - (q * q)
-        return Pair(s, r)
+        var r = (u shl baseLPowerShift) + a0
+        val qSquared = q * q
+        if (r < qSquared) {
+            s = s - 1U
+            r = r + (s shl 1) + 1U
+        }
+        return Pair(s, r - qSquared)
     }
 
     internal fun basecaseSqrt(operand: UIntArray): Pair<UIntArray, UIntArray> {
@@ -1006,7 +1010,7 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
         var tmp: UIntArray
         do {
             s = u
-            tmp = s + (basicDivide2(operand, s).first)
+            tmp = s + (divide(operand, s).first)
             u = tmp shr 1
         } while (u < s)
         return s

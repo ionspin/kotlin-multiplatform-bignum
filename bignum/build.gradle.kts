@@ -43,6 +43,9 @@ val hostOs = getHostOsName()
 val sonatypePasswordEnv: String? = System.getenv()["SONATYPE_PASSWORD"]
 val sonatypeUsernameEnv: String? = System.getenv()["SONATYPE_USERNAME"]
 
+// Snapshots are published to this directory first and uploaded from it by uploadStagedSnapshots
+val snapshotStagingDirectory = layout.buildDirectory.dir("snapshot-staging").get().asFile
+
 repositories {
     mavenCentral()
     google()
@@ -63,22 +66,14 @@ fun getHostOsName(): HostOs {
 kotlin {
     jvm()
     js {
-        compilations {
-            this.forEach {
-                it.compileTaskProvider.configure {
-                    kotlinOptions.sourceMap = true
-                    kotlinOptions.metaInfo = true
-                    if (it.name == "main") {
-                        kotlinOptions.main = "call"
-                    }
-                }
-            }
-            nodejs()
-            browser() {
-                testTask {
-                    useKarma {
-                        useChromeHeadless()
-                    }
+        compilerOptions {
+            sourceMap.set(true)
+        }
+        nodejs()
+        browser {
+            testTask {
+                useKarma {
+                    useChromeHeadless()
                 }
             }
         }
@@ -110,13 +105,11 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(kotlin(Deps.Common.stdLib))
         }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin(Deps.Common.test))
                 implementation(Deps.Common.testCoroutines)
-                implementation(kotlin(Deps.Common.testAnnotation))
                 implementation(Deps.Common.coroutines)
             }
         }
@@ -143,7 +136,6 @@ kotlin {
         }
 
         all {
-            languageSettings.enableLanguageFeature("InlineClasses")
             languageSettings.optIn("expect-actual-classes")
             languageSettings.optIn("kotlin.ExperimentalUnsignedTypes")
             languageSettings.optIn("kotlin.ExperimentalStdlibApi")
@@ -159,14 +151,9 @@ tasks {
     val hostOsName = getHostOsName()
 
     create<Jar>("javadocJar") {
-        dependsOn(dokkaHtml)
+        dependsOn("dokkaGeneratePublicationHtml")
         archiveClassifier.set("javadoc")
-        from(dokkaHtml.get().outputDirectory)
-    }
-
-    dokkaHtml {
-        dokkaSourceSets {
-        }
+        from(layout.buildDirectory.dir("dokka/html"))
     }
 
     val jvmTest by getting(Test::class) {
@@ -377,5 +364,22 @@ publishing {
                 password = sonatypePassword ?: sonatypePasswordEnv ?: ""
             }
         }
+    }
+}
+
+tasks.register("uploadStagedSnapshots") {
+    group = "publishing"
+    description = "Uploads the snapshots published to the snapshotStaging repository, one request at a time"
+    mustRunAfter(tasks.withType<PublishToMavenRepository>())
+    doLast {
+        PacedSnapshotUploader.upload(
+            stagingDirectory = snapshotStagingDirectory,
+            repositoryUrl = sonatypeSnapshots,
+            username = sonatypeUsername ?: sonatypeUsernameEnv ?: "",
+            password = sonatypePassword ?: sonatypePasswordEnv ?: "",
+            intervalMillis = (findProperty("snapshotUploadIntervalMillis") as String?)?.toLong() ?: 1000,
+            log = { logger.lifecycle(it) }
+        )
+        delete(snapshotStagingDirectory)
     }
 }
