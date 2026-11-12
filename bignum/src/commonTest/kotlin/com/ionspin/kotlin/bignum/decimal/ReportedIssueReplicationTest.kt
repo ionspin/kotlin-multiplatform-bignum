@@ -381,4 +381,24 @@ class ReportedIssueReplicationTest {
             .divide(30.toBigDecimal(), DecimalMode(7L, RoundingMode.ROUND_HALF_TO_EVEN))
         assertEquals("53419.67".toBigDecimal(), result)
     }
+
+    @Test
+    fun github331DivisionWithScaleAndUnlimitedPrecisionTest() {
+        run {
+            val result = "460.0".toBigDecimal().divide(
+                other = 40.toBigDecimal(),
+                decimalMode = DecimalMode(scale = 2, roundingMode = RoundingMode.FLOOR)
+            )
+            assertEquals("11.5".toBigDecimal(), result)
+            assertEquals(2L, result.scale)
+        }
+
+        run {
+            val result = "460.0".toBigDecimal().divide(
+                other = 40.toBigDecimal(),
+                decimalMode = DecimalMode(decimalPrecision = 6, scale = 2, roundingMode = RoundingMode.FLOOR)
+            )
+            assertEquals("11.5".toBigDecimal(), result)
+        }
+    }
 }
