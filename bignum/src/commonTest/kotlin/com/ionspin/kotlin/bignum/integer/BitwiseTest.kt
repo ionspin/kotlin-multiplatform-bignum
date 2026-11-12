@@ -225,4 +225,17 @@ class BitwiseTest {
         assertEquals(BigInteger.ZERO, BigInteger.ZERO.setBitAt(100, false))
         assertEquals(BigInteger.ZERO, BigInteger.ONE.setBitAt(0, false))
     }
+
+    @Test
+    fun notMultiWordAndZeroTest() {
+        assertEquals(BigInteger.ZERO, BigInteger.ZERO.not())
+        assertEquals(3.toBigInteger(), 12.toBigInteger().not())
+        assertEquals(BigInteger.ZERO, (BigInteger.ONE.shl(200) - 1).not())
+        for (bits in listOf(62, 63, 64, 65, 126, 127, 130, 200, 400)) {
+            val operand = BigInteger.ONE.shl(bits) + 12345
+            val expected = operand xor (BigInteger.ONE.shl(operand.bitLength()) - 1)
+            assertEquals(expected, operand.not(), "bits=$bits")
+            assertEquals(operand, operand.not() xor (BigInteger.ONE.shl(operand.bitLength()) - 1), "bits=$bits")
+        }
+    }
 }

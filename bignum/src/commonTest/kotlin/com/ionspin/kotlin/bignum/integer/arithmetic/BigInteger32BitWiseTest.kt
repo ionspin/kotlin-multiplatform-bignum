@@ -92,4 +92,11 @@ class BigInteger32BitWiseTest {
         }
         assertTrue { BigInteger32Arithmetic.setBitAt(uintArrayOf(0U, 1U), 32, false).contentEquals(uintArrayOf(0U, 0U)) }
     }
+
+    @Test
+    fun notMultiWordAndZeroTest() {
+        assertTrue { BigInteger32Arithmetic.not(uintArrayOf(5U, 1U)).contentEquals(uintArrayOf(0xFFFFFFFAU)) }
+        assertTrue { BigInteger32Arithmetic.not(uintArrayOf(12U)).contentEquals(uintArrayOf(3U)) }
+        assertTrue { BigInteger32Arithmetic.not(uintArrayOf(0U)).contentEquals(BigInteger32Arithmetic.ZERO) }
+    }
 }

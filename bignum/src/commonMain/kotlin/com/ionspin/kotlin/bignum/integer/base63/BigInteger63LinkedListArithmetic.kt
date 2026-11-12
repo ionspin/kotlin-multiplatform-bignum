@@ -1159,16 +1159,16 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
 
     override fun not(operand: List<ULong>): List<ULong> {
         val leadingZeros = numberOfLeadingZerosInAWord(operand[operand.size - 1])
-        val cleanupMask = (((1UL shl leadingZeros + 1) - 1U) shl (basePowerOfTwo - leadingZeros)).inv()
+        val cleanupMask = baseMask shr leadingZeros
         val inverted = List<ULong>(operand.size) {
-            if (it < operand.size - 2) {
+            if (it < operand.size - 1) {
                 operand[it].inv() and baseMask
             } else {
                 operand[it].inv() and cleanupMask
             }
         }
 
-        return inverted
+        return removeLeadingZeros(inverted)
     }
 
     // -------------- Bitwise ---------------- //

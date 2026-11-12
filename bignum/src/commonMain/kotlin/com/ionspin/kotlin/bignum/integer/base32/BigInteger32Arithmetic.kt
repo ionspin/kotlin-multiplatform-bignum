@@ -1111,9 +1111,15 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
     }
 
     override fun not(operand: UIntArray): UIntArray {
+        val top = operand[operand.size - 1]
+        val cleanupMask = if (top == 0U) 0U else UInt.MAX_VALUE shr numberOfLeadingZerosInAWord(top)
         return removeLeadingZeros(
             UIntArray(operand.size) {
-                operand[it].inv()
+                if (it < operand.size - 1) {
+                    operand[it].inv()
+                } else {
+                    operand[it].inv() and cleanupMask
+                }
             }
         )
     }

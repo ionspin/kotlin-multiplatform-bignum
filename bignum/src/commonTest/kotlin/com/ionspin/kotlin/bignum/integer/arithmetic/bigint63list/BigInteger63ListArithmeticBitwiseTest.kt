@@ -50,4 +50,11 @@ class BigInteger63ListArithmeticBitwiseTest {
             BigInteger63LinkedListArithmetic.shiftRight(operand, -70)
         )
     }
+
+    @Test
+    fun notMultiWordAndZeroTest() {
+        assertEquals(listOf(0x7FFFFFFFFFFFFFFAUL), BigInteger63LinkedListArithmetic.not(listOf(5UL, 1UL)))
+        assertEquals(listOf(3UL), BigInteger63LinkedListArithmetic.not(listOf(12UL)))
+        assertEquals(0, BigInteger63LinkedListArithmetic.compare(BigInteger63LinkedListArithmetic.not(listOf(0UL)), listOf(0UL)))
+    }
 }
