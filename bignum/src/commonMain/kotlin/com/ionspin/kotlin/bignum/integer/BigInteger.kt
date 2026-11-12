@@ -345,17 +345,8 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
         if (other.isZero()) {
             throw ArithmeticException("Division by zero! $this / $other")
         }
-        var sign = if (this.sign != other.sign) {
-            Sign.NEGATIVE
-        } else {
-            Sign.POSITIVE
-        }
         val result = arithmetic.divide(this.magnitude, other.magnitude).second
-        if (result == arithmetic.ZERO) {
-            sign = Sign.ZERO
-        }
-
-        return BigInteger(result, sign)
+        return BigInteger(result, this.sign)
     }
 
     override fun divideAndRemainder(other: BigInteger): Pair<BigInteger, BigInteger> {

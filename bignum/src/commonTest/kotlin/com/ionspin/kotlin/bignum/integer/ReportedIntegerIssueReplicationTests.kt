@@ -26,4 +26,24 @@ class ReportedIntegerIssueReplicationTests {
         assertFailsWith<ArithmeticException> { (-4).toBigInteger().sqrt() }
         assertFailsWith<ArithmeticException> { (-4).toBigInteger().sqrtAndRemainder() }
     }
+
+    @Test
+    fun remainderSignFollowsDividendTest() {
+        assertEquals(1.toBigInteger(), 7.toBigInteger() % 2.toBigInteger())
+        assertEquals(1.toBigInteger(), 7.toBigInteger() % (-2).toBigInteger())
+        assertEquals((-1).toBigInteger(), (-7).toBigInteger() % 2.toBigInteger())
+        assertEquals((-1).toBigInteger(), (-7).toBigInteger() % (-2).toBigInteger())
+        assertEquals(BigInteger.ZERO, (-8).toBigInteger() % (-2).toBigInteger())
+        assertEquals(BigInteger.ZERO, BigInteger.ZERO % (-2).toBigInteger())
+        for (a in -20..20) {
+            for (b in listOf(-7, -3, -1, 1, 3, 7)) {
+                assertEquals((a % b).toBigInteger(), a.toBigInteger() % b.toBigInteger(), "$a % $b")
+                assertEquals(
+                    (a.toBigInteger() divrem b.toBigInteger()).remainder,
+                    a.toBigInteger() % b.toBigInteger(),
+                    "$a divrem $b"
+                )
+            }
+        }
+    }
 }
