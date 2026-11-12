@@ -26,7 +26,6 @@ import com.ionspin.kotlin.bignum.integer.util.toDigit
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
 import kotlin.math.floor
-import kotlin.math.min
 
 /**
  * Created by Ugljesa Jovanovic
