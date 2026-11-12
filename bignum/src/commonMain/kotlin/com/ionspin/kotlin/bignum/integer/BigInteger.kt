@@ -392,10 +392,22 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
     }
 
     fun sqrt(): BigInteger {
+        if (isNegative) {
+            throw ArithmeticException("Square root of a negative number is not defined for BigInteger: $this")
+        }
+        if (isZero()) {
+            return ZERO
+        }
         return BigInteger(arithmetic.sqrt(magnitude).first, this.sign)
     }
 
     fun sqrtAndRemainder(): SqareRootAndRemainder {
+        if (isNegative) {
+            throw ArithmeticException("Square root of a negative number is not defined for BigInteger: $this")
+        }
+        if (isZero()) {
+            return SqareRootAndRemainder(ZERO, ZERO)
+        }
         return SqareRootAndRemainder(
             BigInteger(arithmetic.sqrt(magnitude).first, this.sign),
             BigInteger(arithmetic.sqrt(magnitude).second, this.sign)
