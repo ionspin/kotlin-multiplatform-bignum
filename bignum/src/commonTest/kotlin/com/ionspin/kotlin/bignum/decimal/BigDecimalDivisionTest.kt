@@ -189,4 +189,201 @@ class BigDecimalDivisionTest {
             assertEquals(BigDecimal.ONE.negate(), remainder)
         }
     }
+
+    @Test
+    fun testDirectedRoundingWithInexactQuotient() {
+        run {
+            val a = 1.toBigDecimal()
+            val b = "0.9999999".toBigDecimal()
+            val result = a.divide(b, DecimalMode(1, RoundingMode.CEILING))
+            assertEquals(2.toBigDecimal(), result)
+        }
+
+        run {
+            val a = 1.toBigDecimal()
+            val b = "0.9999999".toBigDecimal()
+            val result = a.divide(b, DecimalMode(2, RoundingMode.AWAY_FROM_ZERO))
+            assertEquals("1.1".toBigDecimal(), result)
+        }
+
+        run {
+            val a = (-1).toBigDecimal()
+            val b = "0.9999999".toBigDecimal()
+            val result = a.divide(b, DecimalMode(1, RoundingMode.FLOOR))
+            assertEquals((-2).toBigDecimal(), result)
+        }
+
+        run {
+            val a = (-1).toBigDecimal()
+            val b = "0.9999999".toBigDecimal()
+            val result = a.divide(b, DecimalMode(1, RoundingMode.CEILING))
+            assertEquals((-1).toBigDecimal(), result)
+        }
+
+        run {
+            val a = 900000004.toBigDecimal()
+            val b = 300000001.toBigDecimal()
+            val result = a.divide(b, DecimalMode(2, RoundingMode.CEILING))
+            assertEquals("3.1".toBigDecimal(), result)
+        }
+
+        run {
+            val a = 1.toBigDecimal()
+            val b = "0.9999999".toBigDecimal()
+            val result = a.divide(b, DecimalMode(1, RoundingMode.TOWARDS_ZERO))
+            assertEquals(1.toBigDecimal(), result)
+        }
+
+        run {
+            val a = 1.toBigDecimal()
+            val b = "0.9999999".toBigDecimal()
+            val result = a.divide(b, DecimalMode(2, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
+            assertEquals(1.toBigDecimal(), result)
+        }
+
+        run {
+            val a = 1.toBigDecimal()
+            val b = "0.9999999".toBigDecimal()
+            assertFailsWith<ArithmeticException> {
+                a.divide(b, DecimalMode(1, RoundingMode.NONE))
+            }
+        }
+    }
+
+    @Test
+    fun testDivisionWithScaleAndUnlimitedPrecision() {
+        run {
+            val mode = DecimalMode(0, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 2)
+            val a = 2.toBigDecimal()
+            val b = 3.toBigDecimal()
+            val result = a.divide(b, mode)
+            assertEquals("0.67".toBigDecimal(), result)
+            assertEquals(2L, result.scale)
+        }
+
+        run {
+            val mode = DecimalMode(0, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 2)
+            val a = 1.toBigDecimal()
+            val b = 3.toBigDecimal()
+            val result = a.divide(b, mode)
+            assertEquals("0.33".toBigDecimal(), result)
+        }
+
+        run {
+            val mode = DecimalMode(0, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 2)
+            val a = 200.toBigDecimal()
+            val b = 3.toBigDecimal()
+            val result = a.divide(b, mode)
+            assertEquals("66.67".toBigDecimal(), result)
+        }
+
+        run {
+            val mode = DecimalMode(0, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 2)
+            val a = 10.toBigDecimal()
+            val b = 4.toBigDecimal()
+            val result = a.divide(b, mode)
+            assertEquals("2.5".toBigDecimal(), result)
+        }
+
+        run {
+            val mode = DecimalMode(0, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 2)
+            val a = (-2).toBigDecimal()
+            val b = 3.toBigDecimal()
+            val result = a.divide(b, mode)
+            assertEquals("-0.67".toBigDecimal(), result)
+        }
+
+        run {
+            val mode = DecimalMode(0, RoundingMode.TOWARDS_ZERO, 2)
+            val a = 2.toBigDecimal()
+            val b = 3.toBigDecimal()
+            val result = a.divide(b, mode)
+            assertEquals("0.66".toBigDecimal(), result)
+        }
+
+        run {
+            val mode = DecimalMode(0, RoundingMode.CEILING, 2)
+            val a = 1.toBigDecimal()
+            val b = 3000.toBigDecimal()
+            val result = a.divide(b, mode)
+            assertEquals("0.01".toBigDecimal(), result)
+        }
+
+        run {
+            val mode = DecimalMode(0, RoundingMode.FLOOR, 2)
+            val a = (-1).toBigDecimal()
+            val b = 3000.toBigDecimal()
+            val result = a.divide(b, mode)
+            assertEquals("-0.01".toBigDecimal(), result)
+        }
+
+        run {
+            val mode = DecimalMode(0, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 2)
+            val a = 1.toBigDecimal()
+            val b = 3000.toBigDecimal()
+            val result = a.divide(b, mode)
+            assertEquals(BigDecimal.ZERO, result)
+        }
+
+        run {
+            val mode = DecimalMode(0, RoundingMode.ROUND_HALF_TO_EVEN, 2)
+            val a = 1.toBigDecimal()
+            val b = 8.toBigDecimal()
+            val result = a.divide(b, mode)
+            assertEquals("0.12".toBigDecimal(), result)
+        }
+
+        run {
+            val mode = DecimalMode(0, RoundingMode.ROUND_HALF_TO_EVEN, 2)
+            val a = 3.toBigDecimal()
+            val b = 8.toBigDecimal()
+            val result = a.divide(b, mode)
+            assertEquals("0.38".toBigDecimal(), result)
+        }
+
+        run {
+            val mode = DecimalMode(0, RoundingMode.ROUND_HALF_TO_EVEN, 0)
+            val a = 5.toBigDecimal()
+            val b = 2.toBigDecimal()
+            val result = a.divide(b, mode)
+            assertEquals(2.toBigDecimal(), result)
+        }
+    }
+
+    @Test
+    fun testZeroDividendKeepsDecimalMode() {
+        run {
+            val mode = DecimalMode(3, RoundingMode.CEILING)
+            val a = BigDecimal.ZERO
+            val b = 3.toBigDecimal()
+            val result = a.divide(b, mode)
+            assertEquals(BigDecimal.ZERO, result)
+            assertEquals(mode, result.decimalMode)
+        }
+
+        run {
+            val mode = DecimalMode(5, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 2)
+            val a = BigDecimal.ZERO
+            val b = 3.toBigDecimal()
+            val result = a.divide(b, mode)
+            assertEquals(BigDecimal.ZERO, result)
+            assertEquals(2L, result.scale)
+            assertEquals(RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, result.roundingMode)
+        }
+
+        run {
+            val a = BigDecimal.ZERO
+            val b = BigDecimal.ZERO
+            assertFailsWith<ArithmeticException> {
+                a.divide(b)
+            }
+        }
+    }
+
+    @Test
+    fun devTest() {
+        val mode = DecimalMode(4, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3)
+        println(BigDecimal.fromDouble(12345.678, mode).toStringExpanded())
+        println("12345.678".toBigDecimal().roundSignificand(mode).toStringExpanded())
+    }
 }

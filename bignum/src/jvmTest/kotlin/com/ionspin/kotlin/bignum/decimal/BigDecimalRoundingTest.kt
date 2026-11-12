@@ -857,4 +857,48 @@ class BigDecimalRoundingTest {
             }
         }
     }
+
+    @Test
+    fun testRoundSignificandWithScale() {
+        run {
+            val mode = DecimalMode(4, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3)
+            val a = "12345.678".toBigDecimal()
+            val result = a.roundSignificand(mode)
+            assertEquals("12345.68".toBigDecimal(), result)
+        }
+
+        run {
+            val mode = DecimalMode(4, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3)
+            val result = BigDecimal.fromDouble(12345.678, mode)
+            assertEquals("12345.68".toBigDecimal(), result)
+        }
+
+        run {
+            val mode = DecimalMode(4, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3)
+            val a = "12345.674".toBigDecimal()
+            val result = a.roundSignificand(mode)
+            assertEquals("12345.67".toBigDecimal(), result)
+        }
+
+        run {
+            val mode = DecimalMode(4, RoundingMode.ROUND_HALF_TOWARDS_ZERO, 3)
+            val a = "12345.675".toBigDecimal()
+            val result = a.roundSignificand(mode)
+            assertEquals("12345.67".toBigDecimal(), result)
+        }
+
+        run {
+            val mode = DecimalMode(4, RoundingMode.CEILING, 3)
+            val a = "12345.6705".toBigDecimal()
+            val result = a.roundSignificand(mode)
+            assertEquals("12345.68".toBigDecimal(), result)
+        }
+
+        run {
+            val mode = DecimalMode(4, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3)
+            val a = "99999.996".toBigDecimal()
+            val result = a.roundSignificand(mode)
+            assertEquals("100000".toBigDecimal(), result)
+        }
+    }
 }
