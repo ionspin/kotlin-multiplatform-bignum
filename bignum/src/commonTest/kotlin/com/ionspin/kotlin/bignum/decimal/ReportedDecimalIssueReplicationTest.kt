@@ -551,6 +551,4 @@ class ReportedDecimalIssueReplicationTest {
         }
         assertEquals(BigInteger.parseString("30"), BigInteger.parseString("1e", 16))
     }
-
-
 }
