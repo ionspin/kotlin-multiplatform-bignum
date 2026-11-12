@@ -401,4 +401,27 @@ class ReportedIssueReplicationTest {
             assertEquals("11.5".toBigDecimal(), result)
         }
     }
+
+    @Test
+    fun github330CreationWithScaleAndUnlimitedPrecisionTest() {
+        val decimalMode = DecimalMode(scale = 2, roundingMode = RoundingMode.ROUND_HALF_TO_EVEN)
+
+        run {
+            val a = 1234.0.toBigDecimal(decimalMode = decimalMode)
+            val b = "1234.0".toBigDecimal(decimalMode = decimalMode)
+            assertEquals("1234".toBigDecimal(), a)
+            assertEquals(b, a)
+            assertEquals(2L, a.scale)
+        }
+
+        run {
+            val a = 1234.toBigDecimal(decimalMode = decimalMode)
+            assertEquals("1234".toBigDecimal(), a)
+        }
+
+        run {
+            val a = 1234.567.toBigDecimal(decimalMode = decimalMode)
+            assertEquals("1234.57".toBigDecimal(), a)
+        }
+    }
 }

@@ -446,6 +446,9 @@ class BigDecimal private constructor(
             if (significand.isZero()) {
                 return BigDecimal(BigInteger.ZERO, exponent, decimalMode)
             }
+            if (decimalMode.isPrecisionUnlimited) {
+                return BigDecimal(significand, exponent, decimalMode)
+            }
             val significandDigits = significand.numberOfDecimalDigits()
             val desiredPrecision = if (decimalMode.usingScale) {
                 decimalMode.decimalPrecision + decimalMode.scale
