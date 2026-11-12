@@ -275,4 +275,15 @@ class ConversionTest {
             UByte.MAX_VALUE.toBigInteger().ubyteValue() == UByte.MAX_VALUE
         }
     }
+
+    @Test
+    fun testUShortValueOfNegative() {
+        val negative = (-5).toBigInteger()
+        assertFailsWith<ArithmeticException> { negative.ushortValue(true) }
+        assertTrue { negative.ushortValue(false) == 5.toUShort() }
+        assertTrue { negative.ushortValue(false).toUInt() == negative.ubyteValue(false).toUInt() }
+        assertTrue { negative.ushortValue(false).toUInt() == negative.uintValue(false) }
+        assertFailsWith<ArithmeticException> { 65536.toBigInteger().ushortValue(true) }
+        assertTrue { 65536.toBigInteger().ushortValue(false) == 0.toUShort() }
+    }
 }

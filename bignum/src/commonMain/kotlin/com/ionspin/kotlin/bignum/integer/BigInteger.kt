@@ -948,7 +948,7 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
     }
 
     override fun ushortValue(exactRequired: Boolean): UShort {
-        if (exactRequired && this > UShort.MAX_VALUE.toUInt() || isNegative) {
+        if (exactRequired && (this > UShort.MAX_VALUE.toUInt() || isNegative)) {
             throw ArithmeticException("Cannot convert to unsigned short and provide exact value")
         }
         return magnitude[0].toUShort()
