@@ -46,4 +46,21 @@ class ReportedIntegerIssueReplicationTests {
             }
         }
     }
+
+    @Test
+    fun modInverseOfNegativeTest() {
+        assertEquals(6.toBigInteger(), (-1).toBigInteger().modInverse(7.toBigInteger()))
+        assertEquals(6.toBigInteger(), (-8).toBigInteger().modInverse(7.toBigInteger()))
+        assertEquals(2.toBigInteger(), (-3).toBigInteger().modInverse(7.toBigInteger()))
+        for (modulo in listOf(2, 3, 7, 9, 16, 35, 97)) {
+            for (a in -200..200) {
+                val value = a.toBigInteger()
+                val bigModulo = modulo.toBigInteger()
+                if (value.gcd(bigModulo) != BigInteger.ONE) continue
+                val inverse = value.modInverse(bigModulo)
+                assertEquals(BigInteger.ONE, (value * inverse).mod(bigModulo), "$a mod $modulo")
+                assertEquals(true, inverse >= 0 && inverse < bigModulo, "$a mod $modulo range")
+            }
+        }
+    }
 }

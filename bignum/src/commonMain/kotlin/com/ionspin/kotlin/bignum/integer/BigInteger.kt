@@ -430,7 +430,7 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
         var t = ZERO
         var newT = ONE
         var r = modulo
-        var newR = this
+        var newR = this.mod(modulo)
 
         // Loop until the remainder is zero
         while (newR != ZERO) {
