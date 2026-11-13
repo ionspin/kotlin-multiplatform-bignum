@@ -1851,9 +1851,14 @@ class BigDecimal private constructor(
      * @return true if "this" is a whole number, false if not
      */
     fun isWholeNumber(): Boolean {
-        val res = abs().divrem(ONE)
-        val isWholeNumber = res.second.isZero()
-        return isWholeNumber
+        if (isZero()) {
+            return true
+        }
+        if (exponent < 0) {
+            return false
+        }
+        val decimalPlaces = precision - exponent - 1
+        return decimalPlaces <= 0 || (significand % BigInteger.TEN.pow(decimalPlaces)).isZero()
     }
 
     /**

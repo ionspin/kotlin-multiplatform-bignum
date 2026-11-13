@@ -21,6 +21,7 @@ import com.ionspin.kotlin.bignum.integer.BigInteger
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /**
@@ -231,5 +232,19 @@ class BigDecimalNarrowingTest {
         assertEquals(1.2345678901234567E19, "12345678901234567890.5".toBigDecimal().doubleValue(false))
         assertEquals(922337203685477580.7, "922337203685477580.7".toBigDecimal().doubleValue(false))
         assertEquals(12.375, "12.375".toBigDecimal().doubleValue(false))
+    }
+
+    @Test
+    fun isWholeNumberTest() {
+        listOf("0", "7", "-7", "12300", "123.00", "1E+20", "-1.5E+1").forEach {
+            assertTrue(it) { it.toBigDecimal().isWholeNumber() }
+        }
+        listOf("0.5", "-0.5", "123.45", "-7.5", "1E-20", "12300.001").forEach {
+            assertFalse(it) { it.toBigDecimal().isWholeNumber() }
+        }
+        val scaled = "5".toBigDecimal(decimalMode = DecimalMode(roundingMode = RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, scale = 2))
+        assertTrue { scaled.isWholeNumber() }
+        assertEquals(123L, "123.00".toBigDecimal().longValue(true))
+        assertFailsWith<ArithmeticException> { "123.45".toBigDecimal().longValue(true) }
     }
 }
