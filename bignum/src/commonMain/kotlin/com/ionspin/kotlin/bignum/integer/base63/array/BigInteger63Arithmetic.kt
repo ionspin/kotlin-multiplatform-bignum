@@ -1750,7 +1750,6 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
     }
 
     private tailrec fun oddBinaryGcd(first: ULongArray, second: ULongArray): ULongArray {
-        // debugOperandsCheck(first, second)
         if (first.contentEquals(second)) {
             return first
         }
@@ -1767,37 +1766,14 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
             return oddBinaryGcd(first shr 1, second)
         }
 
-        if (and(
-                second,
-                ONE
-            ).isZero()
-        ) {
-            return binaryGcd(
-                first,
-                second shr 1
-            )
+        if (and(second, ONE).isZero()) {
+            return oddBinaryGcd(first, second shr 1)
         }
 
-        return if (compare(
-                first,
-                second
-            ) == 1
-        ) {
-            binaryGcd(
-                subtract(
-                    first,
-                    second
-                ) shr 1,
-                second
-            )
+        return if (compare(first, second) == 1) {
+            oddBinaryGcd(subtract(first, second) shr 1, second)
         } else {
-            binaryGcd(
-                subtract(
-                    second,
-                    first
-                ) shr 1,
-                first
-            )
+            oddBinaryGcd(subtract(second, first) shr 1, first)
         }
     }
 
