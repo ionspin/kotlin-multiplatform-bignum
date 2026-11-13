@@ -1298,7 +1298,7 @@ class BigDecimal private constructor(
 
         if (resolvedDecimalMode.isPrecisionUnlimited && resolvedDecimalMode.usingScale.not()) {
             val newExponent = this.exponent - other.exponent
-            val power = (other.precision * 2 + 6)
+            val power = other.significand.bitLength()
             val thisPrepared = this.significand * BigInteger.TEN.pow(power)
             val divRem = thisPrepared divrem other.significand
             val result = divRem.quotient

@@ -381,6 +381,25 @@ class BigDecimalDivisionTest {
     }
 
     @Test
+    fun testExactDivisionByLargePowerOfTwoWithUnlimitedPrecision() {
+        assertEquals(
+            "4.76837158203125E-7".toBigDecimal(),
+            BigDecimal.ONE.divide(2097152.toBigDecimal())
+        )
+        assertEquals(
+            "-5.9604644775390625E-8".toBigDecimal(),
+            BigDecimal.ONE.divide((-16777216).toBigDecimal())
+        )
+        assertEquals(
+            BigDecimal.ONE,
+            BigDecimal.ONE.divide(BigDecimal.TWO.pow(100)) * BigDecimal.TWO.pow(100)
+        )
+        assertFailsWith(ArithmeticException::class) {
+            BigDecimal.ONE.divide(3.toBigDecimal())
+        }
+    }
+
+    @Test
     fun devTest() {
         val mode = DecimalMode(4, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3)
         println(BigDecimal.fromDouble(12345.678, mode).toStringExpanded())
