@@ -1895,72 +1895,18 @@ class BigDecimal private constructor(
      * @throws ArithmeticException if exactRequired is true and any of the above conditions not met
      */
     override fun floatValue(exactRequired: Boolean): Float {
-        if (exactRequired) {
-            var exactPossible = true
-            // IEEE 754 float
-            // Exponent can be between -126 and 127 in base 2 or -38 and 38 in base 10 (2^-126 ~ 10^-38), but subnormal
-            // can go to -45, and since we check the significand part in a base 2 algorithm we should be covering subnormal
-            // values correctly as well
-            if (exponent < -45L || exponent > 38L) {
-                exactPossible = false
-            }
-            // For significand we can have a maximum of 24 bits (23 + 1 implicit)
-            // If there is no decimal point at all we can count the bits after modifying for exponent,
-            // but if there is we need to convert the fractional part to binary32 representation first.
-            // Bit count:
-            val totalBits = if (precision - exponent - 1 > 0) {
-                // First find out where the decimal point will be
-                val integerPart = if (exponent >= 0) {
-                    significand / BigInteger.TEN.pow(precision - exponent - 1)
-                } else {
-                    BigInteger.ZERO
-                }
-                val integerPartBitLength = chosenArithmetic.bitLength(integerPart.magnitude)
-
-                val fractionPart = (significand divrem BigInteger.TEN.pow(precision - exponent - 1)).remainder
-                var fractionConvertTemp =
-                    BigDecimal(fractionPart, -1) // this will represent the integer xxxx as 0.xxxx
-                val bitList = mutableListOf<Int>()
-                var counter = 0
-                while (fractionConvertTemp != ZERO && counter <= 24) {
-                    val multiplied = fractionConvertTemp * 2
-                    val bit = if (multiplied >= ONE) {
-                        1
-                    } else {
-                        0
-                    }
-                    bitList.add(bit)
-                    fractionConvertTemp = if (bit == 1) {
-                        (multiplied divrem ONE).second
-                    } else {
-                        multiplied
-                    }
-                    counter++
-                }
-                val bitSum = integerPartBitLength + bitList.size
-                bitSum
-            } else {
-                // There is no fractional part so we need check if the distance between first non zero bit and
-                // last non zero bit is is less than or equal to 24
-                val trailingZeroBits = chosenArithmetic.trailingZeroBits(significand.magnitude)
-                val bitSum = chosenArithmetic.bitLength(significand.magnitude)
-                bitSum - trailingZeroBits
-            }
-
-            if (totalBits > 24) {
-                exactPossible = false
-            }
-
-            if (!exactPossible) {
-                throw ArithmeticException("Value cannot be narrowed to float")
-            }
+        if (exactRequired && !isExactInBinaryFloatingPoint(24, -149, 127)) {
+            throw ArithmeticException("Value cannot be narrowed to float")
         }
 
         /*
          * For large exponent values, use fallback string parse
          */
         val divExponent = precision - 1 - exponent
-        val f = this.significand.longValue(exactRequired)
+        if (this.significand > Long.MAX_VALUE || this.significand < Long.MIN_VALUE) {
+            return toString().toFloat()
+        }
+        val f = this.significand.longValue(false)
         return if (divExponent >= 0 && divExponent < float10pow.size) {
             f / float10pow[divExponent.toInt()]
         } else {
@@ -1975,82 +1921,51 @@ class BigDecimal private constructor(
      * @throws ArithmeticException if exactRequired is true and any of the above conditions not met
      */
     override fun doubleValue(exactRequired: Boolean): Double {
-        if (exactRequired) {
-            var exactPossible = true
-            // IEEE 754 double precision
-            // Exponent can be between -1022 and 1023 in base 2 or -308 and 308 in base 10, but subnormal numbers
-            // can go to -324, and since we check the significand part in a base 2 algorithm we should be covering subnormal
-            // values correctly as well
-            if (exponent < -324 || exponent > 308L) {
-                exactPossible = false
-            }
-            // For significand we can have a maximum of 53 (52 + 1 implicit)
-            // If there is no decimal point at all we can directly count the bits in significand and use them,
-            // but if there is we need to convert the fractional part to binary64 representation first.
-            // Bit count:
-            val totalBits = if (precision - exponent - 1 > 0) {
-                // First find out where the decimal point will be
-                val integerPart = if (exponent >= 0) {
-                    significand / BigInteger.TEN.pow(precision - exponent - 1)
-                } else {
-                    BigInteger.ZERO
-                }
-                val integerPartBitLength = chosenArithmetic.bitLength(integerPart.magnitude)
-
-                val fractionPart = (significand divrem BigInteger.TEN.pow(precision - exponent - 1)).remainder
-                var fractionConvertTemp =
-                    BigDecimal(fractionPart, -1) // this will represent the integer xxxx as 0.xxxx
-                val bitList = mutableListOf<Int>()
-                var counter = 0
-                while (fractionConvertTemp != ZERO && counter <= 53) {
-                    val multiplied = fractionConvertTemp * 2
-                    val bit = if (multiplied >= ONE) {
-                        1
-                    } else {
-                        0
-                    }
-                    bitList.add(bit)
-                    fractionConvertTemp = if (bit == 1) {
-                        (multiplied divrem ONE).second
-                    } else {
-                        multiplied
-                    }
-                    counter++
-                }
-                val bitSum = integerPartBitLength + bitList.size
-                bitSum
-            } else {
-                // There is no fractional part so we need check if the distance between first non zero bit and
-                // last non zero bit is is less than or equal to 24
-                // We can reuse the trailing zero bits to count number of zeroes from the right, because we know
-                // that in big integer first non-zero is always the leftmost bit
-                val trailingZeroBits = chosenArithmetic.trailingZeroBits(significand.magnitude)
-                val bitSum = chosenArithmetic.bitLength(significand.magnitude)
-                bitSum - trailingZeroBits
-            }
-
-            if (totalBits > 53) {
-                exactPossible = false
-            }
-
-            if (!exactPossible) {
-                throw ArithmeticException("Value cannot be narrowed to float")
-            }
+        if (exactRequired && !isExactInBinaryFloatingPoint(53, -1074, 1023)) {
+            throw ArithmeticException("Value cannot be narrowed to double")
         }
 
         /*
          *  For large exponent values, use fallback string parse
          */
         val divExponent = precision - 1 - exponent
-        val l = this.significand.longValue(exactRequired)
         if (this.significand > Long.MAX_VALUE || this.significand < Long.MIN_VALUE) {
             return toString().toDouble()
         }
+        val l = this.significand.longValue(false)
         return if (l.toDouble().toLong() == l && divExponent >= 0 && divExponent < double10pow.size) {
             (l / double10pow[divExponent.toInt()])
         } else {
             toString().toDouble()
         }
+    }
+
+    private fun isExactInBinaryFloatingPoint(significandBits: Int, minExponent: Int, maxExponent: Int): Boolean {
+        if (isZero()) {
+            return true
+        }
+        if (exponent > maxExponent + 1 || exponent + 1 < minExponent) {
+            return false
+        }
+        val decimalPlaces = precision - exponent - 1
+        val numerator: BigInteger
+        val binaryPlaces: Long
+        if (decimalPlaces > 0) {
+            val divRem = significand.abs() divrem 5.toBigInteger().pow(decimalPlaces)
+            if (!divRem.remainder.isZero()) {
+                return false
+            }
+            numerator = divRem.quotient
+            binaryPlaces = decimalPlaces
+        } else {
+            numerator = significand.abs() * BigInteger.TEN.pow(-decimalPlaces)
+            binaryPlaces = 0
+        }
+        val bitLength = numerator.bitLength()
+        val trailingZeroBits = chosenArithmetic.trailingZeroBits(numerator.magnitude)
+        return bitLength - trailingZeroBits <= significandBits &&
+                trailingZeroBits - binaryPlaces >= minExponent &&
+                bitLength - binaryPlaces - 1 <= maxExponent
     }
 
     /**
