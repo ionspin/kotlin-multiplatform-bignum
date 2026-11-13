@@ -590,4 +590,45 @@ class ReportedDecimalIssueReplicationTest {
         assertEquals(BigDecimal.ZERO, small.floor())
         assertEquals(BigDecimal.ONE, small.ceil())
     }
+
+    @Test
+    fun remainderDoesNotLeakTruncatingMode() {
+        val divisor = "789".toBigDecimal(decimalMode = DecimalMode(3, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
+        val (quotient, remainder) = "123456789".toBigDecimal() divrem divisor
+        assertEquals("156472".toBigDecimal(), quotient)
+        assertEquals("381".toBigDecimal(), remainder)
+    }
+
+    @Test
+    fun subtractWithScaledOperandDoesNotLeakMode() {
+        val x = "10.25".toBigDecimal(decimalMode = DecimalMode.US_CURRENCY)
+        assertEquals((x + (-1)).decimalMode, (x - 1).decimalMode)
+        assertEquals("85.5625".toBigDecimal(), (x - 1) * (x - 1))
+    }
+
+    @Test
+    fun zeroOperandKeepsScaledUnlimitedMode() {
+        val sum = BigDecimal.ZERO.add("1.234".toBigDecimal(), DecimalMode(0, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 2))
+        assertEquals("1.23".toBigDecimal(), sum)
+        assertEquals(2L, sum.scale)
+    }
+
+    @Test
+    fun divisionWithoutModesReturnsNullMode() {
+        assertEquals(null, ("1".toBigDecimal() / "4".toBigDecimal()).decimalMode)
+        assertEquals(null, (BigDecimal.ZERO / "4".toBigDecimal()).decimalMode)
+    }
+
+    @Test
+    fun incDecPowRetainDecimalMode() {
+        val mode = DecimalMode(5, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
+        val a = "12.5".toBigDecimal(decimalMode = mode)
+        assertEquals(mode, a.inc().decimalMode)
+        assertEquals(mode, a.dec().decimalMode)
+        assertEquals(mode, a.pow(0).decimalMode)
+        assertEquals("13.5".toBigDecimal(), a.inc())
+        assertEquals("11.5".toBigDecimal(), a.dec())
+        assertEquals(BigDecimal.ONE, a.pow(0))
+        assertEquals(null, "12.5".toBigDecimal().inc().decimalMode)
+    }
 }

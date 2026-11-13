@@ -3,6 +3,7 @@
 
 
 ##### 0.4.0
+- * API Breaking changes: 
 - Bump to kotlin 2.4.21
 - Fix for #337, #331, #330, #324, #318, #290, #284, #276, #263
 - **Potentially breaking fix**: Decimal mode was not consistently returned in some of the operations
