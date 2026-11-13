@@ -110,7 +110,7 @@ class BigDecimalNarrowingTest {
 
         assertFailsWith<ArithmeticException> {
             val bigDecimal = "3.75E-42".toBigDecimal()
-            val floatExpected = 3.75E-42f 
+            val floatExpected = 3.75E-42f
             println("Expected float value: $floatExpected")
             val narrowed = bigDecimal.floatValue(true)
             narrowed == floatExpected
@@ -217,5 +217,19 @@ class BigDecimalNarrowingTest {
         assertFailsWith<ArithmeticException> {
             BigDecimal.fromBigInteger(BigInteger.TWO.pow(1024)).doubleValue(true)
         }
+    }
+
+    @Test
+    fun floatValueWithLargeSignificandTest() {
+        assertEquals(1.2345679E19f, "12345678901234567890.5".toBigDecimal().floatValue(false))
+        assertEquals(1677721.7f, "1677721.7".toBigDecimal().floatValue(false))
+        assertEquals(12.375f, "12.375".toBigDecimal().floatValue(false))
+    }
+
+    @Test
+    fun doubleValueWithLargeSignificandTest() {
+        assertEquals(1.2345678901234567E19, "12345678901234567890.5".toBigDecimal().doubleValue(false))
+        assertEquals(922337203685477580.7, "922337203685477580.7".toBigDecimal().doubleValue(false))
+        assertEquals(12.375, "12.375".toBigDecimal().doubleValue(false))
     }
 }

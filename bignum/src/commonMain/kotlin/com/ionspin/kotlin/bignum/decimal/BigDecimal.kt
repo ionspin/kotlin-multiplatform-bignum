@@ -1903,12 +1903,8 @@ class BigDecimal private constructor(
          * For large exponent values, use fallback string parse
          */
         val divExponent = precision - 1 - exponent
-        if (this.significand > Long.MAX_VALUE || this.significand < Long.MIN_VALUE) {
-            return toString().toFloat()
-        }
-        val f = this.significand.longValue(false)
-        return if (divExponent >= 0 && divExponent < float10pow.size) {
-            f / float10pow[divExponent.toInt()]
+        return if (significand.abs() <= (1L shl 24) && divExponent >= 0 && divExponent < float10pow.size) {
+            significand.longValue(false) / float10pow[divExponent.toInt()]
         } else {
             this.toString().toFloat()
         }
@@ -1929,12 +1925,8 @@ class BigDecimal private constructor(
          *  For large exponent values, use fallback string parse
          */
         val divExponent = precision - 1 - exponent
-        if (this.significand > Long.MAX_VALUE || this.significand < Long.MIN_VALUE) {
-            return toString().toDouble()
-        }
-        val l = this.significand.longValue(false)
-        return if (l.toDouble().toLong() == l && divExponent >= 0 && divExponent < double10pow.size) {
-            (l / double10pow[divExponent.toInt()])
+        return if (significand.abs() <= (1L shl 53) && divExponent >= 0 && divExponent < double10pow.size) {
+            significand.longValue(false) / double10pow[divExponent.toInt()]
         } else {
             toString().toDouble()
         }
