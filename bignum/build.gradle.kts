@@ -25,8 +25,8 @@ plugins {
     id(PluginsDeps.spotless) version PluginsDeps.PluginVersions.spotlessVersion
 }
 
-val sonatypeStaging = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-val sonatypeSnapshots = "https://oss.sonatype.org/content/repositories/snapshots/"
+val sonatypeStaging = "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/"
+val sonatypeSnapshots = "https://central.sonatype.com/repository/maven-snapshots/"
 
 val sonatypePassword: String? by project
 
@@ -363,6 +363,11 @@ publishing {
                 username = sonatypeUsername ?: sonatypeUsernameEnv ?: ""
                 password = sonatypePassword ?: sonatypePasswordEnv ?: ""
             }
+        }
+
+        maven {
+            name = "snapshotStaging"
+            url = snapshotStagingDirectory.toURI()
         }
     }
 }

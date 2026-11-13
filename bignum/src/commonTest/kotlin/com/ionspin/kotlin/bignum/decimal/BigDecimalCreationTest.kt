@@ -302,7 +302,7 @@ class BigDecimalCreationTest {
         assertEquals("15".toBigDecimal(), "1.5E+1".toBigDecimal())
 
         listOf("1.5E", "1.5E+", "1.5Ex", "1E5.3").forEach {
-            assertFailsWith<ArithmeticException> { it.toBigDecimal() }
+            assertFailsWith<NumberFormatException> { it.toBigDecimal() }
         }
         assertFailsWith<NumberFormatException> { BigInteger.parseString("", 10) }
     }

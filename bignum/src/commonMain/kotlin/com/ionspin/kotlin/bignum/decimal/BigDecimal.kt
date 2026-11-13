@@ -923,11 +923,11 @@ class BigDecimal private constructor(
          * * **Expanded** ie 0.000000001234
          *
          * @return Parsed string
-         * @throws ArithmeticException if parsing fails
+         * @throws NumberFormatException if parsing fails
          */
         fun parseStringWithMode(floatingPointString: String, decimalMode: DecimalMode? = null): BigDecimal {
             if (floatingPointString.isEmpty()) {
-                throw ArithmeticException("Empty string is not a valid decimal number")
+                throw NumberFormatException("Empty string is not a valid decimal number")
             }
             if (floatingPointString.contains('E', true)) {
                 // Sci notation
@@ -960,7 +960,7 @@ class BigDecimal private constructor(
                         val right = rightSplit[0]
 
                         val exponent = rightSplit.getOrNull(1)?.toLongOrNull()
-                            ?: throw ArithmeticException("Invalid (or unsupported) floating point number format: $floatingPointString")
+                            ?: throw NumberFormatException("Invalid (or unsupported) floating point number format: $floatingPointString")
 
                         var leftFirstNonZero = left.indexOfFirst { it != '0' }
 
@@ -994,7 +994,7 @@ class BigDecimal private constructor(
                         return BigDecimal(significand, exponentModifiedByFloatingPointPosition, decimalMode)
                     }
 
-                    else -> throw ArithmeticException("Invalid (or unsupported) floating point number format: $floatingPointString")
+                    else -> throw NumberFormatException("Invalid (or unsupported) floating point number format: $floatingPointString")
                 }
             } else {
                 // Expanded notation
@@ -1048,7 +1048,7 @@ class BigDecimal private constructor(
                             return BigDecimal(significand, exponent.toLong(), decimalMode)
                         }
 
-                        else -> throw ArithmeticException("Invalid (or unsupported) floating point number format: $floatingPointString")
+                        else -> throw NumberFormatException("Invalid (or unsupported) floating point number format: $floatingPointString")
                     }
                 } else {
                     val significand = BigInteger.parseString(floatingPointString, 10)

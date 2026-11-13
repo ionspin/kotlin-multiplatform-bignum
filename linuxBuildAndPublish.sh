@@ -24,4 +24,8 @@ bignum-serialization-kotlinx:publishAndroidNativeArm32PublicationToSnapshotStagi
 bignum-serialization-kotlinx:publishAndroidNativeArm64PublicationToSnapshotStagingRepository \
 bignum-serialization-kotlinx:publishWasmJsPublicationToSnapshotStagingRepository \
 bignum-serialization-kotlinx:publishWasmWasiPublicationToSnapshotStagingRepository || exit 1
+
+./gradlew --no-daemon bignum:uploadStagedSnapshots || exit 1
+./gradlew --no-daemon bignum-serialization-kotlinx:uploadStagedSnapshots || exit 1
+
 exit 0

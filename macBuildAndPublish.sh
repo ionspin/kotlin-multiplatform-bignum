@@ -12,4 +12,8 @@ publishMacosArm64PublicationToSnapshotStagingRepository \
 publishIosSimulatorArm64PublicationToSnapshotStagingRepository \
 publishTvosSimulatorArm64PublicationToSnapshotStagingRepository \
 publishWatchosSimulatorArm64PublicationToSnapshotStagingRepository  || exit 1
+
+./gradlew --no-daemon bignum:uploadStagedSnapshots || exit 1
+./gradlew --no-daemon bignum-serialization-kotlinx:uploadStagedSnapshots || exit 1
+
 exit 0

@@ -709,4 +709,11 @@ class ReportedDecimalIssueReplicationTest {
         assertEquals("1.01".toBigDecimal(), a.subtract(b.negate(), mode))
         assertEquals("1".toBigDecimal(), a.subtract(b, mode))
     }
+
+    @Test
+    fun github329MalformedStringThrowsNumberFormatException() {
+        listOf("", "1.2.3", "1.5E", "1.5Ex", "1.x5", "abc").forEach {
+            assertFailsWith<NumberFormatException>(it) { it.toBigDecimal() }
+        }
+    }
 }
