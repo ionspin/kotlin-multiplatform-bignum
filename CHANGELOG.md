@@ -7,7 +7,7 @@
     (previously the result was unlimited precision with no mode). Remainder and divrem follow the same rule.**
 - **API Breaking change: scale()` no longer defaults to ROUND_HALF_AWAY_FROM_ZERO when the decimal has no rounding mode, pass the rounding mode as the second parameter instead.**
 - Bump to kotlin 2.4.21
-- Fix for #337, #331, #330, #324, #318, #290, #284, #276, #263
+- Fix for #337, #331, #330, #324, #318, #290, #284, #276, #267, #263, #298, #332, #334, 
 - Decimal mode was not consistently returned in some of the operations this is now fixed across all operations.
 - Added and/or/xor TwosComplement for Java BigInt like bitwise operations
 - Define negative shift left and right as positive shift in other direction
