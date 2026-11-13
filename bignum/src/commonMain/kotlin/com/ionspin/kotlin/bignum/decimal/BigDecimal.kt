@@ -1692,14 +1692,14 @@ class BigDecimal private constructor(
     /**
      * Incerement by one
      */
-    fun inc(): BigDecimal {
+    operator fun inc(): BigDecimal {
         return add(ONE, decimalMode)
     }
 
     /**
      * Decrement by one
      */
-    fun dec(): BigDecimal {
+    operator fun dec(): BigDecimal {
         return subtract(ONE, decimalMode)
     }
 
