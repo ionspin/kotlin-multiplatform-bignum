@@ -302,7 +302,7 @@ class ReportedDecimalIssueReplicationTest {
 
     @Test
     fun testToPlainStringScale() {
-        assertEquals("1.000000", 1000000.toBigDecimal().moveDecimalPoint(-6).scale(6).toPlainString())
+        assertEquals("1.000000", 1000000.toBigDecimal().moveDecimalPoint(-6).scale(6, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO).toPlainString())
     }
 
     @Test
@@ -456,37 +456,37 @@ class ReportedDecimalIssueReplicationTest {
     @Test
     fun github284ZeroWithScaleKeepsScaleTest() {
         run {
-            val result = BigDecimal.parseString("1").scale(0) + BigDecimal.parseString("2").scale(1)
+            val result = BigDecimal.parseString("1").scale(0, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO) + BigDecimal.parseString("2").scale(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
             assertEquals(1L, result.scale)
             assertEquals("3".toBigDecimal(), result)
         }
 
         run {
-            val result = BigDecimal.parseString("0").scale(1) + BigDecimal.parseString("2").scale(1)
+            val result = BigDecimal.parseString("0").scale(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO) + BigDecimal.parseString("2").scale(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
             assertEquals(1L, result.scale)
             assertEquals("2".toBigDecimal(), result)
         }
 
         run {
-            val result = BigDecimal.parseString("0").scale(0) + BigDecimal.parseString("2").scale(1)
+            val result = BigDecimal.parseString("0").scale(0, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO) + BigDecimal.parseString("2").scale(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
             assertEquals(1L, result.scale)
             assertEquals("2".toBigDecimal(), result)
         }
 
         run {
-            val result = BigDecimal.parseString("2").scale(1) + BigDecimal.parseString("0").scale(0)
+            val result = BigDecimal.parseString("2").scale(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO) + BigDecimal.parseString("0").scale(0, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
             assertEquals(1L, result.scale)
             assertEquals("2".toBigDecimal(), result)
         }
 
         run {
-            val result = BigDecimal.parseString("1").scale(0) - BigDecimal.parseString("2").scale(1)
+            val result = BigDecimal.parseString("1").scale(0, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO) - BigDecimal.parseString("2").scale(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
             assertEquals(1L, result.scale)
             assertEquals("-1".toBigDecimal(), result)
         }
 
         run {
-            val result = BigDecimal.parseString("0").scale(0) - BigDecimal.parseString("2").scale(1)
+            val result = BigDecimal.parseString("0").scale(0, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO) - BigDecimal.parseString("2").scale(1, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
             assertEquals(1L, result.scale)
             assertEquals("-2".toBigDecimal(), result)
         }
@@ -550,5 +550,170 @@ class ReportedDecimalIssueReplicationTest {
             BigInteger.parseString("5e-1")
         }
         assertEquals(BigInteger.parseString("30"), BigInteger.parseString("1e", 16))
+    }
+
+    @Test
+    fun floorAndCeilDoNotLeakRoundingMode() {
+        val floored = "12.7".toBigDecimal().floor()
+        val ceiled = "12.2".toBigDecimal().ceil()
+        assertEquals(null, floored.decimalMode)
+        assertEquals(null, ceiled.decimalMode)
+        assertEquals("144".toBigDecimal(), floored * floored)
+        assertEquals("111".toBigDecimal(), floored + "99.5".toBigDecimal().floor())
+        assertEquals("169".toBigDecimal(), ceiled * ceiled)
+        assertEquals("113".toBigDecimal(), ceiled + "99.5".toBigDecimal().ceil())
+        assertEquals("-13".toBigDecimal(), "-12.7".toBigDecimal().floor())
+        assertEquals("-12".toBigDecimal(), "-12.7".toBigDecimal().ceil())
+        assertEquals("100".toBigDecimal(), "99.5".toBigDecimal().ceil())
+    }
+
+    @Test
+    fun floorAndCeilRetainOriginalDecimalMode() {
+        val precisionMode = DecimalMode(5, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
+        val withPrecision = "12.7".toBigDecimal(decimalMode = precisionMode)
+        assertEquals(precisionMode, withPrecision.floor().decimalMode)
+        assertEquals(precisionMode, withPrecision.ceil().decimalMode)
+        assertEquals("12".toBigDecimal(), withPrecision.floor())
+        assertEquals("13".toBigDecimal(), withPrecision.ceil())
+        assertEquals("144".toBigDecimal(), withPrecision.floor() * withPrecision.floor())
+
+        val scaleMode = DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 2)
+        val withScale = "12.75".toBigDecimal(decimalMode = scaleMode)
+        assertEquals(2, withScale.floor().decimalMode?.scale)
+        assertEquals(RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, withScale.ceil().decimalMode?.roundingMode)
+        assertEquals("12".toBigDecimal(), withScale.floor())
+        assertEquals("13".toBigDecimal(), withScale.ceil())
+
+        val small = "0.5".toBigDecimal(decimalMode = precisionMode)
+        assertEquals(precisionMode, small.floor().decimalMode)
+        assertEquals(precisionMode, small.ceil().decimalMode)
+        assertEquals(BigDecimal.ZERO, small.floor())
+        assertEquals(BigDecimal.ONE, small.ceil())
+    }
+
+    @Test
+    fun remainderDoesNotLeakTruncatingMode() {
+        val divisor = "789".toBigDecimal(decimalMode = DecimalMode(3, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
+        val (quotient, remainder) = "123456789".toBigDecimal() divrem divisor
+        assertEquals("156000".toBigDecimal(), quotient)
+        assertEquals("381".toBigDecimal(), remainder)
+    }
+
+    @Test
+    fun subtractWithScaledOperandDoesNotLeakMode() {
+        val x = "10.25".toBigDecimal(decimalMode = DecimalMode.US_CURRENCY)
+        assertEquals((x + (-1)).decimalMode, (x - 1).decimalMode)
+        assertEquals("85.56".toBigDecimal(), (x - 1) * (x - 1))
+    }
+
+    @Test
+    fun zeroOperandKeepsScaledUnlimitedMode() {
+        val sum = BigDecimal.ZERO.add("1.234".toBigDecimal(), DecimalMode(0, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 2))
+        assertEquals("1.23".toBigDecimal(), sum)
+        assertEquals(2L, sum.scale)
+    }
+
+    @Test
+    fun divisionWithoutModesReturnsNullMode() {
+        assertEquals(null, ("1".toBigDecimal() / "4".toBigDecimal()).decimalMode)
+        assertEquals(null, (BigDecimal.ZERO / "4".toBigDecimal()).decimalMode)
+    }
+
+    @Test
+    fun incDecPowRetainDecimalMode() {
+        val mode = DecimalMode(5, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
+        val a = "12.5".toBigDecimal(decimalMode = mode)
+        assertEquals(mode, a.inc().decimalMode)
+        assertEquals(mode, a.dec().decimalMode)
+        assertEquals(mode, a.pow(0).decimalMode)
+        assertEquals("13.5".toBigDecimal(), a.inc())
+        assertEquals("11.5".toBigDecimal(), a.dec())
+        assertEquals(BigDecimal.ONE, a.pow(0))
+        assertEquals(null, "12.5".toBigDecimal().inc().decimalMode)
+    }
+
+    @Test
+    fun singleOperandDecimalModeIsApplied() {
+        val mode = DecimalMode(5, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
+        val one = "1".toBigDecimal(decimalMode = mode)
+        assertEquals("0.33333".toBigDecimal(), one / 3)
+        assertEquals(mode, (one / 3).decimalMode)
+        assertEquals(mode, ("3".toBigDecimal() + one).decimalMode)
+
+        val price = "10.25".toBigDecimal(decimalMode = DecimalMode.US_CURRENCY)
+        assertEquals("20.5".toBigDecimal(), price * 2)
+        assertEquals(2L, (price * 2).scale)
+        assertEquals("10.3".toBigDecimal(), price * "1.005".toBigDecimal())
+        assertEquals("123456.79".toBigDecimal(), BigDecimal.ZERO.scale(2, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO) + "123456.789".toBigDecimal())
+    }
+
+    @Test
+    fun scaledDivisionRoundsAtScale() {
+        val a = "0.05".toBigDecimal(decimalMode = DecimalMode.US_CURRENCY)
+        val b = "0.03".toBigDecimal(decimalMode = DecimalMode.US_CURRENCY)
+        assertEquals("1.67".toBigDecimal(), a / b)
+        assertEquals(2L, (a / b).scale)
+        assertEquals("0.02".toBigDecimal(), a / 3)
+    }
+
+    @Test
+    fun differentRoundingModesThrow() {
+        val a = "1.5".toBigDecimal(decimalMode = DecimalMode(5, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
+        val b = "2.5".toBigDecimal(decimalMode = DecimalMode(5, RoundingMode.FLOOR))
+        assertFailsWith<ArithmeticException> { a + b }
+        assertFailsWith<ArithmeticException> { a % b }
+        assertEquals("4".toBigDecimal(), a.add(b, DecimalMode(5, RoundingMode.CEILING)))
+    }
+
+    @Test
+    fun scaleChangesIgnoreDerivedPrecision() {
+        val a = "0.05".toBigDecimal(decimalMode = DecimalMode.US_CURRENCY)
+        assertEquals(3L, a.scale(3).scale)
+        assertEquals("0.05".toBigDecimal(), a.scale(3))
+        assertEquals("0.1".toBigDecimal(), a.scale(1))
+        assertEquals(RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, a.scale(1).roundingMode)
+
+        val unscaled = "10.25".toBigDecimal(decimalMode = DecimalMode.US_CURRENCY).removeScale()
+        assertEquals(null, unscaled.decimalMode)
+        assertEquals("1010.25".toBigDecimal(), unscaled + 1000)
+    }
+
+    @Test
+    fun scaleRequiresRoundingMode() {
+        val plain = "1.005".toBigDecimal()
+        assertFailsWith<ArithmeticException> { plain.scale(2) }
+        assertEquals("1.01".toBigDecimal(), plain.scale(2, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
+        assertEquals("1".toBigDecimal(), plain.scale(2, RoundingMode.FLOOR))
+
+        val withMode = "1.005".toBigDecimal(decimalMode = DecimalMode(10, RoundingMode.FLOOR))
+        assertEquals("1".toBigDecimal(), withMode.scale(2))
+        assertEquals(RoundingMode.FLOOR, withMode.scale(2).roundingMode)
+    }
+
+    @Test
+    fun testToStringOfNegativeWithSingleSignificantDigit() {
+        assertEquals("-5.0", (-5).toBigDecimal().toString())
+        assertEquals("-5.0E+1", (-50).toBigDecimal().toString())
+        assertEquals("-1.0E-3", "-0.001".toBigDecimal().toString())
+        assertEquals("-1.2E+1", (-12).toBigDecimal().toString())
+        assertEquals("5.0", 5.toBigDecimal().toString())
+    }
+
+    @Test
+    fun subtractWithExplicitScaleModeMatchesAdd() {
+        val mode = DecimalMode(roundingMode = RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, scale = 2)
+        val a = "1.005".toBigDecimal()
+        val b = "0.001".toBigDecimal()
+
+        assertEquals("1.01".toBigDecimal(), a.add(b, mode))
+        assertEquals("1.01".toBigDecimal(), a.subtract(b.negate(), mode))
+        assertEquals("1".toBigDecimal(), a.subtract(b, mode))
+    }
+
+    @Test
+    fun github329MalformedStringThrowsNumberFormatException() {
+        listOf("", "1.2.3", "1.5E", "1.5Ex", "1.x5", "abc").forEach {
+            assertFailsWith<NumberFormatException>(it) { it.toBigDecimal() }
+        }
     }
 }

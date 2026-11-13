@@ -297,4 +297,18 @@ class BigDecimalRoundingTests {
             )
         }
     }
+
+    @Test
+    fun testRoundHalfToOddBelowOneToInteger() {
+        val half = "0.5".toBigDecimal()
+        val negativeHalf = "-0.5".toBigDecimal()
+
+        assertEquals(0, half.roundToDigitPositionAfterDecimalPoint(0, RoundingMode.ROUND_HALF_TO_ODD).compareTo(1))
+        assertEquals(0, negativeHalf.roundToDigitPositionAfterDecimalPoint(0, RoundingMode.ROUND_HALF_TO_ODD).compareTo(-1))
+        assertEquals(0, half.roundToDigitPositionAfterDecimalPoint(0, RoundingMode.ROUND_HALF_TO_EVEN).compareTo(0))
+
+        val scaleMode = DecimalMode(roundingMode = RoundingMode.ROUND_HALF_TO_ODD, scale = 0)
+        assertEquals(0, "0.5".toBigDecimal(decimalMode = scaleMode).compareTo(1))
+        assertEquals(0, "-0.5".toBigDecimal(decimalMode = scaleMode).compareTo(-1))
+    }
 }

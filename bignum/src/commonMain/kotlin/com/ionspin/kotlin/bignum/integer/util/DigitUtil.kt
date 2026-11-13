@@ -29,8 +29,8 @@ fun Char.toDigit(base: Int = 10): Int {
         in '0'..'9' -> (this - 48).toInt()
         in 'a'..'z' -> this - 'a' + 10
         in 'A'..'Z' -> this - 'A' + 10
-        in '\uFF21'..'\uFF3A' -> this - '\uFF21' - 10
-        in '\uFF41'..'\uFF5A' -> this - '\uFF41' - 10
+        in '\uFF21'..'\uFF3A' -> this - '\uFF21' + 10
+        in '\uFF41'..'\uFF5A' -> this - '\uFF41' + 10
         '.' -> throw NumberFormatException("Invalid digit for radix $this (Possibly a decimal value, which is not supported by BigInteger parser")
         else -> throw NumberFormatException("Invalid digit for radix $this")
     }

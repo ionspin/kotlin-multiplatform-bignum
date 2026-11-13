@@ -322,6 +322,11 @@ publishing {
                 password = sonatypePassword ?: sonatypePasswordEnv ?: ""
             }
         }
+
+        maven {
+            name = "snapshotStaging"
+            url = snapshotStagingDirectory.toURI()
+        }
     }
 }
 

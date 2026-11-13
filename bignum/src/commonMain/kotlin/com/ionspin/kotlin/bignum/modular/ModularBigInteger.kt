@@ -82,9 +82,9 @@ class ModularBigInteger private constructor(
         fun creatorForModulo(modulo: BigInteger): BigNumber.Creator<ModularBigInteger> {
             return object : BigNumber.Creator<ModularBigInteger> {
                 override val ZERO = ModularBigInteger(BigInteger.ZERO, modulo, this)
-                override val ONE = ModularBigInteger(BigInteger.ONE, modulo, this)
-                override val TWO = ModularBigInteger(BigInteger.TWO, modulo, this)
-                override val TEN = ModularBigInteger(BigInteger.TEN, modulo, this)
+                override val ONE = fromBigInteger(BigInteger.ONE)
+                override val TWO = fromBigInteger(BigInteger.TWO)
+                override val TEN = fromBigInteger(BigInteger.TEN)
 
                 override fun fromBigInteger(bigInteger: BigInteger): ModularBigInteger {
                     return ModularBigInteger(bigInteger.prep(), modulo, this)
@@ -229,6 +229,8 @@ class ModularBigInteger private constructor(
         var e = exponent
         return if (this.modulus == BigInteger.ONE) {
             creator.ZERO
+        } else if (exponent.isNegative) {
+            inverse().pow(exponent.negate())
         } else {
             var residue = BigInteger.ONE
             var base = this.residue
@@ -244,11 +246,11 @@ class ModularBigInteger private constructor(
     }
 
     override fun pow(exponent: Long): ModularBigInteger {
-        return ModularBigInteger(residue.pow(exponent) % modulus, modulus, creator)
+        return pow(BigInteger.fromLong(exponent))
     }
 
     override fun pow(exponent: Int): ModularBigInteger {
-        return ModularBigInteger(residue.pow(exponent) % modulus, modulus, creator)
+        return pow(BigInteger.fromInt(exponent))
     }
 
     override fun signum(): Int {
@@ -284,10 +286,10 @@ class ModularBigInteger private constructor(
     }
 
     override fun equals(other: Any?): Boolean {
-        return if (other == null) {
-            false
-        } else {
-            compareTo(other) == 0
+        return when (other) {
+            is ModularBigInteger -> modulus == other.modulus && residue == other.residue
+            is BigInteger, is Long, is Int, is Short, is Byte -> compareTo(other) == 0
+            else -> false
         }
     }
 
@@ -333,9 +335,6 @@ class ModularBigInteger private constructor(
     }
 
     override fun longValue(exactRequired: Boolean): Long {
-        if (exactRequired && (residue > Long.MAX_VALUE.toUInt())) {
-            throw ArithmeticException("Cannot convert to long and provide exact value")
-        }
         return residue.longValue(exactRequired)
     }
 
@@ -361,9 +360,6 @@ class ModularBigInteger private constructor(
     }
 
     override fun ulongValue(exactRequired: Boolean): ULong {
-        if (exactRequired && (residue > ULong.MAX_VALUE.toUInt())) {
-            throw ArithmeticException("Cannot convert to unsigned long and provide exact value")
-        }
         return residue.ulongValue(exactRequired)
     }
 

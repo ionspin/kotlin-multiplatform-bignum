@@ -2,7 +2,23 @@
 (All dates are DD.MM.YYYY)
 
 
-##### 0.3.11-SNAPSHOT - current 
+##### 0.4.0 - Breaking API changes
+- **API Breaking change: When only one operand has a decimal mode, that mode is now applied to the result
+    (previously the result was unlimited precision with no mode). Remainder and divrem follow the same rule.**
+- **API Breaking change: scale()` no longer defaults to ROUND_HALF_AWAY_FROM_ZERO when the decimal has no rounding mode, pass the rounding mode as the second parameter instead.**
+- **API breaking change: malformed strings passed to BigDecimal parsing now throw NumberFormatException instead of ArithmeticException**
+- *Bump to kotlin 2.4.21*
+- Fix for #337, #331, #330, #324, #318, #290, #284, #276, #267, #263, #298, #332, #334, #329
+- Decimal mode was not consistently returned in some of the operations this is now fixed across all operations.
+- Added and/or/xor TwosComplement for Java BigInt like bitwise operations
+- Define negative shift left and right as positive shift in other direction
+- Define and document sign handling when using xor and or bitwise operations
+- Big integer remainder now correctly returns the result with the sign of dividend instead of divisor
+- Fix big integer not() failing in some corner cases
+- Fix big integer setBitAt() flipping bits
+- Apply proper float and double conversion for big integer like in big decimal
+- Fix ushort value conversion
+
 
 ##### 0.3.10 - 15.7.2024
 - Fix for #280, return byte array containing zero instead of empty array when big integer is zero.

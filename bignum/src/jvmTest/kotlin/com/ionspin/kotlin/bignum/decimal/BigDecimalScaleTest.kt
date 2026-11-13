@@ -28,86 +28,102 @@ class JvmBigDecimalScaleTest {
         assertTrue(e.message?.startsWith("Negative Scale") ?: false)
     }
 
-    /**
-     * Tests of scale functionality when used as a currency
-     */
+    private val bigAmountString = "12345678901234567890.12"
+    private val fractionMode = DecimalMode(4, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3)
+    private val bigAmount = BigDecimal.parseStringWithMode(bigAmountString, DecimalMode.US_CURRENCY)
+    private val halfCent = BigDecimal.parseStringWithMode("0.005", fractionMode)
+
     @Test
-    fun usDollarTest() {
-        val bigAmountStr = "12345678901234567890.12"
-        val bigAmountStr1 = "12345678901234567890.13"
-        val bigAmountStr2 = "12345678901234567890.11"
+    fun usCurrencyModeUsesScale() {
         val usdMode = DecimalMode.US_CURRENCY
-        val usdFractionMode = DecimalMode(4, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 3)
         assertFalse(usdMode.isPrecisionUnlimited)
         assertTrue(usdMode.usingScale)
         assertEquals(2, usdMode.scale)
-        val bigAmount = BigDecimal.parseStringWithMode(bigAmountStr, usdMode)
-        assertEquals(2, usdMode.scale)
-        val oldend = BigDecimal.parseStringWithMode("0.004", DecimalMode(10, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
-        val oldway = oldend.roundToDigitPositionAfterDecimalPoint(3, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
-        val addend = BigDecimal.parseStringWithMode("0.004", usdFractionMode)
-        assertTrue(oldway.compare(addend) == 0)
-        var addWrk = bigAmount.add(addend)
-        assertEquals(3, addWrk.scale)
-        var add = addWrk.scale(2)
-        assertEquals(bigAmountStr, add.toPlainString())
-        assertEquals(2, add.scale)
+        assertEquals(2, bigAmount.scale)
+        assertEquals(bigAmountString, bigAmount.toPlainString())
+    }
 
-        var x = BigDecimal.parseStringWithMode("1234567.128965",
-            DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
-        assertFalse(x.usingScale)
-        x = x.scale(2)
-        var x1 = BigDecimal.parseStringWithMode("1234567.13", DecimalMode.US_CURRENCY)
-        assertTrue(x.compare(x1) == 0)
-        x = x.scale(0)
-        x1 = x1.scale(0)
-        assertTrue(x.compare(x1) == 0)
-        x = x.removeScale()
-        x1 = x1.removeScale()
-        assertTrue(x.compare(x1) == 0)
+    @Test
+    fun scaledValueMatchesRoundingToDigitPosition() {
+        val rounded = BigDecimal.parseStringWithMode("0.004", DecimalMode(10, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO))
+            .roundToDigitPositionAfterDecimalPoint(3, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
+        val scaled = BigDecimal.parseStringWithMode("0.004", fractionMode)
+        assertEquals(0, rounded.compare(scaled))
+    }
 
-        /*
-        Test for rounding and scale operation when adding or subtracting larger scale on a smaller
-        scale.
-         */
-        val halfCent = BigDecimal.parseStringWithMode("0.005", usdFractionMode)
-        addWrk = bigAmount.add(halfCent)
-        assertEquals(3, addWrk.scale)
-        add = addWrk.scale(2)
-        assertEquals(bigAmountStr1, add.toPlainString())
-        assertEquals(2, add.scale)
-        addWrk = bigAmount.minus(halfCent)
-        assertEquals(3, addWrk.scale)
-        add = addWrk.scale(2)
-        assertEquals(bigAmountStr, add.toPlainString())
-        assertEquals(2, add.scale)
-        addWrk = bigAmount.minus(halfCent).minus(halfCent)
-        assertEquals(3, addWrk.scale)
-        add = addWrk.scale(2)
-        assertEquals(bigAmountStr2, add.toPlainString())
-        // Lets test for HALF_TOWARDS_ZERO
-        val bigAmountRoundedTowardsZero = bigAmount.copy(decimalMode = bigAmount.decimalMode!!.copy(roundingMode = RoundingMode.ROUND_HALF_TOWARDS_ZERO))
-        addWrk = bigAmountRoundedTowardsZero.minus(halfCent)
-        add = addWrk.scale(2)
-        assertEquals(bigAmountStr2, add.toPlainString()) // ...115 HALF_TOWARDS_FROM_ZERO <- goes to 111
-        assertEquals(2, add.scale)
+    @Test
+    fun addingLargerScaleKeepsLargerScale() {
+        val belowHalfCent = BigDecimal.parseStringWithMode("0.004", fractionMode)
+        val roundedDown = bigAmount.add(belowHalfCent)
+        assertEquals(3, roundedDown.scale)
+        assertEquals(2, roundedDown.scale(2).scale)
+        assertEquals(bigAmountString, roundedDown.scale(2).toPlainString())
 
-        /*
-        Tests for rounding and scale operation when multiplying or dividing no scale operating on
-        a specified scale.
-         */
-        val scaleZero = DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 0)
-        val factor = BigDecimal.parseStringWithMode("2", scaleZero)
-        var wrk = bigAmount.multiply(factor)
-        assertEquals(2, wrk.scale)
-        var javaWrk = java.math.BigDecimal(bigAmountStr).setScale(2).multiply(java.math.BigDecimal("2"))
-        assertEquals(2, javaWrk.scale())
-        val s = wrk.toPlainString()
-        val s1 = javaWrk.toPlainString()
-        assertTrue(s.equals(s1))
-        wrk = wrk.scale(2)
-        javaWrk = javaWrk.setScale(2)
-        assertTrue(wrk.toPlainString().equals(javaWrk.toPlainString()))
+        val roundedUp = bigAmount.add(halfCent)
+        assertEquals(3, roundedUp.scale)
+        assertEquals("12345678901234567890.13", roundedUp.scale(2).toPlainString())
+    }
+
+    @Test
+    fun subtractingLargerScaleKeepsLargerScale() {
+        val once = bigAmount.minus(halfCent)
+        assertEquals(3, once.scale)
+        assertEquals(2, once.scale(2).scale)
+        assertEquals(bigAmountString, once.scale(2).toPlainString())
+
+        val twice = once.minus(halfCent)
+        assertEquals(3, twice.scale)
+        assertEquals("12345678901234567890.11", twice.scale(2).toPlainString())
+    }
+
+    @Test
+    fun roundingModeDecidesHalfCentRounding() {
+        val towardsZero = RoundingMode.ROUND_HALF_TOWARDS_ZERO
+        val amountTowardsZero =
+            BigDecimal.parseStringWithMode(bigAmountString, DecimalMode.US_CURRENCY.copy(roundingMode = towardsZero))
+        val halfCentTowardsZero = BigDecimal.parseStringWithMode("0.005", fractionMode.copy(roundingMode = towardsZero))
+
+        val difference = amountTowardsZero.minus(halfCentTowardsZero).scale(2)
+        assertEquals(2, difference.scale)
+        assertEquals("12345678901234567890.11", difference.toPlainString())
+        assertEquals(bigAmountString, bigAmount.minus(halfCent).scale(2).toPlainString())
+
+        assertFailsWith<ArithmeticException> {
+            amountTowardsZero.minus(halfCent)
+        }
+    }
+
+    @Test
+    fun changingAndRemovingScale() {
+        var unscaled = BigDecimal.parseStringWithMode(
+            "1234567.128965",
+            DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
+        )
+        var currency = BigDecimal.parseStringWithMode("1234567.13", DecimalMode.US_CURRENCY)
+        assertFalse(unscaled.usingScale)
+
+        unscaled = unscaled.scale(2)
+        assertEquals(0, unscaled.compare(currency))
+
+        unscaled = unscaled.scale(0)
+        currency = currency.scale(0)
+        assertEquals(0, unscaled.compare(currency))
+
+        unscaled = unscaled.removeScale()
+        currency = currency.removeScale()
+        assertFalse(unscaled.usingScale)
+        assertEquals(0, unscaled.compare(currency))
+    }
+
+    @Test
+    fun multiplyingKeepsLargerScale() {
+        val factor = BigDecimal.parseStringWithMode("2", DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 0))
+        val product = bigAmount.multiply(factor)
+        val javaProduct = java.math.BigDecimal(bigAmountString).setScale(2).multiply(java.math.BigDecimal("2"))
+        assertEquals(2, product.scale)
+        assertEquals(2, javaProduct.scale())
+        assertEquals(javaProduct.toPlainString(), product.toPlainString())
+        assertEquals(javaProduct.setScale(2).toPlainString(), product.scale(2).toPlainString())
     }
 
     @Test
