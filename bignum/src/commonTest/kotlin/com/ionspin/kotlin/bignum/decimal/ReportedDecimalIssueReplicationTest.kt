@@ -689,4 +689,13 @@ class ReportedDecimalIssueReplicationTest {
         assertEquals("1".toBigDecimal(), withMode.scale(2))
         assertEquals(RoundingMode.FLOOR, withMode.scale(2).roundingMode)
     }
+
+    @Test
+    fun testToStringOfNegativeWithSingleSignificantDigit() {
+        assertEquals("-5.0", (-5).toBigDecimal().toString())
+        assertEquals("-5.0E+1", (-50).toBigDecimal().toString())
+        assertEquals("-1.0E-3", "-0.001".toBigDecimal().toString())
+        assertEquals("-1.2E+1", (-12).toBigDecimal().toString())
+        assertEquals("5.0", 5.toBigDecimal().toString())
+    }
 }

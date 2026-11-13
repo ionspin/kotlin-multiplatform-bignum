@@ -2272,8 +2272,8 @@ class BigDecimal private constructor(
         } else {
             1
         }
-        val expand = if (significand.toString().dropLastWhile { it == '0' }.length <= 1) {
-            "0"
+        val expand = if (significand.toStringWithoutSign(10).dropLastWhile { it == '0' }.length <= 1) {
+        "0"
         } else {
             ""
         }
