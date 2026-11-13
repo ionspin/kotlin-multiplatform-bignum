@@ -551,4 +551,43 @@ class ReportedDecimalIssueReplicationTest {
         }
         assertEquals(BigInteger.parseString("30"), BigInteger.parseString("1e", 16))
     }
+
+    @Test
+    fun floorAndCeilDoNotLeakRoundingMode() {
+        val floored = "12.7".toBigDecimal().floor()
+        val ceiled = "12.2".toBigDecimal().ceil()
+        assertEquals(null, floored.decimalMode)
+        assertEquals(null, ceiled.decimalMode)
+        assertEquals("144".toBigDecimal(), floored * floored)
+        assertEquals("111".toBigDecimal(), floored + "99.5".toBigDecimal().floor())
+        assertEquals("169".toBigDecimal(), ceiled * ceiled)
+        assertEquals("113".toBigDecimal(), ceiled + "99.5".toBigDecimal().ceil())
+        assertEquals("-13".toBigDecimal(), "-12.7".toBigDecimal().floor())
+        assertEquals("-12".toBigDecimal(), "-12.7".toBigDecimal().ceil())
+        assertEquals("100".toBigDecimal(), "99.5".toBigDecimal().ceil())
+    }
+
+    @Test
+    fun floorAndCeilRetainOriginalDecimalMode() {
+        val precisionMode = DecimalMode(5, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
+        val withPrecision = "12.7".toBigDecimal(decimalMode = precisionMode)
+        assertEquals(precisionMode, withPrecision.floor().decimalMode)
+        assertEquals(precisionMode, withPrecision.ceil().decimalMode)
+        assertEquals("12".toBigDecimal(), withPrecision.floor())
+        assertEquals("13".toBigDecimal(), withPrecision.ceil())
+        assertEquals("144".toBigDecimal(), withPrecision.floor() * withPrecision.floor())
+
+        val scaleMode = DecimalMode(20, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, 2)
+        val withScale = "12.75".toBigDecimal(decimalMode = scaleMode)
+        assertEquals(2, withScale.floor().decimalMode?.scale)
+        assertEquals(RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, withScale.ceil().decimalMode?.roundingMode)
+        assertEquals("12".toBigDecimal(), withScale.floor())
+        assertEquals("13".toBigDecimal(), withScale.ceil())
+
+        val small = "0.5".toBigDecimal(decimalMode = precisionMode)
+        assertEquals(precisionMode, small.floor().decimalMode)
+        assertEquals(precisionMode, small.ceil().decimalMode)
+        assertEquals(BigDecimal.ZERO, small.floor())
+        assertEquals(BigDecimal.ONE, small.ceil())
+    }
 }

@@ -2,7 +2,20 @@
 (All dates are DD.MM.YYYY)
 
 
-##### 0.3.11-SNAPSHOT - current 
+##### 0.4.0
+- Bump to kotlin 2.4.21
+- Fix for #337, #331, #330, #324, #318, #290, #284, #276, #263
+- **Potentially breaking fix**: Decimal mode was not consistently returned in some of the operations
+this is now fixed across all operations.
+- Added and/or/xor TwosComplement for Java BigInt like bitwise operations
+- Define negative shift left and right as positive shift in other direction
+- Define and document sign handling when using xor and or bitwise operations
+- Big integer remainder now correctly returns the result with the sign of divisor instead of dividend
+- Fix big integer not() failing in some corner cases
+- Fix big integer setBitAt() flipping bits
+- Apply proper float and double conversion for big integer like in big decimal
+- Fix ushort value conversion
+
 
 ##### 0.3.10 - 15.7.2024
 - Fix for #280, return byte array containing zero instead of empty array when big integer is zero.

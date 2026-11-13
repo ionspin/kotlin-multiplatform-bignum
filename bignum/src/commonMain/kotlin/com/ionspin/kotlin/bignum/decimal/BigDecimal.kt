@@ -1616,12 +1616,13 @@ class BigDecimal private constructor(
     fun floor(): BigDecimal {
         if (exponent < 0) {
             return when (significand.sign) {
-                Sign.POSITIVE -> ZERO
-                Sign.NEGATIVE -> ONE.negate()
-                Sign.ZERO -> ZERO
+                Sign.POSITIVE -> BigDecimal(BigInteger.ZERO, 0, decimalMode)
+                Sign.NEGATIVE -> BigDecimal(BigInteger.ONE.negate(), 0, decimalMode)
+                Sign.ZERO -> BigDecimal(BigInteger.ZERO, 0, decimalMode)
             }
         }
-        return roundSignificand(DecimalMode(exponent + 1, RoundingMode.FLOOR))
+        val rounded = roundSignificand(DecimalMode(exponent + 1, RoundingMode.FLOOR))
+        return BigDecimal(rounded.significand, rounded.exponent, decimalMode)
     }
 
     /**
@@ -1629,16 +1630,17 @@ class BigDecimal private constructor(
      */
     fun ceil(): BigDecimal {
         if (isZero()) {
-            return ZERO
+            return BigDecimal(BigInteger.ZERO, 0, decimalMode)
         }
         if (exponent < 0) {
             return when (significand.sign) {
-                Sign.POSITIVE -> ONE
-                Sign.NEGATIVE -> ZERO
-                Sign.ZERO -> ZERO
+                Sign.POSITIVE -> BigDecimal(BigInteger.ONE, 0, decimalMode)
+                Sign.NEGATIVE -> BigDecimal(BigInteger.ZERO, 0, decimalMode)
+                Sign.ZERO -> BigDecimal(BigInteger.ZERO, 0, decimalMode)
             }
         }
-        return roundSignificand(DecimalMode(exponent + 1, RoundingMode.CEILING))
+        val rounded = roundSignificand(DecimalMode(exponent + 1, RoundingMode.CEILING))
+        return BigDecimal(rounded.significand, rounded.exponent, decimalMode)
     }
 
     /**
