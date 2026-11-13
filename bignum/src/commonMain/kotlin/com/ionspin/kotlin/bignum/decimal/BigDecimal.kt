@@ -958,24 +958,9 @@ class BigDecimal private constructor(
                         val left = split[0].substring(startIndex = leftStart)
                         val rightSplit = split[1].split('E', 'e')
                         val right = rightSplit[0]
-                        val exponentSplit = rightSplit[1]
-                        val exponentSignPresent = (exponentSplit[0] == '-' || exponentSplit[0] == '+')
-                        val exponentSign = if (exponentSplit[0] == '-') {
-                            Sign.NEGATIVE
-                        } else {
-                            Sign.POSITIVE
-                        }
-                        val skipSignIfPresent = if (exponentSignPresent) {
-                            1
-                        } else {
-                            0
-                        }
-                        val exponentString = exponentSplit.substring(startIndex = skipSignIfPresent)
-                        val exponent = if (exponentSign == Sign.POSITIVE) {
-                            exponentString.toLong(10)
-                        } else {
-                            exponentString.toLong(10) * -1
-                        }
+
+                        val exponent = rightSplit.getOrNull(1)?.toLongOrNull()
+                            ?: throw ArithmeticException("Invalid (or unsupported) floating point number format: $floatingPointString")
 
                         var leftFirstNonZero = left.indexOfFirst { it != '0' }
 
@@ -999,7 +984,7 @@ class BigDecimal private constructor(
                             significand = significand.negate()
                         }
                         // here we need to cover mixed scientific and expanded notationtions, such as 0.00375E-20 = 3.75E-22
-                        val exponentModifiedByFloatingPointPosition = if (leftTruncated != "0") {
+                        val exponentModifiedByFloatingPointPosition = if (left.any { it != '0' }) {
                             // i.e. 375E-37 = 3.75*10^2*10^-37 =4.75 * 10^-35
                             exponent + leftTruncated.length - 1
                         } else {
@@ -1079,8 +1064,8 @@ class BigDecimal private constructor(
 
     /**
      * @param scale a value between 0 and if precision is limited, precision - 1.
-     * @return a new BigDecimal with same precision and RoundingMode, but new scale applied. If current
-     * DecimalMode is null and scale is not null, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO is default
+     * @return a new BigDecimal with same precision and RoundingMode, but new scale applied.
+     * @throws ArithmeticException if scale is negative or the rounding mode is RoundingMode.NONE
      */
     @JvmOverloads
     fun scale(scale: Long, roundingMode: RoundingMode = this.roundingMode): BigDecimal {

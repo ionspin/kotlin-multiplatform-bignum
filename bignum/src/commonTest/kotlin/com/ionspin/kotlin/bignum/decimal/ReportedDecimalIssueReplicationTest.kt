@@ -698,4 +698,15 @@ class ReportedDecimalIssueReplicationTest {
         assertEquals("-1.2E+1", (-12).toBigDecimal().toString())
         assertEquals("5.0", 5.toBigDecimal().toString())
     }
+
+    @Test
+    fun subtractWithExplicitScaleModeMatchesAdd() {
+        val mode = DecimalMode(roundingMode = RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, scale = 2)
+        val a = "1.005".toBigDecimal()
+        val b = "0.001".toBigDecimal()
+
+        assertEquals("1.01".toBigDecimal(), a.add(b, mode))
+        assertEquals("1.01".toBigDecimal(), a.subtract(b.negate(), mode))
+        assertEquals("1".toBigDecimal(), a.subtract(b, mode))
+    }
 }

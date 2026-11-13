@@ -98,6 +98,9 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
                 }
                 return bigDecimal.toBigInteger()
             }
+            if (string.isEmpty()) {
+                throw NumberFormatException("Invalid big integer: $string")
+            }
             val signed = (string[0] == '-' || string[0] == '+')
             return if (signed) {
                 if (string.length == 1) {

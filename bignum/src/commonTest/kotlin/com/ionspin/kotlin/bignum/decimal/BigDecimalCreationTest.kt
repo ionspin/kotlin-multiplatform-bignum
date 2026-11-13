@@ -17,9 +17,12 @@
 
 package com.ionspin.kotlin.bignum.decimal
 
+import com.ionspin.kotlin.bignum.integer.BigInteger
 import com.ionspin.kotlin.bignum.integer.toBigInteger
 import kotlin.test.Ignore
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 /**
@@ -288,5 +291,19 @@ class BigDecimalCreationTest {
             val expected = 0.0012345.toBigDecimal()
             moved == expected
         }
+    }
+
+    @Test
+    fun testScientificNotationEdgeCases() {
+        assertEquals("5".toBigDecimal(), "00.5E1".toBigDecimal())
+        assertEquals("0.5".toBigDecimal(), ".05E1".toBigDecimal())
+        assertEquals("-0.5".toBigDecimal(), "-.05E1".toBigDecimal())
+        assertEquals("75".toBigDecimal(), "007.5E1".toBigDecimal())
+        assertEquals("15".toBigDecimal(), "1.5E+1".toBigDecimal())
+
+        listOf("1.5E", "1.5E+", "1.5Ex", "1E5.3").forEach {
+            assertFailsWith<ArithmeticException> { it.toBigDecimal() }
+        }
+        assertFailsWith<NumberFormatException> { BigInteger.parseString("", 10) }
     }
 }
