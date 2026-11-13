@@ -184,7 +184,7 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
 
         override fun tryFromFloat(float: Float, exactRequired: Boolean): BigInteger {
             val floatDecimalPart = float - floor(float)
-            val bigDecimal = BigDecimal.fromFloat(floor(float), null)
+            val bigDecimal = BigDecimal.fromFloat(float, null)
 
             if (exactRequired) {
                 if (floatDecimalPart > 0) {
@@ -196,7 +196,7 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
 
         override fun tryFromDouble(double: Double, exactRequired: Boolean): BigInteger {
             val doubleDecimalPart = double - floor(double)
-            val bigDecimal = BigDecimal.fromDouble(floor(double), null)
+            val bigDecimal = BigDecimal.fromDouble(double, null)
 
             if (exactRequired) {
                 if (doubleDecimalPart > 0) {
@@ -328,7 +328,7 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
         }
 
         val result = arithmetic.divide(this.magnitude, other.magnitude).first
-        return if (result == arithmetic.ZERO) {
+        return if (isResultZero(result)) {
             ZERO
         } else {
             val sign = if (this.sign != other.sign) {
@@ -362,12 +362,12 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
             Sign.POSITIVE
         }
         val result = arithmetic.divide(this.magnitude, other.magnitude)
-        val quotient = if (result.first == arithmetic.ZERO) {
+        val quotient = if (isResultZero(result.first)) {
             ZERO
         } else {
             BigInteger(result.first, sign)
         }
-        val remainder = if (result.second == arithmetic.ZERO) {
+        val remainder = if (isResultZero(result.second)) {
             ZERO
         } else {
             BigInteger(result.second, this.sign)
@@ -626,7 +626,7 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
      */
     override infix fun shr(places: Int): BigInteger {
         val result = BigInteger(arithmetic.shiftRight(this.magnitude, places), sign)
-        if (result.magnitude == arithmetic.ZERO) {
+        if (result.isZero()) {
             return ZERO
         }
         return result
@@ -784,11 +784,9 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
      * to check if it's a decimal or integer number before comparing.
      */
     private fun javascriptNumberComparison(number: Number): Int {
-        val double = number.toDouble()
-        return when {
-            double > Long.MAX_VALUE -> { compare(parseString(double.toString())) } // This whole block can be removed after 1.6.20 and https://github.com/JetBrains/kotlin/pull/4364
-            double % 1 == 0.0 -> compare(fromLong(number.toLong()))
-            else -> compareFloatAndBigInt(number.toFloat()) { compare(it) }
+        return when (number) {
+            is Long -> compare(fromLong(number))
+            else -> compareDoubleAndBigInt(number.toDouble()) { compare(it) }
         }
     }
 

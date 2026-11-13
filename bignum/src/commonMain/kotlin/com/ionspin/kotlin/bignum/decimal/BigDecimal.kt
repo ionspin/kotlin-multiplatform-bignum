@@ -2107,13 +2107,9 @@ class BigDecimal private constructor(
      * to check if it's a decimal or integer number before comparing.
      */
     private fun javascriptNumberComparison(number: Number): Int {
-        val double = number.toDouble()
-        return when {
-            double > Long.MAX_VALUE -> {
-                compare(parseString(double.toString()))
-            } // This whole block can be removed after 1.6.20 and https://github.com/JetBrains/kotlin/pull/4364
-            double % 1 == 0.0 -> compare(fromLong(number.toLong()))
-            else -> compare(number.toDouble().toBigDecimal())
+        return when (number) {
+            is Long -> compare(fromLong(number))
+            else -> compare(fromDouble(number.toDouble()))
         }
     }
 

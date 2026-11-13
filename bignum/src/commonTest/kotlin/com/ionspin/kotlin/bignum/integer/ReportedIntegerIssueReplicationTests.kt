@@ -74,4 +74,47 @@ class ReportedIntegerIssueReplicationTests {
         assertEquals(BigInteger.ONE, 7.toBigInteger().pow(0))
         assertEquals(BigInteger.ONE, (-7).toBigInteger().pow(0))
     }
+
+    @Test
+    fun testComparisonWithDoublesOutsideLongRange() {
+        val belowLong = BigInteger.parseString("-10000000000000000000")
+        assertEquals(0, belowLong.compareTo(-1e19))
+        assertEquals(1, belowLong.compareTo(-1e20))
+        assertEquals(-1, belowLong.compareTo(-1e18))
+        assertEquals(1, BigInteger.fromInt(3).compareTo(2.9999999999))
+        assertEquals(-1, BigInteger.fromInt(3).compareTo(3.0000000001))
+        assertEquals(0, BigInteger.fromLong(Long.MAX_VALUE).compareTo(Long.MAX_VALUE))
+    }
+
+    @Test
+    fun testTryFromFloatingPointTruncates() {
+        assertEquals(BigInteger.fromInt(-1), BigInteger.tryFromDouble(-1.5))
+        assertEquals(BigInteger.fromInt(-1), BigInteger.tryFromFloat(-1.5f))
+        assertEquals(BigInteger.ONE, BigInteger.tryFromDouble(1.5))
+        assertEquals(BigInteger.ZERO, BigInteger.tryFromDouble(-0.5))
+        assertFailsWith<ArithmeticException> { BigInteger.tryFromDouble(-1.5, true) }
+    }
+
+    @Test
+    fun testFullWidthLetterDigits() {
+        assertEquals(BigInteger.fromInt(255), BigInteger.parseString("\uFF26\uFF26", 16))
+        assertEquals(BigInteger.fromInt(255), BigInteger.parseString("\uFF46\uFF46", 16))
+        assertEquals(BigInteger.fromInt(35), BigInteger.parseString("\uFF3A", 36))
+    }
+
+    @Test
+    fun testShiftRightByWholeWords() {
+        val value = BigInteger.parseString("123456789012345678901234567890123456789012345678901234567890")
+        assertEquals(value, (value shl 126) shr 126)
+        assertEquals(value / BigInteger.ONE.shl(63), value shr 63)
+        assertEquals(BigInteger.ZERO, value shr 630)
+    }
+
+    @Test
+    fun testGcdWithManySharedFactorsOfTwo() {
+        val first = BigInteger.fromInt(3) shl 5000
+        val second = BigInteger.fromInt(5) shl 6000
+        assertEquals(BigInteger.ONE shl 5000, first.gcd(second))
+        assertEquals(first, first.gcd(BigInteger.ZERO))
+    }
 }

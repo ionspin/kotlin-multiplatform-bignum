@@ -18,6 +18,7 @@
 package com.ionspin.kotlin.bignum.decimal
 
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 /**
@@ -70,5 +71,15 @@ class BigDecimalComparisonTest {
         val b = BigDecimal.fromIntWithExponent(1234, -192)
         assertTrue { a == b }
         assertTrue { a.hashCode() == b.hashCode() }
+    }
+
+    @Test
+    fun testComparisonWithDoublesOutsideLongRange() {
+        val belowLong = "-10000000000000000000".toBigDecimal()
+        assertEquals(0, belowLong.compareTo(-1e19))
+        assertEquals(1, belowLong.compareTo(-1e20))
+        assertEquals(-1, belowLong.compareTo(-1e18))
+        assertEquals(0, "2.5".toBigDecimal().compareTo(2.5))
+        assertEquals(0, Long.MAX_VALUE.toBigDecimal().compareTo(Long.MAX_VALUE))
     }
 }

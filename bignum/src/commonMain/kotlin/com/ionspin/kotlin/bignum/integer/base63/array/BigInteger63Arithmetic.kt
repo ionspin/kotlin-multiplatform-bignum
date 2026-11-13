@@ -353,7 +353,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         }
 
         if (shiftBits == 0) {
-            operand.copyOfRange(realOperandSize - wordsToDiscard, realOperandSize)
+            return operand.copyOfRange(wordsToDiscard, realOperandSize)
         }
 
         if (realOperandSize > 1 && realOperandSize - wordsToDiscard == 1) {
@@ -1738,7 +1738,18 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         return u
     }
 
-    private tailrec fun binaryGcd(first: ULongArray, second: ULongArray): ULongArray {
+    private fun binaryGcd(first: ULongArray, second: ULongArray): ULongArray {
+        if (first.isZero()) {
+            return second
+        }
+        if (second.isZero()) {
+            return first
+        }
+        val commonTwos = minOf(trailingZeroBits(first), trailingZeroBits(second))
+        return oddBinaryGcd(first shr commonTwos, second shr commonTwos) shl commonTwos
+    }
+
+    private tailrec fun oddBinaryGcd(first: ULongArray, second: ULongArray): ULongArray {
         // debugOperandsCheck(first, second)
         if (first.contentEquals(second)) {
             return first
@@ -1752,26 +1763,8 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
             return first
         }
 
-        if (and(
-                first,
-                ONE
-            ).isZero()
-        ) { // first is even
-            if (and(
-                    second,
-                    ONE
-                ).isZero()
-            ) { // second is even
-                return binaryGcd(
-                    first shr 1,
-                    second shr 1
-                ) shl 1
-            } else { // second is odd
-                return binaryGcd(
-                    first shr 1,
-                    second
-                )
-            }
+        if (and(first, ONE).isZero()) {
+            return oddBinaryGcd(first shr 1, second)
         }
 
         if (and(
