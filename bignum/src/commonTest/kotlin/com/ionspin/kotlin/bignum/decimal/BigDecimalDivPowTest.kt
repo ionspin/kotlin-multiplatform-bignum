@@ -18,6 +18,7 @@
 package com.ionspin.kotlin.bignum.decimal
 
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
@@ -87,5 +88,19 @@ class BigDecimalDivPowTest {
             val a = 0.toBigDecimal()
             val result = a.pow(-1)
         }
+    }
+
+    @Test
+    fun testPowRoundsOnce() {
+        val threeDigits = DecimalMode(3, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
+        val twoDigits = DecimalMode(2, RoundingMode.ROUND_HALF_AWAY_FROM_ZERO)
+        val scaleTwo = DecimalMode(roundingMode = RoundingMode.ROUND_HALF_AWAY_FROM_ZERO, scale = 2)
+
+        assertEquals(0, "1.1".toBigDecimal(decimalMode = threeDigits).pow(10).compareTo("2.59".toBigDecimal()))
+        assertEquals(0, "1.5".toBigDecimal(decimalMode = twoDigits).pow(5).compareTo("7.6".toBigDecimal()))
+        assertEquals(0, "1.1".toBigDecimal(decimalMode = threeDigits).pow(-10).compareTo("0.386".toBigDecimal()))
+        assertEquals(0, "0.01".toBigDecimal(decimalMode = scaleTwo).pow(-2).compareTo("10000".toBigDecimal()))
+        assertEquals(0, "1.5".toBigDecimal().pow(5).compareTo("7.59375".toBigDecimal()))
+        assertEquals(0, "-2".toBigDecimal().pow(3).compareTo("-8".toBigDecimal()))
     }
 }

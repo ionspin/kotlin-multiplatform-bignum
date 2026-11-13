@@ -1726,35 +1726,28 @@ class BigDecimal private constructor(
         if (this.isZero() && exponent < 0) {
             throw ArithmeticException("Negative exponentiation of zero is not defined.")
         }
-        var result = this
+        val resolvedDecimalMode = resolveDecimalMode(this, ScaleOps.Max, null)
         return when {
             exponent > 0 -> {
-                for (i in 0 until exponent - 1) {
-                    result *= this
-                }
-                result
+                val power = exactPow(exponent)
+                roundOrDont(power.significand, power.exponent, resolvedDecimalMode)
             }
 
             exponent < 0 -> {
-                if (exponent == Long.MIN_VALUE) {
-                    for (i in 0..Long.MAX_VALUE) {
-                        result /= this
-                    }
-                    // And another division beacuse min value is -9223372036854775808L and max value is 9223372036854775807L
-                    result /= this
-                } else {
-                    for (i in 0..exponent.absoluteValue) {
-                        result /= this
-                    }
-                }
-
-                result
+                ONE.divide(exactPow(-exponent), resolvedDecimalMode)
             }
 
             else -> {
                 BigDecimal(BigInteger.ONE, 0, decimalMode)
             }
         }
+    }
+
+    private fun exactPow(exponent: Long): BigDecimal {
+        val newSignificand = significand.pow(exponent)
+        val newExponent = (this.exponent - significand.numberOfDecimalDigits() + 1) * exponent +
+                newSignificand.numberOfDecimalDigits() - 1
+        return BigDecimal(newSignificand, newExponent)
     }
 
     /**
