@@ -150,9 +150,9 @@ class ConversionTest {
     fun testFloatAndDoubleExactRequired() {
         assertTrue { 16777216.toBigInteger().floatValue(true) == 16777216f }
         assertFailsWith<ArithmeticException> { 16777217.toBigInteger().floatValue(true) }
-        assertTrue { 16777217.toBigInteger().floatValue(false) == 16777216f }
-        assertTrue { BigInteger.ONE.shl(100).floatValue(true) == 1.2676506E30f }
-        assertTrue { (-BigInteger.ONE.shl(100)).floatValue(true) == -1.2676506E30f }
+        assertTrue { 16777217.toBigInteger().floatValue(false) == "16777217".toFloat() }
+        assertTrue { BigInteger.ONE.shl(100).floatValue(true) == 1048576f * 1048576f * 1048576f * 1048576f * 1048576f }
+        assertTrue { (-BigInteger.ONE.shl(100)).floatValue(true) == -(1048576f * 1048576f * 1048576f * 1048576f * 1048576f) }
         assertFailsWith<ArithmeticException> { BigInteger.ONE.shl(128).floatValue(true) }
         assertTrue { BigInteger.ZERO.floatValue(true) == 0f }
 
