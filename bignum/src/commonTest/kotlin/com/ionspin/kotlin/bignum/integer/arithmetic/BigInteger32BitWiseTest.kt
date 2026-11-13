@@ -81,4 +81,29 @@ class BigInteger32BitWiseTest {
                 .contentEquals(BigInteger32Arithmetic.shiftLeft(operand, 40))
         }
     }
+
+    @Test
+    fun setBitAtClearAndGrowTest() {
+        assertTrue { BigInteger32Arithmetic.setBitAt(uintArrayOf(4U), 1, false).contentEquals(uintArrayOf(4U)) }
+        assertTrue { BigInteger32Arithmetic.setBitAt(uintArrayOf(4U), 200, false).contentEquals(uintArrayOf(4U)) }
+        assertTrue {
+            BigInteger32Arithmetic.setBitAt(uintArrayOf(4U), 200, true)
+                .contentEquals(uintArrayOf(4U, 0U, 0U, 0U, 0U, 0U, 256U))
+        }
+        assertTrue { BigInteger32Arithmetic.setBitAt(uintArrayOf(0U, 1U), 32, false).contentEquals(uintArrayOf(0U, 0U)) }
+    }
+
+    @Test
+    fun notMultiWordAndZeroTest() {
+        assertTrue { BigInteger32Arithmetic.not(uintArrayOf(5U, 1U)).contentEquals(uintArrayOf(0xFFFFFFFAU)) }
+        assertTrue { BigInteger32Arithmetic.not(uintArrayOf(12U)).contentEquals(uintArrayOf(3U)) }
+        assertTrue { BigInteger32Arithmetic.not(uintArrayOf(0U)).contentEquals(BigInteger32Arithmetic.ZERO) }
+    }
+
+    @Test
+    fun trailingZerosAtEveryPositionTest() {
+        for (position in 0..31) {
+            assertTrue { BigInteger32Arithmetic.numberOfTrailingZerosInAWord(1U shl position) == position }
+        }
+    }
 }

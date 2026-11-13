@@ -26,7 +26,6 @@ import com.ionspin.kotlin.bignum.integer.util.toDigit
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
 import kotlin.math.floor
-import kotlin.math.min
 
 /**
  * Created by Ugljesa Jovanovic
@@ -117,7 +116,7 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
         if (y != 0U) {
             return n - 2
         }
-        return n - x.toInt()
+        return if (x == 0U) n else n - 1
     }
 
     override fun bitLength(value: UIntArray): Int {
@@ -819,44 +818,6 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
         return Pair(removeLeadingZeros(quotient), denormRemainder)
     }
 
-    fun basicDivide2(
-        unnormalizedDividend: UIntArray,
-        unnormalizedDivisor: UIntArray
-    ): Pair<UIntArray, UIntArray> {
-        var (a, b, shift) = normalize(unnormalizedDividend, unnormalizedDivisor)
-        val m = a.size - b.size
-        val bmb = b shl (m * wordSizeInBits)
-        var q = UIntArray(m + 1) { 0U }
-        if (a > bmb) {
-            q[m] = 1U
-            a = a - bmb
-        }
-        var qjhat = ZERO
-        var qjhatULong = 0UL
-        var bjb = ZERO
-        var delta = ZERO
-        for (j in m - 1 downTo 0) {
-            qjhatULong = toULongExact(a.copyOfRange(b.size - 1, b.size + 1)) / b[b.size - 1]
-            q[j] = min(qjhatULong, baseMask).toUInt()
-            bjb = b shl (j * wordSizeInBits)
-            val qjBjb = (b * q[j]) shl (j * wordSizeInBits)
-            if (qjBjb > a) {
-                delta = qjBjb - a
-                while (delta > qjBjb) {
-                    q[j] = q[j] - 1U
-                    delta = delta - bjb
-                }
-                // quotient is now such that q[j] * b*B^j won't be larger than divisor
-                a = a - (b * q[j]) shl (j * wordSizeInBits)
-            } else {
-                a = a - qjBjb
-            }
-        }
-        val denormRemainder =
-            denormalize(a, shift)
-        return Pair(removeLeadingZeros(q), denormRemainder)
-    }
-
     fun d1ReciprocalRecursiveWordVersion(a: UIntArray): Pair<UIntArray, UIntArray> {
         val n = a.size - 1
         if (n <= 2) {
@@ -1149,9 +1110,15 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
     }
 
     override fun not(operand: UIntArray): UIntArray {
+        val top = operand[operand.size - 1]
+        val cleanupMask = if (top == 0U) 0U else UInt.MAX_VALUE shr numberOfLeadingZerosInAWord(top)
         return removeLeadingZeros(
             UIntArray(operand.size) {
-                operand[it].inv()
+                if (it < operand.size - 1) {
+                    operand[it].inv()
+                } else {
+                    operand[it].inv() and cleanupMask
+                }
             }
         )
     }
@@ -1179,25 +1146,26 @@ internal object BigInteger32Arithmetic : BigInteger32ArithmeticInterface {
     }
 
     override fun setBitAt(operand: UIntArray, position: Long, bit: Boolean): UIntArray {
-        if (position / 63 > Int.MAX_VALUE) {
+        if (position / 32 > Int.MAX_VALUE) {
             throw RuntimeException("Invalid bit index, too large, cannot access word (Word position > Int.MAX_VALUE")
         }
 
-        val wordPosition = position / 63
-        if (wordPosition >= operand.size) {
-            throw IndexOutOfBoundsException("Invalid position, addressed word $wordPosition larger than number of words ${operand.size}")
+        val wordPosition = position / 32
+        if (wordPosition >= operand.size && !bit) {
+            return operand
         }
-        val bitPosition = position % 63
+        val bitPosition = position % 32
         val setMask = 1U shl bitPosition.toInt()
-        return UIntArray(operand.size) {
+        return UIntArray(kotlin.math.max(operand.size, wordPosition.toInt() + 1)) {
+            val word = if (it < operand.size) operand[it] else 0U
             if (it == wordPosition.toInt()) {
                 if (bit) {
-                    operand[it] or setMask
+                    word or setMask
                 } else {
-                    operand[it] xor setMask
+                    word and setMask.inv()
                 }
             } else {
-                operand[it]
+                word
             }
         }
     }

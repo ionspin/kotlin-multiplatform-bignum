@@ -135,7 +135,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
             return n - 2
         }
 
-        return n - x.toInt()
+        return if (x == 0UL) n else n - 1
     }
 
     fun numberOfTrailingZerosInAWord(value: ULong): Int {
@@ -172,7 +172,7 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         if (y != 0UL) {
             return n - 2
         }
-        return n - x.toInt()
+        return if (x == 0UL) n else n - 1
     }
 
     override fun bitLength(value: ULongArray): Int {
@@ -1277,60 +1277,6 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         )
     }
 
-    fun basicDivide2(
-        unnormalizedDividend: ULongArray,
-        unnormalizedDivisor: ULongArray
-    ): Pair<ULongArray, ULongArray> {
-        var (a, b, shift) = normalize(
-            unnormalizedDividend,
-            unnormalizedDivisor
-        )
-        val m = a.size - b.size
-        val bmb = b shl (m * wordSizeInBits)
-        var q = ULongArray(m + 1) { 0U }
-        if (a > bmb) {
-            q[m] = 1U
-            a = a - bmb
-        }
-        var qjhat = ZERO
-        var qjhatULong = ZERO
-        var bjb = ZERO
-        var delta = ZERO
-        for (j in m - 1 downTo 0) {
-            qjhatULong = BigInteger32Arithmetic.divide(
-                (a.copyOfRange(b.size - 1, b.size + 1)).to32Bit(),
-                ulongArrayOf(b[b.size - 1]).to32Bit()
-            ).first.from32Bit()
-            q[j] = min(
-                qjhatULong,
-                baseMaskArray
-            )[0]
-            bjb = b shl (j * BigInteger32Arithmetic.wordSizeInBits)
-            val qjBjb = (b * q[j]) shl (j * wordSizeInBits)
-            if (qjBjb > a) {
-                delta = qjBjb - a
-                while (delta > qjBjb) {
-                    q[j] = q[j] - 1U
-                    delta = delta - bjb
-                }
-                // quotient is now such that q[j] * b*B^j won't be larger than divisor
-                a = a - (b * q[j]) shl (j * BigInteger32Arithmetic.wordSizeInBits)
-            } else {
-                a = a - qjBjb
-            }
-        }
-        val denormRemainder =
-            denormalize(
-                a,
-                shift
-            )
-        return Pair(
-            removeLeadingZeros(
-                q
-            ), denormRemainder
-        )
-    }
-
     /**
      * When division is known to be exact ( no remainder, we can use this, especially in Toom-Cook)
      * TODO Need to move modInverse from BigInteger to arithmetic, and then replace here
@@ -2031,16 +1977,16 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
             numberOfLeadingZerosInAWord(
                 operand[operand.size - 1]
             )
-        val cleanupMask = (((1UL shl leadingZeros + 1) - 1U) shl (basePowerOfTwo - leadingZeros)).inv()
+        val cleanupMask = baseMask shr leadingZeros
         val inverted = ULongArray(operand.size) {
-            if (it < operand.size - 2) {
+            if (it < operand.size - 1) {
                 operand[it].inv() and baseMask
             } else {
                 operand[it].inv() and cleanupMask
             }
         }
 
-        return inverted
+        return removeLeadingZeros(inverted)
     }
 
     // -------------- Bitwise ---------------- //
@@ -2079,20 +2025,21 @@ internal object BigInteger63Arithmetic : BigIntegerArithmetic {
         }
 
         val wordPosition = position / 63
-        if (wordPosition >= operand.size) {
-            throw IndexOutOfBoundsException("Invalid position, addressed word $wordPosition larger than number of words ${operand.size}")
+        if (wordPosition >= operand.size && !bit) {
+            return operand
         }
         val bitPosition = position % 63
         val setMask = 1UL shl bitPosition.toInt()
-        return ULongArray(operand.size) {
+        return ULongArray(kotlin.math.max(operand.size, wordPosition.toInt() + 1)) {
+            val word = if (it < operand.size) operand[it] else 0UL
             if (it == wordPosition.toInt()) {
                 if (bit) {
-                    operand[it] or setMask
+                    word or setMask
                 } else {
-                    operand[it] xor setMask
+                    word and setMask.inv()
                 }
             } else {
-                operand[it]
+                word
             }
         }
     }

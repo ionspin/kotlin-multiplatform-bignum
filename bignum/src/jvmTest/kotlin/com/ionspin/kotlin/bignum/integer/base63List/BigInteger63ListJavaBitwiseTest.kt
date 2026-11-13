@@ -20,6 +20,7 @@ package com.ionspin.kotlin.bignum.integer.base63List
 import com.ionspin.kotlin.bignum.integer.base63.BigInteger63LinkedListArithmetic
 import kotlin.random.Random
 import kotlin.random.nextULong
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.test.fail
 import kotlinx.coroutines.GlobalScope
@@ -224,5 +225,12 @@ class BigInteger63ListJavaBitwiseTest() {
             .xor(1.toBigInteger().shr(operand.toJavaBigInteger().bitLength()) - 1.toBigInteger())
 
         assertTrue { result.toJavaBigInteger() == bigIntResult }
+    }
+
+    @Test
+    fun setBitAtClearAndGrowTest() {
+        assertEquals(listOf(4UL), BigInteger63LinkedListArithmetic.setBitAt(listOf(4UL), 1, false))
+        assertEquals(listOf(4UL), BigInteger63LinkedListArithmetic.setBitAt(listOf(4UL), 200, false))
+        assertEquals(listOf(4UL, 0UL, 0UL, 2048UL), BigInteger63LinkedListArithmetic.setBitAt(listOf(4UL), 200, true))
     }
 }

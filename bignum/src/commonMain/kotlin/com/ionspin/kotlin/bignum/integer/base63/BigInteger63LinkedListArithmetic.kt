@@ -123,7 +123,7 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
         if (y != 0UL) {
             return n - 2
         }
-        return n - x.toInt()
+        return if (x == 0UL) n else n - 1
     }
 
     override fun bitLength(value: List<ULong>): Int {
@@ -1159,16 +1159,16 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
 
     override fun not(operand: List<ULong>): List<ULong> {
         val leadingZeros = numberOfLeadingZerosInAWord(operand[operand.size - 1])
-        val cleanupMask = (((1UL shl leadingZeros + 1) - 1U) shl (basePowerOfTwo - leadingZeros)).inv()
+        val cleanupMask = baseMask shr leadingZeros
         val inverted = List<ULong>(operand.size) {
-            if (it < operand.size - 2) {
+            if (it < operand.size - 1) {
                 operand[it].inv() and baseMask
             } else {
                 operand[it].inv() and cleanupMask
             }
         }
 
-        return inverted
+        return removeLeadingZeros(inverted)
     }
 
     // -------------- Bitwise ---------------- //
@@ -1201,20 +1201,21 @@ internal object BigInteger63LinkedListArithmetic : BigIntegerList63Arithmetic {
         }
 
         val wordPosition = position / 63
-        if (wordPosition >= operand.size) {
-            throw IndexOutOfBoundsException("Invalid position, addressed word $wordPosition larger than number of words ${operand.size}")
+        if (wordPosition >= operand.size && !bit) {
+            return operand
         }
         val bitPosition = position % 63
         val setMask = 1UL shl bitPosition.toInt()
-        return List(operand.size) {
+        return List(kotlin.math.max(operand.size, wordPosition.toInt() + 1)) {
+            val word = if (it < operand.size) operand[it] else 0UL
             if (it == wordPosition.toInt()) {
                 if (bit) {
-                    operand[it] or setMask
+                    word or setMask
                 } else {
-                    operand[it] xor setMask
+                    word and setMask.inv()
                 }
             } else {
-                operand[it]
+                word
             }
         }
     }

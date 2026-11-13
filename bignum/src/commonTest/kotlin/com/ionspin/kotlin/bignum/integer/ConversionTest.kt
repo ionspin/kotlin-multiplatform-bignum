@@ -125,7 +125,7 @@ class ConversionTest {
             assertTrue {
                 val bigInt = BigInteger.parseString(it)
                 val float = it.toFloat()
-                bigInt.floatValue() == float
+                bigInt.floatValue(false) == float
             }
         }
     }
@@ -141,9 +141,27 @@ class ConversionTest {
             assertTrue {
                 val bigInt = BigInteger.parseString(it)
                 val double = it.toDouble()
-                bigInt.doubleValue() == double
+                bigInt.doubleValue(false) == double
             }
         }
+    }
+
+    @Test
+    fun testFloatAndDoubleExactRequired() {
+        assertTrue { 16777216.toBigInteger().floatValue(true) == 16777216f }
+        assertFailsWith<ArithmeticException> { 16777217.toBigInteger().floatValue(true) }
+        assertTrue { 16777217.toBigInteger().floatValue(false) == "16777217".toFloat() }
+        assertTrue { BigInteger.ONE.shl(100).floatValue(true) == 1048576f * 1048576f * 1048576f * 1048576f * 1048576f }
+        assertTrue { (-BigInteger.ONE.shl(100)).floatValue(true) == -(1048576f * 1048576f * 1048576f * 1048576f * 1048576f) }
+        assertFailsWith<ArithmeticException> { BigInteger.ONE.shl(128).floatValue(true) }
+        assertTrue { BigInteger.ZERO.floatValue(true) == 0f }
+
+        assertTrue { 9007199254740992L.toBigInteger().doubleValue(true) == 9007199254740992.0 }
+        assertFailsWith<ArithmeticException> { 9007199254740993L.toBigInteger().doubleValue(true) }
+        assertTrue { 9007199254740993L.toBigInteger().doubleValue(false) == 9007199254740992.0 }
+        assertTrue { BigInteger.ONE.shl(200).doubleValue(true) == 1.6069380442589903E60 }
+        assertFailsWith<ArithmeticException> { BigInteger.ONE.shl(1024).doubleValue(true) }
+        assertTrue { BigInteger.ZERO.doubleValue(true) == 0.0 }
     }
 
     @Ignore // Takes too long on Travis, so JS test fail (>2000ms). Karatsuba implementation slowed this down, so needs investigation
@@ -256,5 +274,16 @@ class ConversionTest {
         assertTrue {
             UByte.MAX_VALUE.toBigInteger().ubyteValue() == UByte.MAX_VALUE
         }
+    }
+
+    @Test
+    fun testUShortValueOfNegative() {
+        val negative = (-5).toBigInteger()
+        assertFailsWith<ArithmeticException> { negative.ushortValue(true) }
+        assertTrue { negative.ushortValue(false) == 5.toUShort() }
+        assertTrue { negative.ushortValue(false).toUInt() == negative.ubyteValue(false).toUInt() }
+        assertTrue { negative.ushortValue(false).toUInt() == negative.uintValue(false) }
+        assertFailsWith<ArithmeticException> { 65536.toBigInteger().ushortValue(true) }
+        assertTrue { 65536.toBigInteger().ushortValue(false) == 0.toUShort() }
     }
 }

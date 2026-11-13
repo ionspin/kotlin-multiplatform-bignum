@@ -345,17 +345,8 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
         if (other.isZero()) {
             throw ArithmeticException("Division by zero! $this / $other")
         }
-        var sign = if (this.sign != other.sign) {
-            Sign.NEGATIVE
-        } else {
-            Sign.POSITIVE
-        }
         val result = arithmetic.divide(this.magnitude, other.magnitude).second
-        if (result == arithmetic.ZERO) {
-            sign = Sign.ZERO
-        }
-
-        return BigInteger(result, sign)
+        return BigInteger(result, this.sign)
     }
 
     override fun divideAndRemainder(other: BigInteger): Pair<BigInteger, BigInteger> {
@@ -392,10 +383,22 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
     }
 
     fun sqrt(): BigInteger {
+        if (isNegative) {
+            throw ArithmeticException("Square root of a negative number is not defined for BigInteger: $this")
+        }
+        if (isZero()) {
+            return ZERO
+        }
         return BigInteger(arithmetic.sqrt(magnitude).first, this.sign)
     }
 
     fun sqrtAndRemainder(): SqareRootAndRemainder {
+        if (isNegative) {
+            throw ArithmeticException("Square root of a negative number is not defined for BigInteger: $this")
+        }
+        if (isZero()) {
+            return SqareRootAndRemainder(ZERO, ZERO)
+        }
         return SqareRootAndRemainder(
             BigInteger(arithmetic.sqrt(magnitude).first, this.sign),
             BigInteger(arithmetic.sqrt(magnitude).second, this.sign)
@@ -427,7 +430,7 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
         var t = ZERO
         var newT = ONE
         var r = modulo
-        var newR = this
+        var newR = this.mod(modulo)
 
         // Loop until the remainder is zero
         while (newR != ZERO) {
@@ -534,6 +537,7 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
             throw ArithmeticException("Negative exponent not supported with BigInteger")
         }
         return when {
+            exponent == 0L -> ONE
             isZero() -> ZERO
             this == ONE -> ONE
             else -> {
@@ -566,7 +570,7 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
     }
 
     override fun setBitAt(position: Long, bit: Boolean): BigInteger {
-        return BigInteger(arithmetic.setBitAt(magnitude, position, bit), sign)
+        return BigInteger(arithmetic.setBitAt(magnitude, position, bit), if (isZero()) Sign.POSITIVE else sign)
     }
 
     override fun bitLength(): Int {
@@ -944,27 +948,28 @@ class BigInteger internal constructor(wordArray: WordArray, requestedSign: Sign)
     }
 
     override fun ushortValue(exactRequired: Boolean): UShort {
-        if (exactRequired && this > UShort.MAX_VALUE.toUInt() || isNegative) {
+        if (exactRequired && (this > UShort.MAX_VALUE.toUInt() || isNegative)) {
             throw ArithmeticException("Cannot convert to unsigned short and provide exact value")
         }
         return magnitude[0].toUShort()
     }
 
     override fun floatValue(exactRequired: Boolean): Float {
-        if (exactRequired && this.abs() > Float.MAX_VALUE) {
-            throw ArithmeticException("Cannot convert to float and provide exact value")
+        if (exactRequired) {
+            val bitLength = arithmetic.bitLength(magnitude)
+            if (bitLength > 128 || bitLength - arithmetic.trailingZeroBits(magnitude) > 24) {
+                throw ArithmeticException("Cannot convert to float and provide exact value")
+            }
         }
         return this.toString().toFloat()
     }
 
     override fun doubleValue(exactRequired: Boolean): Double {
-        if (exactRequired && this.abs() > Double.MAX_VALUE) {
-            println(this.abs())
-            println(Double.MAX_VALUE)
-            if (this.abs() > Double.MAX_VALUE) {
-                println("huh")
+        if (exactRequired) {
+            val bitLength = arithmetic.bitLength(magnitude)
+            if (bitLength > 1024 || bitLength - arithmetic.trailingZeroBits(magnitude) > 53) {
+                throw ArithmeticException("Cannot convert to double and provide exact value")
             }
-            throw ArithmeticException("Cannot convert to double and provide exact value")
         }
         return this.toString().toDouble()
     }
