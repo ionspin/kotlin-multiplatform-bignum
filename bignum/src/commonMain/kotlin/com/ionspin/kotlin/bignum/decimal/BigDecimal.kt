@@ -516,15 +516,10 @@ class BigDecimal private constructor(
             return if (exponent >= 0) {
                 roundSignificand(significand, exponent, workMode)
             } else {
-                if (decimalMode.roundingMode == RoundingMode.ROUND_HALF_TO_EVEN) {
-                    val temp = BigDecimal(significand, exponent) + (significand.signum() * 2)
-                    roundSignificand(temp.significand, temp.exponent, workMode)
-                        .subtract(fromInt(significand.signum() * 2), DecimalMode.DEFAULT)
-                } else {
-                    val temp = BigDecimal(significand, exponent) + significand.signum()
-                    roundSignificand(temp.significand, temp.exponent, workMode)
-                        .subtract(fromInt(significand.signum()), DecimalMode.DEFAULT)
-                }
+                val offset = significand.signum() * 2
+                val temp = BigDecimal(significand, exponent) + offset
+                roundSignificand(temp.significand, temp.exponent, workMode)
+                    .subtract(fromInt(offset), DecimalMode.DEFAULT)
             }
         }
 
@@ -2091,7 +2086,7 @@ class BigDecimal private constructor(
         val rounded = if (this.exponent >= 0) {
             roundSignificand(DecimalMode(digitPosition, roundingMode))
         } else {
-            val offset = fromInt(if (roundingMode == RoundingMode.ROUND_HALF_TO_EVEN) this.signum() * 2 else this.signum())
+            val offset = fromInt(this.signum() * 2)
             add(offset, DecimalMode.DEFAULT)
                 .roundSignificand(DecimalMode(digitPosition, roundingMode))
                 .subtract(offset, DecimalMode.DEFAULT)
