@@ -12,7 +12,7 @@
 - Added and/or/xor TwosComplement for Java BigInt like bitwise operations
 - Define negative shift left and right as positive shift in other direction
 - Define and document sign handling when using xor and or bitwise operations
-- Big integer remainder now correctly returns the result with the sign of divisor instead of dividend
+- Big integer remainder now correctly returns the result with the sign of dividend instead of divisor
 - Fix big integer not() failing in some corner cases
 - Fix big integer setBitAt() flipping bits
 - Apply proper float and double conversion for big integer like in big decimal
