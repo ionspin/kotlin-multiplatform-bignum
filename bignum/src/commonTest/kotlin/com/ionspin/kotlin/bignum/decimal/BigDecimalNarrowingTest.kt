@@ -202,9 +202,9 @@ class BigDecimalNarrowingTest {
 
         assertEquals(-0.5f, "-0.5".toBigDecimal().floatValue(true))
         assertEquals(-0.5, "-0.5".toBigDecimal().doubleValue(true))
-        assertEquals(9.313226E-10f, twoToMinus30.floatValue(true))
+        assertEquals(9.313225746154785E-10.toFloat(), twoToMinus30.floatValue(true))
         assertEquals(9.313225746154785E-10, twoToMinus30.doubleValue(true))
-        assertEquals(1.1805916E21f, twoTo70.floatValue(true))
+        assertEquals(1.1805916207174113E21.toFloat(), twoTo70.floatValue(true))
         assertEquals(1.1805916207174113E21, twoTo70.doubleValue(true))
 
         listOf("0.05", "0.025", "1.05").forEach {
@@ -221,8 +221,8 @@ class BigDecimalNarrowingTest {
 
     @Test
     fun floatValueWithLargeSignificandTest() {
-        assertEquals(1.2345679E19f, "12345678901234567890.5".toBigDecimal().floatValue(false))
-        assertEquals(1677721.7f, "1677721.7".toBigDecimal().floatValue(false))
+        assertEquals("12345678901234567890.5".toFloat(), "12345678901234567890.5".toBigDecimal().floatValue(false))
+        assertEquals("1677721.7".toFloat(), "1677721.7".toBigDecimal().floatValue(false))
         assertEquals(12.375f, "12.375".toBigDecimal().floatValue(false))
     }
 
