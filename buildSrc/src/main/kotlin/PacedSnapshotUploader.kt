@@ -45,9 +45,10 @@ object PacedSnapshotUploader {
         intervalMillis: Long = 1000,
         maxRateLimitPauses: Int = 3,
         rateLimitPauseMillis: Long = 60_000,
+        skipSignatures: Boolean = false,
         log: (String) -> Unit = ::println
     ) {
-        val files = filesInUploadOrder(stagingDirectory)
+        val files = filesInUploadOrder(stagingDirectory, skipSignatures)
         require(files.isNotEmpty()) { "Nothing to upload, $stagingDirectory has no files" }
         require(username.isNotEmpty() && password.isNotEmpty()) { "Sonatype credentials are not set" }
 
@@ -89,7 +90,7 @@ object PacedSnapshotUploader {
                 if (pausesLeft == 0) {
                     throw RuntimeException(
                         "Upload of $path was rate limited (429) again after $maxRateLimitPauses pauses, giving up. " +
-                            "Wait before running it again, repeated attempts make the block longer."
+                                "Wait before running it again, repeated attempts make the block longer."
                     )
                 }
                 pausesLeft--
@@ -104,14 +105,22 @@ object PacedSnapshotUploader {
         }
         log("Uploaded ${files.size} files")
     }
-
-    /**
-     * Artifacts first, then the maven-metadata.xml files of each version, then the ones of each module.
-     */
-    fun filesInUploadOrder(stagingDirectory: File): List<File> {
-        val files = stagingDirectory.walkTopDown().filter { it.isFile }.sortedBy { it.invariantSeparatorsPath }.toList()
+    
+    fun filesInUploadOrder(stagingDirectory: File, skipSignatures: Boolean = false): List<File> {
+        val files = stagingDirectory.walkTopDown()
+            .filter { it.isFile && !isSkipped(it.name, skipSignatures) }
+            .sortedBy { it.invariantSeparatorsPath }
+            .toList()
         val (metadata, artifacts) = files.partition { it.name.startsWith(METADATA) }
         val (versionMetadata, moduleMetadata) = metadata.partition { it.parentFile.name.endsWith("-SNAPSHOT") }
         return artifacts + versionMetadata + moduleMetadata
+    }
+
+    private val checksumExtensions = listOf(".md5", ".sha1", ".sha256", ".sha512")
+
+    fun isSkipped(fileName: String, skipSignatures: Boolean): Boolean {
+        if (fileName.endsWith(".md5") || fileName.endsWith(".sha512") || fileName.endsWith(".sha1")) return true
+        if (checksumExtensions.any { fileName.endsWith(".asc$it") }) return true
+        return skipSignatures && fileName.endsWith(".asc")
     }
 }

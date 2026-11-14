@@ -383,6 +383,7 @@ tasks.register("uploadStagedSnapshots") {
             username = sonatypeUsername ?: sonatypeUsernameEnv ?: "",
             password = sonatypePassword ?: sonatypePasswordEnv ?: "",
             intervalMillis = (findProperty("snapshotUploadIntervalMillis") as String?)?.toLong() ?: 1000,
+            skipSignatures = true,
             log = { logger.lifecycle(it) }
         )
         delete(snapshotStagingDirectory)

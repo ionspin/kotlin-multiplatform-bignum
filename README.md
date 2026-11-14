@@ -40,15 +40,7 @@ implementation("com.ionspin.kotlin:bignum:0.3.10")
 ```
 
 #### Snapshot builds
-```kotlin
-repositories {
-    maven {
-        url = uri("https://oss.sonatype.org/content/repositories/snapshots")
-    }
-}
-implementation("com.ionspin.kotlin:bignum:0.3.11-SNAPSHOT")
-
-```
+Snapshot builds are currently not published due to Maven Central quotas. 
 
 ## Serialization
 
