@@ -105,7 +105,7 @@ object PacedSnapshotUploader {
         }
         log("Uploaded ${files.size} files")
     }
-    
+
     fun filesInUploadOrder(stagingDirectory: File, skipSignatures: Boolean = false): List<File> {
         val files = stagingDirectory.walkTopDown()
             .filter { it.isFile && !isSkipped(it.name, skipSignatures) }

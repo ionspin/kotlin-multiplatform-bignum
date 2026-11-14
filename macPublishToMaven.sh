@@ -6,6 +6,7 @@ publishTvosArm64PublicationToMavenRepository \
 publishTvosX64PublicationToMavenRepository \
 publishWatchosArm32PublicationToMavenRepository \
 publishWatchosArm64PublicationToMavenRepository \
+publishWatchosDeviceArmPublicationToMavenRepository \
 publishWatchosX64PublicationToMavenRepository \
 publishMacosArm64PublicationToMavenRepository \
 publishIosSimulatorArm64PublicationToMavenRepository \
